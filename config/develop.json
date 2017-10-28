@@ -1,0 +1,6 @@
+{
+	"baseUrl": "",
+	"server": {
+		"port": 5000
+	}
+}
