@@ -64,7 +64,7 @@ module.exports = function(env) {
       ]
     },
     resolve: {
-      modules: ['node_modules']
+      modules: ['engine', 'webapp', 'node_modules']
     },
     plugins: [
       new CleanWebpackPlugin(['dist']),

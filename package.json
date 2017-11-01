@@ -4,7 +4,8 @@
   "description": "This README would normally document whatever steps are necessary to get your application up and running.",
   "main": "webpack.config.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "serve": "node server/index.js",
+    "build": "webpack --watch"
   },
   "repository": {
     "type": "git",
