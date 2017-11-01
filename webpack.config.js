@@ -27,6 +27,7 @@ module.exports = function(env) {
 
   return {
     entry: {
+      engine: './engine/engine.js',
       webapp: './webapp/index.jsx'
     },
     output: {
@@ -46,7 +47,7 @@ module.exports = function(env) {
         },
         {test: /\.html$/, loader: 'html-loader'},
         { test: /\.js$/, loader: 'imports-loader?THREE=three'},
-        { test: /\.scss$/, use: extractSass.extract({
+        { test: /\.sass$/, use: extractSass.extract({
           use: [{
             loader: "css-loader"
           }, {
@@ -73,7 +74,7 @@ module.exports = function(env) {
       }),
       new HtmlWebpackPlugin({
         inject: true,
-        chunks: ['webapp'],
+        chunks: ['engine', 'webapp'],
         filename: 'index.html',
         minify: {
           collapseWhitespace: isProduction,
