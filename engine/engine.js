@@ -10,15 +10,19 @@ export default class Engine {
         this.scene = new THREE.Scene();
         this.controls = new Controls({container: this.container});
 
-        this.container.appendChild(this.renderer.domElement);
-        this.onResize();
+      let width = this.container.offsetWidth,
+        height = this.container.offsetHeight;
+        var aspect = width / height;
+        this.frustumSize = 20;
+        this.camera = new THREE.OrthographicCamera( - this.frustumSize * aspect, this.frustumSize * aspect, this.frustumSize, - this.frustumSize, 1, 1000 );
+        this.renderer.setPixelRatio( window.devicePixelRatio );
+        this.renderer.setSize( width, height );
 
-        // Hande canvas resizing
-        //window.addEventListener('resize', this.onResize.bind(this), true);
-// camera
-        var aspect = this.width / this.height;
-        var d = 20;
-        this.camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 1, 1000 );
+        this.container.appendChild(this.renderer.domElement);
+        //this.onResize();
+
+        // Handle canvas resizing
+        window.addEventListener('resize', this.onResize.bind(this), true);
 
         // method 1 - use lookAt
         this.camera.position.set( 20, 20, 20 );
@@ -35,8 +39,13 @@ export default class Engine {
         this.width = width;
         this.height = height;
         this.renderer.setSize(width, height);
-        //this.camera.aspect = width / height;
-        //this.camera.updateProjectionMatrix();
+
+        var aspect = width / height;
+      this.camera.left   = - this.frustumSize * aspect;
+      this.camera.right  =   this.frustumSize * aspect;
+      this.camera.top    =   this.frustumSize;
+      this.camera.bottom = - this.frustumSize;
+      this.camera.updateProjectionMatrix();
     }
     animate() {
       this.renderer.render(this.scene, this.camera);

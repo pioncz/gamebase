@@ -7,18 +7,17 @@ import {
   Link
 } from 'react-router-dom'
 import Pages from 'pages'
-import Home from './pages/home/home.jsx';
+import Header from 'components/header/index.jsx'
 
 ReactDOM.render(
   <div>
     <Router>
       <div>
-        <div>
-          <Link to='/'>Home</Link>
-          <Link to='/ludo'>Ludo</Link>
+        <Header/>
+        <div className="main">
+          <Route exact path="/" component={Pages.Home}/>
+          <Route path="/ludo" component={Pages.Ludo}/>
         </div>
-        <Route exact path="/" component={Home}/>
-        <Route path="/ludo" component={Pages.Ludo}/>
       </div>
     </Router>
 
