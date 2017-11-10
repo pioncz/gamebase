@@ -10,6 +10,11 @@ const path = require('path');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 var cors = require('cors');
+var io = require('socket.io')(http);
+
+io.on('connection', function(socket){
+  console.log('a user connected');
+});
 
 function handleError(req, res, error) {
   console.error(error.statusCode, error.error, error.options.uri);
