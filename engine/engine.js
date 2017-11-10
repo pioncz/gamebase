@@ -6,24 +6,26 @@ export default class Engine {
         this.container = props.container;
         this.raycaster = new THREE.Raycaster();
         this.renderer = new THREE.WebGLRenderer({alpha: true});
-        this.camera = new THREE.PerspectiveCamera(75, 1/ 2, 0.1, 10000);
 
         this.scene = new THREE.Scene();
         this.controls = new Controls({container: this.container});
 
         this.container.appendChild(this.renderer.domElement);
         this.onResize();
-        this.board = new Board({scene: this.scene});
-
-        //this.camera.rotateZ(0.05);
-        this.camera.position.z = 400;
-        this.camera.position.x = 55;
-        this.camera.position.y = -55;
-        this.board.$.rotateZ(45 * Math.PI/180);
-        this.camera.lookAt(this.board.$.position);
 
         // Hande canvas resizing
-        window.addEventListener('resize', this.onResize.bind(this), true);
+        //window.addEventListener('resize', this.onResize.bind(this), true);
+// camera
+        var aspect = this.width / this.height;
+        var d = 20;
+        this.camera = new THREE.OrthographicCamera( - d * aspect, d * aspect, d, - d, 1, 1000 );
+
+        // method 1 - use lookAt
+        this.camera.position.set( 20, 20, 20 );
+        this.camera.lookAt( new THREE.Vector3(0,0,0) );
+
+        this.board = new Board({scene: this.scene});
+
         this.animate();
     }
     onResize() {
@@ -33,8 +35,8 @@ export default class Engine {
         this.width = width;
         this.height = height;
         this.renderer.setSize(width, height);
-        this.camera.aspect = width / height;
-        this.camera.updateProjectionMatrix();
+        //this.camera.aspect = width / height;
+        //this.camera.updateProjectionMatrix();
     }
     animate() {
       this.renderer.render(this.scene, this.camera);

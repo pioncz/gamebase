@@ -3,7 +3,7 @@ import Utils from 'utils/utils.js'
 export default class Board {
   constructor({ scene }) {
     this.scene = scene;
-    this.geometry = new THREE.BoxGeometry(512, 512, 5);
+    this.geometry = new THREE.BoxGeometry( 40,2,40 );
 
 
     let canvas = Utils.$({element: 'canvas'}),
@@ -156,15 +156,30 @@ export default class Board {
 
 
     let texture = new THREE.Texture(canvas);
-    this.material = new THREE.MeshBasicMaterial({
+    this.materials = [new THREE.MeshBasicMaterial({
       map: texture,
+      side: THREE.DoubleSide,
+    }),
+      new THREE.MeshBasicMaterial({
+        color: 'green',
+        side: THREE.DoubleSide,
+      })
+    ];
 
-      //side: THREE.DoubleSide,
-    });
+    // Add materialIndex to face
+    for (var i = 0; i < this.geometry.faces.length; i++) {
+      this.geometry.faces[i].materialIndex = (i > 2? 0 : 1);
+    }
+
     texture.needsUpdate = true;
-    this.$ = new THREE.Mesh(this.geometry, [this.material]);
-    this.$.rotateZ(0.03);
-    this.scene.add( this.$ );
+    this.$ = new THREE.Mesh(this.geometry, new THREE.MeshFaceMaterial(this.materials));
+
+    for (var i = 0; i < this.geometry.faces.length; i++) {
+      this.geometry.faces[i].materialIndex = (i > 2? 0 : 1);
+    }
+    var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+    var cube = new THREE.Mesh( this.geometry, new THREE.MeshFaceMaterial(this.materials) );
+    this.scene.add( cube );
   }
   update() {
 
