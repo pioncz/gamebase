@@ -156,28 +156,22 @@ export default class Board {
 
 
     let texture = new THREE.Texture(canvas);
-    this.materials = [new THREE.MeshBasicMaterial({
-      map: texture,
-      side: THREE.DoubleSide,
-    }),
-      new THREE.MeshBasicMaterial({
-        color: 'green',
-        side: THREE.DoubleSide,
-      })
+    this.materials = [
+      new THREE.MeshBasicMaterial({map: texture}),
+      new THREE.MeshBasicMaterial({ color: 'rgba(61, 72, 97, 0.8)' })
     ];
 
-    // Add materialIndex to face
-    for (var i = 0; i < this.geometry.faces.length; i++) {
-      this.geometry.faces[i].materialIndex = (i > 2? 0 : 1);
-    }
 
     texture.needsUpdate = true;
     this.$ = new THREE.Mesh(this.geometry, new THREE.MeshFaceMaterial(this.materials));
 
-    for (var i = 0; i < this.geometry.faces.length; i++) {
-      this.geometry.faces[i].materialIndex = (i > 2? 0 : 1);
-    }
-    var material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+    this.geometry.faces[0].materialIndex = 1;
+    this.geometry.faces[1].materialIndex = 1;
+    this.geometry.faces[4].materialIndex = 0;
+    this.geometry.faces[5].materialIndex = 0;
+    this.geometry.faces[8].materialIndex = 1;
+    this.geometry.faces[9].materialIndex = 1;
+
     var cube = new THREE.Mesh( this.geometry, new THREE.MeshFaceMaterial(this.materials) );
     this.scene.add( cube );
   }
