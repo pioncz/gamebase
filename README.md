@@ -1,29 +1,11 @@
-# README #
-
-This README would normally document whatever steps are necessary to get your application up and running.
-
-### What is this repository for? ###
-
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-
-### How do I get set up? ###
-
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
-
-### Contribution guidelines ###
-
-* Writing tests
-* Code review
-* Other guidelines
-
-### Who do I talk to? ###
-
-* Repo owner or admin
-* Other community or team contact
+TO DO, PLAN GRY
+0) Informacje które są zawsze na ekranie (UI):
+-profil tualnie zalogowanego gracza
+-szybki dostep do czatu i listy znajomych z funkcja zaproszenia do gry
+1) Strona główna
+-lista gier
+2) Strona Ludo
+-wybór (graj sam lub ze znajomymi)
+-ekran wyszukiwania z przewidywanym czasem
+-(jak sie zaczyna rozrgrywka) wybór koloru
+-ekran gry
