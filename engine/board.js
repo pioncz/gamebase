@@ -8,15 +8,8 @@ export default class Board {
 
     let canvas = Utils.$({element: 'canvas'}),
       ctx = canvas.getContext('2d');
-    let x = 20,
-      y = 40,
-      r = 10,
-      width = 512,
-      height = 512,
-      entity = {
-        width: width / 15,
-        height: height / 15
-      };
+    let width = 512,
+      height = 512;
 
     canvas.width = width;
     canvas.height = height;

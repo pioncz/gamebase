@@ -7,7 +7,10 @@ export default class Game extends Component {
         super(props);
     }
     componentDidMount() {
-        this.engine = new Engine({container: this.rendererContainer});
+        this.engine = new Engine({container: this.rendererContainer, pawns: this.props.pawns});
+    }
+    componentWillReceiveProps(nextProps) {
+        console.log(nextProps);
     }
     render() {
         return <div className="game">

@@ -8,9 +8,11 @@ import {
 } from 'react-router-dom'
 import Pages from 'pages'
 import Header from 'components/header/index.jsx'
+import { Provider } from 'react-redux';
+import initStore from './store';
 
 ReactDOM.render(
-  <div>
+  <Provider store={initStore()}>
     <Router>
       <div>
         <Header/>
@@ -21,6 +23,6 @@ ReactDOM.render(
       </div>
     </Router>
 
-  </div>,
+  </Provider>,
   document.getElementById('webapp')
 );

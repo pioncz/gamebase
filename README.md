@@ -1,6 +1,6 @@
 TO DO, PLAN GRY
 0) Informacje które są zawsze na ekranie (UI):
--profil tualnie zalogowanego gracza
+-profil aktualnie zalogowanego gracza
 -szybki dostep do czatu i listy znajomych z funkcja zaproszenia do gry
 1) Strona główna
 -lista gier

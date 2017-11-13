@@ -28,8 +28,10 @@ export default class Engine {
         this.camera.position.set( 20, 20, 20 );
         this.camera.lookAt( new THREE.Vector3(0,0,0) );
 
-        this.board = new Board({scene: this.scene});
-        this.pawn = new Pawn({scene: this.scene, color: 'red'});
+        this.boardWidth = 512;
+        this.boardHeight = 512;
+
+        this.board = new Board({scene: this.scene, pawns: this.pawns});
 
         this.animate();
     }
@@ -37,8 +39,8 @@ export default class Engine {
         let width = this.container.offsetWidth,
             height = this.container.offsetHeight;
 
-        this.width = width;
-        this.height = height;
+        this.windowWidth = width;
+        this.windowHeight = height;
         this.renderer.setSize(width, height);
 
         var aspect = width / height;
