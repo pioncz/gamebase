@@ -2,6 +2,8 @@ import Controls from './utils/controls'
 import Board from './board'
 import Pawn from './pawn'
 
+let i = 0;
+
 export default class Engine {
     constructor(props) {
         this.container = props.container;
@@ -33,6 +35,10 @@ export default class Engine {
 
         this.board = new Board({scene: this.scene, pawns: this.pawns});
 
+        this.pawns = [
+          new Pawn({scene: this.scene, x: -20, y: 0, color: 'red'})
+        ]
+
         this.animate();
     }
     onResize() {
@@ -52,6 +58,9 @@ export default class Engine {
     }
     animate() {
       this.renderer.render(this.scene, this.camera);
+      i++;
+      i%=100;
+      // this.pawns[0].$.position.x = i/200 * 40;
       window.requestAnimationFrame(this.animate.bind(this));
     }
 }
