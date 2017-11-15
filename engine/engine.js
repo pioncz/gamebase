@@ -35,9 +35,16 @@ export default class Engine {
 
         this.board = new Board({scene: this.scene, pawns: this.pawns});
 
+        let meshWidth = 20,
+          meshHeight = 20,
+          columnsLength = 11,
+          x = 40/columnsLength;
+
         this.pawns = [
-          new Pawn({scene: this.scene, x: -20, y: 0, color: 'red'})
-        ]
+          new Pawn({scene: this.scene, x: 0, z: 0, color: 'red'}),
+          new Pawn({scene: this.scene, x: x, z: 0, color: 'green'}),
+          new Pawn({scene: this.scene, x: 0, z: x * 2, color: 'blue'})
+        ];
 
         this.animate();
     }

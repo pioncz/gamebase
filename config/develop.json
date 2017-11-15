@@ -1,6 +1,9 @@
 {
-	"baseUrl": "",
+	"apiUrl": "",
 	"server": {
 		"port": 5000
+	},
+	"ludo": {
+
 	}
 }
