@@ -1,8 +1,9 @@
 import Utils from 'utils/utils.js'
+import Pawn from './pawn'
 
 export default class Board {
-  constructor({ scene }) {
-    this.scene = scene;
+  constructor(props) {
+    this.scene = props.scene;
     this.geometry = new THREE.BoxGeometry( 40,2,40 );
 
 
@@ -167,6 +168,14 @@ export default class Board {
 
     var cube = new THREE.Mesh( this.geometry, new THREE.MeshFaceMaterial(this.materials) );
     this.scene.add( cube );
+
+    // Create pawns
+    let pawns = props.pawns;
+    for(let pawnId in pawns) {
+      let pawn = pawns[pawnId];
+
+      pawn = new Pawn({scene: this.scene, x: pawn.x, z: pawn.z, color: pawn.color});
+    }
   }
   update() {
 

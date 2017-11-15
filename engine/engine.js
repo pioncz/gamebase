@@ -1,6 +1,6 @@
 import Controls from './utils/controls'
+import Animations from './utils/animations'
 import Board from './board'
-import Pawn from './pawn'
 
 let i = 0;
 
@@ -12,10 +12,12 @@ export default class Engine {
 
         this.scene = new THREE.Scene();
         this.controls = new Controls({container: this.container});
+        this.animations = new Animations();
 
         let width = this.container.offsetWidth,
           height = this.container.offsetHeight;
         var aspect = width / height;
+        this._lastRender = 0;
         this.frustumSize = 20;
         this.camera = new THREE.OrthographicCamera( - this.frustumSize * aspect, this.frustumSize * aspect, this.frustumSize, - this.frustumSize, 1, 1000 );
         this.renderer.setPixelRatio( window.devicePixelRatio );
@@ -33,18 +35,18 @@ export default class Engine {
         this.boardWidth = 512;
         this.boardHeight = 512;
 
-        this.board = new Board({scene: this.scene, pawns: this.pawns});
+      let meshWidth = 20,
+        meshHeight = 20,
+        columnsLength = 11,
+        x = 40/columnsLength;
 
-        let meshWidth = 20,
-          meshHeight = 20,
-          columnsLength = 11,
-          x = 40/columnsLength;
+      this.pawns = [
+        {x: 0, z: 0, color: 'red'},
+        {x: x, z: 0, color: 'green'},
+        {x: 0, z: x * 2, color: 'blue'}
+      ];
 
-        this.pawns = [
-          new Pawn({scene: this.scene, x: 0, z: 0, color: 'red'}),
-          new Pawn({scene: this.scene, x: x, z: 0, color: 'green'}),
-          new Pawn({scene: this.scene, x: 0, z: x * 2, color: 'blue'})
-        ];
+        this.board = new Board({scene: this.scene, pawns: this.pawns, animations: this.animations});
 
         this.animate();
     }
@@ -63,11 +65,14 @@ export default class Engine {
       this.camera.bottom = - this.frustumSize;
       this.camera.updateProjectionMatrix();
     }
-    animate() {
+    animate(timestamp) {
+      let delta = Math.min(timestamp - this._lastRender, 500);
+
       this.renderer.render(this.scene, this.camera);
       i++;
       i%=100;
       // this.pawns[0].$.position.x = i/200 * 40;
+      this.animations.tick();
       window.requestAnimationFrame(this.animate.bind(this));
     }
 }
