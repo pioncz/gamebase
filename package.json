@@ -4,7 +4,8 @@
   "description": "This README would normally document whatever steps are necessary to get your application up and running.",
   "main": "webpack.config.js",
   "scripts": {
-    "serve": "node server/index.js",
+    "serve": "webpack-dev-server",
+    "start": "node server/index.js",
     "build": "webpack --watch"
   },
   "repository": {
@@ -51,6 +52,7 @@
     "react-dom": "^16.0.0",
     "react-redux": "^5.0.6",
     "socket.io": "^2.0.4",
-    "socket.io-client": "^2.0.4"
+    "socket.io-client": "^2.0.4",
+    "webpack-dev-server": "^2.9.4"
   }
 }

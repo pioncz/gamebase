@@ -170,15 +170,24 @@ export default class Board {
     this.scene.add( cube );
 
     // Create pawns
-    let pawns = props.pawns;
-    for(let pawnId in pawns) {
-      let pawn = pawns[pawnId];
-
-      pawn = new Pawn({scene: this.scene, x: pawn.x, z: pawn.z, color: pawn.color});
+    this.pawns = {};
+    for(let pawnId in props.pawns) {
+      let pawn = new Pawn({
+        ...props.pawns[pawnId],
+        scene: this.scene
+      });
+      this.pawns[pawnId] = pawn;
     }
   }
   update() {
 
+  }
+  movePawn(pawnId, x, y, z) {
+    if (this.pawns[pawnId]) {
+      this.pawns[pawnId].moveTo(x, y, z);
+    } else {
+      console.error('No pawn with id: ' + pawnId);
+    }
   }
   render() {
 
