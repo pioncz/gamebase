@@ -1,5 +1,5 @@
 import Controls from './utils/controls'
-import { TIMES, Animations } from './utils/animations'
+import { EASING, TIMES, Animations } from './utils/animations'
 import Board from './board'
 
 let i = 0;
@@ -53,16 +53,19 @@ export default class Engine {
     });
   
     this.board.movePawn(0, 0, 2.8, 0);
-    
+  
     this.animations.create({
       length: 1000,
       times: TIMES.Infinity,
-      // times: 1,
+      easing: EASING.InOutQuad,
       update: (progress) => {
-        // console.log(progress);
-        this.board.movePawn(1, x * progress, 2.8, 0);
+        let newX = x * progress,
+          newY = 2.8 * (1 + EASING.Sin(progress / 2));
+      
+        this.board.movePawn(1, newX, newY, x);
       },
     });
+    
     this.animate();
   }
   onResize() {
