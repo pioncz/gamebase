@@ -27,7 +27,7 @@ module.exports = function(env) {
 
   return {
     entry: {
-      engine: './engine/engine.js',
+      game: './game/game.js',
       webapp: './webapp/index.jsx'
     },
     output: {
@@ -65,7 +65,7 @@ module.exports = function(env) {
       ]
     },
     resolve: {
-      modules: ['engine', 'webapp', 'node_modules']
+      modules: ['game', 'webapp', 'node_modules']
     },
     plugins: [
       new CleanWebpackPlugin(['dist']),
@@ -74,7 +74,7 @@ module.exports = function(env) {
       }),
       new HtmlWebpackPlugin({
         inject: true,
-        chunks: ['engine', 'webapp'],
+        chunks: ['game', 'webapp'],
         filename: 'index.html',
         minify: {
           collapseWhitespace: isProduction,

@@ -17,7 +17,7 @@ ReactDOM.render(
       <div>
         <Header/>
         <div className="main">
-          <Route exact path="/" component={Pages.Home}/>
+          <Route exact path="/" component={Pages.Ludo}/>
           <Route path="/ludo" component={Pages.Ludo}/>
         </div>
       </div>
