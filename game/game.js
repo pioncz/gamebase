@@ -37,7 +37,7 @@ export default class Game {
 
         let pawns = [
             {id: 0, x: 0, z: 0, color: 'red'},
-            {id: 1, x: 1, z: 0, color: 'green'},
+            {id: 1, x: 4, z: 4, color: 'green'},
             {id: 2, x: 0, z: 2, color: 'blue'},
         ];
 
@@ -50,7 +50,7 @@ export default class Game {
             animations: this.animations,
         });
 
-        this.board.movePawn('2', 1, -1);
+        //this.board.movePawn('1', 3, 3);
         this.animate();
     }
     onResize() {
