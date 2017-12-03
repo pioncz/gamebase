@@ -13,34 +13,7 @@ export default class Board {
     this.columnsLength = 11;
     this.fieldLength = 40 / this.columnsLength;
     
-    this.createBoard();
-    
-    this.pawnsController = new PawnsController({
-      scene: this.scene,
-      fieldLength: this.fieldLength,
-      pawns: props.pawns,
-    });
-  }
-  createBoard() {
-    let canvas = Utils.$({element: 'canvas'}),
-      ctx = canvas.getContext('2d');
-    let width = this.width,
-      height = this.height;
-    
-    canvas.width = width;
-    canvas.height = height;
-    
-    var gridAmount = 11;
-    
-    var players = [
-      {color: '#D50000'},
-      {color: '#64DD17'},
-      {color: '#1DE9B6'},
-      {color: '#FFEA00'},
-    
-    ];
-    
-    var fields = [
+    this.fields = [
       {x: 0, y: 4, player: '3', type: 'start'},
       {x: 1, y: 4},
       {x: 2, y: 4},
@@ -114,6 +87,34 @@ export default class Board {
       {x: 0, y: 1, player: '3', type: 'spawn'},
       {x: 1, y: 1, player: '3', type: 'spawn'},
     ];
+    this.createBoard();
+    
+    this.pawnsController = new PawnsController({
+      scene: this.scene,
+      fieldLength: this.fieldLength,
+      pawns: props.pawns,
+      animations: props.animations,
+    });
+  }
+  createBoard() {
+    let canvas = Utils.$({element: 'canvas'}),
+      ctx = canvas.getContext('2d');
+    let width = this.width,
+      height = this.height;
+    
+    canvas.width = width;
+    canvas.height = height;
+    
+    var gridAmount = 11;
+    
+    var players = [
+      {color: '#D50000'},
+      {color: '#64DD17'},
+      {color: '#1DE9B6'},
+      {color: '#FFEA00'},
+    
+    ];
+    
     
     ctx.clearRect(0, 0, width, height);
     
@@ -159,8 +160,8 @@ export default class Board {
       ctx.restore();
     }
     
-    for (let i = 0; i < fields.length; i++) {
-      drawField(fields[i]);
+    for (let i = 0; i < this.fields.length; i++) {
+      drawField(this.fields[i]);
     }
     
     let texture = new THREE.Texture(canvas);
@@ -184,24 +185,6 @@ export default class Board {
     this.scene.add(cube);
   }
   movePawn(pawnId, x, z) {
-    if (this.pawns[pawnId]) {
-      let oldX = 0,
-        oldZ = 0;
-      
-      this.animations.create({
-        length: 1000,
-        times: TIMES.Infinity,
-        easing: EASING.InOutQuad,
-        update: (progress) => {
-          let newX = (x * this.fieldLength) * progress,
-            newY = 2.8 * (1 + EASING.Sin(progress / 2)),
-            newZ = z * this.fieldLength;
-          
-          this.pawns[pawnId].moveTo(newX, newY, newZ);
-        },
-      });
-    } else {
-      console.error('No pawn with id: ' + pawnId);
-    }
+    this.pawnsController.movePawn(pawnId, x, z);
   }
 }

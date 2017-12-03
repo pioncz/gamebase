@@ -53,7 +53,7 @@ export class Animations {
       let animation = this.animations[i],
         progress;
       
-      progress = animation.lengthLeft / animation.length;
+      progress = (1 - animation.lengthLeft / animation.length);
       if (animation.easing) {
         progress = animation.easing(progress);
       }

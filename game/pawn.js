@@ -11,7 +11,9 @@ export default class Pawn {
   }
   moveTo(x, y, z) {
     this.$.position.x = x + 0.4;
+    this.x = x;
     this.$.position.y = y;
     this.$.position.z = z + 0.4;
+    this.z = z;
   }
 }

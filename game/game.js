@@ -36,9 +36,9 @@ export default class Game {
         window.addEventListener('resize', this.onResize.bind(this), true);
 
         let pawns = [
-            {id: 0, x: 0, z: 0, color: 'red'},
-            {id: 1, x: 4, z: 4, color: 'green'},
-            {id: 2, x: 0, z: 2, color: 'blue'},
+            {id: 0, x: 2, z: 1, color: 'red'},
+            {id: 1, x: 2, z: 1, color: 'green'},
+            {id: 2, x: 4, z: 1, color: 'blue'},
         ];
 
         this.board = new Board({
@@ -50,7 +50,7 @@ export default class Game {
             animations: this.animations,
         });
 
-        //this.board.movePawn('1', 3, 3);
+        this.board.movePawn('1', 4, 1);
         this.animate();
     }
     onResize() {
