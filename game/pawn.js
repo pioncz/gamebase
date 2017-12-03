@@ -6,14 +6,14 @@ export default class Pawn {
     var material = new THREE.MeshBasicMaterial({color: props.color, wireframe: true});
     this.$ = new THREE.Mesh(geometry, material);
 
-    this.moveTo(props.x, 2.8, props.z);
+    this.moveTo(props.parsedX, 2.8, props.parsedZ);
     this.scene.add(this.$);
   }
   moveTo(x, y, z) {
     this.$.position.x = x + 0.4;
-    this.x = x;
+    this.parsedX = x;
     this.$.position.y = y;
     this.$.position.z = z + 0.4;
-    this.z = z;
+    this.parsedZ = z;
   }
 }

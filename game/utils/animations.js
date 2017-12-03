@@ -43,10 +43,19 @@ export class Animations {
     this.animations = [];
   }
   create(options) {
-    this.animations.push({
-      ...options,
-      lengthLeft: options.length,
+    let animation = {
+        ...options,
+        lengthLeft: options.length,
+      },
+      finishPromise = new Promise((resolve, reject) => {
+        animation.resolve = resolve;
+        animation.reject = reject;
     });
+  
+    animation.finishPromise = finishPromise;
+    this.animations.push(animation);
+  
+    return finishPromise;
   }
   tick(delta) {
     for(let i = this.animations.length - 1; i >= 0; i--) {
@@ -64,6 +73,7 @@ export class Animations {
         if (animation.times == TIMES.Infinity) {
           animation.lengthLeft = animation.length;
         } else {
+          this.animations[i].resolve();
           this.animations.splice(i, 1);
         }
       }

@@ -184,7 +184,20 @@ export default class Board {
     var cube = new THREE.Mesh(this.geometry, new THREE.MeshFaceMaterial(this.materials));
     this.scene.add(cube);
   }
+  getFieldsSequence(oldX, oldY, newX, newY) {
+    return [{x: 3, z: 1}, {x:4, z:1}];
+  }
   movePawn(pawnId, x, z) {
-    this.pawnsController.movePawn(pawnId, x, z);
+    let fieldsSequence = this.getFieldsSequence(x,z);
+    
+    Utils.asyncLoop(fieldsSequence.length, (loop, i) => {
+      this.pawnsController.movePawn(
+        pawnId,
+        fieldsSequence[i].x,
+        fieldsSequence[i].z
+      ).then(
+        loop.next
+      );
+    });
   }
 }

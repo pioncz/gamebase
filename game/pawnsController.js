@@ -15,8 +15,10 @@ export default class PawnsController {
       let pawn = new Pawn({
         ...props.pawns[pawnId],
         scene: this.scene,
-        x: parsedX,
-        z: parsedZ,
+        x: props.pawns[pawnId].x,
+        z: props.pawns[pawnId].z,
+        parsedX: parsedX,
+        parsedZ: parsedZ,
       });
       this.pawns[pawnId] = pawn;
     }
@@ -24,26 +26,30 @@ export default class PawnsController {
   movePawn(pawnId, x, z) {
     let pawn = this.pawns[pawnId];
     
-    if (pawn) {
-      let oldX = pawn.x,
-        dX = Math.abs(oldX - (x * this.fieldLength)),
-        oldZ = pawn.z,
-        dZ = Math.abs(oldZ - (z * this.fieldLength));
-      
-      this.animations.create({
-        length: 1000,
-        times: TIMES.Infinity,
-        easing: EASING.InOutQuad,
-        update: (progress) => {
-          let newX = oldX + (dX * progress),
-            newY = 2.8 * (1 + EASING.Sin(progress / 2)),
-            newZ = oldZ + (dZ * progress);
-
-          pawn.moveTo(newX, newY, newZ);
-        },
-      });
-    } else {
-      console.error('No pawn with id: ' + pawnId);
-    }
+    let returnPromise = new Promise((resolve, reject) => {
+      if (pawn) {
+        let oldX = pawn.parsedX,
+          dX = Math.abs(oldX - (x * this.fieldLength)),
+          oldZ = pawn.parsedZ,
+          dZ = Math.abs(oldZ - (z * this.fieldLength));
+    
+        this.animations.create({
+          length: 1000,
+          easing: EASING.InOutQuad,
+          update: (progress) => {
+            let newX = oldX + (dX * progress),
+              newY = 2.8 * (1 + EASING.Sin(progress / 2)),
+              newZ = oldZ + (dZ * progress);
+        
+            pawn.moveTo(newX, newY, newZ);
+          },
+        }).then(resolve);
+      } else {
+        console.error('No pawn with id: ' + pawnId);
+        reject();
+      }
+    });
+    
+    return returnPromise;
   }
 }
