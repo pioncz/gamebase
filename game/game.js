@@ -35,11 +35,28 @@ export default class Game {
         // Handle canvas resizing
         window.addEventListener('resize', this.onResize.bind(this), true);
 
+        
         let pawns = [
-            {id: 0, x: 2, z: 1, color: 'red'},
-            {id: 1, x: 2, z: 1, color: 'green'},
-            {id: 2, x: 4, z: 1, color: 'blue'},
+            {id: 0, x: 9, z: 10, color: '#D50000'},
+            {id: 1, x: 10, z: 10, color: '#D50000'},
+            {id: 2, x: 9, z: 9, color: '#D50000'},
+            {id: 3, x: 10, z: 9, color: '#D50000'},
+            {id: 4, x: 9, z: 0, color: '#64DD17'},
+            {id: 5, x: 10, z: 0, color: '#64DD17'},
+            {id: 6, x: 9, z: 1, color: '#64DD17'},
+            {id: 7, x: 10, z: 1, color: '#64DD17'},
+            {id: 8, x: 0, z: 9, color: '#1DE9B6'},
+          {id: 9, x: 1, z: 9, color: '#1DE9B6'},
+          {id: 10, x: 0, z: 10, color: '#1DE9B6'},
+          {id: 11, x: 1, z: 10, color: '#1DE9B6'},
+          {id: 12, x: 0, z: 0, color: '#FFEA00'},
+          {id: 13, x: 1, z: 0, color: '#FFEA00'},
+          {id: 14, x: 0, z: 1, color: '#FFEA00'},
+          {id: 15, x: 1, z: 1, color: '#FFEA00'},
         ];
+        let getPawn = (pawnId) => {
+          return pawns.find((a) => a.id == pawnId);
+        };
 
         this.board = new Board({
             width: 512,
@@ -47,10 +64,13 @@ export default class Game {
             scene: this.scene,
             renderer: this.renderer,
             pawns: pawns,
+            getPawn: getPawn,
             animations: this.animations,
         });
-
-        this.board.movePawn('1', 4, 1);
+window.addEventListener('click', () => {
+  this.board.movePawn(2, 5, 5);
+});
+        
         this.animate();
     }
     onResize() {

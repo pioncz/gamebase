@@ -1,7 +1,8 @@
 export default class Pawn {
   constructor(props) {
     this.scene = props.scene;
-
+    this.x = props.x;
+    this.z = props.z;
     var geometry = new THREE.ConeGeometry(1.2, 2.8, 20, 1, false, 0, 6.5);
     var material = new THREE.MeshBasicMaterial({color: props.color, wireframe: true});
     this.$ = new THREE.Mesh(geometry, material);

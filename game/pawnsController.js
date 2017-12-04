@@ -7,18 +7,19 @@ export default class PawnsController {
     this.pawns = {};
     this.fieldLength = props.fieldLength;
     this.animations = props.animations;
+    this.columnsLength = props.columnsLength;
     
     for (let pawnId in props.pawns) {
-      let parsedX = props.pawns[pawnId].x * this.fieldLength,
-        parsedZ = props.pawns[pawnId].z * this.fieldLength;
+      let parsedX = (props.pawns[pawnId].x - Math.floor(props.columnsLength/2)) * this.fieldLength,
+        parsedZ = (props.pawns[pawnId].z - Math.floor(props.columnsLength/2)) * this.fieldLength;
       
       let pawn = new Pawn({
         ...props.pawns[pawnId],
         scene: this.scene,
-        x: props.pawns[pawnId].x,
-        z: props.pawns[pawnId].z,
         parsedX: parsedX,
         parsedZ: parsedZ,
+        x: props.pawns[pawnId].x,
+        z: props.pawns[pawnId].z,
       });
       this.pawns[pawnId] = pawn;
     }
@@ -29,17 +30,19 @@ export default class PawnsController {
     let returnPromise = new Promise((resolve, reject) => {
       if (pawn) {
         let oldX = pawn.parsedX,
-          dX = Math.abs(oldX - (x * this.fieldLength)),
+          newX = (x - Math.floor(this.columnsLength/2)) * this.fieldLength,
+          dX = oldX - newX,
           oldZ = pawn.parsedZ,
-          dZ = Math.abs(oldZ - (z * this.fieldLength));
+          newZ = (z - Math.floor(this.columnsLength/2)) * this.fieldLength,
+          dZ = oldZ - newZ;
     
         this.animations.create({
           length: 1000,
           easing: EASING.InOutQuad,
           update: (progress) => {
-            let newX = oldX + (dX * progress),
+            let newX = oldX - (dX * progress),
               newY = 2.8 * (1 + EASING.Sin(progress / 2)),
-              newZ = oldZ + (dZ * progress);
+              newZ = oldZ - (dZ * progress);
         
             pawn.moveTo(newX, newY, newZ);
           },
@@ -51,5 +54,8 @@ export default class PawnsController {
     });
     
     return returnPromise;
+  }
+  getPawn(pawnId) {
+    return this.pawns[pawnId];
   }
 }
