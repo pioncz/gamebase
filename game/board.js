@@ -116,7 +116,6 @@ export default class Board {
       {color: '#FFEA00'},
     ];
     
-    
     ctx.clearRect(0, 0, width, height);
     
     // background
@@ -190,35 +189,56 @@ export default class Board {
     var cube = new THREE.Mesh(this.geometry, new THREE.MeshFaceMaterial(this.materials));
     this.scene.add(cube);
   }
-  getFieldsSequence(oldX, oldZ, newX, newZ) {
-    let currentField;
+  getFieldsSequence(pawnData, length) {
+    let currentField,
+      currentFieldI = 0,
+      fieldSequence = [];
     
+
     for(let i = 0; i < this.fields.length; i++) {
       let field = this.fields[i];
-      if (field.x === oldX && field.z === oldZ) {
+      
+      if (field.x === pawnData.x && field.z === pawnData.z) {
         currentField = field;
+        currentFieldI = i;
         break;
       }
     }
     
-    return [{x:4, z:4}, {x:6, z:6}, {x:5, z:5}];
+    if (currentField) {
+      for(let i = currentFieldI; i < this.fields.length && fieldSequence.length < length; i++) {
+        let field = this.fields[i];
+        
+        if (!field.type) {
+          fieldSequence.push(field);
+        }
+      }
+    }
+    
+    
+    return fieldSequence;
   }
-  movePawn(pawnId, x, z) {
+  movePawn(pawnId, length) {
     let pawn = this.pawnsController.getPawn(pawnId);
     let pawnData = this.getPawn(pawnId);
     
     if (pawn && pawnData) {
-      let fieldsSequence = this.getFieldsSequence(pawnData.x, pawnData.z, x,z);
+      let fieldsSequence = this.getFieldsSequence(pawnData, length);
   
-      Utils.asyncLoop(fieldsSequence.length, (loop, i) => {
-        this.pawnsController.movePawn(
-          pawnId,
-          fieldsSequence[i].x,
-          fieldsSequence[i].z
-        ).then(
-          loop.next
-        );
-      });
+      if (fieldsSequence.length) {
+        Utils.asyncLoop(fieldsSequence.length, (loop, i) => {
+          this.pawnsController.movePawn(
+            pawnId,
+            fieldsSequence[i].x,
+            fieldsSequence[i].z
+          ).then(
+            loop.next
+          );
+        }, () => {
+          pawnData.x = fieldsSequence[fieldsSequence.length-1].x;
+          pawnData.z = fieldsSequence[fieldsSequence.length-1].z;
+        });
+      }
     }
   }
 }
