@@ -192,9 +192,10 @@ export default class Board {
   getFieldsSequence(pawnData, length) {
     let currentField,
       currentFieldI = 0,
-      fieldSequence = [];
+      fieldSequence = [],
+      firstStart = false;
     
-
+console.log(length);
     for(let i = 0; i < this.fields.length; i++) {
       let field = this.fields[i];
       
@@ -206,16 +207,32 @@ export default class Board {
     }
     
     if (currentField) {
-      for(let i = currentFieldI; i < this.fields.length && fieldSequence.length < length; i++) {
+      for(let i = currentFieldI + 1; i < this.fields.length && fieldSequence.length < length; i++) {
         let field = this.fields[i];
         
-        if (!field.type) {
+        if (field.type === 'start' && field.player === pawnData.player) {
           fieldSequence.push(field);
+          firstStart = true;
+          break;
+        } else if (!field.type || field.type === 'start') {
+          fieldSequence.push(field);
+        }
+      }
+      if (!firstStart && fieldSequence.length < length) {
+        for(let j = 0; j < currentFieldI + 1 && fieldSequence.length < length; j++) {
+          let field = this.fields[j];
+  
+          if (field.type === 'start' && field.player === pawnData.player) {
+            fieldSequence.push(field);
+            break;
+          } else if (!field.type || field.type === 'start') {
+            fieldSequence.push(field);
+          }
         }
       }
     }
     
-    
+    // return [{x: 10, z: 6}];
     return fieldSequence;
   }
   movePawn(pawnId, length) {
