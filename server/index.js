@@ -2,7 +2,7 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const app = express();
-const http = require('http');
+const http = require('http').Server(app);
 const https = require('https');
 const fs = require('fs');
 const git = require('git-rev');
@@ -14,6 +14,12 @@ var io = require('socket.io')(http);
 
 io.on('connection', function(socket){
   console.log('a user connected');
+  socket.on('disconnect', function(){
+    console.log('user disconnected');
+  });
+  socket.on('console', function(msg){
+    console.log('console: ' + msg);
+  });
 });
 
 function handleError(req, res, error) {
@@ -59,7 +65,7 @@ git.branch(function(branchName) {
   });
 
   let port = config.server.port;
-  http.Server(app).listen(port, function(){
+  http.listen(port, function(){
     console.log('Listening on *:' + port);
   });
 });

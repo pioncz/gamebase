@@ -10,6 +10,7 @@ import Pages from 'pages'
 import Header from 'components/header/index.jsx'
 import { Provider } from 'react-redux';
 import initStore from './store';
+import Connector from 'components/connector/index.jsx'
 
 ReactDOM.render(
   <Provider store={initStore()}>
@@ -20,9 +21,9 @@ ReactDOM.render(
           <Route exact path="/" component={Pages.Ludo}/>
           <Route path="/ludo" component={Pages.Ludo}/>
         </div>
+        <Connector />
       </div>
     </Router>
-
   </Provider>,
   document.getElementById('webapp')
 );
