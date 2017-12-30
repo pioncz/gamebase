@@ -67,9 +67,12 @@ export default class Game {
             getPawn: getPawn,
             animations: this.animations,
         });
-window.addEventListener('click', () => {
-  this.board.movePawn(Math.floor(Math.random()*16), Math.ceil(Math.random()*6));
-});
+      window.addEventListener('click', () => {
+        let a = parseInt(Math.random()*4)*4,
+          b = Math.ceil(Math.random()*6);
+        console.log(a, b);
+        this.board.movePawn(a, b);
+      });
         
         this.animate();
     }

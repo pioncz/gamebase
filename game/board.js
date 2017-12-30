@@ -195,7 +195,6 @@ export default class Board {
       fieldSequence = [],
       firstStart = false;
     
-console.log(length);
     for(let i = 0; i < this.fields.length; i++) {
       let field = this.fields[i];
       
@@ -216,6 +215,8 @@ console.log(length);
           break;
         } else if (!field.type || field.type === 'start') {
           fieldSequence.push(field);
+        } else if (field.type === 'goal' && field.player === pawnData.player) {
+          fieldSequence.push(field);
         }
       }
       if (!firstStart && fieldSequence.length < length) {
@@ -226,6 +227,8 @@ console.log(length);
             fieldSequence.push(field);
             break;
           } else if (!field.type || field.type === 'start') {
+            fieldSequence.push(field);
+          } else if (field.type === 'goal' && field.player === pawnData.player) {
             fieldSequence.push(field);
           }
         }
