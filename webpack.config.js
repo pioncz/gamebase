@@ -55,6 +55,7 @@ module.exports = function(env) {
             options: {
               includePaths: [
                 path.resolve(__dirname, 'node_modules'),
+                path.resolve(__dirname, 'webapp/styles'),
               ],
               sourceMap: true
             }

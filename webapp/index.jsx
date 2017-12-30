@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import ReactDOM from 'react-dom'
-import './styles.sass'
+import './styles/styles.sass'
 import {
   BrowserRouter as Router,
   Route,
