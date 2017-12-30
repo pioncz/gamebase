@@ -10,10 +10,12 @@ export default class InitialPage extends Component {
     this.handleClick = this.handleClick.bind(this);
   }
   handleClick() {
-    console.log('x');
+    if (this.modal) {
+      this.modal.close();
+    }
   }
   render() {
-    return (<Modal className="initialPage">
+    return (<Modal className="initialPage" ref={(element) => {this.modal = element;}}>
       <h3>Zacznij</h3>
       <div className="buttons-container">
         <Button onClick={this.handleClick}>START</Button>

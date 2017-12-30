@@ -5,6 +5,7 @@
   height: 100%
   top: 0
   left: 0
+
   .modal-body
     position: absolute
     width: 400px
@@ -16,9 +17,35 @@
     transform: translate(-50%, -50%)
     border-radius: 4px
     padding: 10px 20px
+    &.modal-enter
+      top: 0
+    &.modal-enter.modal-enter-active
+      top: 50%
+    &.modal-leave
+      top: 50%
+    &.modal-leave.modal-leave-active
+      top: 0
+
   .overlay
     position: absolute
     width: 100%
     height: 100%
     background: rgba(0, 0, 0, 0.7)
     z-index: 0
+
+  .modal-enter
+    opacity: 0.01
+
+  .modal-enter.modal-enter-active
+    opacity: 1
+    transition: opacity 300ms ease-in, top 300ms ease-in
+
+  .modal-leave
+    opacity: 1
+
+    .modal-body
+      top: 50%
+
+  .modal-leave.modal-leave-active
+    opacity: 0.01
+    transition: opacity 200ms ease-in, top 300ms ease-in
