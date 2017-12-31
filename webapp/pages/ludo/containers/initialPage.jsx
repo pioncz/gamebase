@@ -10,15 +10,11 @@ export default class InitialPage extends Component {
     this.handleClick = this.handleClick.bind(this);
   }
   handleClick() {
-    if (this.props.connectorInstance) {
-      this.props.connectorInstance.joinQueue({
-        
-      });
-    }
+
     
-    if (this.modal) {
-      this.modal.close();
-    }
+    // if (this.modal) {
+    //   this.modal.close();
+    // }
   }
   render() {
     return (<Modal className="initialPage" ref={(element) => {this.modal = element;}}>

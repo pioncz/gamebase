@@ -8,11 +8,6 @@ export default class Modal extends Component {
     this.state = {
       opened: true
     };
-    
-    this.handleClick = this.handleClick.bind(this);
-  }
-  handleClick() {
-  
   }
   close() {
     this.setState({

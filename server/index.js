@@ -11,20 +11,7 @@ const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 var cors = require('cors');
 var io = require('socket.io')(http);
-
-const Games = ['ludo'];
-
-let queues = {};
-
-io.on('connection', function(socket){
-  socket.emit('console', 'hi user');
-  socket.on('disconnect', function(){
-    console.log('user disconnected');
-  });
-  socket.on('console', function(msg){
-    console.log('console: ' + msg);
-  });
-});
+const socketServer = require('./socketServer.js')(io);
 
 function handleError(req, res, error) {
   console.error(error.statusCode, error.error, error.options.uri);
