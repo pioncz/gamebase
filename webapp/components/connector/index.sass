@@ -1,0 +1,28 @@
+.console
+  position: fixed
+  width: 50%
+  height: 50%
+  top: 50%
+  left: 50%
+  background: red
+  z-index: 10000
+  border: 4px solid #bbb
+  background-color: #bbb
+  font-family: 'Roboto Mono', monospace
+
+  .console-title
+    font-weight: 600
+    color: #222
+
+  .console-messages
+    height: calc(100% - 24px)
+    background-color: #222
+    color: #fff
+    font-size: 14px
+    padding: 4px 2px
+
+    div
+      padding: 2px 8px
+
+      &::before
+        content: '> '

@@ -12,8 +12,12 @@ const helmet = require('helmet');
 var cors = require('cors');
 var io = require('socket.io')(http);
 
+const Games = ['ludo'];
+
+let queues = {};
+
 io.on('connection', function(socket){
-  console.log('a user connected');
+  socket.emit('console', 'hi user');
   socket.on('disconnect', function(){
     console.log('user disconnected');
   });
