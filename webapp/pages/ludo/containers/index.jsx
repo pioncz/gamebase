@@ -45,22 +45,23 @@ export default class Ludo extends Component {
     this.setState({page: Pages.Queue});
   }
   render() {
-    let queueModal = <Modal></Modal>,
-      currentModal;
-  
-    let page = this.state.page;
+    let currentModal,
+      page = this.state.page;
     
-      if (Pages[page]) {
-        if (page == Pages.Initial) {
-          currentModal = <Modal ref={(element) => {this.initialModal = element;}}>
-            <h3>Zacznij</h3>
-            <div className="buttons-container">
-              <Button onClick={this.joinQueue}>START</Button>
-            </div>
-          </Modal>
-        }
-        
-      }
+    if (page == Pages.Initial) {
+      currentModal = <Modal ref={(element) => {this.initialModal = element;}}>
+        <h3>Znajdź grę</h3>
+        <div className="buttons-container">
+          <Button onClick={this.joinQueue}>START</Button>
+        </div>
+      </Modal>
+    }
+    if (page == Pages.Queue) {
+      currentModal = <Modal ref={(element) => {this.queueModal = element;}}>
+        <h3>Szukanie graczy</h3>
+        <p>Przewidywany czas 2min</p>
+      </Modal>;
+    }
       
     return (<div>
       <GameComponent

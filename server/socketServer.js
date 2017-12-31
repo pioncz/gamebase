@@ -1,7 +1,8 @@
 module.exports = function (io) {
   const Games = ['ludo'],
-    MinPlayers = 2; //per room to play
-  
+    MinPlayers = 2, //per room to play
+    players = {};
+    
   let occupiedSocketIds = [],
     queues = {
       'ludo': [],
@@ -14,27 +15,39 @@ module.exports = function (io) {
         return lastId++;
       };
     })(),
-    createRoom = ({socketId, game}) => {
+    createRoom = ({socket, game}) => {
       let room = {
-        room: nextId(),
-        players: [socketId],
+        name: '/room'+nextId(),
+        players: [socket],
         eta: 5*60*60, //18000s
       };
       
       queues[game] = [room];
       
+      // room.namespace = io.of(room.name);
+      // room.namespace.on('connection', function(socket){
+      //   console.log('someone connected to custom room');
+      // });
+      socket.join(room.name);
+      socket.emit('foundRoom', room.name);
+      
       return room;
     },
-    isSocketIdOccupied = (socketId) => {
-      return occupiedSocketIds.indexOf(socketId) > -1;
+    isSocketOccupied = (socket) => {
+      return occupiedSocketIds.indexOf(socket.id) > -1;
     },
-    startGame = ({sockedIds, game}) => {
+    startGame = ({sockets, game}) => {
       let newGame = {
-        clients: sockedIds,
+        clients: sockets,
         game,
       };
       
       games.push(newGame);
+
+      for(let i = 0; i < sockets.length; i++) {
+      
+      }
+      
       return newGame;
     },
     getTotalNumPlayers = () => {
@@ -43,8 +56,12 @@ module.exports = function (io) {
     };
   
   io.on('connection', function (socket) {
-    socket.emit('console', 'connected to socket server. currently ' + getTotalNumPlayers() + ' online.');
+    players[socket.id] = {
+      socket: socket,
+    };
     
+    socket.emit('console', 'connected to socket server. currently ' + getTotalNumPlayers() + ' online.');
+
     socket.on('disconnect', function () {
     });
     
@@ -58,27 +75,30 @@ module.exports = function (io) {
       
       if (!game) return;
       
-      if (isSocketIdOccupied(socket.id)) {
+      if (isSocketOccupied(socket)) {
         socket.emit('console', 'user already in queue or game');
         return;
       }
       
       if (!queues[game].length) {
-        room = createRoom({socketId: socket.id, game});
+        room = createRoom({socket, game});
       } else {
         room = queues[game][0];
-        room.players.push(socket.id);
+        room.players.push(socket);
       }
+  
+      socket.join(room.name);
+      io.to(room.name).emit('console', 'player update: (' + room.players.length + '/2)');
       
       occupiedSocketIds.push(socket.id);
       
       if (room.players.length >= MinPlayers) {
         let players = room.players.slice(0, MinPlayers);
         room.players.splice(0, MinPlayers);
-        console.log(players);
-        startGame({sockedIds: [players], game});
+
+        startGame({sockets: [players], game});
       }
-      console.log(JSON.stringify(queues));
+      // console.log(JSON.stringify(queues));
       socket.emit(
         'console',
         'user joins queue(' + room.players.length +

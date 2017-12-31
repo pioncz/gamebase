@@ -6,13 +6,21 @@ export default class Modal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      opened: true
+      opened: false
     };
   }
   close() {
     this.setState({
       opened: false
     })
+  }
+  open() {
+    this.setState({
+      opened: true
+    })
+  }
+  componentWillReceiveProps(nextProps) {
+    this.open();
   }
   render() {
     let modalItems = [];

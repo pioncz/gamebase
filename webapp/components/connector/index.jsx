@@ -12,10 +12,14 @@ export default class Connector extends Component {
     this.addMessage = this.addMessage.bind(this);
   
     this.socket = ioClient();
-    this.socket.emit('console', 'hi server');
+    
     this.socket.on('console', this.addMessage);
     this.socket.on('connect', () => {
-      this.addMessage("connected to socket server");
+      // this.addMessage("connected to socket server");
+    });
+    this.socket.on('foundRoom', (room) => {
+      this.addMessage("found room:" + room);
+      // this.socket.join(room);
     });
     this.socket.on('connect_error', (e) => {
       console.error(e);
