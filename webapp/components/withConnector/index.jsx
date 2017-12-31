@@ -1,12 +1,24 @@
 import React, { Component } from 'react'
+import PropTypes from 'prop-types'
 
 export default function withConnector(WrappedComponent) {
-  return class extends Component {
+  class withConnector extends Component {
     constructor(props) {
       super(props);
     }
     render() {
-      return <WrappedComponent/>
+      let connectorInstance = this.context.connectorInstance;
+      
+      return <WrappedComponent
+        {...this.props}
+        connectorInstance={connectorInstance}
+      />
     }
   }
+  
+  withConnector.contextTypes = {
+    connectorInstance: PropTypes.object
+  };
+  
+  return withConnector;
 }

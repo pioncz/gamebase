@@ -22,6 +22,9 @@ export default class Connector extends Component {
       this.addMessage("connection error");
     });
   }
+  joinQueue() {
+  
+  }
   addMessage(msg) {
     this.setState({
       messages: this.state.messages.concat(msg)

@@ -23,7 +23,7 @@ export default class Ludo extends Component {
     this.gameComponent.movePen(a, b);
   }
   render() {
-    let page = <InitialPage />;
+    let page = <InitialPage connectorInstance={this.props.connectorInstance} />;
     
     return (<div>
       <GameComponent
