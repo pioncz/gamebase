@@ -54,10 +54,10 @@ export default class Ludo extends Component {
     this.props.connectorInstance.socket.emit('selectColor', color);
   }
   handleClick() {
-    // let a = parseInt(Math.random()*4)*4,
-    //   b = Math.ceil(Math.random()*6);
-    //
-    // this.gameComponent.movePen(a, b);
+    let a = parseInt(Math.random()*4)*4,
+      b = Math.ceil(Math.random()*6);
+
+    this.gameComponent.movePen(a, b);
   }
   joinQueue() {
     if (this.props.connectorInstance) {

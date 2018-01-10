@@ -5,5 +5,6 @@ module.exports = function (options) {
     color: options.color || null,
     socket: options.socket || null,
     room: options.room || null,
+    avatar: '',
   };
 };

@@ -158,11 +158,6 @@ export default class Board {
       ctx.strokeStyle = strokeStyle;
       ctx.stroke();
       ctx.restore();
-  
-      ctx.strokeStyle = null;
-      ctx.fillStyle = '#000';
-      ctx.font = "12px Arial";
-      ctx.fillText("x: " + x + ", z: " + z,cellX - r2,cellZ);
     }
     
     for (let i = 0; i < this.fields.length; i++) {

@@ -3,8 +3,14 @@ export default class Pawn {
     this.scene = props.scene;
     this.x = props.x;
     this.z = props.z;
-    var geometry = new THREE.ConeGeometry(1.2, 2.8, 20, 1, false, 0, 6.5);
-    var material = new THREE.MeshBasicMaterial({color: props.color, wireframe: true});
+    var geometry = new THREE.ConeGeometry(1.2, 2.8, 8, 1, true, 0, 6.3);
+    var material = new THREE.MeshPhongMaterial({
+      color: props.color,
+      flatShading: true,
+      specular: 0x000000,
+      shininess: 0,
+      reflectivity: 0,
+    });
     this.$ = new THREE.Mesh(geometry, material);
 
     this.moveTo(props.parsedX, 2.8, props.parsedZ);
