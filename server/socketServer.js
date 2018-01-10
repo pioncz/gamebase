@@ -62,11 +62,18 @@ module.exports = function (io, config) {
       initialState.players = room.players;
   
       let id = nextId();
-      initialState.players.push(new Player({name: 'name' + id, id: id, color: 'red'}));
+      initialState.players.push(new Player({name: 'name' + id, id: id, color: config.ludo.colors[1]}));
       id = nextId();
-      initialState.players.push(new Player({name: 'name' + id, id: id, color: 'green'}));
+      initialState.players.push(new Player({name: 'name' + id, id: id, color: config.ludo.colors[2]}));
       id = nextId();
-      initialState.players.push(new Player({name: 'name' + id, id: id, color: 'blue'}));
+      initialState.players.push(new Player({name: 'name' + id, id: id, color: config.ludo.colors[3]}));
+  
+      initialState.players.forEach((player, index) => {
+        for(var i = 0; i < 4; i++) {
+          initialState.pawns[(index * 4 + i)].player = player.id;
+          initialState.pawns[(index * 4 + i)].color = player.color;
+        }
+      });
       
       io.to(room.name).emit('startGame', initialState);
     },
