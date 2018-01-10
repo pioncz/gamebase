@@ -5,6 +5,6 @@ module.exports = function (options) {
     color: options.color || null,
     socket: options.socket || null,
     room: options.room || null,
-    avatar: '',
+    avatar: '/static/avatar' + parseInt(Math.random() * 6 + 1)+ '.jpg',
   };
 };

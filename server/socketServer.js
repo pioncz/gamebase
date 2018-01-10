@@ -60,7 +60,13 @@ module.exports = function (io, config) {
       let initialState = new InitialState();
   
       initialState.players = room.players;
-      
+  
+      let id = nextId();
+      initialState.players.push(new Player({name: 'name' + id, id: id, color: 'red'}));
+      id = nextId();
+      initialState.players.push(new Player({name: 'name' + id, id: id, color: 'green'}));
+      id = nextId();
+      initialState.players.push(new Player({name: 'name' + id, id: id, color: 'blue'}));
       
       io.to(room.name).emit('startGame', initialState);
     },

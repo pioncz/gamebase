@@ -24,7 +24,8 @@ export default class Ludo extends Component {
       player: {
         name: '',
       },
-      queueColors: []
+      queueColors: [],
+      players: [],
     };
     
     this.handleClick = this.handleClick.bind(this);
@@ -42,7 +43,8 @@ export default class Ludo extends Component {
       nextProps.connectorInstance.socket.on('startGame', (gameState) => {
         console.log(gameState);
         this.setState({
-          page: Pages.Game
+          players: gameState.players,
+          page: Pages.Game,
         });
       });
       nextProps.connectorInstance.socket.on('updateGame', () => {
@@ -72,7 +74,9 @@ export default class Ludo extends Component {
   }
   render() {
     let currentModal,
-      page = this.state.page;
+      page = this.state.page,
+      players = this.state.players,
+      playersOverlay;
     
     if (page === Pages.Initial) {
       currentModal = <Modal ref={(element) => {this.initialModal = element;}}>
@@ -103,7 +107,22 @@ export default class Ludo extends Component {
         <div className="colors-container">{colors}</div>
       </Modal>;
     }
-      
+    
+    if (players && players.length) {
+      let playerProfiles = players.map((player, index) => {
+        return <div key={player.id} className={"player player-" + index}>
+          <div className="player-name">{player.name}</div>
+          <img src={player.avatar} style={{
+            border: "3px solid " + player.color
+          }} />
+        </div>;
+      });
+  
+      playersOverlay = <div className="player-profiles">
+        {playerProfiles}
+      </div>;
+    }
+    
     return (<div className="ludo">
       <GameComponent
         ref={(element) => {this.gameComponent = element; }}
@@ -111,6 +130,7 @@ export default class Ludo extends Component {
         pawns={this.props.pawns}
         players={this.props.player}
       />
+      {playersOverlay}
       {currentModal}
     </div>);
   }
