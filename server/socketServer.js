@@ -1,4 +1,5 @@
 const Player = require('./../Ludo/Player.js');
+const InitialState = require('./../Ludo/InitialState.js');
 
 module.exports = function (io, config) {
   const MinPlayers = 1, //per room to play
@@ -35,7 +36,7 @@ module.exports = function (io, config) {
     isSocketOccupied = (socket) => {
       return occupiedSocketIds.indexOf(socket.id) > -1;
     },
-    startGame = ({room}) => {
+    pickColor = ({room}) => {
       const queueColors = [],
         getColor = (color) => {
           for(let i = 0; i < queueColors.length; i++) {
@@ -55,6 +56,14 @@ module.exports = function (io, config) {
       // Prepare players
       io.to(room.name).emit('pickColor', queueColors);
     },
+    startGame = (room) => {
+      let initialState = new InitialState();
+  
+      initialState.players = room.players;
+      
+      
+      io.to(room.name).emit('startGame', initialState);
+    },
     queueColorsChanged = (room) => {
       let playersWithColor = room.players.reduce((previousValue, currentValue) => {
         return previousValue + (currentValue.color?1:0);
@@ -62,7 +71,7 @@ module.exports = function (io, config) {
 
     console.log('playersWithColor:' + playersWithColor);
       if (playersWithColor >= MinPlayers) {
-        io.to(room.name).emit('startGame');
+        startGame(room);
       } else {
         io.to(room.name).emit('pickColor', room.queueColors);
       }
@@ -75,6 +84,8 @@ module.exports = function (io, config) {
   io.on('connection', function (socket) {
     sockets[socket.id] = {
       socket: socket,
+      player: null,
+      room: null,
     };
     
     socket.emit('console', 'connected to socket server. currently ' + getTotalNumPlayers() + ' online.');
@@ -109,9 +120,11 @@ module.exports = function (io, config) {
       }
   
       let playerId = nextId(),
-        player = new Player({name: 'name' + playerId, id: playerId, socket, roomId: room.id});
+        player = new Player({name: 'name' + playerId, id: playerId});
       room.players.push(player);
-      sockets[socket.id].room = room;
+      let socketData = sockets[socket.id];
+      socketData.room = room;
+      socketData.player = player;
       
       socket.join(room.name);
       io.to(room.name).emit('console', 'player update: (' + room.players.length + '/' + MinPlayers + ')');
@@ -132,7 +145,7 @@ module.exports = function (io, config) {
       if (room.players.length >= MinPlayers) {
         delete queues[game][room.id];
         games[game][room.id] = room;
-        startGame({room});
+        pickColor({room});
       } else {
         socket.emit(
           'console',
@@ -144,8 +157,9 @@ module.exports = function (io, config) {
     });
     
     socket.on('selectColor', function (color) {
-      let room = sockets[socket.id].room,
-        player = room.players.find((player) => { return player.socket.id === socket.id; }),
+      let socketData = sockets[socket.id],
+        room = socketData.room,
+        player = socketData.player,
         canChangeColor = room && room.queueColors && !player.color;
   
       if (canChangeColor) {
