@@ -11,7 +11,6 @@ const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 var cors = require('cors');
 var io = require('socket.io')(http);
-const socketServer = require('./socketServer.js')(io);
 
 function handleError(req, res, error) {
   console.error(error.statusCode, error.error, error.options.uri);
@@ -22,6 +21,7 @@ git.branch(function(branchName) {
   var configFile = './../config/develop.json'
   var config = require(configFile);
   var baseUrl = config.baseUrl;
+  const socketServer = require('./socketServer.js')(io, config);
 
   /**
   * Module variables

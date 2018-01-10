@@ -1,13 +1,16 @@
-module.exports = function (io) {
-  const Games = ['ludo'],
-    MinPlayers = 2, //per room to play
-    players = {};
-    
+const Player = require('./../Ludo/Player.js');
+
+module.exports = function (io, config) {
+  const MinPlayers = 1, //per room to play
+    sockets = {};
+  
   let occupiedSocketIds = [],
     queues = {
-      'ludo': [],
+      'ludo': {},
     },
-    games = [],
+    games = {
+      'ludo': {},
+    },
     nextId = (() => {
       let lastId = 0;
       
@@ -16,39 +19,53 @@ module.exports = function (io) {
       };
     })(),
     createRoom = ({socket, game}) => {
-      let room = {
-        name: '/room'+nextId(),
-        players: [socket],
-        eta: 5*60*60, //18000s
-      };
-      
-      queues[game] = [room];
-      
-      // room.namespace = io.of(room.name);
-      // room.namespace.on('connection', function(socket){
-      //   console.log('someone connected to custom room');
-      // });
-      socket.join(room.name);
-      socket.emit('foundRoom', room.name);
+      let id = nextId(),
+        room = {
+          id: id,
+          name: '/room'+id,
+          game: game,
+          players: [],
+          eta: 5*60*60, //18000s
+        };
+  
+      occupiedSocketIds.push(socket.id);
       
       return room;
     },
     isSocketOccupied = (socket) => {
       return occupiedSocketIds.indexOf(socket.id) > -1;
     },
-    startGame = ({sockets, game}) => {
-      let newGame = {
-        clients: sockets,
-        game,
-      };
+    startGame = ({room}) => {
+      const queueColors = [],
+        getColor = (color) => {
+          for(let i = 0; i < queueColors.length; i++) {
+            if (queueColors[i].color === color) {
+              return queueColors[i];
+            }
+          }
+        };
+      config.ludo.colors.forEach((color) => {
+        queueColors.push({
+          color: color,
+          selected: false,
+        })
+      });
+      room.queueColors = queueColors;
       
-      games.push(newGame);
+      // Prepare players
+      io.to(room.name).emit('pickColor', queueColors);
+    },
+    queueColorsChanged = (room) => {
+      let playersWithColor = room.players.reduce((previousValue, currentValue) => {
+        return previousValue + (currentValue.color?1:0);
+      }, 0);
 
-      for(let i = 0; i < sockets.length; i++) {
-      
+    console.log('playersWithColor:' + playersWithColor);
+      if (playersWithColor >= MinPlayers) {
+        io.to(room.name).emit('startGame');
+      } else {
+        io.to(room.name).emit('pickColor', room.queueColors);
       }
-      
-      return newGame;
     },
     getTotalNumPlayers = () => {
       let clients = io.sockets.clients().connected;
@@ -56,7 +73,7 @@ module.exports = function (io) {
     };
   
   io.on('connection', function (socket) {
-    players[socket.id] = {
+    sockets[socket.id] = {
       socket: socket,
     };
     
@@ -73,7 +90,10 @@ module.exports = function (io) {
       let game = options.game,
         room;
       
-      if (!game) return;
+      if (!game) {
+        socket.emit('console', 'no game specified');
+        return;
+      }
       
       if (isSocketOccupied(socket)) {
         socket.emit('console', 'user already in queue or game');
@@ -82,29 +102,62 @@ module.exports = function (io) {
       
       if (!queues[game].length) {
         room = createRoom({socket, game});
+        queues[game][room.id] = room;
       } else {
-        room = queues[game][0];
-        room.players.push(socket);
+        // Find room for player
+        room = queues[game][queues[game].length - 1];
       }
   
+      let playerId = nextId(),
+        player = new Player({name: 'name' + playerId, id: playerId, socket, roomId: room.id});
+      room.players.push(player);
+      sockets[socket.id].room = room;
+      
       socket.join(room.name);
-      io.to(room.name).emit('console', 'player update: (' + room.players.length + '/2)');
+      io.to(room.name).emit('console', 'player update: (' + room.players.length + '/' + MinPlayers + ')');
+  
+      socket.on('selectColor', (room) => {
+        return (color) => {
+          console.log('x');
+          let foundColor = getColor(color);
+          if (foundColor && !foundColor.selected) {
+            foundColor.selected = true;
+            io.to(room.name).emit('pickColor', queueColors);
+          }
+        }
+      });
       
       occupiedSocketIds.push(socket.id);
       
       if (room.players.length >= MinPlayers) {
-        let players = room.players.slice(0, MinPlayers);
-        room.players.splice(0, MinPlayers);
-
-        startGame({sockets: [players], game});
+        delete queues[game][room.id];
+        games[game][room.id] = room;
+        startGame({room});
+      } else {
+        socket.emit(
+          'console',
+          'user joins queue(' + room.players.length +
+          '/2). queues for ' + game +
+          ': ' + Object.keys(queues[game]).length + '.'
+        );
       }
-      // console.log(JSON.stringify(queues));
-      socket.emit(
-        'console',
-        'user joins queue(' + room.players.length +
-        '/2). queues for ' + game +
-        ': ' + queues[game].length + '.'
-      );
+    });
+    
+    socket.on('selectColor', function (color) {
+      let room = sockets[socket.id].room,
+        player = room.players.find((player) => { return player.socket.id === socket.id; }),
+        canChangeColor = room && room.queueColors && !player.color;
+  
+      if (canChangeColor) {
+        room.queueColors.forEach((queueColor) => {
+          if (queueColor.color === color && !queueColor.selected) {
+            queueColor.selected = true;
+            player.color = color;
+            queueColorsChanged(room);
+            return;
+          }
+        });
+      }
     });
   });
 };

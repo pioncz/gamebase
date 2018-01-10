@@ -17,9 +17,8 @@ export default class Connector extends Component {
     this.socket.on('connect', () => {
       // this.addMessage("connected to socket server");
     });
-    this.socket.on('foundRoom', (room) => {
-      this.addMessage("found room:" + room);
-      // this.socket.join(room);
+    this.socket.on('foundGame', () => {
+      this.addMessage("found game");
     });
     this.socket.on('connect_error', (e) => {
       console.error(e);
