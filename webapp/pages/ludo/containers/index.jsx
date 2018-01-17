@@ -21,16 +21,16 @@ export default class Ludo extends Component {
     this.state = {
       menuOpened: false,
       page: Pages.Initial,
-      player: {
-        name: '',
-      },
+      yourPlayerId: null,
       queueColors: [],
+      currentPlayerId: null,
       players: [],
     };
     
     this.handleClick = this.handleClick.bind(this);
     this.joinQueue = this.joinQueue.bind(this);
     this.selectColor = this.selectColor.bind(this);
+    this.roll = this.roll.bind(this);
   }
   componentWillReceiveProps(nextProps) {
     if (!this.props.connectorInstance && nextProps.connectorInstance) {
@@ -41,25 +41,40 @@ export default class Ludo extends Component {
         });
       });
       nextProps.connectorInstance.socket.on('startGame', (gameState) => {
+        nextProps.connectorInstance.addMessage('startGame');
         console.log(gameState);
+        nextProps.connectorInstance.addMessage('currentPlayer: ' + gameState.currentPlayerId + (gameState.yourPlayerId == gameState.currentPlayerId?' it\'s You!':''));
         this.setState({
           players: gameState.players,
+          currentPlayerId: gameState.currentPlayerId,
+          yourPlayerId: gameState.yourPlayerId,
           page: Pages.Game,
         });
       });
-      nextProps.connectorInstance.socket.on('updateGame', () => {
-      
+      nextProps.connectorInstance.socket.on('pawnMove', (pawnMove) => {
+        nextProps.connectorInstance.addMessage('pawnMove');
+        this.gameComponent.pawnMove(pawnMove);
       });
     }
   }
   selectColor(color) {
     this.props.connectorInstance.socket.emit('selectColor', color);
   }
+  roll() {
+    this.props.connectorInstance.socket.emit('roll');
+  }
   handleClick() {
-    let a = parseInt(Math.random()*4)*4,
-      b = Math.ceil(Math.random()*6);
+    if (this.state.currentPlayerId == this.state.yourPlayerId) {
+      // let a = parseInt(Math.random()*4)*4,
+      //   b = Math.ceil(Math.random()*6);
+      //
+      // this.gameComponent.movePen(a, b);
+      this.roll();
+    } else {
+      this.props.connectorInstance.addMessage('You can\' roll right now!');
+    }
 
-    this.gameComponent.movePen(a, b);
+    
   }
   joinQueue() {
     if (this.props.connectorInstance) {

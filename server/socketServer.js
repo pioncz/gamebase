@@ -1,6 +1,12 @@
 const Player = require('./../Ludo/Player.js');
 const InitialState = require('./../Ludo/InitialState.js');
 
+const FieldType = {
+  spawn: 'spawn',
+  start: 'start',
+  goal: 'goal',
+};
+
 module.exports = function (io, config) {
   const MinPlayers = 1, //per room to play
     sockets = {};
@@ -26,6 +32,7 @@ module.exports = function (io, config) {
           name: '/room'+id,
           game: game,
           players: [],
+          currentPlayerId: 0,
           eta: 5*60*60, //18000s
         };
   
@@ -58,24 +65,33 @@ module.exports = function (io, config) {
     },
     startGame = (room) => {
       let initialState = new InitialState();
-  
+      room.pawns = initialState.pawns;
+      
       initialState.players = room.players;
   
-      let id = nextId();
-      initialState.players.push(new Player({name: 'name' + id, id: id, color: config.ludo.colors[1]}));
-      id = nextId();
-      initialState.players.push(new Player({name: 'name' + id, id: id, color: config.ludo.colors[2]}));
-      id = nextId();
-      initialState.players.push(new Player({name: 'name' + id, id: id, color: config.ludo.colors[3]}));
-  
+      // let id = nextId();
+      // initialState.players.push(new Player({name: 'name' + id, id: id, color: config.ludo.colors[1]}));
+      // id = nextId();
+      // initialState.players.push(new Player({name: 'name' + id, id: id, color: config.ludo.colors[2]}));
+      // id = nextId();
+      // initialState.players.push(new Player({name: 'name' + id, id: id, color: config.ludo.colors[3]}));
+      //
       initialState.players.forEach((player, index) => {
         for(var i = 0; i < 4; i++) {
-          initialState.pawns[(index * 4 + i)].player = player.id;
+          initialState.pawns[(index * 4 + i)].playerId = player.id;
           initialState.pawns[(index * 4 + i)].color = player.color;
         }
       });
-      
-      io.to(room.name).emit('startGame', initialState);
+
+      room.currentPlayerId = room.players[0].id;
+      initialState.currentPlayerId = room.currentPlayerId;
+  
+      room.players.forEach((player) => {
+        let newInitialState = Object.assign({}, initialState);
+        newInitialState.yourPlayerId = player.id;
+  
+        io.to(player.socketId).emit('startGame', newInitialState);
+      });
     },
     queueColorsChanged = (room) => {
       let playersWithColor = room.players.reduce((previousValue, currentValue) => {
@@ -92,6 +108,43 @@ module.exports = function (io, config) {
     getTotalNumPlayers = () => {
       let clients = io.sockets.clients().connected;
       return Object.keys(clients).length
+    },
+    getNextField = (fieldIndex) => {
+      let field = fields[fieldIndex];
+      
+    },
+    getPawnMove = (diceNumber, pawns) => {
+      let fields = config.ludo.fields;
+      
+      for(let i = 0; i < pawns.length; i++) {
+        let pawn = pawns[i],
+          fieldIndex,
+          pawnField = fields.find((field, index) =>
+            field.x == pawn.x &&
+            field.z == pawn.z &&
+            (fieldIndex = index)
+          ),
+          fieldType = pawnField.type,
+          newField;
+        
+        if (fieldType === FieldType.spawn && diceNumber === 6) {
+          for(let j = fieldIndex + 1; j < fields.length; j++) {
+            let field = fields[j];
+            if (!field) {
+              console.log('cannot find next field');
+              break;
+            }
+            
+            if (field.type !== FieldType.spawn) {
+              newField = field;
+              break;
+            }
+          }
+
+          return {pawnId: pawn.id, field: newField, diceNumber: diceNumber};
+        }
+        break;
+      }
     };
   
   io.on('connection', function (socket) {
@@ -133,7 +186,7 @@ module.exports = function (io, config) {
       }
   
       let playerId = nextId(),
-        player = new Player({name: 'name' + playerId, id: playerId});
+        player = new Player({name: 'name' + playerId, id: playerId, socketId: socket.id});
       room.players.push(player);
       let socketData = sockets[socket.id];
       socketData.room = room;
@@ -141,17 +194,6 @@ module.exports = function (io, config) {
       
       socket.join(room.name);
       io.to(room.name).emit('console', 'player update: (' + room.players.length + '/' + MinPlayers + ')');
-  
-      socket.on('selectColor', (room) => {
-        return (color) => {
-          console.log('x');
-          let foundColor = getColor(color);
-          if (foundColor && !foundColor.selected) {
-            foundColor.selected = true;
-            io.to(room.name).emit('pickColor', queueColors);
-          }
-        }
-      });
       
       occupiedSocketIds.push(socket.id);
       
@@ -184,6 +226,35 @@ module.exports = function (io, config) {
             return;
           }
         });
+      }
+    });
+  
+    socket.on('roll', function () {
+      //get sockets room
+      let room = sockets[socket.id].room,
+        player = sockets[socket.id].player;
+      //check if its this players turn
+      if (room.currentPlayerId == player.id) {
+        // look for first pawn he can move
+        let playerPawns = room.pawns.filter((pawn) => {
+          return pawn.playerId == player.id;
+        });
+        
+        let diceNumber = parseInt(Math.random()*6)+1; // 1-6
+        
+        let pawnMove = getPawnMove(diceNumber, playerPawns);
+        
+        if (pawnMove) {
+          socket.emit('pawnMove', pawnMove);
+          console.log(pawnMove);
+        } else {
+          console.log('player cant move');
+          socket.emit('console', 'player roll\'d ' + diceNumber + ' and cant move');
+        }
+        //move his first pawn
+        //emit updateGame event to this socket
+      } else {
+        console.log('not his turn');
       }
     });
   });

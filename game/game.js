@@ -2,8 +2,6 @@ import Controls from './utils/controls'
 import { EASING, TIMES, Animations } from './utils/animations'
 import Board from './board'
 
-let i = 0;
-
 export default class Game {
     constructor(props) {
         this.container = props.container;

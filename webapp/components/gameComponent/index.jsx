@@ -22,8 +22,8 @@ export default class GameComponent extends Component {
       this.props.onClick(this.engine);
     }
   }
-  movePen(player, length) {
-    this.engine.board.movePawn(player, length);
+  pawnMove(pawnMove) {
+    this.engine.board.pawnMove(pawnMove);
   }
   render() {
     return <div className="game" onClick={this.handleClick}>

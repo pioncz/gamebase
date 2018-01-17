@@ -2,6 +2,7 @@ import Utils from 'utils/utils.js'
 import Pawn from './pawn'
 import {EASING, TIMES} from "./utils/animations";
 import PawnsController from 'pawnsController';
+import Config from './../webapp/config.js';
 
 export default class Board {
   constructor(props) {
@@ -14,80 +15,7 @@ export default class Board {
     this.columnsLength = 11;
     this.fieldLength = 40 / this.columnsLength;
     
-    this.fields = [
-      {x: 0, z:4, player: '3', type: 'start'},
-      {x: 1, z:4},
-      {x: 2, z:4},
-      {x: 3, z:4},
-      {x: 4, z:4},
-      {x: 4, z:3},
-      {x: 4, z:2},
-      {x: 4, z:1},
-      {x: 4, z:0},
-      {x: 5, z:0},
-      {x: 5, z:1, player: '0', type: 'goal'},
-      {x: 5, z:2, player: '0', type: 'goal'},
-      {x: 5, z:3, player: '0', type: 'goal'},
-      {x: 5, z:4, player: '0', type: 'goal'},
-      {x: 9, z:0, player: '0', type: 'spawn'},
-      {x: 10, z:0, player: '0', type: 'spawn'},
-      {x: 9, z:1, player: '0', type: 'spawn'},
-      {x: 10, z:1, player: '0', type: 'spawn'},
-      {x: 6, z:0, player: '0', type: 'start'},
-      {x: 6, z:1},
-      {x: 6, z:2},
-      {x: 6, z:3},
-      {x: 6, z:4},
-      {x: 7, z:4},
-      {x: 8, z:4},
-      {x: 9, z:4},
-      {x: 10, z:4},
-      {x: 10, z:5},
-      {x: 9, z:5, player: '1', type: 'goal'},
-      {x: 8, z:5, player: '1', type: 'goal'},
-      {x: 7, z:5, player: '1', type: 'goal'},
-      {x: 6, z:5, player: '1', type: 'goal'},
-      {x: 9, z:9, player: '1', type: 'spawn'},
-      {x: 10, z:9, player: '1', type: 'spawn'},
-      {x: 9, z:10, player: '1', type: 'spawn'},
-      {x: 10, z:10, player: '1', type: 'spawn'},
-      {x: 10, z:6, player: '1', type: 'start'},
-      {x: 9, z:6},
-      {x: 8, z:6},
-      {x: 7, z:6},
-      {x: 6, z:6},
-      {x: 6, z:7},
-      {x: 6, z:8},
-      {x: 6, z:9},
-      {x: 6, z:10},
-      {x: 5, z:10},
-      {x: 5, z:9, player: '2', type: 'goal'},
-      {x: 5, z:8, player: '2', type: 'goal'},
-      {x: 5, z:7, player: '2', type: 'goal'},
-      {x: 5, z:6, player: '2', type: 'goal'},
-      {x: 0, z:9, player: '2', type: 'spawn'},
-      {x: 1, z:9, player: '2', type: 'spawn'},
-      {x: 0, z:10, player: '2', type: 'spawn'},
-      {x: 1, z:10, player: '2', type: 'spawn'},
-      {x: 4, z:10, player: '2', type: 'start'},
-      {x: 4, z:9},
-      {x: 4, z:8},
-      {x: 4, z:7},
-      {x: 4, z:6},
-      {x: 3, z:6},
-      {x: 2, z:6},
-      {x: 1, z:6},
-      {x: 0, z:6},
-      {x: 0, z:5},
-      {x: 1, z:5, player: '3', type: 'goal'},
-      {x: 2, z:5, player: '3', type: 'goal'},
-      {x: 3, z:5, player: '3', type: 'goal'},
-      {x: 4, z:5, player: '3', type: 'goal'},
-      {x: 0, z:0, player: '3', type: 'spawn'},
-      {x: 1, z:0, player: '3', type: 'spawn'},
-      {x: 0, z:1, player: '3', type: 'spawn'},
-      {x: 1, z:1, player: '3', type: 'spawn'},
-    ];
+    this.fields = Config.ludo.fields;
     this.createBoard();
     
     this.pawnsController = new PawnsController({
@@ -184,29 +112,25 @@ export default class Board {
     var cube = new THREE.Mesh(this.geometry, new THREE.MeshFaceMaterial(this.materials));
     this.scene.add(cube);
   }
-  getFieldsSequence(pawnData, length) {
+  getFieldsSequence(pawnData, endField) {
     let currentField,
-      currentFieldI = 0,
+      currentFieldIndex = 0,
       fieldSequence = [],
-      firstStart = false;
+      finished = false,
+      doubleFields = this.fields.concat(this.fields);
     
-    for(let i = 0; i < this.fields.length; i++) {
-      let field = this.fields[i];
-      
-      if (field.x === pawnData.x && field.z === pawnData.z) {
-        currentField = field;
-        currentFieldI = i;
-        break;
-      }
-    }
+    currentField = this.fields.find((field, index) =>
+      field.x === pawnData.x &&
+      field.z === pawnData.z &&
+      (currentFieldIndex = index)
+    );
     
     if (currentField) {
-      for(let i = currentFieldI + 1; i < this.fields.length && fieldSequence.length < length; i++) {
-        let field = this.fields[i];
-        
+      for (let i = currentFieldIndex; i < doubleFields.length; i++) {
+        let field = doubleFields[i];
+  
         if (field.type === 'start' && field.player === pawnData.player) {
           fieldSequence.push(field);
-          firstStart = true;
           break;
         } else if (!field.type || field.type === 'start') {
           fieldSequence.push(field);
@@ -214,31 +138,17 @@ export default class Board {
           fieldSequence.push(field);
         }
       }
-      if (!firstStart && fieldSequence.length < length) {
-        for(let j = 0; j < currentFieldI + 1 && fieldSequence.length < length; j++) {
-          let field = this.fields[j];
-  
-          if (field.type === 'start' && field.player === pawnData.player) {
-            fieldSequence.push(field);
-            break;
-          } else if (!field.type || field.type === 'start') {
-            fieldSequence.push(field);
-          } else if (field.type === 'goal' && field.player === pawnData.player) {
-            fieldSequence.push(field);
-          }
-        }
-      }
     }
     
     // return [{x: 10, z: 6}];
     return fieldSequence;
   }
-  movePawn(pawnId, length) {
+  pawnMove({pawnId, field}) {
     let pawn = this.pawnsController.getPawn(pawnId);
     let pawnData = this.getPawn(pawnId);
     
     if (pawn && pawnData) {
-      let fieldsSequence = this.getFieldsSequence(pawnData, length);
+      let fieldsSequence = this.getFieldsSequence(pawnData, field);
   
       if (fieldsSequence.length) {
         Utils.asyncLoop(fieldsSequence.length, (loop, i) => {
