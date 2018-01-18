@@ -8,7 +8,7 @@ const FieldType = {
 };
 
 module.exports = function (io, config) {
-  const MinPlayers = 1, //per room to play
+  const MinPlayers = 2, //per room to play
     sockets = {};
   
   let occupiedSocketIds = [],
@@ -93,17 +93,30 @@ module.exports = function (io, config) {
         io.to(player.socketId).emit('startGame', newInitialState);
       });
     },
+    findRoom = ({socket, game}) => {
+      let room;
+
+      if (!Object.keys(queues[game]).length) {
+        room = createRoom({socket, game});
+        queues[game][room.id] = room;
+      } else {
+        // Find room for player
+        let roomId = Object.keys(queues[game])[0];
+        room = queues[game][roomId];
+      }
+
+      return room;
+    },
     queueColorsChanged = (room) => {
       let playersWithColor = room.players.reduce((previousValue, currentValue) => {
         return previousValue + (currentValue.color?1:0);
       }, 0);
 
-    console.log('playersWithColor:' + playersWithColor);
-      if (playersWithColor >= MinPlayers) {
-        startGame(room);
-      } else {
-        io.to(room.name).emit('pickColor', room.queueColors);
-      }
+        if (playersWithColor >= MinPlayers) {
+          startGame(room);
+        } else {
+          io.to(room.name).emit('pickColor', room.queueColors);
+        }
     },
     getTotalNumPlayers = () => {
       let clients = io.sockets.clients().connected;
@@ -177,13 +190,7 @@ module.exports = function (io, config) {
         return;
       }
       
-      if (!queues[game].length) {
-        room = createRoom({socket, game});
-        queues[game][room.id] = room;
-      } else {
-        // Find room for player
-        room = queues[game][queues[game].length - 1];
-      }
+      room = findRoom({socket, game});
   
       let playerId = nextId(),
         player = new Player({name: 'name' + playerId, id: playerId, socketId: socket.id});
