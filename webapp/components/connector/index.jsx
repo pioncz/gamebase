@@ -40,8 +40,10 @@ export default class Connector extends Component {
     
     return (<div className={"console"}>
       <div className="console-title">Console</div>
-      <div className="console-messages">
-        {messages}
+      <div className="console-wrapper">
+        <div className="console-messages">
+          {messages}
+        </div>
       </div>
     </div>);
   }
