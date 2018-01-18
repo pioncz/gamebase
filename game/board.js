@@ -112,25 +112,29 @@ export default class Board {
     var cube = new THREE.Mesh(this.geometry, new THREE.MeshFaceMaterial(this.materials));
     this.scene.add(cube);
   }
-  getFieldsSequence(pawnData, endField) {
+  getFieldsSequence(pawnData, length) {
     let currentField,
-      currentFieldIndex = 0,
+      currentFieldI = 0,
       fieldSequence = [],
-      finished = false,
-      doubleFields = this.fields.concat(this.fields);
+      firstStart = false;
     
-    currentField = this.fields.find((field, index) =>
-      field.x === pawnData.x &&
-      field.z === pawnData.z &&
-      (currentFieldIndex = index)
-    );
+    for(let i = 0; i < this.fields.length; i++) {
+      let field = this.fields[i];
+      
+      if (field.x === pawnData.x && field.z === pawnData.z) {
+        currentField = field;
+        currentFieldI = i;
+        break;
+      }
+    }
     
     if (currentField) {
-      for (let i = currentFieldIndex; i < doubleFields.length; i++) {
-        let field = doubleFields[i];
-  
+      for(let i = currentFieldI + 1; i < this.fields.length && fieldSequence.length < length; i++) {
+        let field = this.fields[i];
+        
         if (field.type === 'start' && field.player === pawnData.player) {
           fieldSequence.push(field);
+          firstStart = true;
           break;
         } else if (!field.type || field.type === 'start') {
           fieldSequence.push(field);
@@ -138,17 +142,31 @@ export default class Board {
           fieldSequence.push(field);
         }
       }
+      if (!firstStart && fieldSequence.length < length) {
+        for(let j = 0; j < currentFieldI + 1 && fieldSequence.length < length; j++) {
+          let field = this.fields[j];
+  
+          if (field.type === 'start' && field.player === pawnData.player) {
+            fieldSequence.push(field);
+            break;
+          } else if (!field.type || field.type === 'start') {
+            fieldSequence.push(field);
+          } else if (field.type === 'goal' && field.player === pawnData.player) {
+            fieldSequence.push(field);
+          }
+        }
+      }
     }
     
     // return [{x: 10, z: 6}];
     return fieldSequence;
   }
-  pawnMove({pawnId, field}) {
+  movePawn({pawnId, length}) {
     let pawn = this.pawnsController.getPawn(pawnId);
     let pawnData = this.getPawn(pawnId);
     
     if (pawn && pawnData) {
-      let fieldsSequence = this.getFieldsSequence(pawnData, field);
+      let fieldsSequence = this.getFieldsSequence(pawnData, length);
   
       if (fieldsSequence.length) {
         Utils.asyncLoop(fieldsSequence.length, (loop, i) => {

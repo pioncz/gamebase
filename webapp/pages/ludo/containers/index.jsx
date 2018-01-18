@@ -53,7 +53,7 @@ export default class Ludo extends Component {
       });
       nextProps.connectorInstance.socket.on('pawnMove', (pawnMove) => {
         nextProps.connectorInstance.addMessage('pawnMove');
-        this.gameComponent.pawnMove(pawnMove);
+        this.gameComponent.movePawn(pawnMove);
       });
     }
   }

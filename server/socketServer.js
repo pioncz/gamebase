@@ -127,7 +127,8 @@ module.exports = function (io, config) {
       
     },
     getPawnMove = (diceNumber, pawns) => {
-      let fields = config.ludo.fields;
+      let fields = config.ludo.fields,
+        length = 0;
       
       for(let i = 0; i < pawns.length; i++) {
         let pawn = pawns[i],
@@ -140,22 +141,51 @@ module.exports = function (io, config) {
           fieldType = pawnField.type,
           newField;
         
-        if (fieldType === FieldType.spawn && diceNumber === 6) {
-          for(let j = fieldIndex + 1; j < fields.length; j++) {
-            let field = fields[j];
-            if (!field) {
-              console.log('cannot find next field');
-              break;
-            }
-            
-            if (field.type !== FieldType.spawn) {
-              newField = field;
-              break;
-            }
-          }
+        for(let j = fieldIndex + 1;
+            j < fields.length &&
+            length < diceNumber; j++) {
+          let field = fields[j];
 
-          return {pawnId: pawn.id, field: newField, diceNumber: diceNumber};
+          if (field.type === 'start' && field.player === pawnField.player) {
+            length++;
+            return {pawnId: pawn.id, length};
+          } else if (!field.type || field.type === 'start') {
+            length++;
+          } else if (field.type === 'goal' && field.player === pawnField.player) {
+            length++;
+          }
         }
+        for(let j = 0; j < fieldIndex + 1 && length < diceNumber; j++) {
+          let field = fields[j];
+  
+          if (field.type === 'start' && field.player === pawnField.player) {
+            length++;
+            return {pawnId: pawn.id, length};
+          } else if (!field.type || field.type === 'start') {
+            length++;
+          } else if (field.type === 'goal' && field.player === pawnField.player) {
+            length++;
+          }
+        }
+        return {pawnId: pawn.id, length };
+        // if (fieldType === FieldType.spawn && diceNumber === 6) {
+        //   return {pawnId: pawn.id, length: 1};
+        // } else if (fieldType !== FieldType.spawn) {
+        //   for(let j = fieldIndex + 1; j < fields.length; j++) {
+        //     let field = fields[j];
+        //     if (!field) {
+        //       console.log('cannot find next field');
+        //       break;
+        //     }
+            
+        //     if (field.type !== FieldType.spawn) {
+        //       newField = field;
+        //       break;
+        //     }
+        //   }
+
+        //   return {pawnId: pawn.id, field: newField, diceNumber: };
+        // }
         break;
       }
     };
@@ -252,7 +282,7 @@ module.exports = function (io, config) {
         let pawnMove = getPawnMove(diceNumber, playerPawns);
         
         if (pawnMove) {
-          socket.emit('pawnMove', pawnMove);
+          io.to(room.name).emit('pawnMove', pawnMove);
           console.log(pawnMove);
         } else {
           console.log('player cant move');
