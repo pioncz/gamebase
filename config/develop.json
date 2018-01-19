@@ -10,6 +10,9 @@
 			"#1DE9B6",
 			"#FFEA00"
 		],
+		"animations": {
+			"movePawn": 1000
+		},
 		"fields": [
 			{
 				"x": 0,

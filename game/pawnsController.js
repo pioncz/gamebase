@@ -1,5 +1,6 @@
 import Pawn from "./pawn";
 import {EASING, TIMES} from "./utils/animations";
+import Config from 'config.js';
 
 export default class PawnsController {
   constructor(props) {
@@ -37,7 +38,7 @@ export default class PawnsController {
           dZ = oldZ - newZ;
     
         this.animations.create({
-          length: 1000,
+          length: Config.ludo.animations.movePawn,
           easing: EASING.InOutQuad,
           update: (progress) => {
             let newX = oldX - (dX * progress),

@@ -2,7 +2,7 @@ import Utils from 'utils/utils.js'
 import Pawn from './pawn'
 import {EASING, TIMES} from "./utils/animations";
 import PawnsController from 'pawnsController';
-import Config from './../webapp/config.js';
+import Config from 'config.js';
 
 export default class Board {
   constructor(props) {
