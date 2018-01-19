@@ -126,7 +126,10 @@ module.exports = function (io, config) {
       if (endField.type === FieldType.goal && endField.playerId !== pawn.playerId) {
         return false;
       }
-    
+      if (endField.type === FieldType.spawn) {
+        return false;
+      }
+  
       return true;
     },
     movePawn = ({pawns, diceNumber}) => {
@@ -173,7 +176,7 @@ module.exports = function (io, config) {
             endField = field;
           }
         }
-        endField = fields[startFieldIndex + length];
+        // endField = fields[startFieldIndex + length];
         pawn.z = endField.z;
         pawn.x = endField.x;
         return { pawnId: pawn.id, endField, length};
