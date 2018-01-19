@@ -52,7 +52,12 @@ export default class Ludo extends Component {
         });
       });
       nextProps.connectorInstance.socket.on('pawnMove', (pawnMove) => {
-        nextProps.connectorInstance.addMessage('pawnMove');
+        nextProps.connectorInstance.addMessage(
+          'pawnMove length: ' +
+          pawnMove.length +
+          ' diceNumber: ' +
+          pawnMove.diceNumber
+        );
         this.gameComponent.movePawn(pawnMove);
       });
     }

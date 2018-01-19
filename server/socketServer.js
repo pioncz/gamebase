@@ -6,9 +6,9 @@ const FieldType = {
   start: 'start',
   goal: 'goal',
 };
-
+var log = (m) => console.log(m);
 module.exports = function (io, config) {
-  const MinPlayers = 2, //per room to play
+  const MinPlayers = 1, //per room to play
     sockets = {};
   
   let occupiedSocketIds = [],
@@ -122,31 +122,92 @@ module.exports = function (io, config) {
       let clients = io.sockets.clients().connected;
       return Object.keys(clients).length
     },
-    getNextField = (fieldIndex) => {
-      let field = fields[fieldIndex];
-      
+    checkField = ({startField, endField, diceNumber, pawn}) => {
+      if (endField.type === FieldType.goal && endField.playerId !== pawn.playerId) {
+        return false;
+      }
+    
+      return true;
+    },
+    movePawn = ({pawns, diceNumber}) => {
+      let fields = config.ludo.fields,
+        endField,
+        length = 0,
+        pawn = pawns[0],
+        areFieldsEqual = (fieldA, fieldB) => {
+          return fieldA.x == fieldB.x &&
+            fieldA.z == fieldB.z;
+        },
+        startFieldIndex = fields.findIndex((field)=> areFieldsEqual(field, pawn)),
+        startField = startFieldIndex > -1 && fields[startFieldIndex];
+  log(startFieldIndex);
+  log(startField);
+  log(pawn);
+        if (!startField) return;
+        
+        // For every pawn
+        
+        // Search twice cause when: startFieldIndex = fields.length-1
+        // => search fields from start
+        for(let i = startFieldIndex + 1; i < fields.length * 2 && !endField; i++) {
+          let fieldIndex = i % fields.length,
+            field = fields[fieldIndex];
+  
+          if (startField.type === FieldType.spawn) {
+            if (diceNumber === 6) {
+              if (field.type === FieldType.start) {
+                length++;
+                endField = field;
+                break;
+              }
+            } else {
+              return;
+            }
+          } else {
+            if(checkField({startField, endField: field, diceNumber, pawn})) {
+              length++;
+            }
+          }
+  
+          if (length >= diceNumber) {
+            endField = field;
+          }
+        }
+        endField = fields[startFieldIndex + length];
+        pawn.z = endField.z;
+        pawn.x = endField.x;
+        return { pawnId: pawn.id, endField, length};
     },
     getPawnMove = (diceNumber, pawns) => {
       let fields = config.ludo.fields,
+        endField,
         length = 0;
-      
+
       for(let i = 0; i < pawns.length; i++) {
         let pawn = pawns[i],
-          fieldIndex,
+          fieldIndex = 0,
           pawnField = fields.find((field, index) =>
             field.x == pawn.x &&
             field.z == pawn.z &&
             (fieldIndex = index)
-          ),
-          fieldType = pawnField.type,
-          newField;
+          );
+        
+        log(pawnField);
+        log('fieldIndex: ' + fieldIndex + ' fields:');
+        
+        
+        
         
         for(let j = fieldIndex + 1;
             j < fields.length &&
             length < diceNumber; j++) {
           let field = fields[j];
+log(field);
 
-          if (field.type === 'start' && field.player === pawnField.player) {
+          if (field.type === 'start' &&
+            field.player === pawnField.player &&
+            diceNumber === 6
+          ) {
             length++;
             return {pawnId: pawn.id, length};
           } else if (!field.type || field.type === 'start') {
@@ -158,6 +219,10 @@ module.exports = function (io, config) {
         for(let j = 0; j < fieldIndex + 1 && length < diceNumber; j++) {
           let field = fields[j];
   
+          if (pawnField.type === 'spawn' && diceNumber != 6) {
+            break;
+          }
+          
           if (field.type === 'start' && field.player === pawnField.player) {
             length++;
             return {pawnId: pawn.id, length};
@@ -167,7 +232,8 @@ module.exports = function (io, config) {
             length++;
           }
         }
-        return {pawnId: pawn.id, length };
+
+        return {pawnId: pawn.id, endField: field, length };
         // if (fieldType === FieldType.spawn && diceNumber === 6) {
         //   return {pawnId: pawn.id, length: 1};
         // } else if (fieldType !== FieldType.spawn) {
@@ -279,11 +345,12 @@ module.exports = function (io, config) {
         
         let diceNumber = parseInt(Math.random()*6)+1; // 1-6
         
-        let pawnMove = getPawnMove(diceNumber, playerPawns);
+        let pawnMove = movePawn({diceNumber, pawns: playerPawns});
         
         if (pawnMove) {
+          pawnMove.diceNumber = diceNumber;
+          log(pawnMove);
           io.to(room.name).emit('pawnMove', pawnMove);
-          console.log(pawnMove);
         } else {
           console.log('player cant move');
           socket.emit('console', 'player roll\'d ' + diceNumber + ' and cant move');

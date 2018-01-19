@@ -397,9 +397,6 @@
     if (endField.type === FieldType.goal && endField.playerId !== pawn.playerId) {
       return false;
     }
-    if (endField.type === FieldType.goal && endField.playerId === pawn.playerId) {
-
-    }
 
     return true;
   };
@@ -431,6 +428,7 @@
       if (startField.type === FieldType.spawn) {
         if (diceNumber === 6) {
           if (field.type === FieldType.start) {
+            length++;
             endField = field;
             break;
           }
