@@ -1,25 +1,15 @@
-'use strict';
 const webpack = require('webpack');
 const path = require('path');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const GitRevisionPlugin = require('git-revision-webpack-plugin');
 
-module.exports = function(env) {
-  if (!env) env = {};
-
+module.exports = function() {
   let isProduction = false;
-  let gitInfo = new GitRevisionPlugin({branch: true, versionCommand: 'describe --always --tags'});
-  let branch = gitInfo.branch();
-  let cfgName = ((branch === 'master' || env.production)?'./config/master.json':'./config/develop.json');
+  let cfgName = './config/develop.json';
   const cfg = require(cfgName);
-  cfg.version = {
-    tag: gitInfo.version(),
-    branch: branch,
-    commit: (gitInfo.commithash()).substr(0,6)
-  };
+
   const extractSass = new ExtractTextPlugin({
     filename: "[name].min.css",
     disable: false

@@ -60,6 +60,12 @@ export default class Ludo extends Component {
         );
         this.gameComponent.movePawn(pawnMove);
       });
+      nextProps.connectorInstance.socket.on('updateGame', (newGameState) => {
+        console.log(newGameState);
+        this.setState({
+          currentPlayerId: newGameState.currentPlayerId
+        });
+      });
     }
   }
   selectColor(color) {
@@ -69,17 +75,7 @@ export default class Ludo extends Component {
     this.props.connectorInstance.socket.emit('roll');
   }
   handleClick() {
-    if (this.state.currentPlayerId == this.state.yourPlayerId) {
-      // let a = parseInt(Math.random()*4)*4,
-      //   b = Math.ceil(Math.random()*6);
-      //
-      // this.gameComponent.movePen(a, b);
-      this.roll();
-    } else {
-      this.props.connectorInstance.addMessage('You can\' roll right now!');
-    }
-
-    
+    this.roll();
   }
   joinQueue() {
     if (this.props.connectorInstance) {

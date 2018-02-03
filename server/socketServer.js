@@ -1,5 +1,5 @@
-const Player = require('./../Ludo/Player.js');
-const InitialState = require('./../Ludo/InitialState.js');
+const Player = require('./../ludo/Player.js');
+const InitialState = require('./../ludo/InitialState.js');
 
 const FieldType = {
   spawn: 'spawn',
@@ -8,7 +8,7 @@ const FieldType = {
 };
 var log = (m) => console.log(m);
 module.exports = function (io, config) {
-  const MinPlayers = 1, //per room to play
+  const MinPlayers = 2, //per room to play
     sockets = {};
   
   let occupiedSocketIds = [],
@@ -31,6 +31,7 @@ module.exports = function (io, config) {
           id: id,
           name: '/room'+id,
           game: game,
+          rolled: false,
           players: [],
           currentPlayerId: 0,
           eta: 5*60*60, //18000s
@@ -143,9 +144,7 @@ module.exports = function (io, config) {
         },
         startFieldIndex = fields.findIndex((field)=> areFieldsEqual(field, pawn)),
         startField = startFieldIndex > -1 && fields[startFieldIndex];
-  log(startFieldIndex);
-  log(startField);
-  log(pawn);
+
         if (!startField) return;
         
         // For every pawn
@@ -179,8 +178,12 @@ module.exports = function (io, config) {
         // endField = fields[startFieldIndex + length];
         pawn.z = endField.z;
         pawn.x = endField.x;
+        
         return { pawnId: pawn.id, endField, length};
     };
+  
+  //blokujemy pokoj na rollowanie
+  // do czasu az
   
   io.on('connection', function (socket) {
     sockets[socket.id] = {
@@ -262,8 +265,10 @@ module.exports = function (io, config) {
       //get sockets room
       let room = sockets[socket.id].room,
         player = sockets[socket.id].player;
+
       //check if its this players turn
-      if (room.currentPlayerId == player.id) {
+      if (room.currentPlayerId == player.id &&
+        !room.rolled) {
         // look for first pawn he can move
         let playerPawns = room.pawns.filter((pawn) => {
           return pawn.playerId == player.id;
@@ -275,14 +280,19 @@ module.exports = function (io, config) {
         
         if (pawnMove) {
           pawnMove.diceNumber = diceNumber;
-          log(pawnMove);
           io.to(room.name).emit('pawnMove', pawnMove);
         } else {
           console.log('player cant move');
-          socket.emit('console', 'player roll\'d ' + diceNumber + ' and cant move');
+          io.to(room.name).emit('console', 'player ' + player.name + ' roll\'d ' + diceNumber + ' and cant move');
         }
-        //move his first pawn
-        //emit updateGame event to this socket
+  
+        let index = room.players.findIndex((player) => {
+          return player.id == room.currentPlayerId;
+        });
+        let nextPlayerId = room.players[(index + 1) % room.players.length].id;
+
+        room.currentPlayerId = nextPlayerId;
+        io.to(room.name).emit('updateGame', {currentPlayerId: nextPlayerId});
       } else {
         console.log('not his turn');
       }

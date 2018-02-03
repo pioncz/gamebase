@@ -57,7 +57,7 @@ git.branch(function(branchName) {
   });
 
   let port = config.server.port;
-  http.listen(port, function(){
+  http.listen(port, '0.0.0.0', function(){
     console.log('Listening on *:' + port);
   });
 });
