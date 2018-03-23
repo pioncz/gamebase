@@ -24,9 +24,14 @@ module.exports = function() {
       filename: '[name].min.js',
       path: path.resolve(__dirname, 'dist')
     },
-    devtool: isProduction?true:'source-map',
+    devtool: 'source-map',
     module: {
       rules: [
+        {
+          test: /\.tsx?$/,
+          use: 'ts-loader',
+          exclude: /node_modules/
+        },
         {
           test: /.jsx?$/,
           loader: 'babel-loader',
@@ -56,7 +61,8 @@ module.exports = function() {
       ]
     },
     resolve: {
-      modules: ['game', 'webapp', 'node_modules']
+      modules: ['game', 'webapp', 'node_modules'],
+      extensions: [ '.tsx', '.ts', '.js', '.jsx' ]
     },
     plugins: [
       new CleanWebpackPlugin(['dist']),

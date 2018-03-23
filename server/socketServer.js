@@ -6,9 +6,9 @@ const FieldType = {
   start: 'start',
   goal: 'goal',
 };
-var log = (m) => console.log(m);
+
 module.exports = function (io, config) {
-  const MinPlayers = 2, //per room to play
+  const MinPlayers = 1, //per room to play
     sockets = {};
   
   let occupiedSocketIds = [],
