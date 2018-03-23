@@ -8,11 +8,15 @@ import {
 import Header from 'components/header/index.jsx'
 import Connector from 'components/connector/index.jsx'
 import PropTypes from 'prop-types'
+import Greeter from 'test'
 
 class Main extends Component {
   constructor(props) {
     super(props);
     
+    let greeter = new Greeter('test');
+    console.log(greeter.greet());
+  
     this.state = {
       connectorInstance: null,
     };

@@ -1,5 +1,11 @@
-function greeter(person: string) {
-    return "Hello, " + person;
+class Greeter {
+  greeting: string;
+  constructor(message: string) {
+    this.greeting = message;
+  }
+  greet() {
+    return "Typescript test success";
+  }
 }
 
-let user = [0, 1, 2];
+export default Greeter;
