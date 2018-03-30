@@ -8,7 +8,7 @@ const FieldType = {
 };
 
 module.exports = function (io, config) {
-  const MinPlayers = 2, //per room to play
+  const MinPlayers = 1, //per room to play
     sockets = {};
   
   let occupiedSocketIds = [],
@@ -67,7 +67,9 @@ module.exports = function (io, config) {
       io.to(room.name).emit('pickColor', queueColors);
     },
     startGame = (room) => {
-      let initialState = new InitialState();
+      let initialState = new InitialState(),
+        playersLength = room.players.length;
+  
       room.pawns = initialState.pawns;
       
       initialState.players = room.players;
@@ -79,6 +81,8 @@ module.exports = function (io, config) {
         }
       });
 
+      // Remove pawns for not connected players
+      initialState.pawns.splice(playersLength * 4, (4 - playersLength) * 4);
       room.currentPlayerId = room.players[0].id;
       initialState.currentPlayerId = room.currentPlayerId;
   

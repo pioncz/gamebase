@@ -3,6 +3,9 @@ import Pawn from './pawn'
 import {EASING, TIMES} from "./utils/animations";
 import PawnsController from 'pawnsController';
 import Config from 'config.js';
+import Fields from './../ludo/Fields.js';
+
+const GridAmount = 11;
 
 export default class Board {
   constructor(props) {
@@ -14,38 +17,57 @@ export default class Board {
     this.getPawn = props.getPawn;
     this.columnsLength = 11;
     this.fieldLength = 40 / this.columnsLength;
+    this.initialized = false;
+    this.canvas = Utils.$({element: 'canvas'});
+    this.texture = null;
     
-    this.fields = Config.ludo.fields;
+    this.fields = Fields;
+    this.players = {};
     this.createBoard();
+    this.drawBoard();
     
     this.pawnsController = new PawnsController({
       scene: this.scene,
       fieldLength: this.fieldLength,
-      pawns: props.pawns,
+      pawns: [],
       animations: props.animations,
       columnsLength: this.columnsLength,
     });
   }
-  createBoard() {
-    let canvas = Utils.$({element: 'canvas'}),
-      ctx = canvas.getContext('2d');
-    let width = this.width,
+  // Color fields, create pawns
+  initGame(props) {
+    if (!this.initialized) {
+      this.initialized = true;
+      this.players = props.players;
+      
+      // Set field colors
+      for(let fieldIndex in this.fields) {
+        let field = this.fields[fieldIndex];
+        
+        if (field.playerIndex !== undefined) {
+          let player = this.players[field.playerIndex];
+          
+          if (player) {
+            field.color = player.color;
+          }
+        }
+      }
+      this.drawBoard();
+      // create pawns
+      this.pawnsController.createPawns({pawns: props.pawns});
+    }
+  }
+  drawBoard() {
+    let canvas = this.canvas,
+      ctx = canvas.getContext('2d'),
+      width = this.width,
       height = this.height;
-    
+  
     canvas.width = width;
     canvas.height = height;
-    
-    var gridAmount = 11;
-    
-    var players = [
-      {color: '#64DD17'},
-      {color: '#D50000'},
-      {color: '#1DE9B6'},
-      {color: '#FFEA00'},
-    ];
-    
+  
     ctx.clearRect(0, 0, width, height);
-    
+  
     // background
     var grd = ctx.createLinearGradient(0, 0, width, height);
     grd.addColorStop(.1, "#0fb8ad");
@@ -53,51 +75,56 @@ export default class Board {
     grd.addColorStop(.7, "#2cb5e8");
     ctx.fillStyle = grd;
     ctx.fillRect(0, 0, width, width);
-    
+  
     //fields
-    function drawField(field) {
+    let drawField = (field) => {
       let x = field.x,
         z = field.z,
         color = 'white',
         lineWidth = 1,
         strokeStyle = '#CFD8DC';
       
-      if (field.player) {
-        color = players[field.player].color;
+      if (field.color) {
+        color = field.color;
         lineWidth = 4;
         strokeStyle = 'rgba(255,255,255,0.3)';
       }
-      
+    
       ctx.beginPath();
-      var cellSize = width / gridAmount;
+      var cellSize = width / GridAmount;
       var r = cellSize / 2 * 0.75;
       var r2 = cellSize / 2 * 0.60;
       let cellX = (x + 0.5) * cellSize,
         cellZ = (z + 0.5) * cellSize;
-      
+    
       ctx.arc(cellX, cellZ, r, 0, 2 * Math.PI);
       ctx.fillStyle = color;
       ctx.fill();
       ctx.save();
       ctx.clip();
-      
+    
       ctx.arc(cellX, cellZ, r2, 0, 2 * Math.PI);
       ctx.lineWidth = lineWidth;
       ctx.strokeStyle = strokeStyle;
       ctx.stroke();
       ctx.restore();
     }
-    
+  
     for (let i = 0; i < this.fields.length; i++) {
       drawField(this.fields[i]);
     }
-    
-    let texture = new THREE.Texture(canvas);
+  
+    this.texture.needsUpdate = true;
+  }
+  createBoard() {
+    let canvas = this.canvas,
+      texture = new THREE.Texture(canvas);
     this.materials = [
       new THREE.MeshBasicMaterial({map: texture}),
       new THREE.MeshBasicMaterial({color: 'rgba(61, 72, 97, 0.8)'})
     ];
     this.geometry = new THREE.BoxGeometry(40, 2, 40);
+    this.texture = texture;
     
     texture.needsUpdate = true;
     this.$ = new THREE.Mesh(this.geometry, new THREE.MeshFaceMaterial(this.materials));

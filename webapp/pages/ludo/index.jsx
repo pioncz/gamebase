@@ -17,7 +17,7 @@ const {
 } = ludoSelectors;
 
 const mapStateToProps = state => ({
-  pawns: getPawns(state),
+//  pawns: getPawns(state),
 });
 
 const mapDispatchToProps = dispatch => ({

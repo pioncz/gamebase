@@ -8,12 +8,18 @@ export default class GameComponent extends Component {
     this.handleClick = this.handleClick.bind(this);
   }
   componentDidMount() {
-    this.engine = new Game({container: this.rendererContainer, pawns: this.props.pawns});
+    this.engine = new Game({container: this.rendererContainer});
   }
   shouldComponentUpdate(nextProps) {
     if (nextProps.moves && nextProps.moves.length) {
       let move = nextProps.moves[nextProps.moves.length - 1];
       this.engine.board.movePawn(move);
+    }
+    let gameShouldInit = nextProps.pawns.length &&
+      nextProps.players && nextProps.players.length;
+    
+    if (gameShouldInit) {
+      this.engine.board.initGame({pawns: nextProps.pawns, players: nextProps.players});
     }
     return false;
   }

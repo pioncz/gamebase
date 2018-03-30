@@ -26,6 +26,7 @@ export default class Ludo extends Component {
       queueColors: [],
       currentPlayerId: null,
       players: [],
+      pawns: [],
     };
     
     this.handleClick = this.handleClick.bind(this);
@@ -61,13 +62,13 @@ export default class Ludo extends Component {
     });
     connectorInstance.socket.on('startGame', (gameState) => {
       connectorInstance.addMessage('startGame');
-      console.log(gameState);
       connectorInstance.addMessage('currentPlayer: ' + gameState.currentPlayerId + (gameState.yourPlayerId == gameState.currentPlayerId?' it\'s You!':''));
       this.setState({
         players: gameState.players,
         currentPlayerId: gameState.currentPlayerId,
         yourPlayerId: gameState.yourPlayerId,
         page: Pages.Game,
+        pawns: gameState.pawns,
       });
     });
     connectorInstance.socket.on('pawnMove', (pawnMove) => {
@@ -75,12 +76,10 @@ export default class Ludo extends Component {
       this.gameComponent.movePawn(pawnMove);
     });
     connectorInstance.socket.on('updateGame', (newGameState) => {
-      console.log(newGameState);
       this.setState({
         currentPlayerId: newGameState.currentPlayerId
       });
     });
-    
     connectorInstance.socket.on('updatePlayers', (newPlayers) => {
       // Leave game when someone leaves
       connectorInstance.socket.emit('leaveGame');
@@ -171,8 +170,8 @@ export default class Ludo extends Component {
       <GameComponent
         ref={(element) => {this.gameComponent = element; }}
         onClick={this.handleClick}
-        pawns={this.props.pawns}
-        players={this.props.player}
+        pawns={this.state.pawns}
+        players={this.state.players}
       />
       {playersOverlay}
       {currentModal}
