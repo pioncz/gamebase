@@ -21,7 +21,7 @@ export default class Connector extends Component {
       this.addMessage("found game");
     });
     this.socket.on('connect_error', (e) => {
-      console.error(e);
+      // console.error(e);
       this.addMessage("connection error");
     });
   }

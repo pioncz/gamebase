@@ -32,7 +32,8 @@ const prefix = `${name}/`;
 
 const initialState = {
   currentUser: {
-    name: 'Kasia',
+    name: 'Pioncz',
+    avatar: '',
     level: 1,
     id: 1,
   }
@@ -72,7 +73,7 @@ const reducer = (state = initialState, action) => {
  * SELECTORS
  */
 
-// const getCurrentUser = state => getState(state);
+const getCurrentUser = state => getState(state).currentUser;
 
 /*
  * EXPORTS
@@ -93,5 +94,5 @@ export const logic = {
 };
 
 export const selectors = {
-//  getCurrentUser: getCurrentUser
+  getCurrentUser: getCurrentUser,
 };

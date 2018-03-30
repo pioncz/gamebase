@@ -34,7 +34,7 @@ const initialState = {
   approxTime: '60',
   state: 'start', //start, queue, game, win, lost
   players: [
-    {id: 1, name:'Kasia', color:'red'}
+    {id: 1, name:'Player1', color:'red'}
   ],
   pawns: [
     {x:0, y:0, player: 1},

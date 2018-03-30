@@ -102,6 +102,7 @@ export default class Ludo extends Component {
         </div>
       </Modal>
     }
+    
     if (page === Pages.Queue) {
       currentModal = <Modal ref={(element) => {this.queueModal = element;}}>
         <h3>Szukanie graczy</h3>

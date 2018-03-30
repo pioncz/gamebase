@@ -5,15 +5,23 @@ import {
   Link
 } from 'react-router-dom'
 import './index.sass'
+import Profile from 'components/profile/index'
 
 export default class Header extends Component {
   constructor(props) {
     super(props);
   }
   render() {
+    let { user }  = this.props;
+    
     return <header>
-      <Link to='/'>Home</Link>
-      <Link to='/ludo'>Ludo</Link>
+      <div className="left-pane">
+        <Link to='/'>Home</Link>
+        <Link to='/ludo'>Ludo</Link>
+      </div>
+      <div className="right-pane">
+        <Profile user={user}></Profile>
+      </div>
     </header>
   }
 }

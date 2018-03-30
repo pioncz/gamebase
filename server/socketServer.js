@@ -8,7 +8,7 @@ const FieldType = {
 };
 
 module.exports = function (io, config) {
-  const MinPlayers = 1, //per room to play
+  const MinPlayers = 2, //per room to play
     sockets = {};
   
   let occupiedSocketIds = [],
@@ -181,19 +181,20 @@ module.exports = function (io, config) {
         
         return { pawnId: pawn.id, endField, length};
     };
-  
-  //blokujemy pokoj na rollowanie
-  // do czasu az
-  
+    
   io.on('connection', function (socket) {
+    let playerId = nextId();
+    
     sockets[socket.id] = {
       socket: socket,
-      player: null,
+      player: new Player({name: 'name' + playerId, id: playerId, socketId: socket.id}),
       room: null,
     };
     
     socket.emit('console', 'connected to socket server. currently ' + getTotalNumPlayers() + ' online.');
 
+    socket.emit('player', sockets[socket.id].player);
+    
     socket.on('disconnect', function () {
     });
     
@@ -216,13 +217,10 @@ module.exports = function (io, config) {
       }
       
       room = findRoom({socket, game});
-  
-      let playerId = nextId(),
-        player = new Player({name: 'name' + playerId, id: playerId, socketId: socket.id});
-      room.players.push(player);
+      
       let socketData = sockets[socket.id];
       socketData.room = room;
-      socketData.player = player;
+      room.players.push(socketData.player);
       
       socket.join(room.name);
       io.to(room.name).emit('console', 'player update: (' + room.players.length + '/' + MinPlayers + ')');
@@ -266,12 +264,15 @@ module.exports = function (io, config) {
       let room = sockets[socket.id].room,
         player = sockets[socket.id].player;
 
+      if (!room) {
+        console.log('not in a room');
+      }
       //check if its this players turn
-      if (room.currentPlayerId == player.id &&
+      else if (room && room.currentPlayerId === player.id &&
         !room.rolled) {
         // look for first pawn he can move
         let playerPawns = room.pawns.filter((pawn) => {
-          return pawn.playerId == player.id;
+          return pawn.playerId === player.id;
         });
         
         let diceNumber = parseInt(Math.random()*6)+1; // 1-6
@@ -287,7 +288,7 @@ module.exports = function (io, config) {
         }
   
         let index = room.players.findIndex((player) => {
-          return player.id == room.currentPlayerId;
+          return player.id === room.currentPlayerId;
         });
         let nextPlayerId = room.players[(index + 1) % room.players.length].id;
 
