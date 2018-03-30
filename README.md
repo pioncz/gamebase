@@ -7,7 +7,8 @@ TO DO, PLAN GRY
 +obsluga rozlaczenia sie gracza
 
 1) Gra
-- przekazywanie ustawien graczy do gry
++ przekazywanie ustawien graczy do gry
+- wyciagnac wspolna funkcje do liczenia ciagu pozycji pionka
 - animacja wejscia pionkow
 
 2) Strona Ludo

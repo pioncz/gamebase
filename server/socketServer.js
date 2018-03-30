@@ -310,7 +310,7 @@ module.exports = function (io, config) {
         console.log('not in a room');
       }
       //check if its this players turn
-      else if (room && room.currentPlayerId === player.id &&
+      else if (room.currentPlayerId === player.id &&
         !room.rolled) {
         // look for first pawn he can move
         let playerPawns = room.pawns.filter((pawn) => {

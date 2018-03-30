@@ -14,7 +14,6 @@ export default class Board {
     this.width = props.width;
     this.height = props.height;
     this.renderer = props.renderer;
-    this.getPawn = props.getPawn;
     this.columnsLength = 11;
     this.fieldLength = 40 / this.columnsLength;
     this.initialized = false;
@@ -190,10 +189,9 @@ export default class Board {
   }
   movePawn({pawnId, length}) {
     let pawn = this.pawnsController.getPawn(pawnId);
-    let pawnData = this.getPawn(pawnId);
     
-    if (pawn && pawnData) {
-      let fieldsSequence = this.getFieldsSequence(pawnData, length);
+    if (pawn) {
+      let fieldsSequence = this.getFieldsSequence(pawn, length);
   
       if (fieldsSequence.length) {
         Utils.asyncLoop(fieldsSequence.length, (loop, i) => {
@@ -205,8 +203,8 @@ export default class Board {
             loop.next
           );
         }, () => {
-          pawnData.x = fieldsSequence[fieldsSequence.length-1].x;
-          pawnData.z = fieldsSequence[fieldsSequence.length-1].z;
+          pawn.x = fieldsSequence[fieldsSequence.length-1].x;
+          pawn.z = fieldsSequence[fieldsSequence.length-1].z;
         });
       }
     }

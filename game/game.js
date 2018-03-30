@@ -55,17 +55,12 @@ export default class Game {
     // Handle canvas resizing
     window.addEventListener('resize', this.onResize.bind(this), true);
     
-    let getPawn = (pawnId) => {
-      return pawns.find((a) => a.id == pawnId);
-    };
-    
     this.board = new Board({
       width: 512,
       height: 512,
       scene: this.scene,
       renderer: this.renderer,
       pawns: [],
-      getPawn: getPawn,
       animations: this.animations,
     });
     

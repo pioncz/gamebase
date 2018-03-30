@@ -11,19 +11,18 @@ export default class PawnsController {
     this.columnsLength = props.columnsLength;
   }
   createPawns({pawns}) {
-    this.pawns = pawns;
-  
-    for (let pawnId in pawns) {
-      let parsedX = (pawns[pawnId].x - Math.floor(this.columnsLength/2)) * this.fieldLength,
-        parsedZ = (pawns[pawnId].z - Math.floor(this.columnsLength/2)) * this.fieldLength;
-    
+    for (let pawnIndex in pawns) {
+      let pawnId = pawns[pawnIndex].id,
+        parsedX = (pawns[pawnIndex].x - Math.floor(this.columnsLength/2)) * this.fieldLength,
+        parsedZ = (pawns[pawnIndex].z - Math.floor(this.columnsLength/2)) * this.fieldLength;
+      
       let pawn = new Pawn({
-        ...pawns[pawnId],
+        ...pawns[pawnIndex],
         scene: this.scene,
         parsedX: parsedX,
         parsedZ: parsedZ,
-        x: pawns[pawnId].x,
-        z: pawns[pawnId].z,
+        x: pawns[pawnIndex].x,
+        z: pawns[pawnIndex].z,
       });
       this.pawns[pawnId] = pawn;
     }
