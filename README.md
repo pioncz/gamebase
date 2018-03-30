@@ -10,13 +10,16 @@ TO DO, PLAN GRY
 - przekazywanie ustawien graczy do gry
 - animacja wejscia pionkow
 
-2) Strona główna
--lista gier
-3) Strona Ludo
+2) Strona Ludo
++ekran wyszukiwania z przewidywanym czasem
++wybór koloru
++ekran gry
+-przerobienie wygladu profili
+-zaznaczenie aktualnego gracza
 -wybór (graj sam lub ze znajomymi)
--ekran wyszukiwania z przewidywanym czasem
--(jak sie zaczyna rozrgrywka) wybór koloru
--ekran gry
 
-3) Czat
+3) Strona główna
+-lista gier
+
+4) Czat
 -szybki dostep do czatu i listy znajomych z funkcja zaproszenia do gry
