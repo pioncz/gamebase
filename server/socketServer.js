@@ -8,7 +8,7 @@ const FieldType = {
 };
 
 module.exports = function (io, config) {
-  const MinPlayers = 1, //per room to play
+  const MinPlayers = 2, //per room to play
     sockets = {};
   
   let occupiedSocketIds = [],
@@ -176,7 +176,12 @@ module.exports = function (io, config) {
         
         return { pawnId: pawn.id, endField, length};
     },
-    leaveRoom = ({socketId, room}) => {
+    leaveGame = ({socketId}) => {
+      let socketData = sockets[socketId],
+        room = socketData.room;
+      
+      if (!room) return;
+      
       // Remove socketId from occupiedSocketIds
       let index = occupiedSocketIds.indexOf(socketId);
       if (index > -1) {
@@ -196,8 +201,6 @@ module.exports = function (io, config) {
         // Remove game without players
         delete games[room.game][room.id];
       }
-      console.log('games');
-      console.log(games);
     };
     
   io.on('connection', function (socket) {
@@ -216,13 +219,11 @@ module.exports = function (io, config) {
     socket.on('disconnect', () => {
       // Check if player was playing
       // Disconnect from current game
-      let socketData = sockets[socket.id],
-        room = socketData.room;
-      
-      if (room) {
-        leaveRoom({socketId: socket.id, room: room});
-      }
-      
+      leaveGame({socketId: socket.id});
+    });
+    
+    socket.on('leaveGame', () => {
+      leaveGame({socketId: socket.id});
     });
     
     socket.on('console', function (msg) {

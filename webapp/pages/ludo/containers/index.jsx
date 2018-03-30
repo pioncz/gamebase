@@ -12,6 +12,7 @@ const Pages = {
   Game: 'Game',
   Win: 'Win',
   Loose: 'Loose',
+  Disconnected: 'Disconnected',
 };
 
 export default class Ludo extends Component {
@@ -79,8 +80,14 @@ export default class Ludo extends Component {
         currentPlayerId: newGameState.currentPlayerId
       });
     });
+    
     connectorInstance.socket.on('updatePlayers', (newPlayers) => {
-      console.log(newPlayers);
+      // Leave game when someone leaves
+      connectorInstance.socket.emit('leaveGame');
+      // Show modal that someone disconnected with cta: search new game
+      this.setState({
+        page: Pages.Disconnected,
+      });
     });
   }
   selectColor(color) {
@@ -121,6 +128,7 @@ export default class Ludo extends Component {
         <p>Przewidywany czas 2min</p>
       </Modal>;
     }
+    
     if (page === Pages.PickColor) {
       let colors = this.state.queueColors.map((queueColor) => {
         return <div
@@ -134,6 +142,13 @@ export default class Ludo extends Component {
       currentModal = <Modal open={true}>
         <h3>Wybierz kolor</h3>
         <div className="colors-container">{colors}</div>
+      </Modal>;
+    }
+    
+    if (page === Pages.Disconnected) {
+      currentModal = <Modal open={true}>
+        <h3>Gracz się rozłączył</h3>
+        <Button onClick={this.joinQueue}>NOWA GRA</Button>
       </Modal>;
     }
     
