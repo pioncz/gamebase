@@ -36,6 +36,8 @@ export default class Ludo extends Component {
     if (this.props.connectorInstance) {
       this.initSocketEvents(this.props.connectorInstance);
     }
+    
+    this.props.setInGame();
   }
   componentWillReceiveProps(nextProps) {
     if (!this.props.connectorInstance && nextProps.connectorInstance) {
@@ -46,6 +48,7 @@ export default class Ludo extends Component {
     if (this.connectorInstance) {
       this.connectorInstance.leaveGame();
     }
+    this.props.unsetInGame();
   }
   initSocketEvents(connectorInstance) {
     this.connectorInstance = connectorInstance;

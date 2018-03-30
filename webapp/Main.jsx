@@ -44,7 +44,7 @@ class Main extends Component {
     let { player } = this.state;
     
     return (<Router>
-      <div>
+      <div className={this.props.inGame?'inGame':''}>
         <Header user={player}/>
         <div className="main">
           <Route exact path="/" component={Pages.Home}/>
@@ -62,10 +62,12 @@ Main.childContextTypes = {
 
 const {
   getCurrentUser,
+  isInGame,
 } = selectors;
 
 const mapStateToProps = state => ({
   currentUser: getCurrentUser(state),
+  inGame: isInGame(state),
 });
 
 export default connect(

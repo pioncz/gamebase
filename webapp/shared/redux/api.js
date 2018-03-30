@@ -13,6 +13,9 @@ const prefix = `${name}/`;
 
 // const FETCH_CURRENT_USER = `${prefix}FETCH_CURRENT_USER`;
 
+const  SET_IN_GAME = `${prefix}SET_IN_GAME`;
+const  UNSET_IN_GAME = `${prefix}UNSET_IN_GAME`;
+
 /*
  * ACTIONS
  */
@@ -26,6 +29,14 @@ const prefix = `${name}/`;
 //   },
 // });
 
+const setInGame = () => ({
+  type: SET_IN_GAME,
+});
+
+const unsetInGame = () => ({
+  type: UNSET_IN_GAME,
+});
+
 /*
  * REDUCER
  */
@@ -36,8 +47,9 @@ const initialState = {
     avatar: '',
     level: 1,
     id: 1,
-  }
-}
+  },
+  inGame: false,
+};
 
 const reducer = (state = initialState, action) => {
   const actions = {
@@ -45,6 +57,14 @@ const reducer = (state = initialState, action) => {
     //   ...state,
     //   state: 'loading'
     // }),
+    [SET_IN_GAME]: () => ({
+      ...state,
+      inGame: true,
+    }),
+    [UNSET_IN_GAME]: () => ({
+      ...state,
+      inGame: false,
+    }),
   };
 
   return (actions[action.type] && actions[action.type]()) || state;
@@ -75,6 +95,8 @@ const reducer = (state = initialState, action) => {
 
 const getCurrentUser = state => getState(state).currentUser;
 
+const isInGame = state => getState(state).inGame;
+
 /*
  * EXPORTS
  */
@@ -83,6 +105,8 @@ export default reducer;
 
 export const actions = {
 //  fetchCurrentUser,
+  setInGame,
+  unsetInGame,
 };
 
 export const types = {
@@ -95,4 +119,5 @@ export const logic = {
 
 export const selectors = {
   getCurrentUser: getCurrentUser,
+  isInGame: isInGame,
 };
