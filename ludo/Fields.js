@@ -45,63 +45,63 @@ const Fields = [
   {
     "x": 5,
     "z": 1,
-    "playerIndex": 3,
+    "playerIndex": 1,
     "color": "",
     "type": "goal"
   },
   {
     "x": 5,
     "z": 2,
-    "playerIndex": 3,
+    "playerIndex": 1,
     "color": "",
     "type": "goal"
   },
   {
     "x": 5,
     "z": 3,
-    "playerIndex": 3,
+    "playerIndex": 1,
     "color": "",
     "type": "goal"
   },
   {
     "x": 5,
     "z": 4,
-    "playerIndex": 3,
+    "playerIndex": 1,
     "color": "",
     "type": "goal"
   },
   {
     "x": 9,
     "z": 0,
-    "playerIndex": 3,
+    "playerIndex": 1,
     "color": "",
     "type": "spawn"
   },
   {
     "x": 10,
     "z": 0,
-    "playerIndex": 3,
+    "playerIndex": 1,
     "color": "",
     "type": "spawn"
   },
   {
     "x": 9,
     "z": 1,
-    "playerIndex": 3,
+    "playerIndex": 1,
     "color": "",
     "type": "spawn"
   },
   {
     "x": 10,
     "z": 1,
-    "playerIndex": 3,
+    "playerIndex": 1,
     "color": "",
     "type": "spawn"
   },
   {
     "x": 6,
     "z": 0,
-    "playerIndex": 3,
+    "playerIndex": 1,
     "color": "",
     "type": "start"
   },
@@ -144,63 +144,63 @@ const Fields = [
   {
     "x": 9,
     "z": 5,
-    "playerIndex": 2,
+    "playerIndex": 3,
     "color": "",
     "type": "goal"
   },
   {
     "x": 8,
     "z": 5,
-    "playerIndex": 2,
+    "playerIndex": 3,
     "color": "",
     "type": "goal"
   },
   {
     "x": 7,
     "z": 5,
-    "playerIndex": 2,
+    "playerIndex": 3,
     "color": "",
     "type": "goal"
   },
   {
     "x": 6,
     "z": 5,
-    "playerIndex": 2,
+    "playerIndex": 3,
     "color": "",
     "type": "goal"
   },
   {
     "x": 9,
     "z": 9,
-    "playerIndex": 2,
+    "playerIndex": 3,
     "color": "",
     "type": "spawn"
   },
   {
     "x": 10,
     "z": 9,
-    "playerIndex": 2,
+    "playerIndex": 3,
     "color": "",
     "type": "spawn"
   },
   {
     "x": 9,
     "z": 10,
-    "playerIndex": 2,
+    "playerIndex": 3,
     "color": "",
     "type": "spawn"
   },
   {
     "x": 10,
     "z": 10,
-    "playerIndex": 2,
+    "playerIndex": 3,
     "color": "",
     "type": "spawn"
   },
   {
     "x": 10,
     "z": 6,
-    "playerIndex": 2,
+    "playerIndex": 3,
     "color": "",
     "type": "start"
   },
@@ -243,63 +243,63 @@ const Fields = [
   {
     "x": 5,
     "z": 9,
-    "playerIndex": 1,
+    "playerIndex": 2,
     "color": "",
     "type": "goal"
   },
   {
     "x": 5,
     "z": 8,
-    "playerIndex": 1,
+    "playerIndex": 2,
     "color": "",
     "type": "goal"
   },
   {
     "x": 5,
     "z": 7,
-    "playerIndex": 1,
+    "playerIndex": 2,
     "color": "",
     "type": "goal"
   },
   {
     "x": 5,
     "z": 6,
-    "playerIndex": 1,
+    "playerIndex": 2,
     "color": "",
     "type": "goal"
   },
   {
     "x": 0,
     "z": 9,
-    "playerIndex": 1,
+    "playerIndex": 2,
     "color": "",
     "type": "spawn"
   },
   {
     "x": 1,
     "z": 9,
-    "playerIndex": 1,
+    "playerIndex": 2,
     "color": "",
     "type": "spawn"
   },
   {
     "x": 0,
     "z": 10,
-    "playerIndex": 1,
+    "playerIndex": 2,
     "color": "",
     "type": "spawn"
   },
   {
     "x": 1,
     "z": 10,
-    "playerIndex": 1,
+    "playerIndex": 2,
     "color": "",
     "type": "spawn"
   },
   {
     "x": 4,
     "z": 10,
-    "playerIndex": 1,
+    "playerIndex": 2,
     "color": "",
     "type": "start"
   },
@@ -397,4 +397,6 @@ const Fields = [
   }
 ];
 
-export default Fields;
+if (module && module.exports) {
+  module.exports = Fields;
+}

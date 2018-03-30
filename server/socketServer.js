@@ -1,5 +1,8 @@
 const Player = require('./../ludo/Player.js');
 const InitialState = require('./../ludo/InitialState.js');
+const Fields = require('./../ludo/Fields.js');
+
+let fields = Fields;
 
 const FieldType = {
   spawn: 'spawn',
@@ -8,7 +11,7 @@ const FieldType = {
 };
 
 module.exports = function (io, config) {
-  const MinPlayers = 1, //per room to play
+  const MinPlayers = 2, //per room to play
     sockets = {};
   
   let occupiedSocketIds = [],
@@ -133,8 +136,7 @@ module.exports = function (io, config) {
       return true;
     },
     movePawn = ({pawns, diceNumber}) => {
-      let fields = config.ludo.fields,
-        endField,
+      let endField,
         length = 0,
         pawn = pawns[0],
         areFieldsEqual = (fieldA, fieldB) => {
@@ -254,7 +256,13 @@ module.exports = function (io, config) {
       socketData.room = room;
       
       room.players.push(socketData.player);
-      
+      // var playerId = nextId();
+      // room.players.push(new Player({name: 'name' + playerId, id: playerId, socketId: socket.id, color: 'black'}));
+      // playerId = nextId();
+      // room.players.push(new Player({name: 'name' + playerId, id: playerId, socketId: socket.id, color: 'tomato'}));
+      // playerId = nextId();
+      // room.players.push(new Player({name: 'name' + playerId, id: playerId, socketId: socket.id, color: 'purple'}));
+      //
       socket.join(room.name);
       io.to(room.name).emit('console', 'player update: (' + room.players.length + '/' + MinPlayers + ')');
       
