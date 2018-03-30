@@ -79,6 +79,9 @@ export default class Ludo extends Component {
         currentPlayerId: newGameState.currentPlayerId
       });
     });
+    connectorInstance.socket.on('updatePlayers', (newPlayers) => {
+      console.log(newPlayers);
+    });
   }
   selectColor(color) {
     this.props.connectorInstance.socket.emit('selectColor', color);

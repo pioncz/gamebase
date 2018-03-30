@@ -8,7 +8,7 @@ const FieldType = {
 };
 
 module.exports = function (io, config) {
-  const MinPlayers = 2, //per room to play
+  const MinPlayers = 1, //per room to play
     sockets = {};
   
   let occupiedSocketIds = [],
@@ -22,7 +22,7 @@ module.exports = function (io, config) {
       let lastId = 0;
       
       return () => {
-        return lastId++;
+        return ''+(lastId++);
       };
     })(),
     createRoom = ({socket, game}) => {
@@ -71,14 +71,7 @@ module.exports = function (io, config) {
       room.pawns = initialState.pawns;
       
       initialState.players = room.players;
-  
-      // let id = nextId();
-      // initialState.players.push(new Player({name: 'name' + id, id: id, color: config.ludo.colors[1]}));
-      // id = nextId();
-      // initialState.players.push(new Player({name: 'name' + id, id: id, color: config.ludo.colors[2]}));
-      // id = nextId();
-      // initialState.players.push(new Player({name: 'name' + id, id: id, color: config.ludo.colors[3]}));
-      //
+      
       initialState.players.forEach((player, index) => {
         for(var i = 0; i < 4; i++) {
           initialState.pawns[(index * 4 + i)].playerId = player.id;
@@ -182,6 +175,29 @@ module.exports = function (io, config) {
         pawn.x = endField.x;
         
         return { pawnId: pawn.id, endField, length};
+    },
+    leaveRoom = ({socketId, room}) => {
+      // Remove socketId from occupiedSocketIds
+      let index = occupiedSocketIds.indexOf(socketId);
+      if (index > -1) {
+        occupiedSocketIds.splice(index, 1);
+      }
+      // Update room players
+      let playerIndex = room.players.findIndex(player => {
+        return player.socketId === socketId;
+      });
+      playerIndex > -1 && room.players.splice(playerIndex, 1);
+      
+      // Finish game if theres one or less players
+      if (room.players.length) {
+        // Emit new player state
+        io.to(room.name).emit('updatePlayers', room.players);
+      } else {
+        // Remove game without players
+        delete games[room.game][room.id];
+      }
+      console.log('games');
+      console.log(games);
     };
     
   io.on('connection', function (socket) {
@@ -197,7 +213,16 @@ module.exports = function (io, config) {
 
     socket.emit('player', sockets[socket.id].player);
     
-    socket.on('disconnect', function () {
+    socket.on('disconnect', () => {
+      // Check if player was playing
+      // Disconnect from current game
+      let socketData = sockets[socket.id],
+        room = socketData.room;
+      
+      if (room) {
+        leaveRoom({socketId: socket.id, room: room});
+      }
+      
     });
     
     socket.on('console', function (msg) {
