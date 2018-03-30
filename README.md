@@ -2,6 +2,9 @@ TO DO, PLAN GRY
 
 0) Informacje które są zawsze na ekranie (UI):
 -profil aktualnie zalogowanego gracza
+-autoukrywanie paska navbaru gdy gracz jest w grze
+-modal przed opuszczeniem gry
+-obsluga rozlaczenia sie gracza
 -szybki dostep do czatu i listy znajomych z funkcja zaproszenia do gry
 
 1) Strona główna

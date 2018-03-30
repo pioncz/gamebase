@@ -36,6 +36,8 @@ module.exports = function (io, config) {
           currentPlayerId: 0,
           eta: 5*60*60, //18000s
         };
+      
+      console.log('created room: ' + room.name);
   
       occupiedSocketIds.push(socket.id);
       
@@ -220,6 +222,7 @@ module.exports = function (io, config) {
       
       let socketData = sockets[socket.id];
       socketData.room = room;
+      
       room.players.push(socketData.player);
       
       socket.join(room.name);
@@ -231,6 +234,7 @@ module.exports = function (io, config) {
         delete queues[game][room.id];
         games[game][room.id] = room;
         pickColor({room});
+        console.log('pickColor in room: ' + room.name);
       } else {
         socket.emit(
           'console',

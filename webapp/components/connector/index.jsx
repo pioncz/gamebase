@@ -25,6 +25,9 @@ export default class Connector extends Component {
       this.addMessage("connection error");
     });
   }
+  leaveGame() {
+    this.socket.emit('leaveGame');
+  }
   joinQueue({game}) {
     this.socket.emit('joinQueue', {game});
   }

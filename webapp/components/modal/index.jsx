@@ -5,27 +5,11 @@ import { CSSTransitionGroup } from 'react-transition-group';
 export default class Modal extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      opened: false
-    };
-  }
-  close() {
-    this.setState({
-      opened: false
-    })
-  }
-  open() {
-    this.setState({
-      opened: true
-    })
-  }
-  componentWillReceiveProps(nextProps) {
-    this.open();
   }
   render() {
     let modalItems = [];
     
-    if (this.state.opened) {
+    if (this.props.open) {
       modalItems = [
         (<div className="modal-body" key="modal-body">
           {this.props.children}

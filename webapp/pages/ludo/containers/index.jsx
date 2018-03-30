@@ -31,42 +31,51 @@ export default class Ludo extends Component {
     this.joinQueue = this.joinQueue.bind(this);
     this.selectColor = this.selectColor.bind(this);
     this.roll = this.roll.bind(this);
+    this.initSocketEvents = this.initSocketEvents.bind(this);
+    
+    if (this.props.connectorInstance) {
+      this.initSocketEvents(this.props.connectorInstance);
+    }
   }
   componentWillReceiveProps(nextProps) {
     if (!this.props.connectorInstance && nextProps.connectorInstance) {
-      nextProps.connectorInstance.socket.on('pickColor', (queueColors) => {
-        this.setState({
-          page: Pages.PickColor,
-          queueColors
-        });
-      });
-      nextProps.connectorInstance.socket.on('startGame', (gameState) => {
-        nextProps.connectorInstance.addMessage('startGame');
-        console.log(gameState);
-        nextProps.connectorInstance.addMessage('currentPlayer: ' + gameState.currentPlayerId + (gameState.yourPlayerId == gameState.currentPlayerId?' it\'s You!':''));
-        this.setState({
-          players: gameState.players,
-          currentPlayerId: gameState.currentPlayerId,
-          yourPlayerId: gameState.yourPlayerId,
-          page: Pages.Game,
-        });
-      });
-      nextProps.connectorInstance.socket.on('pawnMove', (pawnMove) => {
-        nextProps.connectorInstance.addMessage(
-          'pawnMove length: ' +
-          pawnMove.length +
-          ' diceNumber: ' +
-          pawnMove.diceNumber
-        );
-        this.gameComponent.movePawn(pawnMove);
-      });
-      nextProps.connectorInstance.socket.on('updateGame', (newGameState) => {
-        console.log(newGameState);
-        this.setState({
-          currentPlayerId: newGameState.currentPlayerId
-        });
-      });
+      this.initSocketEvents(nextProps.connectorInstance);
     }
+  }
+  componentWillUnmount() {
+    if (this.connectorInstance) {
+      this.connectorInstance.leaveGame();
+    }
+  }
+  initSocketEvents(connectorInstance) {
+    this.connectorInstance = connectorInstance;
+    connectorInstance.socket.on('pickColor', (queueColors) => {
+      this.setState({
+        page: Pages.PickColor,
+        queueColors,
+      });
+    });
+    connectorInstance.socket.on('startGame', (gameState) => {
+      connectorInstance.addMessage('startGame');
+      console.log(gameState);
+      connectorInstance.addMessage('currentPlayer: ' + gameState.currentPlayerId + (gameState.yourPlayerId == gameState.currentPlayerId?' it\'s You!':''));
+      this.setState({
+        players: gameState.players,
+        currentPlayerId: gameState.currentPlayerId,
+        yourPlayerId: gameState.yourPlayerId,
+        page: Pages.Game,
+      });
+    });
+    connectorInstance.socket.on('pawnMove', (pawnMove) => {
+      connectorInstance.addMessage(`pawnMove length: ${pawnMove.length} diceNumber: ${pawnMove.diceNumber}`);
+      this.gameComponent.movePawn(pawnMove);
+    });
+    connectorInstance.socket.on('updateGame', (newGameState) => {
+      console.log(newGameState);
+      this.setState({
+        currentPlayerId: newGameState.currentPlayerId
+      });
+    });
   }
   selectColor(color) {
     this.props.connectorInstance.socket.emit('selectColor', color);
@@ -83,9 +92,6 @@ export default class Ludo extends Component {
         game: 'ludo'
       });
     }
-    if (this.initialModal) {
-      this.initialModal.close();
-    }
     this.setState({page: Pages.Queue});
   }
   render() {
@@ -95,7 +101,7 @@ export default class Ludo extends Component {
       playersOverlay;
     
     if (page === Pages.Initial) {
-      currentModal = <Modal ref={(element) => {this.initialModal = element;}}>
+      currentModal = <Modal open={true}>
         <h3>Znajdź grę</h3>
         <div className="buttons-container">
           <Button onClick={this.joinQueue}>START</Button>
@@ -104,7 +110,7 @@ export default class Ludo extends Component {
     }
     
     if (page === Pages.Queue) {
-      currentModal = <Modal ref={(element) => {this.queueModal = element;}}>
+      currentModal = <Modal open={true}>
         <h3>Szukanie graczy</h3>
         <p>Przewidywany czas 2min</p>
       </Modal>;
@@ -119,7 +125,7 @@ export default class Ludo extends Component {
         ></div>
       });
       
-      currentModal = <Modal ref={(element) => {this.queueModal = element;}}>
+      currentModal = <Modal open={true}>
         <h3>Wybierz kolor</h3>
         <div className="colors-container">{colors}</div>
       </Modal>;
