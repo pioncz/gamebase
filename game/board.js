@@ -4,6 +4,7 @@ import {EASING, TIMES} from "./utils/animations";
 import PawnsController from 'pawnsController';
 import Config from 'config.js';
 import Fields from './../ludo/Fields.js';
+import Dice from './dice'
 
 const GridAmount = 11;
 
@@ -32,6 +33,10 @@ export default class Board {
       animations: props.animations,
       columnsLength: this.columnsLength,
     });
+    this.dice = new Dice({
+      scene: this.scene,
+      animations: props.animations,
+    })
   }
   // Color fields, create pawns
   initGame(props) {
