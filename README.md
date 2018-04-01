@@ -1,5 +1,20 @@
 TO DO, PLAN GRY
 
+ruch:
+gracz rzuca kostka -> serwer losuje liczbe
+	- sprawdz czy ruch mozliwy
+	- jesli tak to czekaj 8s na wykonanie ruchu
+	- jesli nie to zmien gracza
+gracz wykonuje ruch ->
+	- sprawdz czy ruch mozliwy
+	- jesli tak to czekaj wykonaj ruch i zmien gracza
+	- jesli nie to odeslij do konsoli ze ruch niemozliwy
+
+-checkMove([pawn], diceNumber) // return [boolean]
+-makeMove(pawn, diceNumber) // return fieldSequence
+
+
+
 0) Informacje które są zawsze na ekranie (UI):
 +profil aktualnie zalogowanego gracza
 +wyglad navbara w trakcie gry

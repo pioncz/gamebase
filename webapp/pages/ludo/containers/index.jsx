@@ -96,6 +96,7 @@ export default class Ludo extends Component {
     this.props.connectorInstance.socket.emit('roll');
   }
   handleClick() {
+    // this.gameComponent.movePawn({pawnId: parseInt(Math.random()*4), length: 1});
     this.roll();
   }
   joinQueue() {
@@ -154,9 +155,12 @@ export default class Ludo extends Component {
     if (players && players.length) {
       let playerProfiles = players.map((player, index) => {
         return <div key={player.id} className={"player player-" + index}>
-          <div className="player-name">{player.name}</div>
+          <div className="player-name">
+            {player.name}
+            {player.id === this.state.currentPlayerId && <p className={'arrow ' + (index%2?'right':'left')}></p>}
+          </div>
           <img src={player.avatar} style={{
-            border: "3px solid " + player.color
+            borderRight: "3px solid " + player.color
           }} />
         </div>;
       });

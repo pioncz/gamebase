@@ -12,3 +12,22 @@ body, html
 
 .main
   padding-top: 30px
+
+.arrow
+  border: solid #fff
+  border-width: 0 3px 3px 0
+  display: inline-block
+  padding: 3px
+  margin: 0
+
+  &.left
+    transform: translateY(-50%) rotate(135deg)
+
+  &.right
+    transform: translateY(-50%) rotate(-45deg)
+
+  &.up
+    transform: translateY(-50%) rotate(-135deg)
+
+  &.down
+    transform: translateY(-50%) rotate(45deg)

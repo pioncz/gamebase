@@ -180,7 +180,7 @@ module.exports = function (io, config) {
         pawn.z = endField.z;
         pawn.x = endField.x;
         
-        return { pawnId: pawn.id, endField, length};
+        return { pawnId: pawn.id, endField, length, diceNumber};
     },
     leaveGame = ({socketId}) => {
       let socketData = sockets[socketId],

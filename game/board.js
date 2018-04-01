@@ -184,11 +184,12 @@ export default class Board {
       }
     }
     
-    // return [{x: 10, z: 6}];
     return fieldSequence;
   }
-  movePawn({pawnId, length}) {
+  movePawn({pawnId, length, diceNumber}) {
     let pawn = this.pawnsController.getPawn(pawnId);
+    
+    
     
     if (pawn) {
       let fieldsSequence = this.getFieldsSequence(pawn, length);

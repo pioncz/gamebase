@@ -12,11 +12,20 @@
       .player-name
         position: absolute
         left: 100%
-        padding: 30px 20px 0 20px
+        background: rgba(0,0,0,0.2)
+        padding: 6px 20px
+        min-width: 150px
         color: #fff
         font-size: 22px
+        .arrow
+          position: absolute
+          right: 12px
+          top: 50%
+
+
       img
-        border-radius: 4px
+        height: 39px
+        width: 39px
 
     .player-0
       top: 10px
@@ -33,6 +42,10 @@
     .player-1 .player-name, .player-3 .player-name
       right: 100%
       left: auto
+      text-align: right
+      .arrow
+        right: auto
+        left: 12px
 
   .colors-container
     display: flex
