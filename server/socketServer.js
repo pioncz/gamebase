@@ -304,40 +304,43 @@ module.exports = function (io, config) {
     socket.on('roll', function () {
       //get sockets room
       let room = sockets[socket.id].room,
-        player = sockets[socket.id].player;
-
+        player = sockets[socket.id].player,
+        diceNumber = parseInt(Math.random()*6)+1; // 1-6
+  
       if (!room) {
         console.log('not in a room');
       }
       //check if its this players turn
-      else if (room.currentPlayerId === player.id &&
-        !room.rolled) {
-        // look for first pawn he can move
-        let playerPawns = room.pawns.filter((pawn) => {
-          return pawn.playerId === player.id;
-        });
+      else {
+        io.to(room.name).emit('roll', {diceNumber: diceNumber});
         
-        let diceNumber = parseInt(Math.random()*6)+1; // 1-6
-        
-        let pawnMove = movePawn({diceNumber, pawns: playerPawns});
-        
-        if (pawnMove) {
-          pawnMove.diceNumber = diceNumber;
-          io.to(room.name).emit('pawnMove', pawnMove);
+        if (room.currentPlayerId === player.id &&
+          !room.rolled) {
+          // look for first pawn he can move
+          let playerPawns = room.pawns.filter((pawn) => {
+            return pawn.playerId === player.id;
+          });
+    
+          let pawnMove = movePawn({diceNumber, pawns: playerPawns});
+    
+          if (pawnMove) {
+            pawnMove.diceNumber = diceNumber;
+            io.to(room.name).emit('pawnMove', pawnMove);
+          } else {
+            console.log('player cant move');
+            io.to(room.name).emit('console', 'player ' + player.name + ' roll\'d ' + diceNumber + ' and cant move');
+          }
+    
+          let index = room.players.findIndex((player) => {
+            return player.id === room.currentPlayerId;
+          });
+          let nextPlayerId = room.players[(index + 1) % room.players.length].id;
+    
+          room.currentPlayerId = nextPlayerId;
+          io.to(room.name).emit('updateGame', {currentPlayerId: nextPlayerId});
         } else {
-          console.log('player cant move');
-          io.to(room.name).emit('console', 'player ' + player.name + ' roll\'d ' + diceNumber + ' and cant move');
+          console.log('not his turn');
         }
-  
-        let index = room.players.findIndex((player) => {
-          return player.id === room.currentPlayerId;
-        });
-        let nextPlayerId = room.players[(index + 1) % room.players.length].id;
-
-        room.currentPlayerId = nextPlayerId;
-        io.to(room.name).emit('updateGame', {currentPlayerId: nextPlayerId});
-      } else {
-        console.log('not his turn');
       }
     });
   });

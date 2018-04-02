@@ -71,6 +71,9 @@ export default class Ludo extends Component {
         pawns: gameState.pawns,
       });
     });
+    connectorInstance.socket.on('roll', ({diceNumber}) => {
+      this.gameComponent.engine.board.dice.roll(diceNumber);
+    });
     connectorInstance.socket.on('pawnMove', (pawnMove) => {
       connectorInstance.addMessage(`pawnMove length: ${pawnMove.length} diceNumber: ${pawnMove.diceNumber}`);
       this.gameComponent.movePawn(pawnMove);
@@ -96,7 +99,6 @@ export default class Ludo extends Component {
     this.props.connectorInstance.socket.emit('roll');
   }
   handleClick() {
-    // this.gameComponent.movePawn({pawnId: parseInt(Math.random()*4), length: 1});
     this.roll();
   }
   joinQueue() {
