@@ -1,9 +1,10 @@
 import Utils from "./utils/utils";
+import { EASING } from "./utils/animations";
 
 export default class Dice {
   constructor({scene, animations}) {
     this.scene = scene;
-    this.animation = animations;
+    this.animations = animations;
   
     var geometry = new THREE.BoxGeometry( 2, 2, 2 );
     
@@ -15,13 +16,13 @@ export default class Dice {
       this._createFace(5),
       this._createFace(6),
     ];
-    
-    var cube = new THREE.Mesh( geometry, materials );
-    cube.position.x = 0;
-    cube.position.y = 2;
-    cube.position.z = 0;
-    this.scene.add( cube );
-    window.cube = cube;
+  
+    this.cube = new THREE.Mesh( geometry, materials );
+    this.cube.position.x = 0;
+    this.cube.position.y = 2;
+    this.cube.position.z = 0;
+    this._setOpacity(0);
+    this.scene.add( this.cube );
   }
   _createFace(number) {
     let canvas = Utils.$({element: 'canvas'}),
@@ -62,16 +63,70 @@ export default class Dice {
   
       drawDot(dot.x, dot.y, radius);
     }
-    // drawDot(w4, h4, radius);
-    // drawDot(w2, h4, radius);
-    // drawDot((w2+w4), h4, radius);
-    // drawDot(w2, h2, radius);
-    // drawDot(w4, (h2+h4), radius);
-    // drawDot(w2, (h2+h4), radius);
-    // drawDot((w2+w4), (h2+h4), radius);
     
     texture.needsUpdate = true;
     
-    return new THREE.MeshBasicMaterial({map: texture});
+    return new THREE.MeshBasicMaterial({map: texture, transparent: true});
+  }
+  _setOpacity(opacity) {
+    for(let materialId in this.cube.material) {
+      let material = this.cube.material[materialId];
+      
+      material.opacity = opacity;
+    }
+  }
+  roll(number) {
+    let cube = this.cube,
+      numberRotations = {
+        1: {x: 0, z: .25},
+        2: {x: 0, z: .75},
+        3: {x: 0, z: 0},
+        4: {x: 0, z: .5},
+        5: {x: .75, z: 1},
+        6: {x: .25, z: 1},
+      };
+    
+    let baseX = (2*Math.PI) * numberRotations[number].x,
+      baseZ = (2*Math.PI) * numberRotations[number].z;
+  
+    // Substract animation rotation
+    baseX -= (2*Math.PI) * 1.25;
+    baseZ -= (2*Math.PI) * .25;
+    
+    cube.rotation.x = baseX;
+    cube.rotation.z = baseZ;
+    
+    this.animations.createSequence([{
+        update: (progress) => {
+          let diceAlpha = progress * 5;
+      
+          this._setOpacity(diceAlpha);
+      
+          cube.position.x = 15-10*progress;
+          cube.position.y = 15-13*progress;
+          cube.position.z = -(15-10*progress);
+      
+          cube.rotation.x = baseX + (2*Math.PI) * progress;
+          cube.rotation.z = baseZ + (2*Math.PI) * progress / 4;
+        },
+        easing: EASING.InQuad,
+        length: 500,
+      }, {
+        update: (progress) => {
+          cube.position.x = 5 * (1-progress);
+          cube.position.y = 2 + 2 * EASING.Sin(progress/2);
+          cube.position.z = -5 * (1-progress);
+      
+          cube.rotation.x = baseX + (2*Math.PI) * progress / 4;
+        },
+        length: 300,
+      }, {
+        update: (progress) => {
+          this._setOpacity(1-progress);
+        },
+        length: 300,
+        delay: 1000,
+      }
+    ]);
   }
 }

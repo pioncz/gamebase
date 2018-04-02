@@ -1,3 +1,5 @@
+import Utils from './utils'
+
 export const TIMES = {
   Infinity: 'Infinity',
 };
@@ -44,8 +46,12 @@ export class Animations {
   }
   create(options) {
     let animation = {
-        ...options,
         lengthLeft: options.length,
+        delayLeft: options.delay || 0,
+        easing: null,
+        update: null,
+        finished: false, // helps to force last tick with progress == 1
+        ...options,
       },
       finishPromise = new Promise((resolve, reject) => {
         animation.resolve = resolve;
@@ -62,21 +68,43 @@ export class Animations {
       let animation = this.animations[i],
         progress;
       
-      progress = (1 - animation.lengthLeft / animation.length);
-      if (animation.easing) {
-        progress = animation.easing(progress);
+      if (animation.delayLeft) {
+        animation.delayLeft -= delta;
       }
       
-      animation.update(progress);
-      animation.lengthLeft -= delta;
-      if (animation.lengthLeft < 0) {
-        if (animation.times == TIMES.Infinity) {
-          animation.lengthLeft = animation.length;
-        } else {
-          this.animations[i].resolve();
-          this.animations.splice(i, 1);
+      if (animation.delayLeft <= 0) {
+        progress = (1 - animation.lengthLeft / animation.length);
+        if (animation.easing) {
+          progress = animation.easing(progress);
+        }
+  
+        if (progress == 1) {
+          animation.finished = true;
+        }
+        animation.update(progress);
+        animation.lengthLeft -= delta;
+        if (animation.lengthLeft < 0) {
+          if (animation.times == TIMES.Infinity) {
+            animation.lengthLeft = animation.length;
+          } else {
+            if (!animation.finished) {
+              animation.finished = true;
+              animation.update(1);
+            }
+            this.animations[i].resolve();
+            this.animations.splice(i, 1);
+          }
         }
       }
     }
+  }
+  createSequence(optionsArray) {
+    Utils.asyncLoop(
+      optionsArray.length,
+      (loop, index) => {
+        this.create(optionsArray[index])
+          .then(() => { loop.next() });
+      },
+      () => {})
   }
 }
