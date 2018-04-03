@@ -82,11 +82,6 @@ module.exports = function() {
         template: 'webapp/index.html',
       }),
       extractSass,
-      new CopyWebpackPlugin([
-        { from: 'static', to: 'static' },
-      ], {
-        copyUnmodified: true
-      })
     ],
     devServer: {
       port: 5000,
