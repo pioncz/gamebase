@@ -96,7 +96,7 @@ export default class Dice {
     cube.rotation.x = baseX;
     cube.rotation.z = baseZ;
     
-    this.animations.createSequence([{
+    this.animations.createSequence({name: 'rollDice', steps: [{
         update: (progress) => {
           let diceAlpha = progress * 5;
       
@@ -127,6 +127,6 @@ export default class Dice {
         length: 300,
         delay: 1000,
       }
-    ]);
+    ]});
   }
 }

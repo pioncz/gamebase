@@ -40,44 +40,47 @@ export const EASING = {
   },
 };
 
+class Animation {
+  constructor({update, length = 0, delay = 0, easing = null}) {
+    this.lengthLeft = length;
+    this.length = length;
+    this.delayLeft = delay;
+    this.easing = easing;
+    this.update = update;
+    this.finished = false;
+    this.finishPromise = new Promise((resolve, reject) => {
+      this.resolve = resolve;
+      this.reject = reject;
+    });
+  }
+}
+
 export class Animations {
   constructor(props) {
     this.animations = [];
+    this.sequences = {}; // 'sequenceName':
   }
   create(options) {
-    let animation = {
-        lengthLeft: options.length,
-        delayLeft: options.delay || 0,
-        easing: null,
-        update: null,
-        finished: false, // helps to force last tick with progress == 1
-        ...options,
-      },
-      finishPromise = new Promise((resolve, reject) => {
-        animation.resolve = resolve;
-        animation.reject = reject;
-    });
+    let animation = new Animation(options);
   
-    animation.finishPromise = finishPromise;
     this.animations.push(animation);
   
-    return finishPromise;
+    return animation.finishPromise;
   }
   tick(delta) {
-    for(let i = this.animations.length - 1; i >= 0; i--) {
-      let animation = this.animations[i],
-        progress;
-      
+    let _tick = (animation) => {
+      let progress;
+  
       if (animation.delayLeft) {
         animation.delayLeft -= delta;
       }
-      
+  
       if (animation.delayLeft <= 0) {
         progress = (1 - animation.lengthLeft / animation.length);
         if (animation.easing) {
           progress = animation.easing(progress);
         }
-  
+    
         if (progress == 1) {
           animation.finished = true;
         }
@@ -91,20 +94,56 @@ export class Animations {
               animation.finished = true;
               animation.update(1);
             }
-            this.animations[i].resolve();
-            this.animations.splice(i, 1);
           }
         }
       }
+    };
+    
+    for(let i = this.animations.length - 1; i >= 0; i--) {
+      _tick(this.animations[i]);
+      
+      if (this.animations[i].finished) {
+        this.animations[i].resolve();
+        this.animations.splice(i, 1);
+      }
+    }
+    
+    for(let sequenceName in this.sequences) {
+      let sequence = this.sequences[sequenceName];
+      
+      if (sequence.animations.length) {
+        _tick(sequence.animations[0]);
+        if (sequence.animations[0].finished) {
+          sequence.animations.shift();
+        }
+      } else {
+        delete this.sequences[sequenceName];
+      }
     }
   }
-  createSequence(optionsArray) {
-    Utils.asyncLoop(
-      optionsArray.length,
-      (loop, index) => {
-        this.create(optionsArray[index])
-          .then(() => { loop.next() });
-      },
-      () => {})
+  createSequence({name, steps}) {
+    if (this.sequences[name]) {
+    
+    }
+    
+    let animations = [];
+    
+    for(let stepId in steps) {
+      let step = steps[stepId];
+      
+      animations.push(new Animation(step));
+    }
+  
+    this.sequences[name] = {name, animations};
+    
+    // let newLoop = Utils.asyncLoop(
+    //   steps.length,
+    //   (loop, index) => {
+    //     this.create(steps[index])
+    //       .then(() => { loop.next() });
+    //   },
+    //   () => {});
+    //
+    // this.sequences[name] = newLoop;
   }
 }
