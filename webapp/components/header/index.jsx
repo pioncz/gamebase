@@ -18,6 +18,7 @@ export default class Header extends Component {
       <div className="left-pane">
         <Link to='/'>Home</Link>
         <Link to='/ludo'>Ludo</Link>
+        <Link to='/engine'>Engine</Link>
       </div>
       <div className="right-pane">
         <Profile user={user}></Profile>

@@ -11,7 +11,7 @@ const FieldType = {
 };
 
 module.exports = function (io, config) {
-  const MinPlayers = 1, //per room to play
+  const MinPlayers = 2, //per room to play
     sockets = {};
   
   let occupiedSocketIds = [],

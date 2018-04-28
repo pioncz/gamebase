@@ -45,12 +45,13 @@ class Main extends Component {
     
     return (<Router>
       <div className={this.props.inGame?'inGame':''}>
+        <Connector ref={this.setConnector}/>
         <Header user={player}/>
         <div className="main">
           <Route exact path="/" component={Pages.Home}/>
           <Route path="/ludo" component={Pages.Ludo}/>
+          <Route path="/engine" component={Pages.Engine}/>
         </div>
-        <Connector ref={this.setConnector}/>
       </div>
     </Router>);
   }

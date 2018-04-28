@@ -9,10 +9,14 @@ export default function withConnector(WrappedComponent) {
     render() {
       let connectorInstance = this.context.connectorInstance;
       
+      if (!connectorInstance) {
+        return <div />;
+      }
+      
       return <WrappedComponent
         {...this.props}
         connectorInstance={connectorInstance}
-      />
+      />;
     }
   }
   

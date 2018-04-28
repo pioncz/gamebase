@@ -36,15 +36,11 @@ export default class Ludo extends Component {
     this.initSocketEvents = this.initSocketEvents.bind(this);
     
     if (this.props.connectorInstance) {
-      this.initSocketEvents(this.props.connectorInstance);
+      this.connectorInstance = this.props.connectorInstance;
+      this.initSocketEvents(this.connectorInstance);
     }
     
     this.props.setInGame();
-  }
-  componentWillReceiveProps(nextProps) {
-    if (!this.props.connectorInstance && nextProps.connectorInstance) {
-      this.initSocketEvents(nextProps.connectorInstance);
-    }
   }
   componentWillUnmount() {
     if (this.connectorInstance) {
@@ -53,7 +49,6 @@ export default class Ludo extends Component {
     this.props.unsetInGame();
   }
   initSocketEvents(connectorInstance) {
-    this.connectorInstance = connectorInstance;
     connectorInstance.socket.on('pickColor', (queueColors) => {
       this.setState({
         page: Pages.PickColor,
@@ -96,6 +91,7 @@ export default class Ludo extends Component {
     this.props.connectorInstance.socket.emit('selectColor', color);
   }
   roll() {
+    //this.gameComponent.engine.board.dice.roll(1);
     this.props.connectorInstance.socket.emit('roll');
   }
   handleClick() {

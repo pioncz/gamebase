@@ -6,7 +6,8 @@ export default class Connector extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      messages: []
+      messages: [],
+      consoleVisible: false,
     };
     
     this.addMessage = this.addMessage.bind(this);
@@ -36,7 +37,21 @@ export default class Connector extends Component {
       messages: this.state.messages.concat(msg)
     });
   }
+  hideConsole() {
+    this.setState({
+      consoleVisible: false,
+    });
+  }
+  showConsole() {
+    this.setState({
+      consoleVisible: true,
+    });
+  }
   render() {
+    if (!this.state.consoleVisible) {
+      return <div></div>;
+    }
+    
     let messages = this.state.messages.map((message, i) => {
       return <div key={i}>{message}</div>;
     });

@@ -1,7 +1,7 @@
 module.exports = function () {
   return {
     pawns: [
-      {id: 12, x: 0, z: 0}, // first player
+      {id: 12, x: 5, z: 0}, // first player
       {id: 13, x: 1, z: 0}, // first player
       {id: 14, x: 0, z: 1}, // first player
       {id: 15, x: 1, z: 1}, // first player
