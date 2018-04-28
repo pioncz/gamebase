@@ -66,6 +66,9 @@ export default class Game {
     
     this.animate();
   }
+  initGame({pawns, players}) {
+    this.board.initGame({pawns, players});
+  }
   onResize() {
     let width = this.container.offsetWidth,
       height = this.container.offsetHeight,

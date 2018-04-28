@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import GameComponent from 'components/gameComponent/index.jsx';
-import InitialPage from './initialPage.jsx';
-import Modal from 'components/modal/index.jsx';
-import Button from 'components/button/index.jsx';
+import GameComponent from 'components/gameComponent/';
+import InitialPage from './initialPage';
+import Modal from 'components/modal/index';
+import Button from 'components/button/index';
 import './index.sass';
 
 const Pages = {

@@ -19,7 +19,7 @@ export default class GameComponent extends Component {
       nextProps.players && nextProps.players.length;
     
     if (gameShouldInit) {
-      this.engine.board.initGame({pawns: nextProps.pawns, players: nextProps.players});
+      this.engine.initGame({pawns: nextProps.pawns, players: nextProps.players});
     }
     return false;
   }
@@ -30,6 +30,9 @@ export default class GameComponent extends Component {
   }
   movePawn(pawnMove) {
     this.engine.board.movePawn(pawnMove);
+  }
+  checkMoves(pawns, diceNumber) {
+    return this.engine.board.checkMoves(pawns, diceNumber);
   }
   render() {
     return <div className="game" onClick={this.handleClick}>

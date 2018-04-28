@@ -7,13 +7,11 @@ gracz rzuca kostka -> serwer losuje liczbe
 	- jesli nie to zmien gracza
 gracz wykonuje ruch ->
 	- sprawdz czy ruch mozliwy
-	- jesli tak to czekaj wykonaj ruch i zmien gracza
+	- jesli tak to wykonaj ruch i zmien gracza
 	- jesli nie to odeslij do konsoli ze ruch niemozliwy
 
 -checkMove([pawn], diceNumber) // return [boolean]
 -makeMove(pawn, diceNumber) // return fieldSequence
-
-
 
 0) Informacje które są zawsze na ekranie (UI):
 +profil aktualnie zalogowanego gracza
@@ -23,6 +21,8 @@ gracz wykonuje ruch ->
 
 1) Gra
 + przekazywanie ustawien graczy do gry
+- niedorobiona kreska w grafica jednego pola
+- pola graczy ktorych nie ma wyszarzone
 - wyciagnac wspolna funkcje do liczenia ciagu pozycji pionka
 - animacja wejscia pionkow
 
