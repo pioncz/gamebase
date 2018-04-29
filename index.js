@@ -38,8 +38,8 @@ app.use('/ping', function(req, res) {
   res.send(200);
 });
 
-app.use('/', express.static('dist'));
-app.use('/static/', express.static('static'));
+app.use('/', express.static(path.join(__dirname, 'dist')));
+app.use('/static/', express.static(path.join(__dirname, 'static')));
 
 app.use(function (req, res) {
   var fileName = __dirname + '/dist/index.html';

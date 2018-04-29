@@ -108,42 +108,10 @@ export class Animations {
     }
   }
   tick(delta) {
-    let _tick = (animation) => {
-      let progress;
-  
-      if (animation.delayLeft) {
-        animation.delayLeft -= delta;
-      }
-  
-      if (animation.delayLeft <= 0) {
-        progress = (1 - animation.lengthLeft / animation.length);
-        if (animation.easing) {
-          progress = animation.easing(progress);
-        }
-    
-        if (progress == 1) {
-          animation.finished = true;
-        }
-        animation.update(progress);
-        animation.lengthLeft -= delta;
-        if (animation.lengthLeft < 0) {
-          if (animation.times == TIMES.Infinity) {
-            animation.lengthLeft = animation.length;
-          } else {
-            if (!animation.finished) {
-              animation.finished = true;
-              animation.update(1);
-            }
-          }
-        }
-      }
-    };
-    
     for(let i = this.animations.length - 1; i >= 0; i--) {
-      _tick(this.animations[i]);
+      this.tickAnimation(this.animations[i]);
       
       if (this.animations[i].finished) {
-        this.animations[i].resolve();
         this.animations.splice(i, 1);
       }
     }
@@ -152,7 +120,6 @@ export class Animations {
       let sequence = this.sequences[sequenceName];
       
       if (sequence.animations.length) {
-        // _tick(sequence.animations[0]);
         this.tickAnimation(delta, sequence.animations[0]);
         if (sequence.animations[0].finished) {
           sequence.animations.shift();

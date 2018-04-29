@@ -4,7 +4,7 @@ const FieldType = {
   goal: 'goal',
 };
 
-const Fields = require('Fields'),
+const Fields = require('./Fields'),
   getField = (index) => {
     const fieldIndex = index % Fields.length;
 
@@ -65,13 +65,9 @@ const Fields = require('Fields'),
 
     return fieldSequence;
   },
-  findFieldByPosition = (x, z) => {
-  
-  },
   checkMoves = (pawns, diceNumber, playerIndex) => {
     let avaiableMoves = [];
     
-    // { pawnId: '', fieldSequence: [start, ..., end]}
     if (!pawns || !diceNumber || (!playerIndex && playerIndex !== 0)) {
       console.error('Wrong params');
     }
@@ -89,6 +85,6 @@ const Fields = require('Fields'),
   };
 
 module.exports = {
-  
-  getFieldSequence, findFieldByPosition, checkMoves
+  getFieldSequence,
+  checkMoves,
 };

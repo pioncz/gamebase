@@ -37,7 +37,6 @@ export default class PawnsController {
     }
     
     for(let i = 0; i < fieldSequence.length; i++) {
-      debugger;
       let field = fieldSequence[i],
         x = field.x,
         z = field.z,
@@ -49,7 +48,6 @@ export default class PawnsController {
         easing: EASING.InOutQuad,
         update: ((newX, newZ) =>
           (progress) => {
-            debugger;
             let oldX = pawn.parsedX,
               oldZ = pawn.parsedZ,
               dX = oldX - newX,
