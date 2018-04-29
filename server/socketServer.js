@@ -12,7 +12,7 @@ const FieldType = {
 };
 
 module.exports = function (io, config) {
-  const MinPlayers = 1, //per room to play
+  const MinPlayers = 2, //per room to play
     sockets = {};
   
   let occupiedSocketIds = [],
@@ -36,6 +36,7 @@ module.exports = function (io, config) {
           name: '/room'+id,
           game: game,
           rolled: false,
+          nextRollTimestamp: null,
           players: [],
           state: {
             currentPlayerId: 0,
@@ -131,7 +132,7 @@ module.exports = function (io, config) {
     },
     destroyRoom = (room) => {
       if (!room) return;
-            
+      
       delete games[room.game][room.id];
     },
     leaveGame = ({socketId}) => {
@@ -285,20 +286,23 @@ module.exports = function (io, config) {
       }
       //check if its this players turn
       else if (room.state.currentPlayerId === player.id &&
-        !room.rolled) {
+        !room.rolled &&
+        (!room.nextRollTimestamp || Date.now() > room.nextRollTimestamp)) {
         // look for first pawn he can move
         let playerPawns = room.pawns.filter((pawn) => {
           return pawn.playerId === player.id;
         });
         
         let diceNumber = parseInt(Math.random()*6)+1; // 1-6
+
         let moves = BoardUtils.checkMoves(playerPawns, diceNumber, playerIndex);
 
         if (moves.length) {
           let move = moves[0],
             pawn = playerPawns.find(p => p.id === move.pawnId),
             lastField = move.fieldSequence[move.fieldSequence.length - 1];
-            
+  
+          room.nextRollTimestamp = Date.now() + Math.max(config.ludo.animations.movePawn * move.fieldSequence.length, config.ludo.animations.rollDice);
           io.to(room.name).emit('pawnMove', move);
           pawn.x = lastField.x;
           pawn.z = lastField.z;
@@ -310,10 +314,12 @@ module.exports = function (io, config) {
             }
           }
         } else {
+          room.nextRollTimestamp = Date.now() + config.ludo.animations.rollDice;
           console.log('player cant move');
           io.to(room.name).emit('console', 'player ' + player.name + ' roll\'d ' + diceNumber + ' and cant move');
         }
 
+        
         let nextPlayerId = room.players[(playerIndex + 1) % room.players.length].id;
 
         io.to(room.name).emit('roll', {diceNumber: diceNumber});

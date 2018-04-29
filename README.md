@@ -16,7 +16,8 @@ TO DO, PLAN GRY
 + koniec gry gdy wszystkie pionki gracza sa w spawnie
     + wyskakuje modal ze zwyciezca
     + gra jest kasowana na serwerze
-- blokada grania gdy poprzedni gracz jeszcze gra
++ blokada grania gdy poprzedni gracz jeszcze gra
++ czasy animacji ruchu pionka i rzutu kostka zapisane w Config.ludo
 - jak gracz A stanie na pionku gracza B, to pionek gracza B wraca na spawn
 - najpierw leci kostka, a potem pionek sie rusza - nie na raz
 - timer - dlugosc gry ustalana z serwera - widoczny na gorze mapy

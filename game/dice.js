@@ -1,5 +1,6 @@
 import Utils from "./utils/utils";
 import { EASING } from "./utils/animations";
+import Config from 'config.js';
 
 export default class Dice {
   constructor({scene, animations}) {
@@ -84,7 +85,8 @@ export default class Dice {
         4: {x: 0, z: .5},
         5: {x: .75, z: 1},
         6: {x: .25, z: 1},
-      };
+      },
+      totalLength = Config.ludo.animations.rollDice;
     
     let baseX = (2*Math.PI) * numberRotations[number].x,
       baseZ = (2*Math.PI) * numberRotations[number].z;
@@ -110,7 +112,7 @@ export default class Dice {
           cube.rotation.z = baseZ + (2*Math.PI) * progress / 4;
         },
         easing: EASING.InQuad,
-        length: 500,
+        length: totalLength * 5/8,
       }, {
         update: (progress) => {
           cube.position.x = 5 * (1-progress);
@@ -119,7 +121,7 @@ export default class Dice {
       
           cube.rotation.x = baseX + (2*Math.PI) * progress / 4;
         },
-        length: 300,
+        length: totalLength * 3/8,
       }, {
         update: (progress) => {
           this._setOpacity(1-progress);
