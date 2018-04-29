@@ -10,14 +10,18 @@ const Fields = require('./Fields'),
 
     return Fields[fieldIndex];
   },
-  getFieldSequence = (pawn, diceNumber, playerIndex) => {
+  getFieldSequence = (pawns, pawn, diceNumber, playerIndex) => {
     let fieldSequence = [],
       areFieldsEqual = (fieldA, fieldB) => {
         return fieldA.x == fieldB.x &&
           fieldA.z == fieldB.z;
       },
       startFieldIndex = Fields.findIndex((field)=> areFieldsEqual(field, pawn)),
-      startField = startFieldIndex > -1 && Fields[startFieldIndex];
+      startField = startFieldIndex > -1 && Fields[startFieldIndex],
+      isFieldOccupied = (field) => {
+        let fieldOccupied = pawns.find(f => f.z === field.z && f.x === field.x);
+        return !!fieldOccupied;
+      };
   
     if (!startField) return [];
     
@@ -63,6 +67,11 @@ const Fields = require('./Fields'),
       }
     }
 
+    // If last field is taken by another pawn, return []
+    if (fieldSequence.length && isFieldOccupied(fieldSequence[fieldSequence.length - 1])) {
+      fieldSequence = [];
+    }
+
     return fieldSequence;
   },
   checkMoves = (pawns, diceNumber, playerIndex) => {
@@ -74,7 +83,7 @@ const Fields = require('./Fields'),
   
     for(let pawnId in pawns) {
       let pawn = pawns[pawnId],
-        fieldSequence = getFieldSequence(pawn, diceNumber, playerIndex);
+        fieldSequence = getFieldSequence(pawns, pawn, diceNumber, playerIndex);
       
       if (fieldSequence.length) {
         avaiableMoves.push({pawnId: pawn.id, fieldSequence});

@@ -65,9 +65,9 @@ export default class Engine extends Component {
   }
   onSubmit(e) {
     const { pawns, selectedPawnId, pawnInput, } = this.state,
-      pawn = pawns.find(pawn => pawn.id===this.state.selectedPawnId);
+      pawn = pawns.find(pawn => pawn.id === selectedPawnId);
   
-    if (!selectedPawnId || !pawn) {
+    if (!selectedPawnId) {
       log('No pawn');
       e.preventDefault();
       return false;
@@ -80,14 +80,14 @@ export default class Engine extends Component {
     }
     
     try {
-      let moves = this.gameComponent.checkMoves([pawn], +pawnInput,this.state.currentPlayerId);
+      let moves = this.gameComponent.checkMoves(pawns, +pawnInput,this.state.currentPlayerId);
       
       if (moves.length) {
-        let move = moves[0],
-          fieldSequence = move.fieldSequence || [];
+        let move = moves.find(move => move.pawnId === selectedPawnId);
           
-        if (fieldSequence.length) {
-          let lastField = fieldSequence[fieldSequence.length - 1];
+        if (move && move.fieldSequence.length) {
+          let fieldSequence = move.fieldSequence || [],
+            lastField = fieldSequence[fieldSequence.length - 1];
           
           this.gameComponent.movePawn({pawnId: pawn.id, fieldSequence})
             .then(() =>{
