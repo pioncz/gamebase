@@ -41,7 +41,7 @@ module.exports = function() {
           }
         },
         {test: /\.html$/, loader: 'html-loader'},
-        { test: /\.js$/, loader: 'imports-loader?THREE=three'},
+//        { test: /\.js$/, loader: 'imports-loader?THREE=three'},
         { test: /\.sass$/, use: extractSass.extract({
           use: [{
             loader: "css-loader"
