@@ -70,6 +70,7 @@ export default class Ludo extends Component {
       this.gameComponent.engine.board.dice.roll(diceNumber);
     });
     connectorInstance.socket.on('pawnMove', (pawnMove) => {
+      
       connectorInstance.addMessage(`pawnMove length: ${pawnMove.length} diceNumber: ${pawnMove.diceNumber}`);
       this.gameComponent.movePawn(pawnMove);
     });

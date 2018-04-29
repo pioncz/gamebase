@@ -77,7 +77,7 @@ const Fields = require('./Fields'),
         fieldSequence = getFieldSequence(pawn, diceNumber, playerIndex);
       
       if (fieldSequence.length) {
-        avaiableMoves.push({pawnId, fieldSequence});
+        avaiableMoves.push({pawnId: pawn.id, fieldSequence});
       }
     }
     

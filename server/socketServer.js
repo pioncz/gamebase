@@ -1,6 +1,7 @@
 const Player = require('./../ludo/Player.js');
 const InitialState = require('./../ludo/InitialState.js');
 const Fields = require('./../ludo/Fields.js');
+const BoardUtils = require('./../ludo/BoardUtils.js');
 
 let fields = Fields;
 
@@ -215,6 +216,7 @@ module.exports = function (io, config) {
     sockets[socket.id] = {
       socket: socket,
       player: new Player({name: 'name' + playerId, id: playerId, socketId: socket.id}),
+      playerIndex: null,
       room: null,
     };
     
@@ -255,7 +257,7 @@ module.exports = function (io, config) {
       let socketData = sockets[socket.id];
       socketData.room = room;
       
-      room.players.push(socketData.player);
+      socketData.playerIndex = room.players.push(socketData.player) - 1;
       // var playerId = nextId();
       // room.players.push(new Player({name: 'name' + playerId, id: playerId, socketId: socket.id, color: 'black'}));
       // playerId = nextId();
@@ -304,7 +306,8 @@ module.exports = function (io, config) {
     socket.on('roll', function () {
       //get sockets room
       let room = sockets[socket.id].room,
-        player = sockets[socket.id].player;
+        player = sockets[socket.id].player,
+        playerIndex = sockets[socket.id].playerIndex;
   
       if (!room) {
         console.log('not in a room');
@@ -318,24 +321,25 @@ module.exports = function (io, config) {
         });
         
         let diceNumber = parseInt(Math.random()*6)+1; // 1-6
-        
-        let pawnMove = movePawn({diceNumber, pawns: playerPawns});
-        
-        if (pawnMove) {
-          pawnMove.diceNumber = diceNumber;
-          io.to(room.name).emit('pawnMove', pawnMove);
+        let moves = BoardUtils.checkMoves(playerPawns, diceNumber, playerIndex);
+
+        if (moves.length) {
+          let move = moves[0],
+            pawn = playerPawns.find(p => p.id === move.pawnId),
+            lastField = move.fieldSequence[move.fieldSequence.length - 1];
+          
+          io.to(room.name).emit('pawnMove', move);
+          pawn.x = lastField.x;
+          pawn.z = lastField.z;
         } else {
           console.log('player cant move');
           io.to(room.name).emit('console', 'player ' + player.name + ' roll\'d ' + diceNumber + ' and cant move');
         }
-  
-        let index = room.players.findIndex((player) => {
-          return player.id === room.currentPlayerId;
-        });
-        let nextPlayerId = room.players[(index + 1) % room.players.length].id;
-  
+
+        let nextPlayerId = room.players[(playerIndex + 1) % room.players.length].id;
+
         io.to(room.name).emit('roll', {diceNumber: diceNumber});
-        
+
         room.currentPlayerId = nextPlayerId;
         io.to(room.name).emit('updateGame', {currentPlayerId: nextPlayerId});
       } else {

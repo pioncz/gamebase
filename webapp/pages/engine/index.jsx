@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import GameComponent from 'components/gameComponent/';
+const InitialState = require('InitialState');
 import './index.sass';
 
 const nextId = (()=>{
@@ -45,6 +46,7 @@ export default class Engine extends Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.initGame = this.initGame.bind(this);
+    this.onPawnClick = this.onPawnClick.bind(this);
   }
   onSubmit(e) {
     const { pawns, selectedPawnId, pawnInput, } = this.state,
@@ -63,15 +65,6 @@ export default class Engine extends Component {
     }
     
     try {
-      // console.log(this.gameComponent.checkMoves([{id: 1, x: 0, z: 4}], 1 ,0 )); // [ x: 1, z: 4]
-      // console.log(this.gameComponent.checkMoves([{id: 1, x: 0, z: 4}], 3 ,0 )); // [x: 1, z: 4, x: 2, z: 4, x: 3, z: 4]
-      // console.log(this.gameComponent.checkMoves([{id: 1, x: 5, z: 0}], 1 ,0 )); // [x: 6, z: 0]
-      // console.log(this.gameComponent.checkMoves([{id: 1, x: 5, z: 0}], 2 ,0 )); // [x: 6, z: 0, x: 6, z: 1]
-      // console.log(this.gameComponent.checkMoves([{id: 1, x: 0, z: 5}], 2 ,0 )); // x: 1, z: 5, x: 2, z: 5
-      // console.log(this.gameComponent.checkMoves([{id: 1, x: 3, z: 5}], 2 ,0 )); // []
-      // console.log(this.gameComponent.checkMoves([{id: 1, x: 0, z: 5}], 2 ,1 )); // [x: 0, z: 4, x: 1, z: 4]
-      // console.log(this.gameComponent.checkMoves([{id: 1, x: 0, z: 1}], 2 ,0 )); // []
-      // console.log(this.gameComponent.checkMoves([{id: 1, x: 0, z: 1}], 6 ,0 )); // [x: 0, z: 4]
       let moves = this.gameComponent.checkMoves([pawn], +pawnInput,this.state.currentPlayerId);
       
       if (moves.length) {
@@ -86,8 +79,7 @@ export default class Engine extends Component {
       } else {
         log('No available moves');
       }
-      // checkMoves(pawns, diceNumber) // returns pawn ids of pawns which can move
-      // getFieldSequence(pawn, diceNumber) // returns promise - reject if cant move, resolve after move
+
     } catch(e) {
       log(e);
     }
@@ -108,36 +100,44 @@ export default class Engine extends Component {
   }
   initGame() {
     let playerId = nextId(),
-      pawnId = nextId(),
       color = randomColor('rgb'),
       currentPlayerId = 0,
-      newPawn = {
-        id: pawnId,
-        color,
-        playerId: playerId,
-        x: 5,
-        z: 0,
-      },
       newPlayer = {
         id: playerId,
         color,
         avatar: '/static/avatar6.jpg',
         name: 'Name ' + playerId,
         index: currentPlayerId,
-      };
+      },
+      newPawns = InitialState().pawns.slice(0,4);
 
+    for(let pawnI in newPawns) {
+      let pawn = newPawns[pawnI];
+      
+      pawn.color = color;
+      pawn.playerId = playerId;
+    }
+    
+    
     if (!this.state.pawns.length) {
       this.setState({
-        pawns: [...this.state.pawns, newPawn],
-        players: [...this.state.pawns, newPlayer],
-        selectedPawnId: pawnId,
+        pawns: newPawns,
+        players: [newPlayer],
+        selectedPawnId: newPawns[0].id,
         currentPlayerId: currentPlayerId,
       });
     }
   }
+  onPawnClick(pawnId) {
+    this.setState({
+      selectedPawnId: pawnId,
+    });
+  }
   render() {
     let pawns = this.state.pawns.map(pawn => {
-      return <div key={pawn.id} className={'pawn' + (pawn.id===this.state.selectedPawnId?' pawn--selected':'')}>
+      return <div key={pawn.id}
+                  className={'pawn' + (pawn.id===this.state.selectedPawnId?' pawn--selected':'')}
+      onClick={() => { this.onPawnClick(pawn.id)} }>
         {`${pawn.id}:${pawn.color}:${pawn.x},${pawn.z}`}
       </div>;
     }),
