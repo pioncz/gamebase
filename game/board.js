@@ -53,6 +53,8 @@ export default class Board {
         
         if (player) {
           field.color = player.color;
+        } else {
+          field.disabled = true;
         }
       }
     }
@@ -89,7 +91,10 @@ export default class Board {
       
       if (field.color) {
         color = field.color;
-        lineWidth = 4;
+        strokeStyle = 'rgba(255,255,255,0.3)';
+      }
+      if (field.disabled) {
+        color = '#bbb';
         strokeStyle = 'rgba(255,255,255,0.3)';
       }
     
