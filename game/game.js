@@ -7,6 +7,7 @@ export default class Game {
     this.container = props.container;
     this.raycaster = new THREE.Raycaster();
     this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
+    this.initialized = false;
     
     this.scene = new THREE.Scene();
     this.controls = new Controls({container: this.container});
@@ -67,7 +68,10 @@ export default class Game {
     this.animate();
   }
   initGame({pawns, players}) {
-    this.board.initGame({pawns, players});
+    if (!this.initialized) {
+      this.initialized = true;
+      this.board.initGame({pawns, players});
+    }
   }
   onResize() {
     let width = this.container.offsetWidth,

@@ -26,7 +26,21 @@ const nextId = (()=>{
         break;
     }
   },
-  log = (msg) => console.error(msg);
+  log = (msg) => console.error(msg),
+  updateObjectInArray = (array, action) => {
+    return array.map( (item, index) => {
+      if(item.id !== action.id) {
+        // This isn't the item we care about - keep it as-is
+        return item;
+      }
+      
+      // Otherwise, this is the one we want - return an updated value
+      return {
+        ...item,
+        ...action.item
+      };
+    });
+  };
 
 export default class Engine extends Component {
   constructor(props) {
@@ -34,6 +48,7 @@ export default class Engine extends Component {
   
     this.state = {
       pawns: [],
+      moves: [],
       players: [],
       pawnInput: localStorage.pawnInput || '',
       selectedPawnId: null,
@@ -72,7 +87,17 @@ export default class Engine extends Component {
           fieldSequence = move.fieldSequence || [];
           
         if (fieldSequence.length) {
-          this.gameComponent.movePawn({pawnId: pawn.id, fieldSequence});
+          let lastField = fieldSequence[fieldSequence.length - 1];
+          
+          this.gameComponent.movePawn({pawnId: pawn.id, fieldSequence})
+            .then(() =>{
+              let newX = lastField.x,
+                newZ = lastField.z;
+
+              this.setState({
+                pawns: updateObjectInArray(this.state.pawns, {id: pawn.id, item: {x: newX, z: newZ} })
+              });
+            });
         } else {
           log('No possible move for this pawn and dice value')
         }

@@ -197,7 +197,7 @@ export default class Board {
     let pawn = this.pawnsController.getPawn(pawnId);
     
     if (pawn && fieldSequence.length) {
-      this.pawnsController.movePawn(pawnId, fieldSequence)
+      return this.pawnsController.movePawn(pawnId, fieldSequence)
         .then(() => {
           pawn.x = fieldSequence[fieldSequence.length-1].x;
           pawn.z = fieldSequence[fieldSequence.length-1].z;

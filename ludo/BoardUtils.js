@@ -27,7 +27,7 @@ const Fields = require('./Fields'),
         
         while(!fieldSequence.length) {
          let nextField = getField(++index);
-          console.log(nextField);
+
           if (nextField.type !== FieldType.spawn) {
             fieldSequence.push(nextField);
           }

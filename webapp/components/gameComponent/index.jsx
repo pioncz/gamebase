@@ -29,7 +29,7 @@ export default class GameComponent extends Component {
     }
   }
   movePawn(pawnMove) {
-    this.engine.board.movePawn(pawnMove);
+    return this.engine.board.movePawn(pawnMove);
   }
   checkMoves(pawns, diceNumber, playerIndex) {
     return this.engine.board.checkMoves(pawns, diceNumber, playerIndex);
