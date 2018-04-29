@@ -13,6 +13,7 @@ const Pages = {
   Win: 'Win',
   Loose: 'Loose',
   Disconnected: 'Disconnected',
+  Winner: 'Winner',
 };
 
 export default class Ludo extends Component {
@@ -27,6 +28,7 @@ export default class Ludo extends Component {
       currentPlayerId: null,
       players: [],
       pawns: [],
+      winner: null,
     };
     
     this.handleClick = this.handleClick.bind(this);
@@ -76,17 +78,19 @@ export default class Ludo extends Component {
     });
     connectorInstance.socket.on('updateGame', (newGameState) => {
       this.setState({
-        currentPlayerId: newGameState.currentPlayerId
+        currentPlayerId: newGameState.currentPlayerId,
+        winner: newGameState.winner,
+        page: (newGameState.winner?Pages.Winner:this.state.page),
       });
     });
     connectorInstance.socket.on('updatePlayers', (newPlayers) => {
-      // Leave game when someone leaves
-      connectorInstance.socket.emit('leaveGame');
-      // Show modal that someone disconnected with cta: search new game
-      this.setState({
-        page: Pages.Disconnected,
-      });
+    // Leave game when someone leaves
+    connectorInstance.socket.emit('leaveGame');
+    // Show modal that someone disconnected with cta: search new game
+    this.setState({
+      page: Pages.Disconnected,
     });
+  });
   }
   selectColor(color) {
     this.props.connectorInstance.socket.emit('selectColor', color);
@@ -108,8 +112,7 @@ export default class Ludo extends Component {
   }
   render() {
     let currentModal,
-      page = this.state.page,
-      players = this.state.players,
+      {page, players, winner} = this.state,
       playersOverlay;
     
     if (page === Pages.Initial) {
@@ -151,6 +154,23 @@ export default class Ludo extends Component {
       </Modal>;
     }
     
+    if (page === Pages.Winner) {
+      let player = players.find(player => player.id === winner);
+      
+      currentModal = <Modal open={true}>
+        <h3>Winner!</h3>
+        <div key={player.id} className={"player"}>
+          <img src={player.avatar} style={{
+            borderRight: "3px solid " + player.color
+          }} />
+          <div className="player-name">
+            {player.name}
+          </div>
+        </div>
+        <Button onClick={this.joinQueue}>NOWA GRA</Button>
+      </Modal>
+    }
+    
     if (players && players.length) {
       let playerProfiles = players.map((player, index) => {
         return <div key={player.id} className={"player player-" + index}>
@@ -159,7 +179,7 @@ export default class Ludo extends Component {
             {player.id === this.state.currentPlayerId && <p className={'arrow ' + (index%2?'right':'left')}></p>}
           </div>
           <img src={player.avatar} style={{
-            borderRight: "3px solid " + player.color
+            [(index%2?'borderLeft':'borderRight')]: "3px solid " + player.color
           }} />
         </div>;
       });

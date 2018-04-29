@@ -37,7 +37,10 @@ module.exports = function (io, config) {
           game: game,
           rolled: false,
           players: [],
-          currentPlayerId: 0,
+          state: {
+            currentPlayerId: 0,
+            winner: null,
+          },
           eta: 5*60*60, //18000s
         };
       
@@ -87,8 +90,8 @@ module.exports = function (io, config) {
 
       // Remove pawns for not connected players
       initialState.pawns.splice(playersLength * 4, (4 - playersLength) * 4);
-      room.currentPlayerId = room.players[0].id;
-      initialState.currentPlayerId = room.currentPlayerId;
+      room.state.currentPlayerId = room.players[0].id;
+      initialState.currentPlayerId = room.state.currentPlayerId;
   
       room.players.forEach((player) => {
         let newInitialState = Object.assign({}, initialState);
@@ -126,62 +129,10 @@ module.exports = function (io, config) {
       let clients = io.sockets.clients().connected;
       return Object.keys(clients).length
     },
-    checkField = ({startField, endField, diceNumber, pawn}) => {
-      if (endField.type === FieldType.goal && endField.playerId !== pawn.playerId) {
-        return false;
-      }
-      if (endField.type === FieldType.spawn) {
-        return false;
-      }
-  
-      return true;
-    },
-    movePawn = ({pawns, diceNumber}) => {
-      let endField,
-        length = 0,
-        pawn = pawns[0],
-        areFieldsEqual = (fieldA, fieldB) => {
-          return fieldA.x == fieldB.x &&
-            fieldA.z == fieldB.z;
-        },
-        startFieldIndex = fields.findIndex((field)=> areFieldsEqual(field, pawn)),
-        startField = startFieldIndex > -1 && fields[startFieldIndex];
-
-        if (!startField) return;
-        
-        // For every pawn
-        
-        // Search twice cause when: startFieldIndex = fields.length-1
-        // => search fields from start
-        for(let i = startFieldIndex + 1; i < fields.length * 2 && !endField; i++) {
-          let fieldIndex = i % fields.length,
-            field = fields[fieldIndex];
-  
-          if (startField.type === FieldType.spawn) {
-            if (diceNumber === 6) {
-              if (field.type === FieldType.start) {
-                length++;
-                endField = field;
-                break;
-              }
-            } else {
-              return;
-            }
-          } else {
-            if(checkField({startField, endField: field, diceNumber, pawn})) {
-              length++;
-            }
-          }
-  
-          if (length >= diceNumber) {
-            endField = field;
-          }
-        }
-        // endField = fields[startFieldIndex + length];
-        pawn.z = endField.z;
-        pawn.x = endField.x;
-        
-        return { pawnId: pawn.id, endField, length, diceNumber};
+    destroyRoom = (room) => {
+      if (!room) return;
+            
+      delete games[room.game][room.id];
     },
     leaveGame = ({socketId}) => {
       let socketData = sockets[socketId],
@@ -206,8 +157,28 @@ module.exports = function (io, config) {
         io.to(room.name).emit('updatePlayers', room.players);
       } else {
         // Remove game without players
-        delete games[room.game][room.id];
+        destroyRoom(room);
       }
+    },
+    checkWin = (playerPawns) => {
+      for(let pawnI in playerPawns) {
+        let pawn = playerPawns[pawnI],
+          field = BoardUtils.getFieldByPosition(pawn.x, pawn.z);
+        
+        if (field.type !== FieldType.goal) {
+          return false;
+        }
+      }
+      
+      return true;
+    },
+    finishGame = (room, player) => {
+      if (!room) return;
+      
+      room.state.winner = (player && player.id) || null;
+      io.to(room.name).emit('updateGame', room.state);
+  
+      destroyRoom(room);
     };
     
   io.on('connection', function (socket) {
@@ -313,7 +284,7 @@ module.exports = function (io, config) {
         console.log('not in a room');
       }
       //check if its this players turn
-      else if (room.currentPlayerId === player.id &&
+      else if (room.state.currentPlayerId === player.id &&
         !room.rolled) {
         // look for first pawn he can move
         let playerPawns = room.pawns.filter((pawn) => {
@@ -327,10 +298,17 @@ module.exports = function (io, config) {
           let move = moves[0],
             pawn = playerPawns.find(p => p.id === move.pawnId),
             lastField = move.fieldSequence[move.fieldSequence.length - 1];
-          
+            
           io.to(room.name).emit('pawnMove', move);
           pawn.x = lastField.x;
           pawn.z = lastField.z;
+          
+          if (lastField.type === FieldType.goal) {
+            console.log('player win!');
+            if (checkWin(playerPawns)) {
+              finishGame(room, player);
+            }
+          }
         } else {
           console.log('player cant move');
           io.to(room.name).emit('console', 'player ' + player.name + ' roll\'d ' + diceNumber + ' and cant move');
@@ -340,8 +318,8 @@ module.exports = function (io, config) {
 
         io.to(room.name).emit('roll', {diceNumber: diceNumber});
 
-        room.currentPlayerId = nextPlayerId;
-        io.to(room.name).emit('updateGame', {currentPlayerId: nextPlayerId});
+        room.state.currentPlayerId = nextPlayerId;
+        io.to(room.name).emit('updateGame', room.state);
       } else {
         console.log('not his turn');
       }

@@ -10,6 +10,11 @@ const Fields = require('./Fields'),
 
     return Fields[fieldIndex];
   },
+  getFieldByPosition = (x, z) => {
+    return Fields.find((field) => {
+      return field.x === x && field.z === z;
+    });
+  },
   getFieldSequence = (pawns, pawn, diceNumber, playerIndex) => {
     let fieldSequence = [],
       areFieldsEqual = (fieldA, fieldB) => {
@@ -96,4 +101,5 @@ const Fields = require('./Fields'),
 module.exports = {
   getFieldSequence,
   checkMoves,
+  getFieldByPosition,
 };

@@ -12,13 +12,15 @@ TO DO, PLAN GRY
 + niedorobiona kreska w grafica jednego pola
 + pola graczy ktorych nie ma wyszarzone
 + wyciagnac wspolna funkcje do liczenia ciagu pozycji pionka
-- animacja wejscia pionkow
-- koniec gry gdy wszystkie pionki gracza sa w spawnie
++ animacja wejscia pionkow
++ koniec gry gdy wszystkie pionki gracza sa w spawnie
+    + wyskakuje modal ze zwyciezca
+    + gra jest kasowana na serwerze
 - blokada grania gdy poprzedni gracz jeszcze gra
-- modal ze zwyciezca gry z guzikiem do szukania nastepnej
 - jak gracz A stanie na pionku gracza B, to pionek gracza B wraca na spawn
 - najpierw leci kostka, a potem pionek sie rusza - nie na raz
 - timer - dlugosc gry ustalana z serwera - widoczny na gorze mapy
+- naprawic nowa rozgrywke
 
 2) Strona Ludo
 +ekran wyszukiwania z przewidywanym czasem
