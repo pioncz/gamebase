@@ -109,7 +109,7 @@ export class Animations {
   }
   tick(delta) {
     for(let i = this.animations.length - 1; i >= 0; i--) {
-      this.tickAnimation(this.animations[i]);
+      this.tickAnimation(delta, this.animations[i]);
       
       if (this.animations[i].finished) {
         this.animations.splice(i, 1);

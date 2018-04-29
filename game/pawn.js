@@ -10,12 +10,13 @@ export default class Pawn {
       specular: 0x000000,
       shininess: 0,
       reflectivity: 0,
+      transparent: true,
     });
     this.$ = new THREE.Mesh(geometry, material);
 
     this.parsedX = props.parsedX;
     this.parsedZ = props.parsedZ;
-    this.moveTo(props.parsedX, 2.8, props.parsedZ);
+    this.moveTo(props.parsedX, 22.8, props.parsedZ);
     this.scene.add(this.$);
   }
   moveTo(x, y, z) {

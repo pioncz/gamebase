@@ -25,6 +25,22 @@ export default class PawnsController {
         z: pawns[pawnIndex].z,
       });
       this.pawns[pawnId] = pawn;
+      
+      let delay = Math.floor((+pawnIndex / 4))*200+(+pawnIndex % 4)*100;
+      
+      pawn.$.material.opacity = 0;
+      this.animations.create({
+        length: 300,
+        delay: delay,
+        easing: EASING.InOutQuad,
+        update: (progress) => {
+          let newY = (20*(1-progress)) + 2.8,
+            newOpacity = (progress * 5);
+  
+          pawn.$.material.opacity = newOpacity;
+          pawn.moveTo(pawn.parsedX, newY ,pawn.parsedZ);
+        },
+      });
     }
   }
   movePawn(pawnId, fieldSequence) {

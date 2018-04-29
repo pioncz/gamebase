@@ -1,18 +1,5 @@
 TO DO, PLAN GRY
 
-ruch:
-gracz rzuca kostka -> serwer losuje liczbe
-	- sprawdz czy ruch mozliwy
-	- jesli tak to czekaj 8s na wykonanie ruchu
-	- jesli nie to zmien gracza
-gracz wykonuje ruch ->
-	- sprawdz czy ruch mozliwy
-	- jesli tak to wykonaj ruch i zmien gracza
-	- jesli nie to odeslij do konsoli ze ruch niemozliwy
-
--checkMoves([pawns], diceNumber) // return [boolean]
--getFieldSequence(pawn, diceNumber) // return fieldSequence
-
 0) Informacje które są zawsze na ekranie (UI):
 +profil aktualnie zalogowanego gracza
 +wyglad navbara w trakcie gry
@@ -22,10 +9,16 @@ gracz wykonuje ruch ->
 
 1) Gra
 + przekazywanie ustawien graczy do gry
-- niedorobiona kreska w grafica jednego pola
-- pola graczy ktorych nie ma wyszarzone
-- wyciagnac wspolna funkcje do liczenia ciagu pozycji pionka
++ niedorobiona kreska w grafica jednego pola
++ pola graczy ktorych nie ma wyszarzone
++ wyciagnac wspolna funkcje do liczenia ciagu pozycji pionka
 - animacja wejscia pionkow
+- koniec gry gdy wszystkie pionki gracza sa w spawnie
+- blokada grania gdy poprzedni gracz jeszcze gra
+- modal ze zwyciezca gry z guzikiem do szukania nastepnej
+- jak gracz A stanie na pionku gracza B, to pionek gracza B wraca na spawn
+- najpierw leci kostka, a potem pionek sie rusza - nie na raz
+- timer - dlugosc gry ustalana z serwera - widoczny na gorze mapy
 
 2) Strona Ludo
 +ekran wyszukiwania z przewidywanym czasem
