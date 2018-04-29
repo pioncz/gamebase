@@ -84,8 +84,8 @@ export default class Board {
       let x = field.x,
         z = field.z,
         color = 'white',
-        lineWidth = 1,
-        strokeStyle = '#CFD8DC';
+        lineWidth = 4,
+        strokeStyle = 'rgba(0,0,0,.07)';
       
       if (field.color) {
         color = field.color;
@@ -105,10 +105,11 @@ export default class Board {
       ctx.fill();
       ctx.save();
       ctx.clip();
-    
+      
       ctx.arc(cellX, cellZ, r2, 0, 2 * Math.PI);
       ctx.lineWidth = lineWidth;
       ctx.strokeStyle = strokeStyle;
+      
       ctx.stroke();
       ctx.restore();
     }
