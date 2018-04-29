@@ -10,14 +10,15 @@ gracz wykonuje ruch ->
 	- jesli tak to wykonaj ruch i zmien gracza
 	- jesli nie to odeslij do konsoli ze ruch niemozliwy
 
--checkMove([pawn], diceNumber) // return [boolean]
--makeMove(pawn, diceNumber) // return fieldSequence
+-checkMoves([pawns], diceNumber) // return [boolean]
+-getFieldSequence(pawn, diceNumber) // return fieldSequence
 
 0) Informacje które są zawsze na ekranie (UI):
 +profil aktualnie zalogowanego gracza
 +wyglad navbara w trakcie gry
 +wyłącz grę jak ktoś wyjdzie - dialog z ponownym wyszukaniem
 +obsluga rozlaczenia sie gracza
+-badge przy avatarze usera informujacy o stanie polaczenia
 
 1) Gra
 + przekazywanie ustawien graczy do gry

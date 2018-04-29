@@ -36,6 +36,7 @@ export default class Engine extends Component {
       players: [],
       pawnInput: localStorage.pawnInput || '',
       selectedPawnId: null,
+      currentPlayerId: null,
     };
   
     this.gameComponent = null;
@@ -46,9 +47,10 @@ export default class Engine extends Component {
     this.initGame = this.initGame.bind(this);
   }
   onSubmit(e) {
-    const { selectedPawnId, pawnInput, } = this.state;
+    const { pawns, selectedPawnId, pawnInput, } = this.state,
+      pawn = pawns.find(pawn => pawn.id===this.state.selectedPawnId);
   
-    if (!selectedPawnId) {
+    if (!selectedPawnId || !pawn) {
       log('No pawn');
       e.preventDefault();
       return false;
@@ -61,7 +63,29 @@ export default class Engine extends Component {
     }
     
     try {
-      console.log(this.gameComponent.checkMoves({pawnId: selectedPawnId, diceNumber: +pawnInput}));
+      // console.log(this.gameComponent.checkMoves([{id: 1, x: 0, z: 4}], 1 ,0 )); // [ x: 1, z: 4]
+      // console.log(this.gameComponent.checkMoves([{id: 1, x: 0, z: 4}], 3 ,0 )); // [x: 1, z: 4, x: 2, z: 4, x: 3, z: 4]
+      // console.log(this.gameComponent.checkMoves([{id: 1, x: 5, z: 0}], 1 ,0 )); // [x: 6, z: 0]
+      // console.log(this.gameComponent.checkMoves([{id: 1, x: 5, z: 0}], 2 ,0 )); // [x: 6, z: 0, x: 6, z: 1]
+      // console.log(this.gameComponent.checkMoves([{id: 1, x: 0, z: 5}], 2 ,0 )); // x: 1, z: 5, x: 2, z: 5
+      // console.log(this.gameComponent.checkMoves([{id: 1, x: 3, z: 5}], 2 ,0 )); // []
+      // console.log(this.gameComponent.checkMoves([{id: 1, x: 0, z: 5}], 2 ,1 )); // [x: 0, z: 4, x: 1, z: 4]
+      // console.log(this.gameComponent.checkMoves([{id: 1, x: 0, z: 1}], 2 ,0 )); // []
+      // console.log(this.gameComponent.checkMoves([{id: 1, x: 0, z: 1}], 6 ,0 )); // [x: 0, z: 4]
+      let moves = this.gameComponent.checkMoves([pawn], +pawnInput,this.state.currentPlayerId);
+      
+      if (moves.length) {
+        let move = moves[0],
+          fieldSequence = move.fieldSequence || [];
+          
+        if (fieldSequence.length) {
+          this.gameComponent.movePawn({pawnId: pawn.id, fieldSequence});
+        } else {
+          log('No possible move for this pawn and dice value')
+        }
+      } else {
+        log('No available moves');
+      }
       // checkMoves(pawns, diceNumber) // returns pawn ids of pawns which can move
       // getFieldSequence(pawn, diceNumber) // returns promise - reject if cant move, resolve after move
     } catch(e) {
@@ -86,6 +110,7 @@ export default class Engine extends Component {
     let playerId = nextId(),
       pawnId = nextId(),
       color = randomColor('rgb'),
+      currentPlayerId = 0,
       newPawn = {
         id: pawnId,
         color,
@@ -98,6 +123,7 @@ export default class Engine extends Component {
         color,
         avatar: '/static/avatar6.jpg',
         name: 'Name ' + playerId,
+        index: currentPlayerId,
       };
 
     if (!this.state.pawns.length) {
@@ -105,6 +131,7 @@ export default class Engine extends Component {
         pawns: [...this.state.pawns, newPawn],
         players: [...this.state.pawns, newPlayer],
         selectedPawnId: pawnId,
+        currentPlayerId: currentPlayerId,
       });
     }
   }

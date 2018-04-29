@@ -13,14 +13,14 @@ export default class Pawn {
     });
     this.$ = new THREE.Mesh(geometry, material);
 
+    this.parsedX = props.parsedX;
+    this.parsedZ = props.parsedZ;
     this.moveTo(props.parsedX, 2.8, props.parsedZ);
     this.scene.add(this.$);
   }
   moveTo(x, y, z) {
     this.$.position.x = x + 0.4;
-    this.parsedX = x;
     this.$.position.y = y;
     this.$.position.z = z + 0.4;
-    this.parsedZ = z;
   }
 }

@@ -27,36 +27,47 @@ export default class PawnsController {
       this.pawns[pawnId] = pawn;
     }
   }
-  movePawn(pawnId, x, z) {
-    let pawn = this.pawns[pawnId];
+  movePawn(pawnId, fieldSequence) {
+    let pawn = this.pawns[pawnId],
+      animationsSteps = [];
     
-    let returnPromise = new Promise((resolve, reject) => {
-      if (pawn) {
-        let oldX = pawn.parsedX,
-          newX = (x - Math.floor(this.columnsLength/2)) * this.fieldLength,
-          dX = oldX - newX,
-          oldZ = pawn.parsedZ,
-          newZ = (z - Math.floor(this.columnsLength/2)) * this.fieldLength,
-          dZ = oldZ - newZ;
+    if (!pawn) {
+      console.error('No pawn with id: ' + pawnId);
+      return;
+    }
     
-        this.animations.create({
-          length: Config.ludo.animations.movePawn,
-          easing: EASING.InOutQuad,
-          update: (progress) => {
-            let newX = oldX - (dX * progress),
-              newY = 2.8 * (1 + EASING.Sin(progress / 2)),
-              newZ = oldZ - (dZ * progress);
-        
-            pawn.moveTo(newX, newY, newZ);
-          },
-        }).then(resolve);
-      } else {
-        console.error('No pawn with id: ' + pawnId);
-        reject();
-      }
-    });
+    for(let i = 0; i < fieldSequence.length; i++) {
+      debugger;
+      let field = fieldSequence[i],
+        x = field.x,
+        z = field.z,
+        newX = (x - Math.floor(this.columnsLength/2)) * this.fieldLength,
+        newZ = (z - Math.floor(this.columnsLength/2)) * this.fieldLength;
+      
+      animationsSteps.push({
+        length: Config.ludo.animations.movePawn,
+        easing: EASING.InOutQuad,
+        update: ((newX, newZ) =>
+          (progress) => {
+            debugger;
+            let oldX = pawn.parsedX,
+              oldZ = pawn.parsedZ,
+              dX = oldX - newX,
+              dZ = oldZ - newZ,
+              newParsedX = oldX - (dX * progress),
+              newParsedY = 2.8 * (1 + EASING.Sin(progress / 2)),
+              newParsedZ = oldZ - (dZ * progress);
+  
+            pawn.moveTo(newParsedX, newParsedY, newParsedZ);
+        })(newX, newZ),
+        finish: () => {
+          pawn.parsedX = newX;
+          pawn.parsedZ = newZ;
+        },
+      });
+    }
     
-    return returnPromise;
+    return this.animations.createSequence({name: 'movePawn', steps: animationsSteps});
   }
   getPawn(pawnId) {
     return this.pawns[pawnId];

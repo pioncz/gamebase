@@ -4,7 +4,8 @@ import {EASING, TIMES} from "./utils/animations";
 import PawnsController from 'pawnsController';
 import Config from 'config.js';
 import Fields from './../ludo/Fields.js';
-import Dice from './dice'
+import Dice from './dice';
+import BoardUtils from 'BoardUtils';
 
 const GridAmount = 11;
 
@@ -40,26 +41,24 @@ export default class Board {
   }
   // Color fields, create pawns
   initGame(props) {
-    if (!this.initialized) {
-      this.initialized = true;
-      this.players = props.players;
+    this.initialized = true;
+    this.players = props.players;
+    
+    // Set field colors
+    for(let fieldIndex in this.fields) {
+      let field = this.fields[fieldIndex];
       
-      // Set field colors
-      for(let fieldIndex in this.fields) {
-        let field = this.fields[fieldIndex];
+      if (field.playerIndex !== undefined) {
+        let player = this.players[field.playerIndex];
         
-        if (field.playerIndex !== undefined) {
-          let player = this.players[field.playerIndex];
-          
-          if (player) {
-            field.color = player.color;
-          }
+        if (player) {
+          field.color = player.color;
         }
       }
-      this.drawBoard();
-      // create pawns
-      this.pawnsController.createPawns({pawns: props.pawns});
     }
+    this.drawBoard();
+    // create pawns
+    this.pawnsController.createPawns({pawns: props.pawns});
   }
   drawBoard() {
     let canvas = this.canvas,
@@ -191,28 +190,20 @@ export default class Board {
     
     return fieldSequence;
   }
-  movePawn({pawnId, length, diceNumber}) {
+  checkMoves(pawns, diceNumber, playerIndex) {
+    return BoardUtils.checkMoves(pawns, diceNumber, playerIndex);
+  }
+  movePawn({pawnId, fieldSequence}) {
     let pawn = this.pawnsController.getPawn(pawnId);
     
-    
-    
-    if (pawn) {
-      let fieldsSequence = this.getFieldsSequence(pawn, length);
-  
-      if (fieldsSequence.length) {
-        Utils.asyncLoop(fieldsSequence.length, (loop, i) => {
-          this.pawnsController.movePawn(
-            pawnId,
-            fieldsSequence[i].x,
-            fieldsSequence[i].z
-          ).then(
-            loop.next
-          );
+    if (pawn && fieldSequence.length) {
+      this.pawnsController.movePawn(pawnId, fieldSequence)
+        .then(() => {
+          pawn.x = fieldSequence[fieldSequence.length-1].x;
+          pawn.z = fieldSequence[fieldSequence.length-1].z;
         }, () => {
-          pawn.x = fieldsSequence[fieldsSequence.length-1].x;
-          pawn.z = fieldsSequence[fieldsSequence.length-1].z;
+          console.log('Cannot move this pawn with this dice value');
         });
-      }
     }
   }
 }

@@ -40,8 +40,14 @@ export const EASING = {
   },
 };
 
+const nextId = (() => {
+  let id = 0;
+  return () => id++;
+})();
+
 class Animation {
   constructor({update, length = 0, delay = 0, easing = null}) {
+    this.id = nextId();
     this.lengthLeft = length;
     this.length = length;
     this.delayLeft = delay;
@@ -66,6 +72,40 @@ export class Animations {
     this.animations.push(animation);
   
     return animation.finishPromise;
+  }
+  tickAnimation(delta, animation) {
+    let progress;
+  
+    if (animation.delayLeft) {
+      animation.delayLeft -= delta;
+    }
+  
+    if (animation.delayLeft <= 0) {
+      progress = (1 - animation.lengthLeft / animation.length);
+      if (animation.easing) {
+        progress = animation.easing(progress);
+      }
+    
+      if (progress == 1) {
+        animation.finished = true;
+      }
+      animation.update(progress);
+      animation.lengthLeft -= delta;
+      if (animation.lengthLeft < 0) {
+        if (animation.times == TIMES.Infinity) {
+          animation.lengthLeft = animation.length;
+        } else {
+          if (!animation.finished) {
+            animation.finished = true;
+            animation.update(1);
+          }
+        }
+      }
+    }
+    
+    if (animation.finished) {
+      animation.resolve();
+    }
   }
   tick(delta) {
     let _tick = (animation) => {
@@ -112,38 +152,44 @@ export class Animations {
       let sequence = this.sequences[sequenceName];
       
       if (sequence.animations.length) {
-        _tick(sequence.animations[0]);
+        // _tick(sequence.animations[0]);
+        this.tickAnimation(delta, sequence.animations[0]);
         if (sequence.animations[0].finished) {
           sequence.animations.shift();
         }
       } else {
+        sequence.resolveFunction();
         delete this.sequences[sequenceName];
       }
     }
   }
   createSequence({name, steps}) {
-    if (this.sequences[name]) {
-    
-    }
-    
-    let animations = [];
+    let animations = [],
+      resolveFunction = null,
+      rejectFunction = null,
+      animationPromise = new Promise((resolve, reject) => {
+        resolveFunction = resolve;
+        rejectFunction = reject;
+      });
     
     for(let stepId in steps) {
-      let step = steps[stepId];
+      let step = steps[stepId],
+        animation = new Animation(step);
       
-      animations.push(new Animation(step));
+      animations.push(animation);
+
+      if (step.finish) {
+        animation.finishPromise.then(step.finish, step.finish);
+      }
     }
   
-    this.sequences[name] = {name, animations};
+    this.sequences[name] = {
+      name,
+      animations,
+      resolveFunction,
+      rejectFunction,
+    };
     
-    // let newLoop = Utils.asyncLoop(
-    //   steps.length,
-    //   (loop, index) => {
-    //     this.create(steps[index])
-    //       .then(() => { loop.next() });
-    //   },
-    //   () => {});
-    //
-    // this.sequences[name] = newLoop;
+    return animationPromise;
   }
 }

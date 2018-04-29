@@ -16,9 +16,9 @@ function handleError(req, res, error) {
   res.send(error.statusCode);
 }
 
-var configFile = './../config/develop.json';
+var configFile = './config/develop.json';
 var config = require(configFile);
-const socketServer = require('./socketServer.js')(io, config);
+const socketServer = require('./server/socketServer.js')(io, config);
 
 /**
 * Module variables
@@ -42,7 +42,7 @@ app.use('/', express.static('dist'));
 app.use('/static/', express.static('static'));
 
 app.use(function (req, res) {
-  var fileName = __dirname + '/../dist/index.html';
+  var fileName = __dirname + '/dist/index.html';
     fs.readFile(fileName, 'utf8', function (err,data) {
     if (err) {
       console.log(err);
