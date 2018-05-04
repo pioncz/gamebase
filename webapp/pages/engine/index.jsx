@@ -3,6 +3,8 @@ import GameComponent from 'components/gameComponent/';
 const InitialState = require('InitialState');
 import './index.sass';
 
+const NumberOfPlayers = 2;
+
 const nextId = (()=>{
   let id = 0;
   return () => {
@@ -40,6 +42,17 @@ const nextId = (()=>{
         ...action.item
       };
     });
+  },
+  randomPlayer = () => {
+    let id = nextId();
+  
+    return {
+      id,
+      color: randomColor('rgb'),
+      avatar: '/static/avatar6.jpg',
+      name: 'Name ' + id,
+      index: null,
+    }
   };
 
 export default class Engine extends Component {
@@ -124,32 +137,31 @@ export default class Engine extends Component {
     });
   }
   initGame() {
-    let playerId = nextId(),
-      color = randomColor('rgb'),
-      currentPlayerId = 0,
-      newPlayer = {
-        id: playerId,
-        color,
-        avatar: '/static/avatar6.jpg',
-        name: 'Name ' + playerId,
-        index: currentPlayerId,
-      },
-      newPawns = InitialState().pawns.slice(0,4);
-
-    for(let pawnI in newPawns) {
-      let pawn = newPawns[pawnI];
-      
-      pawn.color = color;
-      pawn.playerId = playerId;
+    let newPlayers = [],
+      newPawns;
+  
+    for(let i = 0; i < NumberOfPlayers; i++) {
+      let newPlayer = randomPlayer();
+      newPlayer.index = newPlayers.length;
+      newPlayers.push(newPlayer);
     }
     
+    newPawns = InitialState().pawns.slice(0,4*NumberOfPlayers);
+    
+    for(let pawnI in newPawns) {
+      let pawn = newPawns[pawnI],
+        player = newPlayers[Math.floor(pawnI / 4)];
+      
+      pawn.color = player.color;
+      pawn.playerId = player.id;
+    }
     
     if (!this.state.pawns.length) {
       this.setState({
         pawns: newPawns,
-        players: [newPlayer],
+        players: newPlayers,
         selectedPawnId: newPawns[0].id,
-        currentPlayerId: currentPlayerId,
+        currentPlayerId: newPawns[0].playerId,
       });
     }
   }
