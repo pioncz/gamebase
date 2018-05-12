@@ -3,6 +3,7 @@ import GameComponent from 'components/gameComponent/';
 const InitialState = require('InitialState');
 import './index.sass';
 import BoardUtils from 'BoardUtils';
+import Timer from 'components/timer';
 
 const NumberOfPlayers = 2;
 
@@ -70,6 +71,7 @@ export default class Engine extends Component {
     };
   
     this.gameComponent = null;
+    this.timerComponent = null;
     this.connectorInstance = this.props.connectorInstance;
     
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -190,6 +192,8 @@ export default class Engine extends Component {
         currentPlayerId: newPawns[0].playerId,
       });
     }
+    
+    this.timerComponent.start(5*60*1000);
   }
   onPawnClick(pawnId) {
     this.setState({
@@ -227,12 +231,13 @@ export default class Engine extends Component {
         </div>
       </div>
       <GameComponent
-        ref={(element) => {this.gameComponent = element; }}
+        ref={(element) => { this.gameComponent = element; }}
         onClick={this.handleClick}
         pawns={this.state.pawns}
         players={this.state.players}
         moves={this.state.moves}
       />
+      <Timer ref={(element) => { this.timerComponent = element; }}/>
     </div>;
   }
 }

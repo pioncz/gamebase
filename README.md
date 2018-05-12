@@ -19,7 +19,7 @@ TO DO, PLAN GRY
 + blokada grania gdy poprzedni gracz jeszcze gra
 + czasy animacji ruchu pionka i rzutu kostka zapisane w Config.ludo
 + jak gracz A stanie na pionku gracza B, to pionek gracza B wraca na spawn
-- timer - dlugosc gry ustalana z serwera - widoczny na gorze mapy - kolor aktualnego gracza
++ timer - dlugosc gry ustalana z serwera - widoczny na gorze mapy - kolor aktualnego gracza
 - naprawic nowa rozgrywke
 - profile graczy przy starcie wysuwaja sie z prawej i lewej strony
 - najpierw leci kostka, a potem pionek sie rusza - nie na raz

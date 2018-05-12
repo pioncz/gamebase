@@ -4,6 +4,7 @@ import InitialPage from './initialPage';
 import Modal from 'components/modal/index';
 import Button from 'components/button/index';
 import './index.sass';
+import Timer from 'components/timer';
 
 const Pages = {
   Initial: 'Initial',
@@ -29,6 +30,7 @@ export default class Ludo extends Component {
       players: [],
       pawns: [],
       winner: null,
+      timestamp: null,
     };
     
     this.handleClick = this.handleClick.bind(this);
@@ -36,13 +38,16 @@ export default class Ludo extends Component {
     this.selectColor = this.selectColor.bind(this);
     this.roll = this.roll.bind(this);
     this.initSocketEvents = this.initSocketEvents.bind(this);
+  
+    this.timerComponent = null;
     
+    this.props.setInGame();
+  }
+  componentDidMount() {
     if (this.props.connectorInstance) {
       this.connectorInstance = this.props.connectorInstance;
       this.initSocketEvents(this.connectorInstance);
     }
-    
-    this.props.setInGame();
   }
   componentWillUnmount() {
     if (this.connectorInstance) {
@@ -66,7 +71,9 @@ export default class Ludo extends Component {
         yourPlayerId: gameState.yourPlayerId,
         page: Pages.Game,
         pawns: gameState.pawns,
+        timestamp: gameState.timestamp,
       });
+      this.timerComponent.start(gameState.timestamp - Date.now());
     });
     connectorInstance.socket.on('roll', ({diceNumber}) => {
       this.gameComponent.engine.board.dice.roll(diceNumber);
@@ -112,7 +119,7 @@ export default class Ludo extends Component {
   }
   render() {
     let currentModal,
-      {page, players, winner} = this.state,
+      {page, players, winner, pawns, timestamp} = this.state,
       playersOverlay;
     
     if (page === Pages.Initial) {
@@ -193,11 +200,12 @@ export default class Ludo extends Component {
       <GameComponent
         ref={(element) => {this.gameComponent = element; }}
         onClick={this.handleClick}
-        pawns={this.state.pawns}
-        players={this.state.players}
+        pawns={pawns}
+        players={players}
       />
       {playersOverlay}
       {currentModal}
+      {timestamp !== null && <Timer ref={(element) => { this.timerComponent = element; }}/>}
     </div>);
   }
 }
