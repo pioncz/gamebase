@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import GameComponent from 'components/gameComponent/';
 const InitialState = require('InitialState');
 import './index.sass';
+import BoardUtils from 'BoardUtils';
 
 const NumberOfPlayers = 2;
 
@@ -93,14 +94,19 @@ export default class Engine extends Component {
     }
     
     try {
-      let moves = this.gameComponent.checkMoves(pawns, +pawnInput,this.state.currentPlayerId);
+      let moves = this.gameComponent.checkMoves(pawns, +pawnInput, this.state.currentPlayerId);
       
       if (moves.length) {
         let move = moves.find(move => move.pawnId === selectedPawnId);
           
         if (move && move.fieldSequence.length) {
           let fieldSequence = move.fieldSequence || [],
-            lastField = fieldSequence[fieldSequence.length - 1];
+            lastField = fieldSequence[fieldSequence.length - 1],
+            anotherPawns = pawns.filter(pawn =>
+              pawn.playerId !== this.state.currentPlayerId &&
+              pawn.x === lastField.x &&
+              pawn.z === lastField.z
+            ) || [];
           
           this.gameComponent.movePawn({pawnId: pawn.id, fieldSequence})
             .then(() =>{
@@ -111,6 +117,25 @@ export default class Engine extends Component {
                 pawns: updateObjectInArray(this.state.pawns, {id: pawn.id, item: {x: newX, z: newZ} })
               });
             });
+  
+          if (anotherPawns.length) {
+            let anotherPawn = anotherPawns[0],
+              anotherPawnSpawnFields = BoardUtils.getSpawnFields(pawns, anotherPawn.playerIndex),
+              spawnField = (anotherPawnSpawnFields && anotherPawnSpawnFields[0]) || null,
+              anotherPawnMove = { pawnId: anotherPawn.id, fieldSequence: [spawnField] };
+    
+            if (anotherPawnMove) {
+              this.gameComponent.movePawn(anotherPawnMove)
+                .then(() =>{
+                  let newX = spawnField.x,
+                    newZ = spawnField.z;
+      
+                  this.setState({
+                    pawns: updateObjectInArray(this.state.pawns, {id: anotherPawnMove.pawnId, item: {x: newX, z: newZ} })
+                  });
+                });
+            }
+          }
         } else {
           log('No possible move for this pawn and dice value')
         }
@@ -154,6 +179,7 @@ export default class Engine extends Component {
       
       pawn.color = player.color;
       pawn.playerId = player.id;
+      pawn.playerIndex = player.index;
     }
     
     if (!this.state.pawns.length) {

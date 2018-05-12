@@ -24,10 +24,10 @@ const Fields = require('./Fields'),
       startFieldIndex = Fields.findIndex((field)=> areFieldsEqual(field, pawn)),
       startField = startFieldIndex > -1 && Fields[startFieldIndex],
       isFieldOccupied = (field) => {
-        let fieldOccupied = pawns.find(f => f.z === field.z && f.x === field.x);
+        let fieldOccupied = pawns.find(f => f.z === field.z && f.x === field.x && f.playerId === field.playerId);
         return !!fieldOccupied;
       };
-  
+    
     if (!startField) return [];
     
     if (startField.type === FieldType.spawn) {
@@ -72,12 +72,23 @@ const Fields = require('./Fields'),
       }
     }
 
-    // If last field is taken by another pawn, return []
+    // If last field is taken by another pawn of same player, return []
     if (fieldSequence.length && isFieldOccupied(fieldSequence[fieldSequence.length - 1])) {
       fieldSequence = [];
     }
-
+    
     return fieldSequence;
+  },
+  getSpawnFields = (pawns, playerIndex) => {
+    let goalFields = Fields.filter(field =>
+      field.playerIndex === playerIndex &&
+      field.type === FieldType.spawn
+    ),
+      emptyGoalFields = goalFields.filter(field =>
+        pawns.findIndex(pawn => (pawn.x === field.x && pawn.z === field.z)) === -1
+      );
+    
+    return emptyGoalFields;
   },
   checkMoves = (pawns, diceNumber, playerIndex) => {
     let avaiableMoves = [];
@@ -102,4 +113,5 @@ module.exports = {
   getFieldSequence,
   checkMoves,
   getFieldByPosition,
+  getSpawnFields,
 };

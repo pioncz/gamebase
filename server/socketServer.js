@@ -84,6 +84,7 @@ module.exports = function (io, config) {
       
       initialState.players.forEach((player, index) => {
         for(var i = 0; i < 4; i++) {
+          initialState.pawns[(index * 4 + i)].playerIndex = index;
           initialState.pawns[(index * 4 + i)].playerId = player.id;
           initialState.pawns[(index * 4 + i)].color = player.color;
         }
@@ -289,7 +290,7 @@ module.exports = function (io, config) {
         !room.rolled &&
         (!room.nextRollTimestamp || Date.now() > room.nextRollTimestamp)) {
         // look for first pawn he can move
-        let playerPawns = room.pawns.filter((pawn) => {
+        let playerPawns = room.pawns.filter(pawn => {
           return pawn.playerId === player.id;
         });
         
@@ -300,12 +301,31 @@ module.exports = function (io, config) {
         if (moves.length) {
           let move = moves[0],
             pawn = playerPawns.find(p => p.id === move.pawnId),
-            lastField = move.fieldSequence[move.fieldSequence.length - 1];
+            lastField = move.fieldSequence[move.fieldSequence.length - 1],
+            anotherPawns = room.pawns.filter(pawn =>
+              pawn.playerId !== player.id &&
+              pawn.x === lastField.x &&
+              pawn.z === lastField.z
+            ) || [];
   
           room.nextRollTimestamp = Date.now() + Math.max(config.ludo.animations.movePawn * move.fieldSequence.length, config.ludo.animations.rollDice);
           io.to(room.name).emit('pawnMove', move);
+          
           pawn.x = lastField.x;
           pawn.z = lastField.z;
+          
+          if (anotherPawns.length) {
+            let anotherPawn = anotherPawns[0],
+              anotherPawnSpawnFields = BoardUtils.getSpawnFields(room.pawns, anotherPawn.playerIndex),
+              spawnField = (anotherPawnSpawnFields && anotherPawnSpawnFields[0]) || null,
+              anotherPawnMove = { pawnId: anotherPawn.id, fieldSequence: [spawnField] };
+  
+              if (anotherPawnMove) {
+                anotherPawn.x = spawnField.x;
+                anotherPawn.z = spawnField.z;
+                io.to(room.name).emit('pawnMove', anotherPawnMove);
+              }
+          }
           
           if (lastField.type === FieldType.goal) {
             console.log('player win!');

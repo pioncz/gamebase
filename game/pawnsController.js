@@ -81,7 +81,7 @@ export default class PawnsController {
       });
     }
     
-    return this.animations.createSequence({name: 'movePawn', steps: animationsSteps});
+    return this.animations.createSequence({name: 'movePawn'+pawnId, steps: animationsSteps});
   }
   getPawn(pawnId) {
     return this.pawns[pawnId];
