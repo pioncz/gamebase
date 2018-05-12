@@ -40,11 +40,12 @@ export default class Ludo extends Component {
     this.initSocketEvents = this.initSocketEvents.bind(this);
   
     this.timerComponent = null;
+    this.connectorInstance = this.props.connectorInstance;
     
     this.props.setInGame();
   }
   componentDidMount() {
-    if (this.props.connectorInstance) {
+    if (this.connectorInstance) {
       this.connectorInstance = this.props.connectorInstance;
       this.initSocketEvents(this.connectorInstance);
     }
@@ -100,21 +101,19 @@ export default class Ludo extends Component {
   });
   }
   selectColor(color) {
-    this.props.connectorInstance.socket.emit('selectColor', color);
+    this.connectorInstance.socket.emit('selectColor', color);
   }
   roll() {
     //this.gameComponent.engine.board.dice.roll(1);
-    this.props.connectorInstance.socket.emit('roll');
+    this.connectorInstance.socket.emit('roll');
   }
   handleClick() {
     this.roll();
   }
   joinQueue() {
-    if (this.props.connectorInstance) {
-      this.props.connectorInstance.joinQueue({
-        game: 'ludo'
-      });
-    }
+    this.connectorInstance.joinQueue({
+      game: 'ludo'
+    });
     this.setState({page: Pages.Queue});
   }
   render() {

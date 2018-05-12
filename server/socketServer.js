@@ -134,7 +134,20 @@ module.exports = function (io, config) {
     destroyRoom = (room) => {
       if (!room) return;
       
+      for(let i = room.players.length -1; i > 0; i--) {
+        let player = room.players[i],
+          occupiedIndex = occupiedSocketIds.indexOf(player.socketId);
+        
+        if (occupiedIndex > -1) {
+          occupiedSocketIds.splice(occupiedIndex, 1);
+        }
+        
+        room.players.splice(i, 1);
+      }
+      
       delete games[room.game][room.id];
+      
+      console.log('destroyed room ' + room.name);
     },
     leaveGame = ({socketId}) => {
       let socketData = sockets[socketId],
@@ -221,6 +234,7 @@ module.exports = function (io, config) {
       }
       
       if (isSocketOccupied(socket)) {
+        console.log('user ' + sockets[socket.id].player.name + ' already in queue or game');
         socket.emit('console', 'user already in queue or game');
         return;
       }
@@ -243,6 +257,7 @@ module.exports = function (io, config) {
       
       occupiedSocketIds.push(socket.id);
       
+      console.log('user ' + socketData.player.name + ' joins queue(' + room.players.length + '/2) in ' + room.name);
       if (room.players.length >= MinPlayers) {
         delete queues[game][room.id];
         games[game][room.id] = room;
