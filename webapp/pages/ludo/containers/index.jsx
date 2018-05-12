@@ -119,7 +119,8 @@ export default class Ludo extends Component {
   render() {
     let currentModal,
       {page, players, winner, pawns, timestamp} = this.state,
-      playersOverlay;
+      playersOverlay,
+      profiles;
     
     if (page === Pages.Initial) {
       currentModal = <Modal open={true}>
@@ -178,22 +179,29 @@ export default class Ludo extends Component {
     }
     
     if (players && players.length) {
-      let playerProfiles = players.map((player, index) => {
-        return <div key={player.id} className={"player player-" + index}>
-          <div className="player-name">
-            {player.name}
-            {player.id === this.state.currentPlayerId && <p className={'arrow ' + (index%2?'right':'left')}></p>}
-          </div>
-          <img src={player.avatar} style={{
-            [(index%2?'borderLeft':'borderRight')]: "3px solid " + player.color
-          }} />
-        </div>;
-      });
-  
-      playersOverlay = <div className="player-profiles">
-        {playerProfiles}
-      </div>;
+      profiles = players;
+    } else {
+      profiles = [{id:0, name: '', avatar: null, color: ''},
+        {id:1, name: '', avatar: null, color: ''},
+        {id:2, name: '', avatar: null, color: ''},
+        {id:3, name: '', avatar: null, color: ''}];
     }
+  
+    let playerProfiles = profiles.map((player, index) => {
+      return <div key={index} className={"player player-" + index + (page !== Pages.Game?' player--hidden':'')}>
+        <div className="player-name">
+          {player.name}
+          {player.id === this.state.currentPlayerId && <p className={'arrow ' + (index%2?'right':'left')}></p>}
+        </div>
+        <img src={player.avatar} style={{
+          [(index%2?'borderLeft':'borderRight')]: "3px solid " + player.color
+        }} />
+      </div>;
+    });
+  
+    playersOverlay = <div className="player-profiles">
+      {playerProfiles}
+    </div>;
     
     return (<div className="ludo">
       <GameComponent

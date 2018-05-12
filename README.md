@@ -21,8 +21,8 @@ TO DO, PLAN GRY
 + jak gracz A stanie na pionku gracza B, to pionek gracza B wraca na spawn
 + timer - dlugosc gry ustalana z serwera - widoczny na gorze mapy - kolor aktualnego gracza
 + naprawic nowa rozgrywke
-- profile graczy przy starcie wysuwaja sie z prawej i lewej strony
-- najpierw leci kostka, a potem pionek sie rusza - nie na raz
++ profile graczy przy starcie wysuwaja sie z prawej i lewej strony
+-- najpierw leci kostka, a potem pionek sie rusza - nie na raz
 - przy profilu aktualnego gracza, progress jego kolejki
 - wybor pionka
 - gdy ktos w pokoju gracza wyjdzie, a on dolaczy do nowej rozgrywki, to w pickColor modalu nie wybiera zadnego koloru

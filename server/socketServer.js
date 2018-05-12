@@ -92,6 +92,12 @@ module.exports = function (io, config) {
 
       // Remove pawns for not connected players
       initialState.pawns.splice(playersLength * 4, (4 - playersLength) * 4);
+      // initialState.pawns[4].playerIndex = 1;
+      // initialState.pawns[4].playerId = '2222';
+      // initialState.pawns[4].color = 'black';
+  
+      initialState.timestamp = Date.now() + 5 * 60 * 1000;
+      
       room.state.currentPlayerId = room.players[0].id;
       initialState.currentPlayerId = room.state.currentPlayerId;
   
@@ -227,7 +233,7 @@ module.exports = function (io, config) {
     socket.on('joinQueue', function (options) {
       let game = options.game,
         room;
-      
+      console.log('joinQueue');
       if (!game) {
         socket.emit('console', 'no game specified');
         return;
@@ -310,7 +316,7 @@ module.exports = function (io, config) {
         });
         
         let diceNumber = parseInt(Math.random()*6)+1; // 1-6
-
+        diceNumber=1;
         let moves = BoardUtils.checkMoves(playerPawns, diceNumber, playerIndex);
 
         if (moves.length) {

@@ -54,10 +54,10 @@ export default class Dice {
     canvas.width = width;
     canvas.height = height;
   
-    ctx.fillStyle = "#f6f6f5";
+    ctx.fillStyle = '#f6f6f5'; // '#ffbbe4';
     ctx.fillRect(0, 0, width, height);
     
-    ctx.fillStyle = "#1e1e1e";
+    ctx.fillStyle = "#1e1e1e"; // '#fff'
     let dots = dotPositions[number];
     for(let dotI in dots) {
       let dot = dots[dotI];
