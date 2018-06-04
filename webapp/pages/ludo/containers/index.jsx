@@ -17,6 +17,69 @@ const Pages = {
   Winner: 'Winner',
 };
 
+class Progress extends Component {
+  constructor(props) {
+    super(props);
+    
+    this.update = this.update.bind(this);
+    
+    let interval = null;
+  
+    if (props.startTimestamp && props.endTimestamp) {
+      interval = window.setInterval(this.update, 50);
+    }
+    
+    this.state = {
+      startTimestamp: props.startTimestamp,
+      endTimestamp: props.endTimestamp,
+      length: 0,
+      interval: interval,
+    };
+  }
+  componentWillReceiveProps(nextProps) {
+    const { startTimestamp, endTimestamp } = this.props,
+      timestampsChanged = startTimestamp !== nextProps.startTimestamp || endTimestamp !== nextProps.endTimestamp;
+    
+    if (timestampsChanged) {
+      this.stop();
+      
+    }
+  }
+  stop() {
+    const { interval } = this.state;
+  
+    interval && window.clearInterval(interval);
+    this.setState({
+      interval: null,
+      startTimestamp: null,
+      endTimestamp: null,
+      length: 0,
+    });
+  }
+  update() {
+    const { startTimestamp, endTimestamp} = this.state;
+    let length = (Date.now() - startTimestamp)/(endTimestamp - startTimestamp);
+    if (length < 0) {
+      window.clearInterval(this.state.interval);
+    }
+    length = Math.min(Math.max(Math.round((length*100)), 0), 1);
+    
+    this.setState({
+      length,
+    });
+  }
+  render() {
+    const { length } = this.state;
+    
+    let progressStyle = {
+      width: length + '%',
+      background: '#fff',
+    };
+    
+    return <div className="player-progress" style={progressStyle} />;
+  }
+}
+
 export default class Ludo extends Component {
   constructor(props) {
     super(props);
@@ -31,7 +94,19 @@ export default class Ludo extends Component {
       pawns: [],
       winner: null,
       timestamp: null,
+      nextRollTimestamp: null,
+      nextRollLength: null,
     };
+    
+    // this.state.currentPlayerId = '2';
+    // this.state.page = 'Game';
+    // this.state.pawns = [];
+    // this.state.players = [
+    //   {id:0, name: 'd1', avatar: null, color: ''},
+    //   {id:1, name: 'd2', avatar: null, color: ''},
+    //   {id:2, name: 'd3', avatar: null, color: ''},
+    //   {id:3, name: 'd4', avatar: null, color: ''},
+    // ];
     
     this.handleClick = this.handleClick.bind(this);
     this.joinQueue = this.joinQueue.bind(this);
@@ -89,15 +164,17 @@ export default class Ludo extends Component {
         currentPlayerId: newGameState.currentPlayerId,
         winner: newGameState.winner,
         page: (newGameState.winner?Pages.Winner:this.state.page),
+        nextRollTimestamp: newGameState.nextRollTimestamp,
+        nextRollLength: newGameState.nextRollLength,
       });
     });
     connectorInstance.socket.on('updatePlayers', (newPlayers) => {
-    // Leave game when someone leaves
-    connectorInstance.socket.emit('leaveGame');
-    // Show modal that someone disconnected with cta: search new game
-    this.setState({
-      page: Pages.Disconnected,
-    });
+      // Leave game when someone leaves
+      connectorInstance.socket.emit('leaveGame');
+      // Show modal that someone disconnected with cta: search new game
+      this.setState({
+        page: Pages.Disconnected,
+      });
   });
   }
   selectColor(color) {
@@ -118,7 +195,7 @@ export default class Ludo extends Component {
   }
   render() {
     let currentModal,
-      {page, players, winner, pawns, timestamp} = this.state,
+      {page, players, winner, pawns, timestamp, nextRollTimestamp, currentPlayerId, nextRollLength} = this.state,
       playersOverlay,
       profiles;
     
@@ -188,10 +265,22 @@ export default class Ludo extends Component {
     }
   
     let playerProfiles = profiles.map((player, index) => {
+      let startTimestamp = null,
+        endTimestamp = null;
+      
+      if (nextRollTimestamp && player.id === currentPlayerId) {
+        startTimestamp = nextRollTimestamp - nextRollLength;
+        endTimestamp = nextRollTimestamp;
+  
+        startTimestamp = Date.now();
+        endTimestamp = startTimestamp + 8000;
+      }
+      
       return <div key={index} className={"player player-" + index + (page !== Pages.Game?' player--hidden':'')}>
         <div className="player-name">
           {player.name}
-          {player.id === this.state.currentPlayerId && <p className={'arrow ' + (index%2?'right':'left')}></p>}
+          {player.id === currentPlayerId && <p className={'arrow ' + (index%2?'right':'left')}></p>}
+          <Progress startTimestamp={startTimestamp} endTimestamp={endTimestamp} />
         </div>
         <img src={player.avatar} style={{
           [(index%2?'borderLeft':'borderRight')]: "3px solid " + player.color
