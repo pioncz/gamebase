@@ -1,4 +1,32 @@
-const Player = require('./../ludo/Player.js');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: socketServer.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: socketServer.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const Player = require('./../ludo/Player.js');
 const InitialState = require('./../ludo/InitialState.js');
 const Fields = require('./../ludo/Fields.js');
 const BoardUtils = require('./../ludo/BoardUtils.js');
@@ -63,7 +91,7 @@ module.exports = function (io, config) {
     pickColor = ({room}) => {
       const queueColors = [],
         getColor = (color) => {
-          for(let i = 0; i < queueColors.length; i++) {
+          for(let i = 0; i &lt; queueColors.length; i++) {
             if (queueColors[i].color === color) {
               return queueColors[i];
             }
@@ -89,7 +117,7 @@ module.exports = function (io, config) {
       initialState.players = room.players;
       
       initialState.players.forEach((player, index) => {
-        for(var i = 0; i < 4; i++) {
+        for(var i = 0; i &lt; 4; i++) {
           initialState.pawns[(index * 4 + i)].playerIndex = index;
           initialState.pawns[(index * 4 + i)].playerId = player.id;
           initialState.pawns[(index * 4 + i)].color = player.color;
@@ -176,7 +204,7 @@ module.exports = function (io, config) {
       let playerIndex = room.players.findIndex(player => {
         return player.socketId === socketId;
       });
-      playerIndex > -1 && room.players.splice(playerIndex, 1);
+      playerIndex > -1 &amp;&amp; room.players.splice(playerIndex, 1);
       
       // Finish game if theres one or less players
       if (room.players.length) {
@@ -202,7 +230,7 @@ module.exports = function (io, config) {
     finishGame = (room, player) => {
       if (!room) return;
       
-      room.state.winner = (player && player.id) || null;
+      room.state.winner = (player &amp;&amp; player.id) || null;
       io.to(room.name).emit('updateGame', room.state);
   
       destroyRoom(room);
@@ -289,11 +317,11 @@ module.exports = function (io, config) {
       let socketData = sockets[socket.id],
         room = socketData.room,
         player = socketData.player,
-        canChangeColor = room && room.queueColors && !player.color;
+        canChangeColor = room &amp;&amp; room.queueColors &amp;&amp; !player.color;
   
       if (canChangeColor) {
         room.queueColors.forEach((queueColor) => {
-          if (queueColor.color === color && !queueColor.selected) {
+          if (queueColor.color === color &amp;&amp; !queueColor.selected) {
             queueColor.selected = true;
             player.color = color;
             queueColorsChanged(room);
@@ -313,8 +341,8 @@ module.exports = function (io, config) {
         console.log('not in a room');
       }
       //check if its this players turn
-      else if (room.state.currentPlayerId === player.id &&
-        !room.rolled &&
+      else if (room.state.currentPlayerId === player.id &amp;&amp;
+        !room.rolled &amp;&amp;
         (!room.state.nextRollTimestamp || Date.now() > room.state.nextRollTimestamp)) {
         // look for first pawn he can move
         let playerPawns = room.pawns.filter(pawn => {
@@ -330,8 +358,8 @@ module.exports = function (io, config) {
             pawn = playerPawns.find(p => p.id === move.pawnId),
             lastField = move.fieldSequence[move.fieldSequence.length - 1],
             anotherPawns = room.pawns.filter(pawn =>
-              pawn.playerId !== player.id &&
-              pawn.x === lastField.x &&
+              pawn.playerId !== player.id &amp;&amp;
+              pawn.x === lastField.x &amp;&amp;
               pawn.z === lastField.z
             ) || [];
   
@@ -345,7 +373,7 @@ module.exports = function (io, config) {
           if (anotherPawns.length) {
             let anotherPawn = anotherPawns[0],
               anotherPawnSpawnFields = BoardUtils.getSpawnFields(room.pawns, anotherPawn.playerIndex),
-              spawnField = (anotherPawnSpawnFields && anotherPawnSpawnFields[0]) || null,
+              spawnField = (anotherPawnSpawnFields &amp;&amp; anotherPawnSpawnFields[0]) || null,
               anotherPawnMove = { pawnId: anotherPawn.id, fieldSequence: [spawnField] };
   
               if (anotherPawnMove) {
@@ -379,4 +407,26 @@ module.exports = function (io, config) {
       }
     });
   });
-};
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Classes</h3><ul><li><a href="module.exports.html">exports</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri May 25 2018 17:39:27 GMT+0200 (Central European Daylight Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
