@@ -6,7 +6,7 @@ import withConnector from 'components/withConnector/index.jsx'
 
 export default {
   Home,
-  Admin,
+  Admin: withConnector(Admin),
   Ludo: withConnector(Ludo),
   Engine: withConnector(Engine),
 }

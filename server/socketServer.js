@@ -444,6 +444,14 @@ class WebsocketServer {
           console.log('not his turn');
         }
       });
+  
+      socket.on('getStats', function () {
+        socket.emit('statsUpdate', {
+          connections,
+          rooms,
+          players,
+        });
+      });
     });
   }
 }
