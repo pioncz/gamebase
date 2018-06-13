@@ -1,5 +1,48 @@
 TO DO, PLAN GRY
 
+// server should wait for user interaction to generate new actions
+// actions are usually blocking - determined by finishTimestamp - and while so, may not generate new actions
+// server loop proceeds finishTimestamps to generate new 'waiting'
+
+room.playerIds = ['22','s31','1','2']; // queue order
+room.state = {
+  winnerId: null,
+  colorsQueue, 
+  playerColors,
+  inQueue: false, //
+};
+room.actions = [
+ {name: 'pickColors', colors: ['1','2','3','4'], finishTimestamp: Date.now() + 6s + .3s}, //pick colors aoutmaticaly if players dont pick colors. .3s for leave queue animation
+ //after 6.3s
+ {name: 'playerPickedColor', playerId: '1', color: '1'},//action change state, finish immediately
+ {name: 'playerPickedColor', playerId: '2', color: '2'},
+ {name: 'startGame', finishTimestamp: Date.now() + .3s } // delay this action for start game animation
+ //after .3s 
+ {name: 'waitForPlayerAction', playerId: '22', finishTimestamp: Date.now() + 4s} // wait for player action
+ //up to +4s
+ {name: 'playerRolled', playerId: '22', diceValue: 0}
+ {name: 'waitForPlayerAction', playerId: 's31', finishTimestamp: Date.now() + 4s} // wait for player action
+ //after 4s
+ {name: 'waitForPlayerAction', playerId: '1', finishTimestamp: Date.now() + 4s} // wait for player action
+ {name: 'playerRolled', playerId: '22', diceValue: 6},
+ {name: 'movePawns', pawnSequences=[{pawnId: '3', sequence: []}], finishTimestamp: Date.now() + 1s} // ... emit pawn sequences to move one after one.
+ //after 1s (pawn animation length)
+ {name: 'waitForPlayerAction', playerId: '4', finishTimestamp: Date.now() + 4s} // wait for player action
+ ...
+ {name: 'gameFinished', winnerId: 's31'} //after this message room is removed
+]
+
+-1. Refaktor: 
+-socketServer: _startGame, socket.on('selectColor', 'roll'
+ 
+-wszystkie pliki ludo wrzucic do games/ludo
+-dodac ludo do Games
+-zmienic socketServer na ioConnector
+-testy serwera
+-testy poszczegolnych gier
+-testy silnika
+-panel admina - stan polaczen, kolejki, obciazenie serwera
+
 0) Informacje które są zawsze na ekranie (UI):
 +profil aktualnie zalogowanego gracza
 +wyglad navbara w trakcie gry
