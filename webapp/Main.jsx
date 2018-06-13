@@ -51,6 +51,7 @@ class Main extends Component {
           <Route exact path="/" component={Pages.Home}/>
           <Route path="/ludo" component={Pages.Ludo}/>
           <Route path="/engine" component={Pages.Engine}/>
+          <Route path="/admin" component={Pages.Admin}/>
         </div>
       </div>
     </Router>);
