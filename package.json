@@ -5,7 +5,7 @@
   "main": "webpack.config.js",
   "scripts": {
     "serve": "webpack-dev-server",
-    "start": "node --experimental-modules index.js",
+    "start": "node index.js",
     "docs": "jsdoc -c jsdoc.conf.json --readme README.md",
     "build": "webpack --watch"
   },

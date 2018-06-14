@@ -1,3 +1,5 @@
+const InitialState = require('./../ludo/InitialState.js');
+
 /**
  * Enum representing room states.
  *
@@ -5,6 +7,7 @@
  */
 const RoomStates = {
   queue: 'queue',
+  pickColors: 'pickColors',
   game: 'game',
   finished: 'finished',
 };
@@ -16,14 +19,15 @@ const RoomStates = {
 class Room {
   constructor(options) {
     this.id = options.id;
-    this.name = options.name;
+    this.config = options.config;
+    this.name = '/room' + options.id;
     this.gameName = options.gameName;
-    this.playerIds = options.playerIds;
-    
+    this.playerIds = [];
     this.rolled = options.rolled;
     this.state = {
       currentPlayerId: null,
       winnerId: null,
+      roomState: RoomStates.queue,
     };
     this.eta = options.eta || 5*60*60; //18000s
     this.actions = [];
@@ -35,7 +39,30 @@ class Room {
     return this.state;
   }
   startGame() {
-  
+    this.state.roomState = RoomStates.pickColors;
+    this.state.playerColors = [];
+    this.state.colorsQueue = [];
+    this.config.ludo.colors.forEach(color => {
+      this.state.colorsQueue.push({
+        color: color,
+        selected: false,
+      });
+    });
+    
+    // let initialState = new InitialState();
+    // this.state.pawns = initialState.pawns;
+  }
+  handleAction(action) {
+    let returnAction;
+    
+    switch(action.name) {
+      case 'pickColor':
+        break;
+      default:
+        console.log('x');
+    }
+    
+    return returnAction;
   }
 }
 

@@ -33,7 +33,7 @@ const FieldType = {
  */
 class WebsocketServer {
   constructor (io, config) {
-    const MinPlayers = 2; //per room to play
+    const MinPlayers = 1; //per room to play
     let connections = {}, // [socket.id]: {roomId, playerId}
       rooms = {},
       players = {};
@@ -41,6 +41,9 @@ class WebsocketServer {
     let _getTotalNumPlayers = () => {
         let clients = io.sockets.clients().connected;
         return Object.keys(clients).length
+      },
+      _emitRoomState = (room) => {
+        io.to(room.name).emit('roomUpdate', room.getState());
       },
       // Remove player from room, update other sockets, remove connections room.
       _leaveGame = (socketId) => {
@@ -61,7 +64,7 @@ class WebsocketServer {
         // Finish game if theres one or less players
         if (room.playerIds.length) {
           // Emit new room state
-          io.to(room.name).emit('roomUpdate', room.getState());
+          _emitRoomState(room);
         } else {
           // Remove game without players
           delete rooms[roomId];
@@ -87,16 +90,8 @@ class WebsocketServer {
         let id = nextId(),
           room = new Room({
             id: id,
-            name: '/room' + id,
+            config: config,
             gameName: gameName,
-            playerIds: [],
-            state: {
-              rolled: false,
-              currentPlayerId: 0,
-              winnerId: null,
-              nextRollTimestamp: null,
-              eta: 5*60*60, //18000s
-            },
           });
         
         return room;
@@ -342,7 +337,7 @@ class WebsocketServer {
       
         if (connection.roomId) {
           console.log('user ' + player.name + ' already in queue or game');
-          socket.emit('console', 'user already in queue or game');
+          // socket.emit('console', 'user already in queue or game');
           return;
         }
         
@@ -356,18 +351,15 @@ class WebsocketServer {
         room.playerIds.push(player.id);
         socket.join(room.name);
   
-        io.to(room.name).emit('console', 'player update: (' + room.playerIds.length + '/' + MinPlayers + ')');
+        // io.to(room.name).emit('console', 'player update: (' + room.playerIds.length + '/' + MinPlayers + ')');
         console.log('user ' + player.name + ' joins queue(' + room.playerIds.length + '/' + MinPlayers + ') in ' + room.name);
         
         if (room.playerIds.length >= MinPlayers) {
-          _startGame(room.id);
+          room.startGame();
           console.log('game started in room: ' + room.name);
-        } else {
-          socket.emit(
-            'console',
-            'user joins queue(' + room.playerIds.length + '/' + MinPlayers + ')'
-          );
         }
+  
+        _emitRoomState(room);
       });
   
       socket.on('getStats', function () {

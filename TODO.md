@@ -30,7 +30,8 @@ room.actions = [
 
 -1. Refaktor: 
 - zbudowac dokumentacje, poprawic
-
+- początkowy stan w Room.js powinien byc brany z klasy gry
+- wywalic stare metody z serwera
  
 -wszystkie pliki ludo wrzucic do games/ludo
 -dodac ludo do Games

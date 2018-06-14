@@ -132,10 +132,12 @@ export default class Ludo extends Component {
     this.props.unsetInGame();
   }
   initSocketEvents(connectorInstance) {
-    connectorInstance.socket.on('pickColor', (queueColors) => {
+    connectorInstance.socket.on('roomUpdate', (roomState) => {
+      console.log(roomState);
+      
       this.setState({
         page: Pages.PickColor,
-        queueColors,
+        queueColors: roomState.colorsQueue,
       });
     });
     connectorInstance.socket.on('startGame', (gameState) => {
