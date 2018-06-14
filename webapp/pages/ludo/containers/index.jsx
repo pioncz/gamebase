@@ -188,7 +188,7 @@ export default class Ludo extends Component {
     this.roll();
   }
   joinQueue() {
-    this.connectorInstance.joinQueue({
+    this.connectorInstance.socket.emit('findRoom', {
       game: 'ludo'
     });
     this.setState({page: Pages.Queue});

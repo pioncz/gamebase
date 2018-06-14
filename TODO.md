@@ -1,9 +1,5 @@
 TO DO, PLAN GRY
 
-// server should wait for user interaction to generate new actions
-// actions are usually blocking - determined by finishTimestamp - and while so, may not generate new actions
-// server loop proceeds finishTimestamps to generate new 'waiting'
-
 room.playerIds = ['22','s31','1','2']; // queue order
 room.state = {
   winnerId: null,
@@ -16,7 +12,7 @@ room.actions = [
  //after 6.3s
  {name: 'playerPickedColor', playerId: '1', color: '1'},//action change state, finish immediately
  {name: 'playerPickedColor', playerId: '2', color: '2'},
- {name: 'startGame', finishTimestamp: Date.now() + .3s } // delay this action for start game animation
+ {name: 'startGame', finishTimestamp: Date.now() + .3s, gameState: {} } // delay this action for start game animation
  //after .3s 
  {name: 'waitForPlayerAction', playerId: '22', finishTimestamp: Date.now() + 4s} // wait for player action
  //up to +4s
@@ -33,7 +29,8 @@ room.actions = [
 ]
 
 -1. Refaktor: 
--socketServer: _startGame, socket.on('selectColor', 'roll'
+- zbudowac dokumentacje, poprawic
+
  
 -wszystkie pliki ludo wrzucic do games/ludo
 -dodac ludo do Games
