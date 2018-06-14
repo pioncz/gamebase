@@ -4,6 +4,7 @@ const Fields = require('./../ludo/Fields.js');
 const BoardUtils = require('./../ludo/BoardUtils.js');
 const Connection = require('./Connection.js');
 const Room = require('./Room.js');
+const Games = require('./../games/Games.js');
 
 let fields = Fields;
 
@@ -33,17 +34,29 @@ const FieldType = {
  */
 class WebsocketServer {
   constructor (io, config) {
-    const MinPlayers = 1; //per room to play
+    const MinPlayers = Games.Ludo.Config.MinPlayer; //per room to play
     let connections = {}, // [socket.id]: {roomId, playerId}
       rooms = {},
       players = {};
   
-    let _getTotalNumPlayers = () => {
+    let _nextId = (() => {
+      let lastId = 0;
+  
+      return () => {
+        return ''+(lastId++);
+      };
+    })(),
+      _getTotalNumPlayers = () => {
         let clients = io.sockets.clients().connected;
         return Object.keys(clients).length
       },
       _emitRoomState = (room) => {
         io.to(room.name).emit('roomUpdate', room.getState());
+      },
+      _emitNewActions = (room, newActions) => {
+        newActions.forEach(action => {
+          io.to(room.name).emit('newAction', action);
+        });
       },
       // Remove player from room, update other sockets, remove connections room.
       _leaveGame = (socketId) => {
@@ -87,7 +100,7 @@ class WebsocketServer {
         delete connections[socketId];
       },
       _createRoom = (gameName) => {
-        let id = nextId(),
+        let id = _nextId(),
           room = new Room({
             id: id,
             config: config,
@@ -112,11 +125,6 @@ class WebsocketServer {
           
         return room;
       },
-      _startGame = (roomId) => {
-        let room = rooms[roomId];
-        
-        
-      },
       _log = (msg) => {
         let messages = msg instanceof Array ? msg : null;
         //socket.emit('console', msg);
@@ -127,182 +135,8 @@ class WebsocketServer {
         }
       };
   
-    let nextId = (() => {
-        let lastId = 0;
-      
-        return () => {
-          return ''+(lastId++);
-        };
-      })(),
-      createRoom = ({socket, game}) => {
-        let id = nextId(),
-          room = {
-            id: id,
-            name: '/room'+id,
-            game: game,
-            rolled: false,
-            players: [],
-            state: {
-              currentPlayerId: 0,
-              winner: null,
-              nextRollTimestamp: null,
-            },
-            eta: 5*60*60, //18000s
-          };
-      
-        console.log('created room: ' + room.name);
-      
-        return room;
-      },
-      isSocketOccupied = (socket) => {
-        return occupiedSocketIds.indexOf(socket.id) > -1;
-      },
-      pickColor = ({room}) => {
-        const queueColors = [],
-          getColor = (color) => {
-            for(let i = 0; i < queueColors.length; i++) {
-              if (queueColors[i].color === color) {
-                return queueColors[i];
-              }
-            }
-          };
-        config.ludo.colors.forEach((color) => {
-          queueColors.push({
-            color: color,
-            selected: false,
-          })
-        });
-        room.queueColors = queueColors;
-      
-        // Prepare players
-        io.to(room.name).emit('pickColor', queueColors);
-      },
-      startGame = (room) => {
-        let initialState = new InitialState(),// [Pawn]
-          playersLength = room.players.length;
-      
-        room.pawns = initialState.pawns;
-      
-        initialState.players = room.players;
-      
-        initialState.players.forEach((player, index) => {
-          for(var i = 0; i < 4; i++) {
-            initialState.pawns[(index * 4 + i)].playerIndex = index;
-            initialState.pawns[(index * 4 + i)].playerId = player.id;
-            initialState.pawns[(index * 4 + i)].color = player.color;
-          }
-        });
-      
-        // Remove pawns for not connected players
-        initialState.pawns.splice(playersLength * 4, (4 - playersLength) * 4);
-        // initialState.pawns[4].playerIndex = 1;
-        // initialState.pawns[4].playerId = '2222';
-        // initialState.pawns[4].color = 'black';
-      
-        initialState.timestamp = Date.now() + 5 * 60 * 1000;
-      
-        room.state.currentPlayerId = room.players[0].id;
-        initialState.currentPlayerId = room.state.currentPlayerId;
-      
-        room.players.forEach((player) => {
-          let newInitialState = Object.assign({}, initialState);
-          newInitialState.yourPlayerId = player.id;
-        
-          io.to(player.socketId).emit('startGame', newInitialState);
-        });
-      },
-      findRoom = ({socket, game}) => {
-        let room;
-      
-        if (!Object.keys(queues[game]).length) {
-          room = createRoom({socket, game});
-          queues[game][room.id] = room;
-        } else {
-          // Find room for player
-          let roomId = Object.keys(queues[game])[0];
-          room = queues[game][roomId];
-        }
-      
-        return room;
-      },
-      queueColorsChanged = (room) => {
-        let playersWithColor = room.players.reduce((previousValue, currentValue) => {
-          return previousValue + (currentValue.color?1:0);
-        }, 0);
-      
-        if (playersWithColor >= MinPlayers) {
-          startGame(room);
-        } else {
-          io.to(room.name).emit('pickColor', room.queueColors);
-        }
-      },
-      destroyRoom = (room) => {
-        if (!room) return;
-      
-        for(let i = room.players.length -1; i > 0; i--) {
-          let player = room.players[i],
-            occupiedIndex = occupiedSocketIds.indexOf(player.socketId);
-        
-          if (occupiedIndex > -1) {
-            occupiedSocketIds.splice(occupiedIndex, 1);
-          }
-        
-          room.players.splice(i, 1);
-        }
-      
-        delete games[room.game][room.id];
-      
-        console.log('destroyed room ' + room.name);
-      },
-      leaveGame = ({socketId}) => {
-        let socketData = sockets[socketId],
-          room = socketData.room;
-      
-        if (!room) return;
-      
-        // Remove socketId from occupiedSocketIds
-        let index = occupiedSocketIds.indexOf(socketId);
-        if (index > -1) {
-          occupiedSocketIds.splice(index, 1);
-        }
-        // Update room players
-        let playerIndex = room.players.findIndex(player => {
-          return player.socketId === socketId;
-        });
-        playerIndex > -1 && room.players.splice(playerIndex, 1);
-      
-        // Finish game if theres one or less players
-        if (room.players.length) {
-          // Emit new player state
-          io.to(room.name).emit('updatePlayers', room.players);
-        } else {
-          // Remove game without players
-          destroyRoom(room);
-        }
-      },
-      checkWin = (playerPawns) => {
-        for(let pawnI in playerPawns) {
-          let pawn = playerPawns[pawnI],
-            field = BoardUtils.getFieldByPosition(pawn.x, pawn.z);
-        
-          if (field.type !== FieldType.goal) {
-            return false;
-          }
-        }
-      
-        return true;
-      },
-      finishGame = (room, player) => {
-        if (!room) return;
-      
-        room.state.winner = (player && player.id) || null;
-        io.to(room.name).emit('updateGame', room.state);
-      
-        destroyRoom(room);
-      };
-  
     io.on('connection', function (socket) {
-      let playerId = nextId(),
+      let playerId = _nextId(),
         newPlayer = new Player({name: 'name' + playerId, id: playerId, socketId: socket.id});
     
       players[playerId] = newPlayer;
@@ -314,6 +148,8 @@ class WebsocketServer {
   
       _log('connected to socket server. currently ' + _getTotalNumPlayers() + ' online.');
     
+      socket.emit('player', newPlayer);
+      
       socket.on('disconnect', () => {
         _destroyConnection(socket.id);
       });
@@ -328,7 +164,7 @@ class WebsocketServer {
           connection = connections[socket.id],
           player = connection.playerId && players[connection.playerId];
       
-        _log('Player requestes findRoom');
+        _log(`player ${player.name} requests findRoom`);
 
         if (!game || !connection || !player) {
           _log('Invalid data, cannot find room.');
@@ -344,22 +180,53 @@ class WebsocketServer {
         room = _findRoom(game);
         if (!room) {
           _log('create new room');
-          room = _createRoom(game);
+          room = _createRoom(Games.Ludo.Name);
           rooms[room.id] = room;
         }
         connection.roomId = room.id;
         room.playerIds.push(player.id);
         socket.join(room.name);
-  
-        // io.to(room.name).emit('console', 'player update: (' + room.playerIds.length + '/' + MinPlayers + ')');
-        console.log('user ' + player.name + ' joins queue(' + room.playerIds.length + '/' + MinPlayers + ') in ' + room.name);
+        player.roomId = room.id;
+        
+        console.log(`player ${player.name} joins queue(${room.playerIds.length}/${MinPlayers}) in ${room.name}`);
         
         if (room.playerIds.length >= MinPlayers) {
-          room.startGame();
+          let playersFromRoom = [];
+  
+          room.playerIds.forEach(playerId => {
+            playersFromRoom.push(players[playerId]);
+          });
+          
+          room.startGame(playersFromRoom);
           console.log('game started in room: ' + room.name);
         }
   
         _emitRoomState(room);
+      });
+      
+      socket.on('callAction', action => {
+        if (!action || !action.type) {
+          _log('Invalid action');
+          return;
+        }
+  
+        let connection = connections[socket.id],
+          player = connection.playerId && players[connection.playerId],
+          room = connection.roomId && rooms[connection.roomId];
+          
+        if (!connection || !player || !room) {
+          _log('player is not in a room.');
+          return;
+        }
+  
+        _log(`player ${player.name} calls action: ${action.type}`);
+        
+        let newActions = room.handleAction(action, player);
+        if (newActions) {
+          _log(`newAction emitted: ${newActions}`);
+          room.actions = room.actions.concat(newActions);
+          _emitNewActions(room, newActions);
+        }
       });
   
       socket.on('getStats', function () {
@@ -369,101 +236,6 @@ class WebsocketServer {
           players,
         });
       });
-      
-      // should be 'callAction'
-      // socket.on('selectColor', function (color) {
-      //   let socketData = sockets[socket.id],
-      //     room = socketData.room,
-      //     player = socketData.player,
-      //     canChangeColor = room && room.queueColors && !player.color;
-      //
-      //   if (canChangeColor) {
-      //     room.queueColors.forEach((queueColor) => {
-      //       if (queueColor.color === color && !queueColor.selected) {
-      //         queueColor.selected = true;
-      //         player.color = color;
-      //         queueColorsChanged(room);
-      //         return;
-      //       }
-      //     });
-      //   }
-      // });
-      //
-      // socket.on('roll', function () {
-      //   //get sockets room
-      //   let room = sockets[socket.id].room,
-      //     player = sockets[socket.id].player,
-      //     playerIndex = sockets[socket.id].playerIndex;
-      //
-      //   if (!room) {
-      //     console.log('not in a room');
-      //   }
-      //   //check if its this players turn
-      //   else if (room.state.currentPlayerId === player.id &&
-      //     !room.rolled &&
-      //     (!room.state.nextRollTimestamp || Date.now() > room.state.nextRollTimestamp)) {
-      //     // look for first pawn he can move
-      //     let playerPawns = room.pawns.filter(pawn => {
-      //       return pawn.playerId === player.id;
-      //     });
-      //  
-      //     let diceNumber = parseInt(Math.random()*6)+1; // 1-6
-      //     // diceNumber=1;
-      //     let moves = BoardUtils.checkMoves(playerPawns, diceNumber, playerIndex);
-      //  
-      //     if (moves.length) {
-      //       let move = moves[0],
-      //         pawn = playerPawns.find(p => p.id === move.pawnId),
-      //         lastField = move.fieldSequence[move.fieldSequence.length - 1],
-      //         anotherPawns = room.pawns.filter(pawn =>
-      //           pawn.playerId !== player.id &&
-      //           pawn.x === lastField.x &&
-      //           pawn.z === lastField.z
-      //         ) || [];
-      //    
-      //       room.state.nextRollLength = Math.max(config.ludo.animations.movePawn * move.fieldSequence.length, config.ludo.animations.rollDice);
-      //       room.state.nextRollTimestamp = Date.now() + room.state.nextRollLength;
-      //       io.to(room.name).emit('pawnMove', move);
-      //    
-      //       pawn.x = lastField.x;
-      //       pawn.z = lastField.z;
-      //    
-      //       if (anotherPawns.length) {
-      //         let anotherPawn = anotherPawns[0],
-      //           anotherPawnSpawnFields = BoardUtils.getSpawnFields(room.pawns, anotherPawn.playerIndex),
-      //           spawnField = (anotherPawnSpawnFields && anotherPawnSpawnFields[0]) || null,
-      //           anotherPawnMove = { pawnId: anotherPawn.id, fieldSequence: [spawnField] };
-      //      
-      //         if (anotherPawnMove) {
-      //           anotherPawn.x = spawnField.x;
-      //           anotherPawn.z = spawnField.z;
-      //           io.to(room.name).emit('pawnMove', anotherPawnMove);
-      //         }
-      //       }
-      //    
-      //       if (lastField.type === FieldType.goal) {
-      //         console.log('player win!');
-      //         if (checkWin(playerPawns)) {
-      //           finishGame(room, player);
-      //         }
-      //       }
-      //     } else {
-      //       room.state.nextRollTimestamp = Date.now() + config.ludo.animations.rollDice;
-      //       console.log('player cant move');
-      //       io.to(room.name).emit('console', 'player ' + player.name + ' roll\'d ' + diceNumber + ' and cant move');
-      //     }
-      //  
-      //  
-      //     let nextPlayerId = room.players[(playerIndex + 1) % room.players.length].id;
-      //  
-      //     io.to(room.name).emit('roll', {diceNumber: diceNumber});
-      //  
-      //     room.state.currentPlayerId = nextPlayerId;
-      //     io.to(room.name).emit('updateGame', room.state);
-      //   } else {
-      //     console.log('not his turn');
-      //   }
-      // });
     });
   }
 }

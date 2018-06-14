@@ -4,7 +4,7 @@ module.exports = function (options) {
     name: options.name,
     color: options.color || null,
     socketId: options.socketId || null,
-    room: options.room || null,
+    roomId: options.roomId || null,
     avatar: '/static/avatar' + parseInt(Math.random() * 6 + 1)+ '.jpg',
   };
 };

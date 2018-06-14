@@ -7,8 +7,9 @@ room.state = {
   playerColors,
   inQueue: false, //
 };
+// roomState event
+{name: 'pickColors', colors: ['1','2','3','4'], finishTimestamp: Date.now() + 6s + .3s}, //pick colors aoutmaticaly if players dont pick colors. .3s for leave queue animation
 room.actions = [
- {name: 'pickColors', colors: ['1','2','3','4'], finishTimestamp: Date.now() + 6s + .3s}, //pick colors aoutmaticaly if players dont pick colors. .3s for leave queue animation
  //after 6.3s
  {name: 'playerPickedColor', playerId: '1', color: '1'},//action change state, finish immediately
  {name: 'playerPickedColor', playerId: '2', color: '2'},

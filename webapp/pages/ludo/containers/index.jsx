@@ -5,6 +5,7 @@ import Modal from 'components/modal/index';
 import Button from 'components/button/index';
 import './index.sass';
 import Timer from 'components/timer';
+import Games from 'Games.js';
 
 const Pages = {
   Initial: 'Initial',
@@ -134,12 +135,49 @@ export default class Ludo extends Component {
   initSocketEvents(connectorInstance) {
     connectorInstance.socket.on('roomUpdate', (roomState) => {
       console.log(roomState);
-      
+      if (roomState.roomState === 'pickColors') {
+        this.setState({
+          page: Pages.PickColor,
+          queueColors: roomState.colorsQueue,
+        });
+      }
+    });
+    connectorInstance.socket.on('player', (player) => {
+      console.log(player);
       this.setState({
-        page: Pages.PickColor,
-        queueColors: roomState.colorsQueue,
+        player,
       });
     });
+    connectorInstance.socket.on('newAction', (newAction) => {
+      console.log('newAction', newAction);
+      if (newAction.type === Games.Ludo.ActionTypes.SelectedColor) {
+        let queueColors = this.state.queueColors,
+          queueColor = queueColors.find(color => color.color === newAction.value);
+  
+        if (queueColor) {
+          queueColor.selected = true;
+        }
+  
+        this.setState({
+          queueColors: queueColors,
+        });
+      }
+      if (newAction.type === Games.Ludo.ActionTypes.StartGame) {
+        let roomState = newAction.roomState;
+        
+        console.log(roomState);
+        
+        this.setState({
+          players: roomState.players,
+          currentPlayerId: roomState.currentPlayerId,
+          page: Pages.Game,
+          pawns: roomState.pawns,
+          timestamp: roomState.timestamp,
+        });
+        this.timerComponent.start(roomState.timestamp - Date.now());
+      }
+    });
+    
     connectorInstance.socket.on('startGame', (gameState) => {
       connectorInstance.addMessage('startGame');
       connectorInstance.addMessage('currentPlayer: ' + gameState.currentPlayerId + (gameState.yourPlayerId == gameState.currentPlayerId?' it\'s You!':''));
@@ -180,7 +218,7 @@ export default class Ludo extends Component {
   });
   }
   selectColor(color) {
-    this.connectorInstance.socket.emit('selectColor', color);
+    this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.SelectColor(color));
   }
   roll() {
     //this.gameComponent.engine.board.dice.roll(1);
@@ -191,7 +229,7 @@ export default class Ludo extends Component {
   }
   joinQueue() {
     this.connectorInstance.socket.emit('findRoom', {
-      game: 'ludo'
+      game: Games.Ludo.Name,
     });
     this.setState({page: Pages.Queue});
   }

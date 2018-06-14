@@ -61,7 +61,7 @@ module.exports = function() {
       ]
     },
     resolve: {
-      modules: ['game', 'webapp', 'node_modules', 'ludo'],
+      modules: ['games', 'game', 'webapp', 'node_modules', 'ludo'],
       extensions: [ '.tsx', '.ts', '.js', '.jsx' ]
     },
     plugins: [

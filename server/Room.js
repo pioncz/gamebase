@@ -1,4 +1,5 @@
 const InitialState = require('./../ludo/InitialState.js');
+const Games = require('./../games/Games.js');
 
 /**
  * Enum representing room states.
@@ -24,7 +25,7 @@ class Room {
     this.gameName = options.gameName;
     this.playerIds = [];
     this.rolled = options.rolled;
-    this.state = {
+    this.gameState = {
       currentPlayerId: null,
       winnerId: null,
       roomState: RoomStates.queue,
@@ -36,33 +37,70 @@ class Room {
    * Returns this.state
    */
   getState() {
-    return this.state;
+    const gameState = this.gameState;
+    
+    let returnState = {
+      currentPlayerId: gameState.currentPlayerId,
+      winnerId: gameState.winnerId,
+      roomState: gameState.roomState,
+    };
+  
+    gameState.playerColors && (returnState.playerColors = gameState.playerColors);
+    gameState.colorsQueue && (returnState.colorsQueue = gameState.colorsQueue);
+    gameState.pawns && (returnState.pawns = gameState.pawns);
+    this.players && (returnState.players = this.players);
+    
+    return returnState;
   }
-  startGame() {
-    this.state.roomState = RoomStates.pickColors;
-    this.state.playerColors = [];
-    this.state.colorsQueue = [];
+  startGame(players) {
+    this.players = players;
+    this.gameState.roomState = RoomStates.pickColors;
+    this.gameState.playerColors = [];
+    this.gameState.colorsQueue = [];
     this.config.ludo.colors.forEach(color => {
-      this.state.colorsQueue.push({
+      this.gameState.colorsQueue.push({
         color: color,
         selected: false,
       });
     });
-    
-    // let initialState = new InitialState();
-    // this.state.pawns = initialState.pawns;
   }
-  handleAction(action) {
-    let returnAction;
-    
-    switch(action.name) {
-      case 'pickColor':
-        break;
-      default:
-        console.log('x');
+  handleAction(action, player) {
+    let returnActions = [],
+      actionHandler = Games.Ludo.ActionHandlers[action.type],
+      roomState = this.getState(),
+      handleAction = null;
+      
+    if (actionHandler) {
+      handleAction = actionHandler(action, player, roomState);
+  
+      returnActions.push(handleAction);
+      
+      if (this.gameState.playerColors.length >= Games.Ludo.Config.MinPlayer) {
+        this.gameState.roomState = RoomStates.game;
+        delete this.gameState.colorsQueue;
+        let initialState = new InitialState(); // [Pawns]
+        
+        this.gameState.pawns = initialState.pawns;
+        this.players.forEach((player, index) => {
+          player.color = this.gameState.playerColors.find(color => color.playerId === player.id).color;
+          
+          for(var i = 0; i < 4; i++) {
+            initialState.pawns[(index * 4 + i)].playerIndex = index;
+            initialState.pawns[(index * 4 + i)].playerId = player.id;
+            initialState.pawns[(index * 4 + i)].color = player.color;
+          }
+        });
+  
+        // Remove pawns for extra players
+        initialState.pawns.splice(this.players.length * 4, (4 - this.players.length) * 4);
+  
+        let roomState = this.getState(),
+          startGameAction = Games.Ludo.ActionHandlers[Games.Ludo.ActionTypes.StartGame](roomState);
+        returnActions.push(startGameAction);
+      }
     }
     
-    return returnAction;
+    return returnActions;
   }
 }
 

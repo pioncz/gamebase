@@ -5,6 +5,6 @@ const Ludo = require('./ludo/index.js');
  */
 const Games  = {
   Ludo: Ludo,
-}
+};
 
 module.exports = Games;
