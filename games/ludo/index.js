@@ -2,6 +2,12 @@ const ActionTypes = {
   SelectColor: 'SelectColor',
   SelectedColor: 'SelectedColor',
   StartGame: 'StartGame',
+  Roll: 'Roll',
+  WaitForPlayer: 'WaitForPlayer',
+};
+
+const Roll = () => {
+  return {type: ActionTypes.Roll};
 };
 
 const SelectColor = (color) => {
@@ -12,8 +18,16 @@ const StartGame = (roomState) => {
   return {type: ActionTypes.StartGame, roomState: roomState};
 };
 
+const WaitForPlayer = (roomState) => {
+  return {type: ActionTypes.WaitForPlayer, playerId: roomState.currentPlayerId};
+};
+
 const Config = {
   MinPlayer: 1,
+};
+
+const RollHandler = (action, player, roomState) => {
+  console.log('player rolled');
 };
 
 const SelectColorHandler = (action, player, roomState) => {
@@ -45,10 +59,13 @@ const Ludo = {
   Config,
   Actions: {
     SelectColor,
+    Roll,
+    StartGame,
+    WaitForPlayer,
   },
   ActionHandlers: {
     SelectColor: SelectColorHandler,
-    StartGame: StartGame,
+    Roll: RollHandler,
   },
   ActionTypes,
 };

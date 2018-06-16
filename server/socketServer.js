@@ -46,6 +46,15 @@ class WebsocketServer {
         return ''+(lastId++);
       };
     })(),
+      _log = (msg) => {
+        let messages = msg instanceof Array ? msg : null;
+        //socket.emit('console', msg);
+        if (messages) {
+          console.log(messages);
+        } else {
+          console.log(msg);
+        }
+      },
       _getTotalNumPlayers = () => {
         let clients = io.sockets.clients().connected;
         return Object.keys(clients).length
@@ -55,6 +64,7 @@ class WebsocketServer {
       },
       _emitNewActions = (room, newActions) => {
         newActions.forEach(action => {
+          _log(`newAction emitted: ${action.type}`);
           io.to(room.name).emit('newAction', action);
         });
       },
@@ -124,15 +134,6 @@ class WebsocketServer {
           room = matchingRooms.length && matchingRooms[0];
           
         return room;
-      },
-      _log = (msg) => {
-        let messages = msg instanceof Array ? msg : null;
-        //socket.emit('console', msg);
-        if (messages) {
-          console.log(messages);
-        } else {
-          console.log(msg);
-        }
       };
   
     io.on('connection', function (socket) {
@@ -148,7 +149,7 @@ class WebsocketServer {
   
       _log('connected to socket server. currently ' + _getTotalNumPlayers() + ' online.');
     
-      socket.emit('player', newPlayer);
+      socket.emit('playerUpdate', newPlayer);
       
       socket.on('disconnect', () => {
         _destroyConnection(socket.id);
@@ -222,8 +223,8 @@ class WebsocketServer {
         _log(`player ${player.name} calls action: ${action.type}`);
         
         let newActions = room.handleAction(action, player);
+
         if (newActions) {
-          _log(`newAction emitted: ${newActions}`);
           room.actions = room.actions.concat(newActions);
           _emitNewActions(room, newActions);
         }

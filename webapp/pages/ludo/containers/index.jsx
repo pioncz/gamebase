@@ -134,7 +134,7 @@ export default class Ludo extends Component {
   }
   initSocketEvents(connectorInstance) {
     connectorInstance.socket.on('roomUpdate', (roomState) => {
-      console.log(roomState);
+      console.log('roomUpdate', roomState);
       if (roomState.roomState === 'pickColors') {
         this.setState({
           page: Pages.PickColor,
@@ -142,8 +142,8 @@ export default class Ludo extends Component {
         });
       }
     });
-    connectorInstance.socket.on('player', (player) => {
-      console.log(player);
+    connectorInstance.socket.on('playerUpdate', (player) => {
+      console.log('playerUpdate', player);
       this.setState({
         player,
       });
@@ -165,8 +165,6 @@ export default class Ludo extends Component {
       if (newAction.type === Games.Ludo.ActionTypes.StartGame) {
         let roomState = newAction.roomState;
         
-        console.log(roomState);
-        
         this.setState({
           players: roomState.players,
           currentPlayerId: roomState.currentPlayerId,
@@ -174,7 +172,12 @@ export default class Ludo extends Component {
           pawns: roomState.pawns,
           timestamp: roomState.timestamp,
         });
-        this.timerComponent.start(roomState.timestamp - Date.now());
+        this.timerComponent.start(roomState.finishTimestamp - Date.now());
+      }
+      if (newAction.type === Games.Ludo.ActionTypes.WaitForPlayer) {
+        this.setState({
+          currentPlayerId: newAction.playerId,
+        })
       }
     });
     
@@ -222,7 +225,7 @@ export default class Ludo extends Component {
   }
   roll() {
     //this.gameComponent.engine.board.dice.roll(1);
-    this.connectorInstance.socket.emit('roll');
+    this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.Roll());
   }
   handleClick() {
     this.roll();

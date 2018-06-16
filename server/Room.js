@@ -29,6 +29,7 @@ class Room {
       currentPlayerId: null,
       winnerId: null,
       roomState: RoomStates.queue,
+      finishTimestamp: null,
     };
     this.eta = options.eta || 5*60*60; //18000s
     this.actions = [];
@@ -43,6 +44,7 @@ class Room {
       currentPlayerId: gameState.currentPlayerId,
       winnerId: gameState.winnerId,
       roomState: gameState.roomState,
+      finishTimestamp: gameState.finishTimestamp,
     };
   
     gameState.playerColors && (returnState.playerColors = gameState.playerColors);
@@ -72,10 +74,11 @@ class Room {
       
     if (actionHandler) {
       handleAction = actionHandler(action, player, roomState);
-  
-      returnActions.push(handleAction);
+      if (handleAction) {
+        returnActions.push(handleAction);
+      }
       
-      if (this.gameState.playerColors.length >= Games.Ludo.Config.MinPlayer) {
+      if (this.gameState.playerColors.length >= Games.Ludo.Config.MinPlayer && this.gameState.roomState !== RoomStates.game) {
         this.gameState.roomState = RoomStates.game;
         delete this.gameState.colorsQueue;
         let initialState = new InitialState(); // [Pawns]
@@ -90,13 +93,19 @@ class Room {
             initialState.pawns[(index * 4 + i)].color = player.color;
           }
         });
-  
+        
+        this.gameState.finishTimestamp = Date.now() + 5 * 60 * 1000;
+        this.gameState.currentPlayerId = this.playerIds[0];
+        
         // Remove pawns for extra players
         initialState.pawns.splice(this.players.length * 4, (4 - this.players.length) * 4);
   
         let roomState = this.getState(),
-          startGameAction = Games.Ludo.ActionHandlers[Games.Ludo.ActionTypes.StartGame](roomState);
+          startGameAction = Games.Ludo.Actions[Games.Ludo.ActionTypes.StartGame](roomState),
+          waitForPlayer = Games.Ludo.Actions[Games.Ludo.ActionTypes.WaitForPlayer](roomState);
+        
         returnActions.push(startGameAction);
+        returnActions.push(waitForPlayer);
       }
     }
     
