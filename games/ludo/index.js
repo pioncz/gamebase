@@ -24,7 +24,7 @@ const InitialState = () => {
 };
 
 const Config = {
-  MinPlayer: 1,
+  MinPlayer: 2,
 };
 
 const ActionTypes = {
@@ -33,6 +33,11 @@ const ActionTypes = {
   StartGame: 'StartGame',
   Roll: 'Roll',
   WaitForPlayer: 'WaitForPlayer',
+};
+
+const AnimationLengths = {
+  movePawn: 1000,
+  rollDice: 800,
 };
 
 /**
@@ -59,8 +64,8 @@ const StartGame = (roomState) => {
   return {type: ActionTypes.StartGame, roomState: roomState};
 };
 
-const WaitForPlayer = (roomState) => {
-  return {type: ActionTypes.WaitForPlayer, playerId: roomState.currentPlayerId};
+const WaitForPlayer = (roomState, finishTimestamp) => {
+  return {type: ActionTypes.WaitForPlayer, playerId: roomState.currentPlayerId, finishTimestamp};
 };
 
 const RollHandler = (action, player, roomState) => {
@@ -69,7 +74,8 @@ const RollHandler = (action, player, roomState) => {
     returnActions = [],
     getNextPlayerId = (playerIds, playerId) => {
       return playerIds[(playerIds.indexOf(playerId) + 1) % playerIds.length];
-    };
+    },
+    animationLength = 0;
 
   if (!rollPossible) {
     console.log('this player cant roll in that room');
@@ -84,15 +90,17 @@ const RollHandler = (action, player, roomState) => {
   let moves = BoardUtils.checkMoves(roomState.pawns, diceNumber, player.id);
   
   console.log(`player ${player.name} rolled ${diceNumber}`);
-  console.log(moves);
-  if (moves.length) {
   
-  } else {
+  roomState.waitingForAction = true;
+  if (!moves.length) {
+    animationLength = Date.now() + AnimationLengths.rollDice + 500;
     roomState.currentPlayerId = getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
+  } else {
+    animationLength = Date.now() + AnimationLengths.rollDice + 500;
   }
   
   returnActions.push(Roll(diceNumber));
-  returnActions.push(WaitForPlayer(roomState));
+  returnActions.push(WaitForPlayer(roomState, animationLength));
   
   return returnActions;
   // //check if its this players turn
@@ -100,7 +108,6 @@ const RollHandler = (action, player, roomState) => {
   //   !room.rolled &&
   //   (!room.state.nextRollTimestamp || Date.now() > room.state.nextRollTimestamp)) {
   //   // look for first pawn he can move
-
   //
   //
   //   if (moves.length) {
@@ -186,7 +193,6 @@ const SelectColorHandler = (action, player, roomState) => {
     
     roomState.roomState = GameStates.game;
     delete roomState.colorsQueue;
-    console.log(roomState);
 
     roomState.pawns = initialState.pawns;
     // Connect pawns and players
@@ -201,7 +207,6 @@ const SelectColorHandler = (action, player, roomState) => {
     // Remove pawns for extra players
     initialState.pawns.splice(roomState.playerIds.length * 4, (4 - roomState.playerIds.length) * 4);
 
-    roomState.finishTimestamp = Date.now() + 5 * 60 * 1000;
     roomState.currentPlayerId = roomState.playerIds[0];
     roomState.waitingForAction = true;
 
@@ -228,6 +233,7 @@ const Ludo = {
     SelectColor: SelectColorHandler,
     Roll: RollHandler,
   },
+  AnimationLengths,
   ActionTypes,
 };
 

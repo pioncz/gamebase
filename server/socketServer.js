@@ -205,13 +205,21 @@ class WebsocketServer {
   
         let connection = connections[socket.id],
           player = connection.playerId && players[connection.playerId],
-          room = connection.roomId && rooms[connection.roomId];
+          room = connection.roomId && rooms[connection.roomId],
+          timestampsSub;
           
         if (!connection || !player || !room) {
           _log('player is not in a room.');
           return;
         }
   
+        timestampsSub = room.gameState.finishTimestamp && (room.gameState.finishTimestamp - Date.now()) || 0;
+        
+        if (timestampsSub > 0) {
+          _log(`actions are blocked for ${parseInt(timestampsSub/100)/10}s`);
+          return;
+        }
+        
         _log(`player ${player.name} calls action: ${action.type}`);
         
         let newActions = room.handleAction(action, player);

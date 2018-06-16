@@ -1,5 +1,9 @@
 TO DO, PLAN GRY
-- podczas robienia akcji powinien byc sprawdzany timestamp pokoju
++ podczas robienia akcji powinien byc sprawdzany timestamp pokoju
+- dorobic wybor pionka po stronie klienta
+- gracz wysyla pawnMove action (playerId, pawnId) na serwer
+- serwer zwraca sekwencje ruchow pionka
+- skasowac ludo z glownego configa
 - konczenie gry gdy uplynie czas rozgrywki
 - skasowac z room.gameState.players albo playerColors
 

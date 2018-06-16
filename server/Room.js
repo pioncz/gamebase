@@ -69,11 +69,21 @@ class Room {
     });
   }
   handleAction(action, player) {
-    let returnActions = [],
-      actionHandler = Games.Ludo.ActionHandlers[action.type];
+    let actionHandler = Games.Ludo.ActionHandlers[action.type],
+      returnActions = (actionHandler && actionHandler(action, player, this.gameState)) || [];
       
-    if (actionHandler) {
-      returnActions = actionHandler(action, player, this.gameState);
+    if (returnActions.length) {
+      let finishTimestamps = returnActions.reduce((prevValue, currentValue) => {
+          prevValue.push(currentValue.finishTimestamp ? currentValue.finishTimestamp : 0)
+          return prevValue;
+        }, []),
+        maxTimestamp = finishTimestamps.length && finishTimestamps.reduce((prevValue, currentValue) => {
+          return Math.max(prevValue, currentValue);
+        });
+      
+      if (maxTimestamp) {
+        this.gameState.finishTimestamp = maxTimestamp;
+      }
     }
     
     return returnActions;
