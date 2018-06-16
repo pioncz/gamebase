@@ -1,3 +1,32 @@
+const BoardUtils = require('./BoardUtils.js');
+
+const InitialState = () => {
+  return {
+    pawns: [
+      {id: '12', x: 0, z: 0}, // first player
+      {id: '13', x: 1, z: 0}, // first player
+      {id: '14', x: 0, z: 1}, // first player
+      {id: '15', x: 1, z: 1}, // first player
+      {id: '4', x: 9, z: 0}, // second player
+      {id: '5', x: 10, z: 0}, // second player
+      {id: '6', x: 9, z: 1}, // second player
+      {id: '7', x: 10, z: 1}, // second player
+      {id: '8', x: 0, z: 9}, // third player
+      {id: '9', x: 1, z: 9}, // third player
+      {id: '10', x: 0, z: 10}, // third player
+      {id: '11', x: 1, z: 10}, // third player
+      {id: '0', x: 9, z: 10}, // fourth player
+      {id: '1', x: 10, z: 10}, // fourth player
+      {id: '2', x: 9, z: 9}, // fourth player
+      {id: '3', x: 10, z: 9}, // fourth player
+    ]
+  }
+};
+
+const Config = {
+  MinPlayer: 1,
+};
+
 const ActionTypes = {
   SelectColor: 'SelectColor',
   SelectedColor: 'SelectedColor',
@@ -6,8 +35,20 @@ const ActionTypes = {
   WaitForPlayer: 'WaitForPlayer',
 };
 
-const Roll = () => {
-  return {type: ActionTypes.Roll};
+/**
+ * Enum representing game states.
+ *
+ * @enum
+ */
+const GameStates = {
+  queue: 'queue',
+  pickColors: 'pickColors',
+  game: 'game',
+  finished: 'finished',
+};
+
+const Roll = (diceNumber) => {
+  return {type: ActionTypes.Roll, diceNumber};
 };
 
 const SelectColor = (color) => {
@@ -22,16 +63,98 @@ const WaitForPlayer = (roomState) => {
   return {type: ActionTypes.WaitForPlayer, playerId: roomState.currentPlayerId};
 };
 
-const Config = {
-  MinPlayer: 1,
-};
-
 const RollHandler = (action, player, roomState) => {
-  console.log('player rolled');
+  let rollPossible = (roomState.currentPlayerId === player.id &&
+    !!roomState.waitingForAction),
+    returnActions = [];
+
+  if (!rollPossible) {
+    console.log('this player cant roll in that room');
+    return;
+  }
+  
+  let playerPawns = roomState.pawns.filter(pawn => {
+    return pawn.playerId === player.id;
+  });
+  let diceNumber = parseInt(Math.random()*6)+1; // 1-6
+  //diceNumber=1;
+  let moves = BoardUtils.checkMoves(roomState.pawns, diceNumber, player.id);
+  
+  console.log(`player ${player.name} rolled ${diceNumber}`);
+  console.log(moves);
+  if (moves.length) {
+  
+  } else {
+  
+  }
+  
+  returnActions.push(Roll(diceNumber));
+  
+  return returnActions;
+  // //check if its this players turn
+  // else if (room.state.currentPlayerId === player.id &&
+  //   !room.rolled &&
+  //   (!room.state.nextRollTimestamp || Date.now() > room.state.nextRollTimestamp)) {
+  //   // look for first pawn he can move
+
+  //
+  //
+  //   if (moves.length) {
+  //     let move = moves[0],
+  //       pawn = playerPawns.find(p => p.id === move.pawnId),
+  //       lastField = move.fieldSequence[move.fieldSequence.length - 1],
+  //       anotherPawns = room.pawns.filter(pawn =>
+  //         pawn.playerId !== player.id &&
+  //         pawn.x === lastField.x &&
+  //         pawn.z === lastField.z
+  //       ) || [];
+  //
+  //     room.state.nextRollLength = Math.max(config.ludo.animations.movePawn * move.fieldSequence.length, config.ludo.animations.rollDice);
+  //     room.state.nextRollTimestamp = Date.now() + room.state.nextRollLength;
+  //     io.to(room.name).emit('pawnMove', move);
+  //
+  //     pawn.x = lastField.x;
+  //     pawn.z = lastField.z;
+  //
+  //     if (anotherPawns.length) {
+  //       let anotherPawn = anotherPawns[0],
+  //         anotherPawnSpawnFields = BoardUtils.getSpawnFields(room.pawns, anotherPawn.playerIndex),
+  //         spawnField = (anotherPawnSpawnFields && anotherPawnSpawnFields[0]) || null,
+  //         anotherPawnMove = { pawnId: anotherPawn.id, fieldSequence: [spawnField] };
+  //
+  //       if (anotherPawnMove) {
+  //         anotherPawn.x = spawnField.x;
+  //         anotherPawn.z = spawnField.z;
+  //         io.to(room.name).emit('pawnMove', anotherPawnMove);
+  //       }
+  //     }
+  //
+  //     if (lastField.type === FieldType.goal) {
+  //       console.log('player win!');
+  //       if (checkWin(playerPawns)) {
+  //         finishGame(room, player);
+  //       }
+  //     }
+  //   } else {
+  //     room.state.nextRollTimestamp = Date.now() + config.ludo.animations.rollDice;
+  //     console.log('player cant move');
+  //     io.to(room.name).emit('console', 'player ' + player.name + ' roll\'d ' + diceNumber + ' and cant move');
+  //   }
+  //
+  //
+  //   let nextPlayerId = room.players[(playerIndex + 1) % room.players.length].id;
+  //
+  //   io.to(room.name).emit('roll', {diceNumber: diceNumber});
+  //
+  //   room.state.currentPlayerId = nextPlayerId;
+  //   io.to(room.name).emit('updateGame', room.state);
+  // } else {
+  //   console.log('not his turn');
+  // }
 };
 
 const SelectColorHandler = (action, player, roomState) => {
-  // console.log(action, player, roomState);
+  const returnActions = [];
   let playerColor = roomState.playerColors.find(playerColor => {
     return playerColor.playerId === player.id;
   }),
@@ -50,8 +173,42 @@ const SelectColorHandler = (action, player, roomState) => {
   }
   
   roomState.playerColors.push({playerId: player.id, color: action.value});
+  player.color = action.value;
   
-  return {type: ActionTypes.SelectedColor, value: action.value};
+  returnActions.push({type: ActionTypes.SelectedColor, value: action.value});
+  
+  if (roomState.playerColors.length >= Config.MinPlayer && roomState.roomId !== GameStates.game) {
+    let initialState = InitialState(); // [Pawns]
+    
+    roomState.roomState = GameStates.game;
+    delete roomState.colorsQueue;
+    console.log(roomState);
+
+    roomState.pawns = initialState.pawns;
+    // Connect pawns and players
+    roomState.playerIds.forEach((playerId, i) => {
+      playerColor = roomState.playerColors.find(playerColor => playerColor.playerId === playerId);
+
+      for(let j = 0; j < 4; j++) {
+        initialState.pawns[(i * 4 + j)].playerId = playerColor.playerId;
+        initialState.pawns[(i * 4 + j)].color = playerColor.color;
+      }
+    });
+    // Remove pawns for extra players
+    initialState.pawns.splice(roomState.playerIds.length * 4, (4 - roomState.playerIds.length) * 4);
+
+    roomState.finishTimestamp = Date.now() + 5 * 60 * 1000;
+    roomState.currentPlayerId = roomState.playerIds[0];
+    roomState.waitingForAction = true;
+
+    let startGameAction = StartGame(roomState),
+      waitForPlayer = WaitForPlayer(roomState);
+
+    returnActions.push(startGameAction);
+    returnActions.push(waitForPlayer);
+  }
+  
+  return returnActions;
 };
 
 const Ludo = {

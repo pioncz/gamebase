@@ -3,9 +3,9 @@ import Pawn from './pawn'
 import {EASING, TIMES} from "./utils/animations";
 import PawnsController from 'pawnsController';
 import Config from 'config.js';
-import Fields from './../ludo/Fields.js';
+import Fields from './../games/ludo/Fields.js';
 import Dice from './dice';
-import BoardUtils from 'BoardUtils';
+import BoardUtils from './../games/ludo/BoardUtils.js';
 
 const GridAmount = 11;
 

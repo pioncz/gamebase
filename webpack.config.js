@@ -65,7 +65,7 @@ module.exports = function() {
       extensions: [ '.tsx', '.ts', '.js', '.jsx' ]
     },
     plugins: [
-      new CleanWebpackPlugin(['dist']),
+      // new CleanWebpackPlugin(['dist']),
       new webpack.DefinePlugin({
         __CONFIG__: JSON.stringify(cfg)
       }),

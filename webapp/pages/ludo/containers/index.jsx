@@ -179,6 +179,9 @@ export default class Ludo extends Component {
           currentPlayerId: newAction.playerId,
         })
       }
+      if (newAction.type === Games.Ludo.ActionTypes.Roll) {
+        this.gameComponent.engine.board.dice.roll(newAction.diceNumber);
+      }
     });
     
     connectorInstance.socket.on('startGame', (gameState) => {

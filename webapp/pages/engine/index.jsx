@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import GameComponent from 'components/gameComponent/';
 const InitialState = require('InitialState');
 import './index.sass';
-import BoardUtils from 'BoardUtils';
+import BoardUtils from 'ludo/BoardUtils';
 import Timer from 'components/timer';
 
 const NumberOfPlayers = 2;

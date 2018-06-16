@@ -1,9 +1,8 @@
 const Player = require('./../ludo/Player.js');
 const InitialState = require('./../ludo/InitialState.js');
-const Fields = require('./../ludo/Fields.js');
-const BoardUtils = require('./../ludo/BoardUtils.js');
+const Fields = require('./../games/ludo/Fields.js');
 const Connection = require('./Connection.js');
-const Room = require('./Room.js');
+const { Room } = require('./Room.js');
 const Games = require('./../games/Games.js');
 
 let fields = Fields;
@@ -47,13 +46,7 @@ class WebsocketServer {
       };
     })(),
       _log = (msg) => {
-        let messages = msg instanceof Array ? msg : null;
-        //socket.emit('console', msg);
-        if (messages) {
-          console.log(messages);
-        } else {
-          console.log(msg);
-        }
+        console.log(msg);
       },
       _getTotalNumPlayers = () => {
         let clients = io.sockets.clients().connected;
@@ -78,14 +71,14 @@ class WebsocketServer {
         if (!room || !playerId) return;
       
         // Update room players
-        if (room.playerIds.indexOf(playerId) > -1) {
-          room.playerIds.splice(room.playerIds.indexOf(playerId), 1);
+        if (room.playerIds && room.gameState.playerIds.indexOf(playerId) > -1) {
+          room.gameState.playerIds.splice(room.playerIds.indexOf(playerId), 1);
         }
         // Update connection
         connection.roomId = null;
       
         // Finish game if theres one or less players
-        if (room.playerIds.length) {
+        if (room.gameState.playerIds.length) {
           // Emit new room state
           _emitRoomState(room);
         } else {
@@ -122,10 +115,9 @@ class WebsocketServer {
       _findRoom = (gameName) => {
         let matchingRooms = Object.keys(rooms).reduce((returnRooms, roomId) => {
           const room = rooms[roomId];
-          let roomState = room.getState();
           
           if (room.gameName === gameName &&
-            roomState.playerIds.length < MinPlayers) {
+            room.gameState.playerIds.length < MinPlayers) {
             return returnRooms.concat(room);
           }
           
@@ -185,16 +177,16 @@ class WebsocketServer {
           rooms[room.id] = room;
         }
         connection.roomId = room.id;
-        room.playerIds.push(player.id);
+        room.gameState.playerIds.push(player.id);
         socket.join(room.name);
         player.roomId = room.id;
         
-        console.log(`player ${player.name} joins queue(${room.playerIds.length}/${MinPlayers}) in ${room.name}`);
+        console.log(`player ${player.name} joins queue(${room.gameState.playerIds.length}/${MinPlayers}) in ${room.name}`);
         
-        if (room.playerIds.length >= MinPlayers) {
+        if (room.gameState.playerIds.length >= MinPlayers) {
           let playersFromRoom = [];
   
-          room.playerIds.forEach(playerId => {
+          room.gameState.playerIds.forEach(playerId => {
             playersFromRoom.push(players[playerId]);
           });
           

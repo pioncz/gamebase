@@ -1,10 +1,13 @@
 TO DO, PLAN GRY
+- podczas robienia akcji powinien byc sprawdzany timestamp pokoju
+- konczenie gry gdy uplynie czas rozgrywki
+- skasowac z room.gameState.players albo playerColors
 
-room.playerIds = ['22','s31','1','2']; // queue order
 room.state = {
   winnerId: null,
   colorsQueue, 
   playerColors,
+  playerIds = ['22','s31','1','2'], // queue order
   inQueue: false, //
 };
 // roomState event
