@@ -66,7 +66,10 @@ const WaitForPlayer = (roomState) => {
 const RollHandler = (action, player, roomState) => {
   let rollPossible = (roomState.currentPlayerId === player.id &&
     !!roomState.waitingForAction),
-    returnActions = [];
+    returnActions = [],
+    getNextPlayerId = (playerIds, playerId) => {
+      return playerIds[(playerIds.indexOf(playerId) + 1) % playerIds.length];
+    };
 
   if (!rollPossible) {
     console.log('this player cant roll in that room');
@@ -85,10 +88,11 @@ const RollHandler = (action, player, roomState) => {
   if (moves.length) {
   
   } else {
-  
+    roomState.currentPlayerId = getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
   }
   
   returnActions.push(Roll(diceNumber));
+  returnActions.push(WaitForPlayer(roomState));
   
   return returnActions;
   // //check if its this players turn

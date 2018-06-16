@@ -95,9 +95,6 @@ export default class Dice {
     baseX -= (2*Math.PI) * 1.25;
     baseZ -= (2*Math.PI) * .25;
     
-    cube.rotation.x = baseX;
-    cube.rotation.z = baseZ;
-    
     this.animations.createSequence({name: 'rollDice', steps: [{
         update: (progress) => {
           let diceAlpha = progress * 5;
