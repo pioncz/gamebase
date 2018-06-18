@@ -74,9 +74,9 @@ room.actions = [
 -- najpierw leci kostka, a potem pionek sie rusza - nie na raz
 - przy profilu aktualnego gracza, progress jego kolejki
 - wybor pionka
-- gdy ktos w pokoju gracza wyjdzie, a on dolaczy do nowej rozgrywki, to w pickColor modalu nie wybiera zadnego koloru
-- gdy ktos w pokoju gracza wyjdzie, a on dolaczy do nowej rozgrywki, to kolory pionkow u graczy sie nie zgadzaja
+- testy wychodzenia z gry / disconnect / szukanie nowej rozgrywki
 - koniec rozgrywki gdy sie skonczy czas
+- automatyczny ruch gdy skonczy sie kolejka
 
 2) Strona Ludo
 +ekran wyszukiwania z przewidywanym czasem
@@ -91,3 +91,8 @@ room.actions = [
 
 4) Czat
 -szybki dostep do czatu i listy znajomych z funkcja zaproszenia do gry
+
+- nowe pionki
+- internacionalizacja
+- reportowanie graczy
+- mozliwosc robienia a/b testow
