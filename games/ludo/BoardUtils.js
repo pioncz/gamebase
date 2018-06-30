@@ -90,16 +90,19 @@ const Fields = require('./Fields'),
     
     return emptyGoalFields;
   },
-  checkMoves = (pawns, diceNumber, playerIndex) => {
+  checkMoves = (roomState, diceNumber, playerId) => {
     let avaiableMoves = [];
     
-    if (!pawns || !diceNumber || (!playerIndex && playerIndex !== 0)) {
+    if (!roomState || !roomState.playerIds || !roomState.pawns || !diceNumber || !playerId) {
       console.error('Wrong params');
     }
+
+    let playerIndex = roomState.playerIds.indexOf(playerId),
+      playerPawns = roomState.pawns.filter(pawn => pawn.playerId === playerId);
   
-    for(let pawnId in pawns) {
-      let pawn = pawns[pawnId],
-        fieldSequence = getFieldSequence(pawns, pawn, diceNumber, playerIndex);
+    for(let pawnId in playerPawns) {
+      let pawn = playerPawns[pawnId],
+        fieldSequence = getFieldSequence(playerPawns, pawn, diceNumber, playerIndex);
       
       if (fieldSequence.length) {
         avaiableMoves.push({pawnId: pawn.id, fieldSequence});

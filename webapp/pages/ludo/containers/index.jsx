@@ -186,8 +186,9 @@ export default class Ludo extends Component {
         this.gameComponent.movePawn({pawnId: newAction.pawnId, fieldSequence: newAction.fieldSequence});
       }
       if (newAction.type === Games.Ludo.ActionTypes.PickPawn) {
-        // check if its current player
-        // highligh possible pawns
+        // highlight pawns only for current player
+        if (newAction.playerId !== this.state.player.id) return;
+
         this.gameComponent.engine.selectPawns(newAction.pawnIds);
       }
     });

@@ -105,7 +105,7 @@ const RollHandler = (action, player, roomState) => {
     }),
     diceNumber = parseInt(Math.random()*6)+1, // 1-6
     // diceNumber=6;
-    moves = BoardUtils.checkMoves(roomState.pawns, diceNumber, roomState.playerIds.indexOf(player.id));
+    moves = BoardUtils.checkMoves(roomState, diceNumber, player.id);
 
   console.log(`player ${player.name} rolled ${diceNumber}`);
   
@@ -119,7 +119,7 @@ const RollHandler = (action, player, roomState) => {
     let pawnIds = moves.map(move => move.pawnId);
     animationLength = Date.now() + AnimationLengths.rollDice + 500;
     roomState.rolled = true;
-    returnActions.push(PickPawn(pawnIds, playerId, animationLength));
+    returnActions.push(PickPawn(pawnIds, player.id, animationLength));
   }
   
   returnActions.push(Roll(diceNumber));
