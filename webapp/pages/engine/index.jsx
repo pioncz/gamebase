@@ -4,6 +4,10 @@ const InitialState = require('InitialState');
 import './index.sass';
 import BoardUtils from 'ludo/BoardUtils';
 import Timer from 'components/timer';
+import { actions } from 'shared/redux/api';
+import Ludo from "../ludo/containers";
+import {connect} from "react-redux";
+import {bindActionCreators} from "redux";
 
 const NumberOfPlayers = 2;
 
@@ -57,7 +61,7 @@ const nextId = (()=>{
     }
   };
 
-export default class Engine extends Component {
+class Engine extends Component {
   constructor(props) {
     super(props);
   
@@ -78,6 +82,12 @@ export default class Engine extends Component {
     this.onSubmit = this.onSubmit.bind(this);
     this.initGame = this.initGame.bind(this);
     this.onPawnClick = this.onPawnClick.bind(this);
+  }
+  componentDidMount() {
+    this.props.setInGame();
+  }
+  componentWillUnmount() {
+    this.props.unsetInGame();
   }
   onSubmit(e) {
     const { pawns, selectedPawnId, pawnInput, } = this.state,
@@ -196,6 +206,7 @@ export default class Engine extends Component {
     this.timerComponent.start(5*60*1000);
   }
   onPawnClick(pawnId) {
+    this.gameComponent.engine.selectPawns([pawnId]);
     this.setState({
       selectedPawnId: pawnId,
     });
@@ -241,3 +252,25 @@ export default class Engine extends Component {
     </div>;
   }
 }
+
+const {
+  setInGame,
+  unsetInGame,
+} = actions;
+
+const mapStateToProps = state => ({
+//  pawns: getPawns(state),
+});
+
+const mapDispatchToProps = dispatch => ({
+  ...bindActionCreators({
+//    fetchPresentation,
+    setInGame,
+    unsetInGame,
+  }, dispatch),
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Engine);

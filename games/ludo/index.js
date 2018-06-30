@@ -24,7 +24,7 @@ const InitialState = () => {
 };
 
 const Config = {
-  MinPlayer: 2,
+  MinPlayer: 1,
 };
 
 const ActionTypes = {
@@ -32,6 +32,7 @@ const ActionTypes = {
   SelectedColor: 'SelectedColor',
   StartGame: 'StartGame',
   Roll: 'Roll',
+  MovePawn: 'MovePawn',
   WaitForPlayer: 'WaitForPlayer',
 };
 
@@ -56,6 +57,10 @@ const Roll = (diceNumber) => {
   return {type: ActionTypes.Roll, diceNumber};
 };
 
+const MovePawn = (pawnId, fieldSequence) => {
+  return {type: ActionTypes.MovePawn, pawnId, fieldSequence};
+};
+
 const SelectColor = (color) => {
   return {type: ActionTypes.SelectColor, value: color};
 };
@@ -75,7 +80,8 @@ const RollHandler = (action, player, roomState) => {
     getNextPlayerId = (playerIds, playerId) => {
       return playerIds[(playerIds.indexOf(playerId) + 1) % playerIds.length];
     },
-    animationLength = 0;
+    animationLength = 0,
+    rollDiceDelay = AnimationLengths.rollDice + 500;
 
   if (!rollPossible) {
     console.log('this player cant roll in that room');
@@ -84,23 +90,71 @@ const RollHandler = (action, player, roomState) => {
   
   let playerPawns = roomState.pawns.filter(pawn => {
     return pawn.playerId === player.id;
-  });
-  let diceNumber = parseInt(Math.random()*6)+1; // 1-6
-  //diceNumber=1;
-  let moves = BoardUtils.checkMoves(roomState.pawns, diceNumber, player.id);
-  
+  }),
+    diceNumber = parseInt(Math.random()*6)+1, // 1-6
+    // diceNumber=6;
+//diceNumber=1;
+    moves = BoardUtils.checkMoves(roomState.pawns, diceNumber, roomState.playerIds.indexOf(player.id));
+
   console.log(`player ${player.name} rolled ${diceNumber}`);
   
+  diceNumber = parseInt(Math.random()*3)+4;
+  returnActions.push(Roll(diceNumber));
+  
   roomState.waitingForAction = true;
+  console.log('--------');
+  console.log(roomState.pawns.length, diceNumber, player.id);
+  console.log(moves.length);
+  
+  // no available moves, switch player
   if (!moves.length) {
-    animationLength = Date.now() + AnimationLengths.rollDice + 500;
+    animationLength = Date.now() + rollDiceDelay;
     roomState.currentPlayerId = getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
+  // available moves, call first move, switch player
   } else {
-    animationLength = Date.now() + AnimationLengths.rollDice + 500;
+    roomState.currentPlayerId = getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
+    animationLength = Date.now() + rollDiceDelay;
+    let move = moves[0],
+      pawn = playerPawns.find(p => p.id === move.pawnId),
+      lastField = move.fieldSequence[move.fieldSequence.length - 1],
+      anotherPawns = roomState.pawns.filter(pawn =>
+        pawn.playerId !== player.id &&
+        pawn.x === lastField.x &&
+        pawn.z === lastField.z
+      ) || [];
+  
+    let nextRollLength = AnimationLengths.movePawn * move.fieldSequence.length;
+  
+    pawn.x = lastField.x;
+    pawn.z = lastField.z;
+    
+    returnActions.push(MovePawn(move.pawnId, move.fieldSequence, nextRollLength));
+    // if there are another pawns on last field, move them to their spawns
+    // if (anotherPawns.length) {
+    //   let anotherPawn = anotherPawns[0],
+    //     anotherPawnSpawnFields = BoardUtils.getSpawnFields(room.pawns, anotherPawn.playerIndex),
+    //     spawnField = (anotherPawnSpawnFields && anotherPawnSpawnFields[0]) || null,
+    //     anotherPawnMove = { pawnId: anotherPawn.id, fieldSequence: [spawnField] };
+    //
+    //   if (anotherPawnMove) {
+    //     anotherPawn.x = spawnField.x;
+    //     anotherPawn.z = spawnField.z;
+    //     io.to(room.name).emit('pawnMove', anotherPawnMove);
+    //   }
+    // }
   }
   
-  returnActions.push(Roll(diceNumber));
   returnActions.push(WaitForPlayer(roomState, animationLength));
+  
+  /////
+
+  
+  // if (lastField.type === FieldType.goal) {
+  //   console.log('player win!');
+  //   if (checkWin(playerPawns)) {
+  //     finishGame(room, player);
+  //   }
+  // }
   
   return returnActions;
   // //check if its this players turn

@@ -3,9 +3,9 @@ import { EASING } from "./utils/animations";
 import Config from 'config.js';
 
 export default class Dice {
-  constructor({scene, animations}) {
+  constructor({scene, context}) {
     this.scene = scene;
-    this.animations = animations;
+    this.animations = context.animations;
   
     var geometry = new THREE.BoxGeometry( 2, 2, 2 );
     

@@ -29,6 +29,7 @@ class Room {
       roomState: RoomStates.queue,
       finishTimestamp: null,
       waitingForAction: false,
+      rolledDice: false,
       playerIds: [],
       players: [],
     };

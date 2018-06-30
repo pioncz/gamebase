@@ -12,6 +12,7 @@ export default class Game {
     this.scene = new THREE.Scene();
     this.controls = new Controls({container: this.container});
     this.animations = new Animations();
+    this.context = {animations: this.animations, controls: this.controls};
     
     let width = this.container.offsetWidth,
       height = this.container.offsetHeight,
@@ -62,10 +63,23 @@ export default class Game {
       scene: this.scene,
       renderer: this.renderer,
       pawns: [],
-      animations: this.animations,
+      context: this.context,
     });
-    
-    this.animate();
+  
+    WebFont.load({
+      custom: {
+        families: ['FontAwesome'],
+        urls: [
+          'https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css',
+        ],
+        testStrings: {
+          'FontAwesome': '\uf001'
+        }
+      },
+      active: () => {
+        this.animate();
+      }
+    });
   }
   initGame({pawns, players}) {
     if (!this.initialized) {
@@ -87,6 +101,9 @@ export default class Game {
     this.camera.top    =   this.frustumSize;
     this.camera.bottom = - this.frustumSize;
     this.camera.updateProjectionMatrix();
+  }
+  selectPawns(pawnIds) {
+    this.board.pawnsController.selectPawns(pawnIds);
   }
   animate(timestamp) {
     let delta = Math.min(Date.now() - this._lastRender, 500);

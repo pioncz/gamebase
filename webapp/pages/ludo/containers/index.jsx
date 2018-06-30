@@ -182,6 +182,9 @@ export default class Ludo extends Component {
       if (newAction.type === Games.Ludo.ActionTypes.Roll) {
         this.gameComponent.engine.board.dice.roll(newAction.diceNumber);
       }
+      if (newAction.type === Games.Ludo.ActionTypes.MovePawn) {
+        this.gameComponent.movePawn({pawnId: newAction.pawnId, fieldSequence: newAction.fieldSequence});
+      }
     });
     
     connectorInstance.socket.on('startGame', (gameState) => {
@@ -201,7 +204,6 @@ export default class Ludo extends Component {
       this.gameComponent.engine.board.dice.roll(diceNumber);
     });
     connectorInstance.socket.on('pawnMove', (pawnMove) => {
-      
       connectorInstance.addMessage(`pawnMove length: ${pawnMove.length} diceNumber: ${pawnMove.diceNumber}`);
       this.gameComponent.movePawn(pawnMove);
     });

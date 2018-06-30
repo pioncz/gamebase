@@ -90,16 +90,16 @@ const Fields = require('./Fields'),
     
     return emptyGoalFields;
   },
-  checkMoves = (pawns, diceNumber, playerId) => {
+  checkMoves = (pawns, diceNumber, playerIndex) => {
     let avaiableMoves = [];
     
-    if (!pawns || !diceNumber || !playerId) {
+    if (!pawns || !diceNumber || (!playerIndex && playerIndex !== 0)) {
       console.error('Wrong params');
     }
   
     for(let pawnId in pawns) {
       let pawn = pawns[pawnId],
-        fieldSequence = getFieldSequence(pawns, pawn, diceNumber, playerId);
+        fieldSequence = getFieldSequence(pawns, pawn, diceNumber, playerIndex);
       
       if (fieldSequence.length) {
         avaiableMoves.push({pawnId: pawn.id, fieldSequence});

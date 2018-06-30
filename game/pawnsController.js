@@ -7,7 +7,8 @@ export default class PawnsController {
     this.scene = props.scene;
     this.pawns = {};
     this.fieldLength = props.fieldLength;
-    this.animations = props.animations;
+    this.animations = props.context.animations;
+    this.context = props.context;
     this.columnsLength = props.columnsLength;
   }
   createPawns({pawns}) {
@@ -18,17 +19,19 @@ export default class PawnsController {
       
       let pawn = new Pawn({
         ...pawns[pawnIndex],
+        id: pawnId,
         scene: this.scene,
         parsedX: parsedX,
         parsedZ: parsedZ,
         x: pawns[pawnIndex].x,
         z: pawns[pawnIndex].z,
+        context: this.context,
       });
       this.pawns[pawnId] = pawn;
       
       let delay = Math.floor((+pawnIndex / 4))*200+(+pawnIndex % 4)*100;
       
-      pawn.$.material.opacity = 0;
+      pawn.pawnMesh.material.opacity = 0;
       this.animations.create({
         length: 300,
         delay: delay,
@@ -37,7 +40,7 @@ export default class PawnsController {
           let newY = (20*(1-progress)) + 2.8,
             newOpacity = (progress * 5);
   
-          pawn.$.material.opacity = newOpacity;
+          pawn.pawnMesh.material.opacity = newOpacity;
           pawn.moveTo(pawn.parsedX, newY ,pawn.parsedZ);
         },
       });
@@ -85,5 +88,21 @@ export default class PawnsController {
   }
   getPawn(pawnId) {
     return this.pawns[pawnId];
+  }
+  selectPawns(pawnIds) {
+    for(let pawnId in this.pawns) {
+      let pawn = this.pawns[pawnId];
+  
+      if (!pawn) {
+        console.log(`Invalid pawnId: ${pawnId}`);
+        return;
+      }
+  
+      if (pawnIds.indexOf(pawnId) > -1) {
+        pawn.select();
+      } else {
+        pawn.unselect();
+      }
+    }
   }
 }

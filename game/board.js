@@ -12,7 +12,8 @@ const GridAmount = 11;
 export default class Board {
   constructor(props) {
     this.scene = props.scene;
-    this.animations = props.animations;
+    this.animations = props.context.animations;
+    this.context = props.context;
     this.width = props.width;
     this.height = props.height;
     this.renderer = props.renderer;
@@ -28,6 +29,7 @@ export default class Board {
     this.drawBoard();
     
     this.pawnsController = new PawnsController({
+      context: this.context,
       scene: this.scene,
       fieldLength: this.fieldLength,
       pawns: [],
@@ -36,7 +38,7 @@ export default class Board {
     });
     this.dice = new Dice({
       scene: this.scene,
-      animations: props.animations,
+      context: props.context,
     })
   }
   // Color fields, create pawns
@@ -136,17 +138,16 @@ export default class Board {
     this.texture = texture;
     
     texture.needsUpdate = true;
-    this.$ = new THREE.Mesh(this.geometry, new THREE.MeshFaceMaterial(this.materials));
-    
+
     this.geometry.faces[0].materialIndex = 1;
     this.geometry.faces[1].materialIndex = 1;
     this.geometry.faces[4].materialIndex = 0;
     this.geometry.faces[5].materialIndex = 0;
     this.geometry.faces[8].materialIndex = 1;
     this.geometry.faces[9].materialIndex = 1;
-    
-    var cube = new THREE.Mesh(this.geometry, new THREE.MeshFaceMaterial(this.materials));
-    this.scene.add(cube);
+  
+    this.$ = new THREE.Mesh(this.geometry, new THREE.MeshFaceMaterial(this.materials));
+    this.scene.add(this.$);
   }
   getFieldsSequence(pawnData, length) {
     let currentField,

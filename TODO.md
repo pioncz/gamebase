@@ -1,5 +1,10 @@
+- zablokowac roll w trakcie wyboru pionka
+- refaktor games/ludo/index.js
+
 TO DO, PLAN GRY
 + podczas robienia akcji powinien byc sprawdzany timestamp pokoju
+- gdy pionek sie rusza, selectionObject sie nie animuje
+- selectPawn robi unselectPawn na wszystkich innych pawnach
 - dorobic wybor pionka po stronie klienta
 - gracz wysyla pawnMove action (playerId, pawnId) na serwer
 - serwer zwraca sekwencje ruchow pionka
