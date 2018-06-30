@@ -1,5 +1,7 @@
-- zablokowac roll w trakcie wyboru pionka
++ zablokowac roll w trakcie wyboru pionka
+- sprawdzanie win'u
 - refaktor games/ludo/index.js
+- optymalizacja builda
 
 TO DO, PLAN GRY
 + podczas robienia akcji powinien byc sprawdzany timestamp pokoju
@@ -101,3 +103,6 @@ room.actions = [
 - internacionalizacja
 - reportowanie graczy
 - mozliwosc robienia a/b testow
+
+5) Panel admina
+-wyswietlac server log obok stanu
