@@ -7,7 +7,6 @@ import {
 import Header from 'components/header/index.jsx'
 import Connector from 'components/connector/index.jsx'
 import PropTypes from 'prop-types'
-import Greeter from 'test'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { selectors, actions } from 'shared/redux/api'
@@ -16,9 +15,6 @@ import Ludo from "./pages/ludo/containers";
 class Main extends Component {
   constructor(props) {
     super(props);
-    
-    let greeter = new Greeter('test');
-    console.log(greeter.greet());
   
     this.state = {
       connectorInstance: null,

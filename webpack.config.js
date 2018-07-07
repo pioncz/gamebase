@@ -28,11 +28,6 @@ module.exports = function() {
     module: {
       rules: [
         {
-          test: /\.tsx?$/,
-          use: 'ts-loader',
-          exclude: /node_modules/
-        },
-        {
           test: /.jsx?$/,
           loader: 'babel-loader',
           exclude: /node_modules/,
@@ -41,7 +36,6 @@ module.exports = function() {
           }
         },
         {test: /\.html$/, loader: 'html-loader'},
-//        { test: /\.js$/, loader: 'imports-loader?THREE=three'},
         { test: /\.sass$/, use: extractSass.extract({
           use: [{
             loader: "css-loader"
