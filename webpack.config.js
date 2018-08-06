@@ -80,9 +80,7 @@ module.exports = function() {
     devServer: {
       port: 5000,
       host: '0.0.0.0',
-      historyApiFallback: {
-        index: 'index.html'
-      },
+      historyApiFallback: true,
     }
   };
 }

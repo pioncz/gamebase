@@ -10,6 +10,10 @@ export default class PawnsController {
     this.animations = props.context.animations;
     this.context = props.context;
     this.columnsLength = props.columnsLength;
+    
+    this.$ = new THREE.Object3D();
+    this.$.name = 'PawnsController';
+    this.scene.add(this.$);
   }
   createPawns({pawns}) {
     for (let pawnIndex in pawns) {
@@ -32,6 +36,7 @@ export default class PawnsController {
       let delay = Math.floor((+pawnIndex / 4))*200+(+pawnIndex % 4)*100;
       
       pawn.pawnMesh.material.opacity = 0;
+      this.$.add(pawn.$);
       this.animations.create({
         length: 300,
         delay: delay,

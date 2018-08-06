@@ -12,6 +12,7 @@ export default class Game {
     this.scene = new THREE.Scene();
     this.controls = new Controls({container: this.container});
     this.animations = new Animations();
+    this.raycaster = new THREE.Raycaster();
     this.context = {animations: this.animations, controls: this.controls};
     
     let width = this.container.offsetWidth,
@@ -54,8 +55,9 @@ export default class Game {
     this.scene.add( lights[ 2 ] );
     this.scene.add( lights[ 3 ] );
     
-    // Handle canvas resizing
+    // Handle canvas events
     window.addEventListener('resize', this.onResize.bind(this), true);
+    window.addEventListener('click', this.onClick.bind(this), true);
     
     this.board = new Board({
       width: 512,
@@ -81,12 +83,6 @@ export default class Game {
       }
     });
   }
-  initGame({pawns, players}) {
-    if (!this.initialized) {
-      this.initialized = true;
-      this.board.initGame({pawns, players});
-    }
-  }
   onResize() {
     let width = this.container.offsetWidth,
       height = this.container.offsetHeight,
@@ -101,6 +97,22 @@ export default class Game {
     this.camera.top    =   this.frustumSize;
     this.camera.bottom = - this.frustumSize;
     this.camera.updateProjectionMatrix();
+  }
+  onClick(e) {
+    let mouse = { x: ( e.clientX / this.renderer.domElement.clientWidth ) * 2 - 1, y: - ( e.clientY / this.renderer.domElement.clientHeight ) * 2 + 1};
+    this.raycaster.setFromCamera( mouse, this.camera );
+    // See if the ray from the camera into the world hits one of our meshes
+    let intersects = this.raycaster.intersectObjects( this.board.pawnsController.$.children, true );
+    // Toggle rotation bool for meshes that we clicked
+    if ( intersects.length > 0 ) {
+      console.log('pawn clicked!');
+    }
+  }
+  initGame({pawns, players}) {
+    if (!this.initialized) {
+      this.initialized = true;
+      this.board.initGame({pawns, players});
+    }
   }
   selectPawns(pawnIds) {
     this.board.pawnsController.selectPawns(pawnIds);

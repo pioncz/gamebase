@@ -147,6 +147,7 @@ export default class Board {
     this.geometry.faces[9].materialIndex = 1;
   
     this.$ = new THREE.Mesh(this.geometry, new THREE.MeshFaceMaterial(this.materials));
+    this.$.name = 'BoardMesh';
     this.scene.add(this.$);
   }
   getFieldsSequence(pawnData, length) {

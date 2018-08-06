@@ -3,7 +3,6 @@ import {EASING, TIMES} from "./utils/animations";
 
 export default class Pawn {
   constructor(props) {
-    this.scene = props.scene;
     this.x = props.x;
     this.z = props.z;
     this.id = props.id;
@@ -23,9 +22,9 @@ export default class Pawn {
     this.parsedX = props.parsedX;
     this.parsedZ = props.parsedZ;
     this.moveTo(props.parsedX, 22.8, props.parsedZ);
+    this.$.name = 'PawnMesh';
     this.$.add(pawnMesh);
     this.pawnMesh = pawnMesh;
-    this.scene.add(this.$);
     this._createSelectionObject();
   }
   _createSelectionObject() {
