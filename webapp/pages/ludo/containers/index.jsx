@@ -241,6 +241,11 @@ export default class Ludo extends Component {
   handleClick(e) {
     console.log('ludo page got click width data: ', e);
     this.roll();
+    if (e && e.pawns && e.pawns.length) {
+      let pawnId = e.pawns[0].pawnId;
+
+      this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.PickPawn(this.state.yourPlayerId, pawnId));
+    }
   }
   joinQueue() {
     this.connectorInstance.socket.emit('findRoom', {

@@ -1,3 +1,13 @@
+gdy strona ludo dostanie clicka:
+- jezeli jest kolej gracza na wybor pionka i kliknal w podswietlonego pionka:
+ - wyslij do serwera info zeby ruszyl pionka z id: pawn.id
+- obsluga akcji wyboru pionka po stronie serwera
+ - obsluga wyjatku gdy to nie jest kolej gracza
+ - obsluga wyjatku gdy wybranu pionek ktory nie jest dozwolony
+ - obsluga wyboru zaznaczonego pionka:
+  - policz mozliwy ruch dla pionka i wyslij akcje ruchu pionkiem
+ - zmien gracza
+
 + zablokowac roll w trakcie wyboru pionka
 - sprawdzanie win'u
 - refaktor games/ludo/index.js

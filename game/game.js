@@ -105,13 +105,13 @@ export default class Game extends EventEmitter {
       x: ( e.clientX / this.renderer.domElement.clientWidth ) * 2 - 1, 
       y: - ( e.clientY / this.renderer.domElement.clientHeight ) * 2 + 1,
     };
-    
+
     this.raycaster.setFromCamera( mouse, this.camera );
 
-    let widgets = this.board.handleClick(this.raycaster),
-      widgetIds = widgets.map(widget => { return { widgetId: widget.id }; })
+    let pawns = this.board.handleClick(this.raycaster),
+      pawnIds = pawns.map(pawn => { return { pawnId: pawn.id }; })
     
-    this.emit('click', {widgetIds: widgetIds});
+    this.emit('click', { pawnIds });
   }
   initGame({pawns, players}) {
     if (!this.initialized) {
