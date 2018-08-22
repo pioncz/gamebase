@@ -9,6 +9,10 @@ export default class GameComponent extends Component {
   }
   componentDidMount() {
     this.engine = new Game({container: this.rendererContainer});
+    this.engine.on('click', this.handleClick);
+  }
+  componentWillUnmount() {
+   this.engine.off(); 
   }
   shouldComponentUpdate(nextProps) {
     if (nextProps.moves && nextProps.moves.length) {
@@ -23,9 +27,9 @@ export default class GameComponent extends Component {
     }
     return false;
   }
-  handleClick() {
+  handleClick(e) {
     if (this.props.onClick) {
-      this.props.onClick(this.engine);
+      this.props.onClick(this.engine, e);
     }
   }
   movePawn(pawnMove) {
@@ -35,7 +39,7 @@ export default class GameComponent extends Component {
     return this.engine.board.checkMoves(pawns, diceNumber, playerIndex);
   }
   render() {
-    return <div className="game" onClick={this.handleClick}>
+    return <div className="game">
       <div ref={(renderer) => {
         this.rendererContainer = renderer;
       }} className="renderer"></div>

@@ -1,9 +1,11 @@
 import Controls from './utils/controls'
 import { EASING, TIMES, Animations } from './utils/animations'
 import Board from './board'
+import EventEmitter from 'event-emitter-es6';
 
-export default class Game {
+export default class Game extends EventEmitter {
   constructor(props) {
+    super();
     this.container = props.container;
     this.raycaster = new THREE.Raycaster();
     this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
@@ -99,14 +101,17 @@ export default class Game {
     this.camera.updateProjectionMatrix();
   }
   onClick(e) {
-    let mouse = { x: ( e.clientX / this.renderer.domElement.clientWidth ) * 2 - 1, y: - ( e.clientY / this.renderer.domElement.clientHeight ) * 2 + 1};
+    let mouse = { 
+      x: ( e.clientX / this.renderer.domElement.clientWidth ) * 2 - 1, 
+      y: - ( e.clientY / this.renderer.domElement.clientHeight ) * 2 + 1,
+    };
+    
     this.raycaster.setFromCamera( mouse, this.camera );
-    // See if the ray from the camera into the world hits one of our meshes
-    let intersects = this.raycaster.intersectObjects( this.board.pawnsController.$.children, true );
-    // Toggle rotation bool for meshes that we clicked
-    if ( intersects.length > 0 ) {
-      console.log('pawn clicked!');
-    }
+
+    let widgets = this.board.handleClick(this.raycaster),
+      widgetIds = widgets.map(widget => { return { widgetId: widget.id }; })
+    
+    this.emit('click', {widgetIds: widgetIds});
   }
   initGame({pawns, players}) {
     if (!this.initialized) {

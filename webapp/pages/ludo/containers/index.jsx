@@ -238,7 +238,8 @@ export default class Ludo extends Component {
     //this.gameComponent.engine.board.dice.roll(1);
     this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.Roll());
   }
-  handleClick() {
+  handleClick(e) {
+    console.log('ludo page got click width data: ', e);
     this.roll();
   }
   joinQueue() {

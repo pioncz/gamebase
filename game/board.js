@@ -214,4 +214,18 @@ export default class Board {
         });
     }
   }
+  handleClick(raycaster) {
+    let pawns = [];
+
+    for(let pawnId of Object.keys(this.pawnsController.pawns)) {
+      let pawn = this.pawnsController.pawns[pawnId],
+        intersects = raycaster.intersectObject(pawn.$, true);
+
+      if (pawn && intersects.length) {
+        pawns.push(pawn);
+      }
+    }
+
+    return pawns;
+  }
 }
