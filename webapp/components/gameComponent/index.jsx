@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import './index.sass';
-import Game from 'game.js'
+import Engine from 'engine.js'
 
 export default class GameComponent extends Component {
   constructor(props) {
@@ -8,7 +8,7 @@ export default class GameComponent extends Component {
     this.handleClick = this.handleClick.bind(this);
   }
   componentDidMount() {
-    this.engine = new Game({container: this.rendererContainer});
+    this.engine = new Engine({container: this.rendererContainer});
     this.engine.on('click', this.handleClick);
   }
   componentWillUnmount() {

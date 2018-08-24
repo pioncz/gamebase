@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
 import GameComponent from 'components/gameComponent/';
-const InitialState = require('InitialState');
 import './index.sass';
 import BoardUtils from 'ludo/BoardUtils';
 import Timer from 'components/timer';
 import { actions } from 'shared/redux/api';
-import Ludo from "../ludo/containers";
+import Ludo from "ludo";
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
 
@@ -183,7 +182,7 @@ class Engine extends Component {
       newPlayers.push(newPlayer);
     }
     
-    newPawns = InitialState().pawns.slice(0,4*NumberOfPlayers);
+    newPawns = Ludo.InitialState().pawns.slice(0,4*NumberOfPlayers);
     
     for(let pawnI in newPawns) {
       let pawn = newPawns[pawnI],

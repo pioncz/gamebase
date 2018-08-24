@@ -1,5 +1,4 @@
-const Player = require('./../ludo/Player.js');
-const InitialState = require('./../ludo/InitialState.js');
+const Player = require('./Player.js');
 const Fields = require('./../games/ludo/Fields.js');
 const Connection = require('./Connection.js');
 const { Room } = require('./Room.js');

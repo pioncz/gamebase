@@ -3,7 +3,7 @@ import { EASING, TIMES, Animations } from './utils/animations'
 import Board from './board'
 import EventEmitter from 'event-emitter-es6';
 
-export default class Game extends EventEmitter {
+export default class Engine extends EventEmitter {
   constructor(props) {
     super();
     this.container = props.container;

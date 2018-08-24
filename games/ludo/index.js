@@ -325,6 +325,7 @@ const Ludo = {
   },
   AnimationLengths,
   ActionTypes,
+  InitialState,
 };
 
 module.exports = Ludo;

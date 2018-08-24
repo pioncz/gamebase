@@ -17,7 +17,7 @@ module.exports = function() {
 
   return {
     entry: {
-      game: './game/game.js',
+      engine: './engine/engine.js',
       webapp: './webapp/index.jsx'
     },
     output: {
@@ -55,7 +55,7 @@ module.exports = function() {
       ]
     },
     resolve: {
-      modules: ['games', 'game', 'webapp', 'node_modules', 'ludo'],
+      modules: ['games', 'engine', 'webapp', 'node_modules'],
       extensions: [ '.tsx', '.ts', '.js', '.jsx' ]
     },
     plugins: [
@@ -65,7 +65,7 @@ module.exports = function() {
       }),
       new HtmlWebpackPlugin({
         inject: true,
-        chunks: ['game', 'webapp'],
+        chunks: ['engine', 'webapp'],
         filename: 'index.html',
         minify: {
           collapseWhitespace: isProduction,
