@@ -291,13 +291,19 @@ const PickPawnHandler = (action, player, roomState) => {
 
   console.log(`player ${player.name} picks pawn ${action.pawnId}`);
 
-  let move = (moves.filter(move => move.pawnId === action.pawnId))[0];
+  let move = (moves.filter(move => move.pawnId === action.pawnId))[0],
+    pawn = roomState.pawns.filter(pawn => pawn.id === move.pawnId)[0],
+    lastField = move.fieldSequence[move.fieldSequence.length - 1];
+
+  pawn.x = lastField.x;
+  pawn.z = lastField.z;
 
   animationLength = Date.now() + (AnimationLengths.movePawn * move.fieldSequence.length) + 500;
   roomState.rolled = false;
   roomState.selectedPawns = [];
   roomState.currentPlayerId = getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
   returnActions.push(MovePawn(action.pawnId, move.fieldSequence));
+  returnActions.push(WaitForPlayer(roomState, animationLength));
 
   return returnActions;
 };
