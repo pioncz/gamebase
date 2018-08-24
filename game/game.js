@@ -109,7 +109,7 @@ export default class Game extends EventEmitter {
     this.raycaster.setFromCamera( mouse, this.camera );
 
     let pawns = this.board.handleClick(this.raycaster),
-      pawnIds = pawns.map(pawn => { return { pawnId: pawn.id }; })
+      pawnIds = pawns.map(pawn => pawn.id );
     
     this.emit('click', { pawnIds });
   }

@@ -29,7 +29,7 @@ export default class GameComponent extends Component {
   }
   handleClick(e) {
     if (this.props.onClick) {
-      this.props.onClick(this.engine, e);
+      this.props.onClick(e);
     }
   }
   movePawn(pawnMove) {

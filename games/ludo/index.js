@@ -1,11 +1,15 @@
 const BoardUtils = require('./BoardUtils.js');
 
+const getNextPlayerId = (playerIds, playerId) => {
+  return playerIds[(playerIds.indexOf(playerId) + 1) % playerIds.length];
+};
+
 const InitialState = () => {
   return {
     pawns: [
       {id: '12', x: 0, z: 0}, // first player
       {id: '13', x: 1, z: 0}, // first player
-      {id: '14', x: 0, z: 1}, // first player
+      {id: '14', x: 0, z: 4}, // first player
       {id: '15', x: 1, z: 1}, // first player
       {id: '4', x: 9, z: 0}, // second player
       {id: '5', x: 10, z: 0}, // second player
@@ -35,6 +39,7 @@ const ActionTypes = {
   MovePawn: 'MovePawn',
   WaitForPlayer: 'WaitForPlayer',
   PickPawn: 'PickPawn',
+  SelectPawns: 'SelectPawns',
 };
 
 const AnimationLengths = {
@@ -58,7 +63,7 @@ const Roll = (diceNumber) => {
   return {type: ActionTypes.Roll, diceNumber};
 };
 
-const MovePawn = (pawnId, fieldSequence) => {
+const MovePawn = (pawnId, fieldSequence, finishTimestamp) => {
   return {type: ActionTypes.MovePawn, pawnId, fieldSequence};
 };
 
@@ -74,17 +79,18 @@ const WaitForPlayer = (roomState, finishTimestamp) => {
   return {type: ActionTypes.WaitForPlayer, playerId: roomState.currentPlayerId, finishTimestamp};
 };
 
-const PickPawn = (pawnIds, playerId, finishTimestamp) => {
-  return {type: ActionTypes.PickPawn, pawnIds, playerId, finishTimestamp};
+const SelectPawns = (pawnIds, playerId, finishTimestamp) => {
+  return {type: ActionTypes.SelectPawns, pawnIds, playerId, finishTimestamp};
+};
+
+const PickPawn = (pawnId, playerId) => {
+  return {type: ActionTypes.PickPawn, pawnId, playerId};
 };
 
 const RollHandler = (action, player, roomState) => {
   let rollPossible = (roomState.currentPlayerId === player.id &&
     !!roomState.waitingForAction),
     returnActions = [],
-    getNextPlayerId = (playerIds, playerId) => {
-      return playerIds[(playerIds.indexOf(playerId) + 1) % playerIds.length];
-    },
     animationLength = 0,
     rollDiceDelay = AnimationLengths.rollDice + 500;
 
@@ -109,6 +115,10 @@ const RollHandler = (action, player, roomState) => {
 
   console.log(`player ${player.name} rolled ${diceNumber}`);
   
+  roomState.diceNumber = diceNumber;
+
+  returnActions.push(Roll(diceNumber));
+
   // no available moves, switch player
   if (!moves.length) {
     animationLength = Date.now() + rollDiceDelay;
@@ -119,10 +129,9 @@ const RollHandler = (action, player, roomState) => {
     let pawnIds = moves.map(move => move.pawnId);
     animationLength = Date.now() + AnimationLengths.rollDice + 500;
     roomState.rolled = true;
-    returnActions.push(PickPawn(pawnIds, player.id, animationLength));
+    roomState.selectedPawns = pawnIds;
+    returnActions.push(SelectPawns(pawnIds, player.id, animationLength));
   }
-  
-  returnActions.push(Roll(diceNumber));
   
   /////
 
@@ -252,6 +261,47 @@ const SelectColorHandler = (action, player, roomState) => {
   return returnActions;
 };
 
+const PickPawnHandler = (action, player, roomState) => {
+  let pickPawnPossible = (
+      roomState.currentPlayerId === player.id &&
+      !!roomState.waitingForAction
+    ),
+    returnActions = [];
+
+  if (!pickPawnPossible) {
+    console.log('This player cant pick pawn in this room');
+    return;
+  }
+
+  let playerPawns = roomState.pawns.filter(pawn => {
+      return pawn.playerId === player.id;
+    }),
+    diceNumber = roomState.diceNumber,
+    moves = BoardUtils.checkMoves(roomState, diceNumber, player.id);
+  
+  if (!moves.length) {
+    console.log('Move not possible.');
+    return; 
+  }
+
+  if (roomState.selectedPawns.indexOf(action.pawnId) === -1) {
+    console.log('This pawn is not selected. Pick correct pawn!');
+    return; 
+  }
+
+  console.log(`player ${player.name} picks pawn ${action.pawnId}`);
+
+  let move = (moves.filter(move => move.pawnId === action.pawnId))[0];
+
+  animationLength = Date.now() + (AnimationLengths.movePawn * move.fieldSequence.length) + 500;
+  roomState.rolled = false;
+  roomState.selectedPawns = [];
+  roomState.currentPlayerId = getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
+  returnActions.push(MovePawn(action.pawnId, move.fieldSequence));
+
+  return returnActions;
+};
+
 const Ludo = {
   Name: 'Ludo',
   Config,
@@ -260,10 +310,12 @@ const Ludo = {
     Roll,
     StartGame,
     WaitForPlayer,
+    PickPawn,
   },
   ActionHandlers: {
     SelectColor: SelectColorHandler,
     Roll: RollHandler,
+    PickPawn: PickPawnHandler,
   },
   AnimationLengths,
   ActionTypes,

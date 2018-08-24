@@ -1,3 +1,11 @@
+- TODO: przy wybieraniu koloru gracz od razu rzuca kostka - powinno to sie dziac przy nastepnym clicku
+
+- TODO: lugo page: nie zmienia sie zaznaczony aktualny gracz
+
+- TODO: pickPawnHandler generuje 1 move - tylko ten z pawnId === action.pawnId - powinny dojsc ruchy pionkow nie tego gracza (przypadek gdy gracz bije innego gracza)
+
+- TODO: gdy jeden gracz jest mozliwy do ruchu, rusz go automatycznie i zmien gracza
+
 gdy strona ludo dostanie clicka:
 - jezeli jest kolej gracza na wybor pionka i kliknal w podswietlonego pionka:
  - wyslij do serwera info zeby ruszyl pionka z id: pawn.id

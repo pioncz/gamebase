@@ -33,6 +33,7 @@ class Room {
       diceNumber: 0,
       playerIds: [],
       players: [],
+      selectedPawns: [],
     };
     this.eta = options.eta || 5*60*60; //18000s
     this.actions = [];

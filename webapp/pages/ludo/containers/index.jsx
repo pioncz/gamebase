@@ -89,6 +89,7 @@ export default class Ludo extends Component {
       menuOpened: false,
       page: Pages.Initial,
       yourPlayerId: null,
+      // colors that players can pick from
       queueColors: [],
       currentPlayerId: null,
       players: [],
@@ -97,6 +98,7 @@ export default class Ludo extends Component {
       timestamp: null,
       nextRollTimestamp: null,
       nextRollLength: null,
+      waitingForAction: null,
     };
     
     // this.state.currentPlayerId = '2';
@@ -184,12 +186,21 @@ export default class Ludo extends Component {
       }
       if (newAction.type === Games.Ludo.ActionTypes.MovePawn) {
         this.gameComponent.movePawn({pawnId: newAction.pawnId, fieldSequence: newAction.fieldSequence});
+        this.gameComponent.engine.selectPawns([]);
+
+        this.setState({
+          waitingForAction: Games.Ludo.ActionTypes.Roll,
+        });
       }
-      if (newAction.type === Games.Ludo.ActionTypes.PickPawn) {
+      if (newAction.type === Games.Ludo.ActionTypes.SelectPawns) {
         // highlight pawns only for current player
         if (newAction.playerId !== this.state.player.id) return;
 
         this.gameComponent.engine.selectPawns(newAction.pawnIds);
+        
+        this.setState({
+          waitingForAction: Games.Ludo.ActionTypes.PickPawn,
+        });
       }
     });
     
@@ -235,16 +246,17 @@ export default class Ludo extends Component {
     this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.SelectColor(color));
   }
   roll() {
-    //this.gameComponent.engine.board.dice.roll(1);
     this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.Roll());
   }
   handleClick(e) {
-    console.log('ludo page got click width data: ', e);
-    this.roll();
-    if (e && e.pawns && e.pawns.length) {
-      let pawnId = e.pawns[0].pawnId;
+    if (this.state.waitingForAction === Games.Ludo.ActionTypes.PickPawn) {
+      if (e && e.pawnIds && e.pawnIds.length) {
+        let pawnId = e.pawnIds[0];
 
-      this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.PickPawn(this.state.yourPlayerId, pawnId));
+        this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.PickPawn(pawnId, this.state.yourPlayerId));
+      }
+    } else {
+      this.roll();
     }
   }
   joinQueue() {
