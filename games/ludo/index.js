@@ -293,16 +293,34 @@ const PickPawnHandler = (action, player, roomState) => {
 
   let move = (moves.filter(move => move.pawnId === action.pawnId))[0],
     pawn = roomState.pawns.filter(pawn => pawn.id === move.pawnId)[0],
-    lastField = move.fieldSequence[move.fieldSequence.length - 1];
-
+    lastField = move.fieldSequence[move.fieldSequence.length - 1],
+    lastFieldPawns = roomState.pawns.filter(pawn => ( 
+      pawn.x === lastField.x &&
+      pawn.z === lastField.z &&
+      pawn.playerId !== player.id
+    )),
+    lastFieldPawn = lastFieldPawns.length && lastFieldPawns[0];
+  
   pawn.x = lastField.x;
   pawn.z = lastField.z;
-
+  
   animationLength = Date.now() + (AnimationLengths.movePawn * move.fieldSequence.length) + 500;
   roomState.rolled = false;
   roomState.selectedPawns = [];
   roomState.currentPlayerId = getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
   returnActions.push(MovePawn(action.pawnId, move.fieldSequence));
+  
+  // check if pawn moves on someone others pawn and move this pawn to spawn
+  if (lastFieldPawn) {
+    let playerIndex =  roomState.playerIds.findIndex(playerId => lastFieldPawn.playerId === playerId),
+      spawnPosition = BoardUtils.getSpawnFields(roomState.pawns, playerIndex)[0],
+      fieldSequence = [{x: spawnPosition.x, z: spawnPosition.z}];
+    
+    lastFieldPawn.x = spawnPosition.x;
+    lastFieldPawn.z = spawnPosition.z;
+    
+    returnActions.push(MovePawn(lastFieldPawn.id, fieldSequence));
+  }
   returnActions.push(WaitForPlayer(roomState, 0, animationLength));
 
   return returnActions;

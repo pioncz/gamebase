@@ -1,5 +1,3 @@
-- TODO: pickPawnHandler generuje 1 move - tylko ten z pawnId === action.pawnId - powinny dojsc ruchy pionkow nie tego gracza (przypadek gdy gracz bije innego gracza)
-
 - TODO: gdy jeden gracz jest mozliwy do ruchu, rusz go automatycznie i zmien gracza
 
 - TODO: gdy gracz wyjdzie i zostal ostatni gracz to zakoncz gre z winner = ostatni player
@@ -8,18 +6,10 @@
 
 - TODO: wygrana jak wszystkie pionki ktos zdobyl jako pierwszy
 
-gdy strona ludo dostanie clicka:
-- jezeli jest kolej gracza na wybor pionka i kliknal w podswietlonego pionka:
- - wyslij do serwera info zeby ruszyl pionka z id: pawn.id
-- obsluga akcji wyboru pionka po stronie serwera
- - obsluga wyjatku gdy to nie jest kolej gracza
- - obsluga wyjatku gdy wybranu pionek ktory nie jest dozwolony
- - obsluga wyboru zaznaczonego pionka:
-  - policz mozliwy ruch dla pionka i wyslij akcje ruchu pionkiem
- - zmien gracza
+- TODO: stan disconnected aplikacji
 
-+ zablokowac roll w trakcie wyboru pionka
-- sprawdzanie win'u
+- TODO: gdy gracz zostanie rozlaczony: dialog z rozlaczeniem i timeout reconnectu do gry i stan disconnected
+
 - refaktor games/ludo/index.js
 - optymalizacja builda
 
