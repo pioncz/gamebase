@@ -273,10 +273,7 @@ const PickPawnHandler = (action, player, roomState) => {
     return;
   }
 
-  let playerPawns = roomState.pawns.filter(pawn => {
-      return pawn.playerId === player.id;
-    }),
-    diceNumber = roomState.diceNumber,
+  let diceNumber = roomState.diceNumber,
     moves = BoardUtils.checkMoves(roomState, diceNumber, player.id);
   
   if (!moves.length) {
