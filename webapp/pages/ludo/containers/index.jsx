@@ -135,23 +135,7 @@ export default class Ludo extends Component {
     this.props.unsetInGame();
   }
   initSocketEvents(connectorInstance) {
-    connectorInstance.socket.on('roomUpdate', (roomState) => {
-      console.log('roomUpdate', roomState);
-      if (roomState.roomState === 'pickColors') {
-        this.setState({
-          page: Pages.PickColor,
-          queueColors: roomState.colorsQueue,
-        });
-      }
-    });
-    connectorInstance.socket.on('playerUpdate', (player) => {
-      console.log('playerUpdate', player);
-      this.setState({
-        player,
-      });
-    });
-    connectorInstance.socket.on('newAction', (newAction) => {
-      console.log('newAction', newAction);
+    const handleAction = (newAction) => {
       if (newAction.type === Games.Ludo.ActionTypes.SelectedColor) {
         let queueColors = this.state.queueColors,
           queueColor = queueColors.find(color => color.color === newAction.value);
@@ -179,7 +163,7 @@ export default class Ludo extends Component {
       if (newAction.type === Games.Ludo.ActionTypes.WaitForPlayer) {
         this.setState({
           currentPlayerId: newAction.playerId,
-        })
+        });
       }
       if (newAction.type === Games.Ludo.ActionTypes.Roll) {
         this.gameComponent.engine.board.dice.roll(newAction.diceNumber);
@@ -194,13 +178,37 @@ export default class Ludo extends Component {
       }
       if (newAction.type === Games.Ludo.ActionTypes.SelectPawns) {
         // highlight pawns only for current player
-        if (newAction.playerId !== this.state.player.id) return;
+        if (this.state.player && newAction.playerId !== this.state.player.id) return;
 
         this.gameComponent.engine.selectPawns(newAction.pawnIds);
         
         this.setState({
           waitingForAction: Games.Ludo.ActionTypes.PickPawn,
         });
+      }
+    };
+
+    connectorInstance.socket.on('roomUpdate', (roomState) => {
+      console.log('roomUpdate', roomState);
+      if (roomState.roomState === 'pickColors') {
+        this.setState({
+          page: Pages.PickColor,
+          queueColors: roomState.colorsQueue,
+        });
+      }
+    });
+    connectorInstance.socket.on('playerUpdate', (player) => {
+      console.log('playerUpdate', player);
+      this.setState({
+        player,
+      });
+    });
+    connectorInstance.socket.on('newAction', (newAction) => {
+      console.log('newAction', newAction);
+      if (newAction.startTimestamp && Date.now() < newAction.startTimestamp) {
+        setTimeout(() => handleAction(newAction), Date.now() - newAction.startTimestamp);
+      } else {
+        handleAction(newAction);
       }
     });
     

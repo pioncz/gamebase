@@ -75,11 +75,11 @@ const StartGame = (roomState) => {
   return {type: ActionTypes.StartGame, roomState: roomState};
 };
 
-const WaitForPlayer = (roomState, finishTimestamp) => {
-  return {type: ActionTypes.WaitForPlayer, playerId: roomState.currentPlayerId, finishTimestamp};
+const WaitForPlayer = (roomState, startTimestamp, finishTimestamp) => {
+  return {type: ActionTypes.WaitForPlayer, playerId: roomState.currentPlayerId, startTimestamp, finishTimestamp};
 };
 
-const SelectPawns = (pawnIds, playerId, finishTimestamp) => {
+const SelectPawns = (pawnIds, playerId, startTimestamp, finishTimestamp) => {
   return {type: ActionTypes.SelectPawns, pawnIds, playerId, finishTimestamp};
 };
 
@@ -124,13 +124,13 @@ const RollHandler = (action, player, roomState) => {
     animationLength = Date.now() + rollDiceDelay;
     roomState.currentPlayerId = getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
     roomState.rolled = false;
-    returnActions.push(WaitForPlayer(roomState, animationLength));
+    returnActions.push(WaitForPlayer(roomState, 0, animationLength));
   } else {
     let pawnIds = moves.map(move => move.pawnId);
     animationLength = Date.now() + AnimationLengths.rollDice + 500;
     roomState.rolled = true;
     roomState.selectedPawns = pawnIds;
-    returnActions.push(SelectPawns(pawnIds, player.id, animationLength));
+    returnActions.push(SelectPawns(pawnIds, player.id, 0, animationLength));
   }
   
   /////
@@ -252,7 +252,7 @@ const SelectColorHandler = (action, player, roomState) => {
     roomState.waitingForAction = true;
 
     let startGameAction = StartGame(roomState),
-      waitForPlayer = WaitForPlayer(roomState);
+      waitForPlayer = WaitForPlayer(roomState, Date.now() + 1000);
 
     returnActions.push(startGameAction);
     returnActions.push(waitForPlayer);
@@ -303,7 +303,7 @@ const PickPawnHandler = (action, player, roomState) => {
   roomState.selectedPawns = [];
   roomState.currentPlayerId = getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
   returnActions.push(MovePawn(action.pawnId, move.fieldSequence));
-  returnActions.push(WaitForPlayer(roomState, animationLength));
+  returnActions.push(WaitForPlayer(roomState, 0, animationLength));
 
   return returnActions;
 };

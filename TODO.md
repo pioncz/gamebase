@@ -1,8 +1,12 @@
-- TODO: przy wybieraniu koloru gracz od razu rzuca kostka - powinno to sie dziac przy nastepnym clicku
-
 - TODO: pickPawnHandler generuje 1 move - tylko ten z pawnId === action.pawnId - powinny dojsc ruchy pionkow nie tego gracza (przypadek gdy gracz bije innego gracza)
 
 - TODO: gdy jeden gracz jest mozliwy do ruchu, rusz go automatycznie i zmien gracza
+
+- TODO: gdy gracz wyjdzie i zostal ostatni gracz to zakoncz gre z winner = ostatni player
+
+- TODO: zbijanie pionka
+
+- TODO: wygrana jak wszystkie pionki ktos zdobyl jako pierwszy
 
 gdy strona ludo dostanie clicka:
 - jezeli jest kolej gracza na wybor pionka i kliknal w podswietlonego pionka:

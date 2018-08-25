@@ -74,18 +74,29 @@ class Room {
   handleAction(action, player) {
     let actionHandler = Games.Ludo.ActionHandlers[action.type],
       returnActions = (actionHandler && actionHandler(action, player, this.gameState)) || [];
-      
+
     if (returnActions.length) {
-      let finishTimestamps = returnActions.reduce((prevValue, currentValue) => {
-          prevValue.push(currentValue.finishTimestamp ? currentValue.finishTimestamp : 0)
+      let startTimestamps = returnActions.reduce((prevValue, currentValue) => {
+          prevValue.push(currentValue.startTimestamp ? currentValue.startTimestamp : 0);
           return prevValue;
         }, []),
-        maxTimestamp = finishTimestamps.length && finishTimestamps.reduce((prevValue, currentValue) => {
+        maxStartTimestamp = startTimestamps.length && startTimestamps.reduce((prevValue, currentValue) => {
+          return Math.max(prevValue, currentValue);
+        }),
+        finishTimestamps = returnActions.reduce((prevValue, currentValue) => {
+          prevValue.push(currentValue.finishTimestamp ? currentValue.finishTimestamp : 0);
+          return prevValue;
+        }, []),
+        maxFinishTimestamp = finishTimestamps.length && finishTimestamps.reduce((prevValue, currentValue) => {
           return Math.max(prevValue, currentValue);
         });
       
-      if (maxTimestamp) {
-        this.gameState.finishTimestamp = maxTimestamp;
+      if (maxFinishTimestamp) {
+        this.gameState.finishTimestamp = maxFinishTimestamp;
+      }
+
+      if (maxStartTimestamp) {
+        this.gameState.startTimestamp = maxStartTimestamp;
       }
     }
     
