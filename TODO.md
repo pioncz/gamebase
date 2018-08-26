@@ -1,6 +1,6 @@
-- TODO: wygrana jak wszystkie pionki ktos zdobyl jako pierwszy (test 2 graczy)
++ TODO: wygrana jak wszystkie pionki ktos zdobyl jako pierwszy (test 2 graczy)
 
-- TODO: blokada stania na tym samym polu
++ TODO: blokada stania na tym samym polu
 
 - TODO: napraw nowa gre
 

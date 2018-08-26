@@ -24,14 +24,14 @@ const Fields = require('./Fields'),
       startFieldIndex = Fields.findIndex((field)=> areFieldsEqual(field, pawn)),
       startField = startFieldIndex > -1 && Fields[startFieldIndex],
       isFieldOccupied = (field) => {
-        let fieldOccupied = pawns.find(f => f.z === field.z && f.x === field.x && f.playerId === field.playerId);
+        let fieldOccupied = pawns.find(f => f.z === field.z && f.x === field.x);
         return !!fieldOccupied;
       };
     
     if (!startField) return [];
     
     if (startField.type === FieldTypes.spawn) {
-      if (diceNumber === 6) {
+      if (diceNumber === 6 || diceNumber === 1) {
         let index = startFieldIndex;
         
         while(!fieldSequence.length) {
@@ -71,7 +71,7 @@ const Fields = require('./Fields'),
         }
       }
     }
-
+    
     // If last field is taken by another pawn of same player, return []
     if (fieldSequence.length && isFieldOccupied(fieldSequence[fieldSequence.length - 1])) {
       fieldSequence = [];
