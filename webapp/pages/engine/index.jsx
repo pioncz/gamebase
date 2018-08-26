@@ -71,6 +71,7 @@ class Engine extends Component {
       pawnInput: localStorage.pawnInput || '',
       selectedPawnId: null,
       currentPlayerId: null,
+      gameId: null,
     };
   
     this.gameComponent = null;
@@ -192,15 +193,14 @@ class Engine extends Component {
       pawn.playerId = player.id;
       pawn.playerIndex = player.index;
     }
-    
-    if (!this.state.pawns.length) {
-      this.setState({
-        pawns: newPawns,
-        players: newPlayers,
-        selectedPawnId: newPawns[0].id,
-        currentPlayerId: newPawns[0].playerId,
-      });
-    }
+
+    this.setState({
+      pawns: newPawns,
+      players: newPlayers,
+      selectedPawnId: newPawns[0].id,
+      currentPlayerId: newPawns[0].playerId,
+      gameId: nextId(),
+    });
     
     this.timerComponent.start(5*60*1000);
   }
@@ -246,6 +246,7 @@ class Engine extends Component {
         pawns={this.state.pawns}
         players={this.state.players}
         moves={this.state.moves}
+        gameId={this.state.gameId}
       />
       <Timer ref={(element) => { this.timerComponent = element; }}/>
     </div>;

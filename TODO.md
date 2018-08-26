@@ -2,6 +2,8 @@
 
 + TODO: blokada stania na tym samym polu
 
+- TODO: updateGame wywolywany przy zmianie pawns i players
+
 - TODO: napraw nowa gre
 
 - TODO: wywalic config z roomState

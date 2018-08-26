@@ -19,11 +19,10 @@ export default class GameComponent extends Component {
       let move = nextProps.moves[nextProps.moves.length - 1];
       this.engine.board.movePawn(move);
     }
-    let gameShouldInit = nextProps.pawns.length &&
-      nextProps.players && nextProps.players.length;
+    let gameShouldUpdate = this.props.gameId !== nextProps.gameId;
     
-    if (gameShouldInit) {
-      this.engine.initGame({pawns: nextProps.pawns, players: nextProps.players});
+    if (gameShouldUpdate) {
+      this.engine.updateGame({gameId: nextProps.gameId, pawns: nextProps.pawns, players: nextProps.players});
     }
     return false;
   }

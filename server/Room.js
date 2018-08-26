@@ -24,6 +24,7 @@ class Room {
     this.gameName = options.gameName;
     this.rolled = options.rolled;
     this.gameState = {
+      id: options.id,
       currentPlayerId: null,
       winnerId: null,
       roomState: RoomStates.queue,
