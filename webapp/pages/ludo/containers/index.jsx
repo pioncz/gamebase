@@ -186,6 +186,16 @@ export default class Ludo extends Component {
           waitingForAction: Games.Ludo.ActionTypes.PickPawn,
         });
       }
+      if (newAction.type === Games.Ludo.ActionTypes.FinishGame) {
+        let roomState = newAction.roomState;
+  
+        this.setState({
+          winnerId: roomState.winnerId,
+          page: (roomState.winnerId?Pages.Winner:this.state.page),
+        });
+  
+        this.timerComponent.stop();
+      }
     };
 
     connectorInstance.socket.on('roomUpdate', (roomState) => {
@@ -235,8 +245,8 @@ export default class Ludo extends Component {
     connectorInstance.socket.on('updateGame', (newGameState) => {
       this.setState({
         currentPlayerId: newGameState.currentPlayerId,
-        winner: newGameState.winner,
-        page: (newGameState.winner?Pages.Winner:this.state.page),
+        winnerId: newGameState.winnerId,
+        page: (newGameState.winnerId?Pages.Winner:this.state.page),
         nextRollTimestamp: newGameState.nextRollTimestamp,
         nextRollLength: newGameState.nextRollLength,
       });
@@ -275,7 +285,7 @@ export default class Ludo extends Component {
   }
   render() {
     let currentModal,
-      {page, players, winner, pawns, timestamp, nextRollTimestamp, currentPlayerId, nextRollLength} = this.state,
+      {page, players, winnerId, pawns, timestamp, nextRollTimestamp, currentPlayerId, nextRollLength} = this.state,
       playersOverlay,
       profiles;
     
@@ -319,7 +329,7 @@ export default class Ludo extends Component {
     }
     
     if (page === Pages.Winner) {
-      let player = players.find(player => player.id === winner);
+      let player = players.find(player => player.id === winnerId);
       
       currentModal = <Modal open={true}>
         <h3>Winner!</h3>

@@ -40,6 +40,7 @@ const ActionTypes = {
   WaitForPlayer: 'WaitForPlayer',
   PickPawn: 'PickPawn',
   SelectPawns: 'SelectPawns',
+  FinishGame: 'FinishGame'
 };
 
 const AnimationLengths = {
@@ -73,6 +74,10 @@ const SelectColor = (color) => {
 
 const StartGame = (roomState) => {
   return {type: ActionTypes.StartGame, roomState: roomState};
+};
+
+const FinishGame = (roomState) => {
+  return {type: ActionTypes.FinishGame, roomState: roomState};
 };
 
 const WaitForPlayer = (roomState, startTimestamp, finishTimestamp) => {
@@ -132,17 +137,7 @@ const RollHandler = (action, player, roomState) => {
     roomState.selectedPawns = pawnIds;
     returnActions.push(SelectPawns(pawnIds, player.id, 0, animationLength));
   }
-  
-  /////
-
-  
-  // if (lastField.type === FieldType.goal) {
-  //   console.log('player win!');
-  //   if (checkWin(playerPawns)) {
-  //     finishGame(room, player);
-  //   }
-  // }
-  
+    
   return returnActions;
   // //check if its this players turn
   // else if (room.state.currentPlayerId === player.id &&
@@ -318,6 +313,18 @@ const PickPawnHandler = (action, player, roomState) => {
     
     returnActions.push(MovePawn(lastFieldPawn.id, fieldSequence));
   }
+  //check win
+  if (lastField.type === BoardUtils.FieldTypes.goal) {
+    let playerPawns = roomState.pawns.filter(pawn => {
+      return pawn.playerId === player.id;
+    });
+    if (BoardUtils.checkWin(playerPawns)) {
+      
+      console.log(`player ${player.name} wins!`);
+      roomState.winnerId = player.id;
+      returnActions.push(FinishGame(roomState));
+    }
+  }
   returnActions.push(WaitForPlayer(roomState, 0, animationLength));
 
   return returnActions;
@@ -332,6 +339,7 @@ const Ludo = {
     StartGame,
     WaitForPlayer,
     PickPawn,
+    FinishGame,
   },
   ActionHandlers: {
     SelectColor: SelectColorHandler,

@@ -1,10 +1,12 @@
-- TODO: gdy jeden gracz jest mozliwy do ruchu, rusz go automatycznie i zmien gracza
+- TODO: wygrana jak wszystkie pionki ktos zdobyl jako pierwszy (test 2 graczy)
+
+- TODO: blokada stania na tym samym polu
+
+- TODO: napraw nowa gre
+
+- TODO: wywalic config z roomState
 
 - TODO: gdy gracz wyjdzie i zostal ostatni gracz to zakoncz gre z winner = ostatni player
-
-- TODO: zbijanie pionka
-
-- TODO: wygrana jak wszystkie pionki ktos zdobyl jako pierwszy
 
 - TODO: stan disconnected aplikacji
 

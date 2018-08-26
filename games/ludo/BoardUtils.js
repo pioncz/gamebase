@@ -1,4 +1,4 @@
-const FieldType = {
+const FieldTypes = {
   spawn: 'spawn',
   start: 'start',
   goal: 'goal',
@@ -30,14 +30,14 @@ const Fields = require('./Fields'),
     
     if (!startField) return [];
     
-    if (startField.type === FieldType.spawn) {
+    if (startField.type === FieldTypes.spawn) {
       if (diceNumber === 6) {
         let index = startFieldIndex;
         
         while(!fieldSequence.length) {
          let nextField = getField(++index);
 
-          if (nextField.type !== FieldType.spawn) {
+          if (nextField.type !== FieldTypes.spawn) {
             fieldSequence.push(nextField);
           }
         }
@@ -50,18 +50,18 @@ const Fields = require('./Fields'),
         let nextField = getField(++index),
           lastField = fieldSequence.length && fieldSequence[fieldSequence.length - 1];
         
-        if (nextField.type === FieldType.spawn) {
+        if (nextField.type === FieldTypes.spawn) {
           continue;
         }
         if (!isNaN(nextField.playerIndex) &&
           nextField.playerIndex !== playerIndex &&
-          nextField.type !== FieldType.start
+          nextField.type !== FieldTypes.start
         ) {
           continue;
         }
-        if ((startField.type === FieldType.goal ||
-          (lastField && lastField.type === FieldType.goal))
-            && nextField.type !== FieldType.goal) {
+        if ((startField.type === FieldTypes.goal ||
+          (lastField && lastField.type === FieldTypes.goal))
+            && nextField.type !== FieldTypes.goal) {
           fieldSequence = [];
           index = -1;
         }
@@ -82,7 +82,7 @@ const Fields = require('./Fields'),
   getSpawnFields = (pawns, playerIndex) => {
     let goalFields = Fields.filter(field =>
       field.playerIndex === playerIndex &&
-      field.type === FieldType.spawn
+      field.type === FieldTypes.spawn
     ),
       emptyGoalFields = goalFields.filter(field =>
         pawns.findIndex(pawn => (pawn.x === field.x && pawn.z === field.z)) === -1
@@ -110,6 +110,12 @@ const Fields = require('./Fields'),
     }
     
     return avaiableMoves;
+  },
+  checkWin = (pawns) => {
+    let fields = pawns.map(pawn => getFieldByPosition(pawn.x, pawn.z)),
+      fieldGoals = fields.map(field => field.type === FieldTypes.goal);
+    
+    return fieldGoals.indexOf(false) === -1;
   };
 
 module.exports = {
@@ -117,4 +123,6 @@ module.exports = {
   checkMoves,
   getFieldByPosition,
   getSpawnFields,
+  checkWin,
+  FieldTypes,
 };

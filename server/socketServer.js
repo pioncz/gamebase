@@ -237,6 +237,11 @@ class WebsocketServer {
           room.actions = room.actions.concat(newActions);
           _emitNewActions(room, newActions);
         }
+        
+        if (room.getState().winnerId) {
+          _leaveGame(socket.id);
+        }
+        
       });
   
       socket.on('getStats', function () {
