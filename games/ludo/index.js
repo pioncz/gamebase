@@ -7,11 +7,11 @@ const getNextPlayerId = (playerIds, playerId) => {
 const InitialState = () => {
   return {
     pawns: [
-      {id: '12', x: 0, z: 0}, // first player
-      {id: '13', x: 1, z: 0}, // first player
-      {id: '14', x: 0, z: 4}, // first player
-      {id: '15', x: 1, z: 1}, // first player
-      {id: '4', x: 9, z: 0}, // second player
+      {id: '12', x: 1, z: 4}, // first player
+      {id: '13', x: 0, z: 5}, // first player
+      {id: '14', x: 2, z: 5}, // first player
+      {id: '15', x: 4, z: 5}, // first player
+      {id: '4', x: 2, z: 4}, // second player
       {id: '5', x: 10, z: 0}, // second player
       {id: '6', x: 9, z: 1}, // second player
       {id: '7', x: 10, z: 1}, // second player
@@ -28,7 +28,7 @@ const InitialState = () => {
 };
 
 const Config = {
-  MinPlayer: 2,
+  MinPlayer: 1,
 };
 
 const ActionTypes = {
@@ -111,13 +111,10 @@ const RollHandler = (action, player, roomState) => {
     return;
   }
   
-  let playerPawns = roomState.pawns.filter(pawn => {
-      return pawn.playerId === player.id;
-    }),
-    diceNumber = parseInt(Math.random()*6)+1, // 1-6
+  let diceNumber = 1, //parseInt(Math.random()*6)+1, // 1-6
     // diceNumber=6;
     moves = BoardUtils.checkMoves(roomState, diceNumber, player.id);
-
+  
   console.log(`player ${player.name} rolled ${diceNumber}`);
   
   roomState.diceNumber = diceNumber;
