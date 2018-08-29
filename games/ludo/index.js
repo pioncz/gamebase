@@ -9,7 +9,7 @@ const InitialState = () => {
     pawns: [
       {id: '12', x: 0, z: 0}, // first player
       {id: '13', x: 1, z: 0}, // first player
-      {id: '14', x: 0, z: 4}, // first player
+      {id: '14', x: 0, z: 1}, // first player
       {id: '15', x: 1, z: 1}, // first player
       {id: '4', x: 9, z: 0}, // second player
       {id: '5', x: 10, z: 0}, // second player
