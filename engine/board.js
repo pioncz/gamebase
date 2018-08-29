@@ -3,31 +3,31 @@ import Pawn from './pawn'
 import {EASING, TIMES} from "./utils/animations";
 import PawnsController from 'pawnsController';
 import Config from 'config.js';
-import Fields from './../ludo/Fields.js';
+import Fields from './../games/ludo/Fields.js';
 import Dice from './dice';
-import BoardUtils from 'BoardUtils';
+import BoardUtils from './../games/ludo/BoardUtils.js';
 
 const GridAmount = 11;
 
 export default class Board {
   constructor(props) {
     this.scene = props.scene;
-    this.animations = props.animations;
+    this.animations = props.context.animations;
+    this.context = props.context;
     this.width = props.width;
     this.height = props.height;
     this.renderer = props.renderer;
     this.columnsLength = 11;
     this.fieldLength = 40 / this.columnsLength;
-    this.initialized = false;
     this.canvas = Utils.$({element: 'canvas'});
     this.texture = null;
     
     this.fields = Fields;
-    this.players = {};
     this.createBoard();
     this.drawBoard();
     
     this.pawnsController = new PawnsController({
+      context: this.context,
       scene: this.scene,
       fieldLength: this.fieldLength,
       pawns: [],
@@ -36,23 +36,24 @@ export default class Board {
     });
     this.dice = new Dice({
       scene: this.scene,
-      animations: props.animations,
+      context: props.context,
     })
   }
   // Color fields, create pawns
   initGame(props) {
-    this.initialized = true;
-    this.players = props.players;
+    this.clearGame();
+    const players = props.players;
     
     // Set field colors
     for(let fieldIndex in this.fields) {
       let field = this.fields[fieldIndex];
       
       if (field.playerIndex !== undefined) {
-        let player = this.players[field.playerIndex];
+        let player = players[field.playerIndex];
         
         if (player) {
           field.color = player.color;
+          field.disabled = false;
         } else {
           field.disabled = true;
         }
@@ -61,6 +62,19 @@ export default class Board {
     this.drawBoard();
     // create pawns
     this.pawnsController.createPawns({pawns: props.pawns});
+  }
+  clearGame() {
+    console.log('clearGame');
+    // clear board
+    for(let fieldIndex in this.fields) {
+      let field = this.fields[fieldIndex];
+    
+      if (field.playerIndex !== undefined) {
+        field.disabled = true;
+      }
+    }
+    this.drawBoard();
+    this.pawnsController.removePawns();
   }
   drawBoard() {
     let canvas = this.canvas,
@@ -136,17 +150,17 @@ export default class Board {
     this.texture = texture;
     
     texture.needsUpdate = true;
-    this.$ = new THREE.Mesh(this.geometry, new THREE.MeshFaceMaterial(this.materials));
-    
+
     this.geometry.faces[0].materialIndex = 1;
     this.geometry.faces[1].materialIndex = 1;
     this.geometry.faces[4].materialIndex = 0;
     this.geometry.faces[5].materialIndex = 0;
     this.geometry.faces[8].materialIndex = 1;
     this.geometry.faces[9].materialIndex = 1;
-    
-    var cube = new THREE.Mesh(this.geometry, new THREE.MeshFaceMaterial(this.materials));
-    this.scene.add(cube);
+  
+    this.$ = new THREE.Mesh(this.geometry, new THREE.MeshFaceMaterial(this.materials));
+    this.$.name = 'BoardMesh';
+    this.scene.add(this.$);
   }
   getFieldsSequence(pawnData, length) {
     let currentField,
@@ -211,5 +225,19 @@ export default class Board {
           console.log('Cannot move this pawn with this dice value');
         });
     }
+  }
+  handleClick(raycaster) {
+    let pawns = [];
+
+    for(let pawnId of Object.keys(this.pawnsController.pawns)) {
+      let pawn = this.pawnsController.pawns[pawnId],
+        intersects = raycaster.intersectObject(pawn.$, true);
+
+      if (pawn && intersects.length) {
+        pawns.push(pawn);
+      }
+    }
+
+    return pawns;
   }
 }

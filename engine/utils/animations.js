@@ -46,13 +46,14 @@ const nextId = (() => {
 })();
 
 class Animation {
-  constructor({update, length = 0, delay = 0, easing = null}) {
-    this.id = nextId();
+  constructor({id, update, length = 0, delay = 0, easing = null, loop = false}) {
+    this.id = id;
     this.lengthLeft = length;
     this.length = length;
     this.delayLeft = delay;
     this.easing = easing;
     this.update = update;
+    this.loop = loop;
     this.finished = false;
     this.finishPromise = new Promise((resolve, reject) => {
       this.resolve = resolve;
@@ -66,7 +67,27 @@ export class Animations {
     this.animations = [];
     this.sequences = {}; // 'sequenceName':
   }
+  _getAnimationById(id) {
+    let animation = this.animations.find(animation => animation.id === id);
+    
+    return animation;
+  }
+  removeAnimation(id) {
+    let animation = this._getAnimationById(id);
+    
+    if (!animation) return;
+    
+    this._finishAnimation(id);
+    this.animations.splice(this.animations.indexOf(animation), 1);
+  }
+  _finishAnimation(id) {
+    
+  }
   create(options) {
+    options.id = options.id || nextId();
+    
+    if (this._getAnimationById(options.id)) this.removeAnimation(options.id);
+    
     let animation = new Animation(options);
   
     this.animations.push(animation);
@@ -85,20 +106,15 @@ export class Animations {
       if (animation.easing) {
         progress = animation.easing(progress);
       }
-    
-      if (progress == 1) {
-        animation.finished = true;
-      }
+      
       animation.update(progress);
       animation.lengthLeft -= delta;
       if (animation.lengthLeft < 0) {
-        if (animation.times == TIMES.Infinity) {
+        if (animation.loop) {
           animation.lengthLeft = animation.length;
-        } else {
-          if (!animation.finished) {
-            animation.finished = true;
-            animation.update(1);
-          }
+        } else if (!animation.finished) {
+          animation.finished = true;
+          animation.update(1);
         }
       }
     }

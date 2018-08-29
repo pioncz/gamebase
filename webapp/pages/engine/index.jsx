@@ -1,9 +1,12 @@
 import React, { Component } from 'react';
 import GameComponent from 'components/gameComponent/';
-const InitialState = require('InitialState');
 import './index.sass';
-import BoardUtils from 'BoardUtils';
+import BoardUtils from 'ludo/BoardUtils';
 import Timer from 'components/timer';
+import { actions } from 'shared/redux/api';
+import Ludo from "ludo";
+import {connect} from "react-redux";
+import {bindActionCreators} from "redux";
 
 const NumberOfPlayers = 2;
 
@@ -57,7 +60,7 @@ const nextId = (()=>{
     }
   };
 
-export default class Engine extends Component {
+class Engine extends Component {
   constructor(props) {
     super(props);
   
@@ -68,6 +71,7 @@ export default class Engine extends Component {
       pawnInput: localStorage.pawnInput || '',
       selectedPawnId: null,
       currentPlayerId: null,
+      gameId: null,
     };
   
     this.gameComponent = null;
@@ -78,6 +82,12 @@ export default class Engine extends Component {
     this.onSubmit = this.onSubmit.bind(this);
     this.initGame = this.initGame.bind(this);
     this.onPawnClick = this.onPawnClick.bind(this);
+  }
+  componentDidMount() {
+    this.props.setInGame();
+  }
+  componentWillUnmount() {
+    this.props.unsetInGame();
   }
   onSubmit(e) {
     const { pawns, selectedPawnId, pawnInput, } = this.state,
@@ -173,7 +183,7 @@ export default class Engine extends Component {
       newPlayers.push(newPlayer);
     }
     
-    newPawns = InitialState().pawns.slice(0,4*NumberOfPlayers);
+    newPawns = Ludo.InitialState().pawns.slice(0,4*NumberOfPlayers);
     
     for(let pawnI in newPawns) {
       let pawn = newPawns[pawnI],
@@ -183,19 +193,19 @@ export default class Engine extends Component {
       pawn.playerId = player.id;
       pawn.playerIndex = player.index;
     }
-    
-    if (!this.state.pawns.length) {
-      this.setState({
-        pawns: newPawns,
-        players: newPlayers,
-        selectedPawnId: newPawns[0].id,
-        currentPlayerId: newPawns[0].playerId,
-      });
-    }
+
+    this.setState({
+      pawns: newPawns,
+      players: newPlayers,
+      selectedPawnId: newPawns[0].id,
+      currentPlayerId: newPawns[0].playerId,
+      gameId: nextId(),
+    });
     
     this.timerComponent.start(5*60*1000);
   }
   onPawnClick(pawnId) {
+    this.gameComponent.engine.selectPawns([pawnId]);
     this.setState({
       selectedPawnId: pawnId,
     });
@@ -236,8 +246,31 @@ export default class Engine extends Component {
         pawns={this.state.pawns}
         players={this.state.players}
         moves={this.state.moves}
+        gameId={this.state.gameId}
       />
       <Timer ref={(element) => { this.timerComponent = element; }}/>
     </div>;
   }
 }
+
+const {
+  setInGame,
+  unsetInGame,
+} = actions;
+
+const mapStateToProps = state => ({
+//  pawns: getPawns(state),
+});
+
+const mapDispatchToProps = dispatch => ({
+  ...bindActionCreators({
+//    fetchPresentation,
+    setInGame,
+    unsetInGame,
+  }, dispatch),
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Engine);

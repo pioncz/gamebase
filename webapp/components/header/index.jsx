@@ -19,6 +19,7 @@ export default class Header extends Component {
         <Link to='/'>Home</Link>
         <Link to='/ludo'>Ludo</Link>
         <Link to='/engine'>Engine</Link>
+        <Link to='/admin'>Admin</Link>
       </div>
       <div className="right-pane">
         <Profile user={user}></Profile>

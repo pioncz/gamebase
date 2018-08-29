@@ -3,9 +3,9 @@ import { EASING } from "./utils/animations";
 import Config from 'config.js';
 
 export default class Dice {
-  constructor({scene, animations}) {
+  constructor({scene, context}) {
     this.scene = scene;
-    this.animations = animations;
+    this.animations = context.animations;
   
     var geometry = new THREE.BoxGeometry( 2, 2, 2 );
     
@@ -94,9 +94,6 @@ export default class Dice {
     // Substract animation rotation
     baseX -= (2*Math.PI) * 1.25;
     baseZ -= (2*Math.PI) * .25;
-    
-    cube.rotation.x = baseX;
-    cube.rotation.z = baseZ;
     
     this.animations.createSequence({name: 'rollDice', steps: [{
         update: (progress) => {

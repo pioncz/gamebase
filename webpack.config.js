@@ -17,7 +17,7 @@ module.exports = function() {
 
   return {
     entry: {
-      game: './game/game.js',
+      engine: './engine/engine.js',
       webapp: './webapp/index.jsx'
     },
     output: {
@@ -28,11 +28,6 @@ module.exports = function() {
     module: {
       rules: [
         {
-          test: /\.tsx?$/,
-          use: 'ts-loader',
-          exclude: /node_modules/
-        },
-        {
           test: /.jsx?$/,
           loader: 'babel-loader',
           exclude: /node_modules/,
@@ -41,7 +36,6 @@ module.exports = function() {
           }
         },
         {test: /\.html$/, loader: 'html-loader'},
-//        { test: /\.js$/, loader: 'imports-loader?THREE=three'},
         { test: /\.sass$/, use: extractSass.extract({
           use: [{
             loader: "css-loader"
@@ -61,17 +55,17 @@ module.exports = function() {
       ]
     },
     resolve: {
-      modules: ['game', 'webapp', 'node_modules', 'ludo'],
+      modules: ['games', 'engine', 'webapp', 'node_modules'],
       extensions: [ '.tsx', '.ts', '.js', '.jsx' ]
     },
     plugins: [
-      new CleanWebpackPlugin(['dist']),
+      // new CleanWebpackPlugin(['dist']),
       new webpack.DefinePlugin({
         __CONFIG__: JSON.stringify(cfg)
       }),
       new HtmlWebpackPlugin({
         inject: true,
-        chunks: ['game', 'webapp'],
+        chunks: ['engine', 'webapp'],
         filename: 'index.html',
         minify: {
           collapseWhitespace: isProduction,
@@ -86,9 +80,7 @@ module.exports = function() {
     devServer: {
       port: 5000,
       host: '0.0.0.0',
-      historyApiFallback: {
-        index: 'index.html'
-      },
+      historyApiFallback: true,
     }
   };
 }
