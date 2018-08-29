@@ -245,9 +245,13 @@ class WebsocketServer {
       });
   
       socket.on('getStats', function () {
+        let roomsFiltered = {};
+        for (let roomId in rooms) {
+          roomsFiltered[roomId] = rooms[roomId].getState();
+        }
         socket.emit('statsUpdate', {
           connections,
-          rooms,
+          rooms: roomsFiltered,
           players,
         });
       });

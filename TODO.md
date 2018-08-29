@@ -1,6 +1,4 @@
 TO DO, PLAN GRY
-- napraw nowa gre
-- wywalic config z roomState
 - gdy gracz wyjdzie i zostal ostatni gracz to zakoncz gre z winner = ostatni player
 - stan disconnected aplikacji
 - gdy gracz zostanie rozlaczony: dialog z rozlaczeniem i timeout reconnectu do gry i stan disconnected
@@ -81,3 +79,5 @@ DONE:
 + wybor pionka
 +przerobienie wygladu profili
 +zaznaczenie aktualnego gracza
++ napraw nowa gre
++ wywalic config z roomState
