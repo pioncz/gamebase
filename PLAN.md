@@ -1,13 +1,10 @@
--dopisac opisy zadan
--estymata zadan
-
 Wymagania: (W)WWW, (D)Devops, (S)Server, (E)Engine, (G)Grafika, (#) inne, (A) analityka, (AP) admin panel
 
 0.7 Alpha: (do wystartowania)
 S:refaktor
 #:nazwa strony, nazwy gier
 E:gry w pelni testowalne automatycznie
-E:gry: mozliwosc grania na tel'
++E:gry: mozliwosc grania na tel'
 E:ludo: dzialajaca rozgrywka, nowa gra
 E:labirynt: dzialajaca rozgrywka, nowa gra
 D:rozbicie na repozytoria (testowalne osobno)
@@ -74,6 +71,7 @@ fx
 
 1.1
 bugfixing
+Chat:  szybki dostep do czatu i listy znajomych z funkcja zaproszenia do gry
 
 2.0: 
 analiza analitk
@@ -81,5 +79,12 @@ gry dla firm zewnetrznych
 inne rodzaje gier
 cs 2d, z innymi broniami i skillami (osobne spa)
 
+PARKING LOT:
+- nowe pionki
+- internacionalizacja
+- reportowanie graczy
+- mozliwosc robienia a/b testow
+
 busines model:
 reklamy dla kont free
+konta premium bez reklam
