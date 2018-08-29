@@ -153,6 +153,7 @@ export default class Ludo extends Component {
         let roomState = newAction.roomState;
         
         this.setState({
+          gameId: roomState.id,
           players: roomState.players,
           currentPlayerId: roomState.currentPlayerId,
           page: Pages.Game,

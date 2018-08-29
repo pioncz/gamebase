@@ -24,7 +24,6 @@ export default class PawnsController {
       let pawn = new Pawn({
         ...pawns[pawnIndex],
         id: pawnId,
-        scene: this.scene,
         parsedX: parsedX,
         parsedZ: parsedZ,
         x: pawns[pawnIndex].x,
@@ -38,6 +37,7 @@ export default class PawnsController {
       pawn.pawnMesh.material.opacity = 0;
       this.$.add(pawn.$);
       this.animations.create({
+        id: 'enterPawn' + pawnId,
         length: 300,
         delay: delay,
         easing: EASING.InOutQuad,
@@ -49,6 +49,16 @@ export default class PawnsController {
           pawn.moveTo(pawn.parsedX, newY ,pawn.parsedZ);
         },
       });
+    }
+  }
+  removePawns() {
+    for(let pawnId in this.pawns) {
+      let pawn = this.pawns[pawnId];
+      this.animations.removeAnimation('enterPawn' + pawnId);
+      pawn.unselect();
+      this.$.remove(pawn.$);
+      console.log(pawnId);
+      delete this.pawns[pawnId];
     }
   }
   movePawn(pawnId, fieldSequence) {

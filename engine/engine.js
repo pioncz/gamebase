@@ -115,14 +115,6 @@ export default class Engine extends EventEmitter {
     this.emit('click', { pawnIds });
   }
   initGame({gameId, pawns, players}) {
-    console.log('initGame pawns, players',pawns, players);
-    if (!this.initializing) {
-      this.initializing = true;
-      this.board.initGame({pawns, players});
-      this.initializing = false;
-    }
-  }
-  updateGame({gameId, pawns, players}) {
     if (this.initializing) {
       console.log('Game is updating already.');
       return;
@@ -131,8 +123,8 @@ export default class Engine extends EventEmitter {
       console.log('Game ids are the same.');
       return;
     }
-  
-    console.log('update pawns, players',pawns, players);
+
+    console.log('initGame',pawns, players);
     this.initializing = true;
     this.board.initGame({pawns, players});
     this.initializing = false;

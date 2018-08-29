@@ -22,7 +22,7 @@ export default class GameComponent extends Component {
     let gameShouldUpdate = this.props.gameId !== nextProps.gameId;
     
     if (gameShouldUpdate) {
-      this.engine.updateGame({gameId: nextProps.gameId, pawns: nextProps.pawns, players: nextProps.players});
+      this.engine.initGame({gameId: nextProps.gameId, pawns: nextProps.pawns, players: nextProps.players});
     }
     return false;
   }
