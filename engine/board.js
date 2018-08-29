@@ -19,12 +19,10 @@ export default class Board {
     this.renderer = props.renderer;
     this.columnsLength = 11;
     this.fieldLength = 40 / this.columnsLength;
-    this.initialized = false;
     this.canvas = Utils.$({element: 'canvas'});
     this.texture = null;
     
     this.fields = Fields;
-    this.players = {};
     this.createBoard();
     this.drawBoard();
     
@@ -43,18 +41,19 @@ export default class Board {
   }
   // Color fields, create pawns
   initGame(props) {
-    this.initialized = true;
-    this.players = props.players;
+    this.clearGame();
+    const players = props.players;
     
     // Set field colors
     for(let fieldIndex in this.fields) {
       let field = this.fields[fieldIndex];
       
       if (field.playerIndex !== undefined) {
-        let player = this.players[field.playerIndex];
+        let player = players[field.playerIndex];
         
         if (player) {
           field.color = player.color;
+          field.disabled = false;
         } else {
           field.disabled = true;
         }
@@ -63,6 +62,19 @@ export default class Board {
     this.drawBoard();
     // create pawns
     this.pawnsController.createPawns({pawns: props.pawns});
+  }
+  clearGame() {
+    console.log('clearGame');
+    // clear board
+    for(let fieldIndex in this.fields) {
+      let field = this.fields[fieldIndex];
+    
+      if (field.playerIndex !== undefined) {
+        field.disabled = true;
+      }
+    }
+    this.drawBoard();
+    this.pawnsController.removePawns();
   }
   drawBoard() {
     let canvas = this.canvas,

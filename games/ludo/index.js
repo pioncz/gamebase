@@ -28,7 +28,7 @@ const InitialState = () => {
 };
 
 const Config = {
-  MinPlayer: 2,
+  MinPlayer: 1,
 };
 
 const ActionTypes = {
@@ -111,13 +111,10 @@ const RollHandler = (action, player, roomState) => {
     return;
   }
   
-  let playerPawns = roomState.pawns.filter(pawn => {
-      return pawn.playerId === player.id;
-    }),
-    diceNumber = parseInt(Math.random()*6)+1, // 1-6
+  let diceNumber = 1, //parseInt(Math.random()*6)+1, // 1-6
     // diceNumber=6;
     moves = BoardUtils.checkMoves(roomState, diceNumber, player.id);
-
+  
   console.log(`player ${player.name} rolled ${diceNumber}`);
   
   roomState.diceNumber = diceNumber;

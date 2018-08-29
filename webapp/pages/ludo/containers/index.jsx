@@ -92,6 +92,7 @@ export default class Ludo extends Component {
       // colors that players can pick from
       queueColors: [],
       currentPlayerId: null,
+      gameId: null,
       players: [],
       pawns: [],
       winner: null,
@@ -152,6 +153,7 @@ export default class Ludo extends Component {
         let roomState = newAction.roomState;
         
         this.setState({
+          gameId: roomState.id,
           players: roomState.players,
           currentPlayerId: roomState.currentPlayerId,
           page: Pages.Game,
@@ -285,7 +287,7 @@ export default class Ludo extends Component {
   }
   render() {
     let currentModal,
-      {page, players, winnerId, pawns, timestamp, nextRollTimestamp, currentPlayerId, nextRollLength} = this.state,
+      {gameId, page, players, winnerId, pawns, timestamp, nextRollTimestamp, currentPlayerId, nextRollLength} = this.state,
       playersOverlay,
       profiles;
     
@@ -386,6 +388,7 @@ export default class Ludo extends Component {
       <GameComponent
         ref={(element) => {this.gameComponent = element; }}
         onClick={this.handleClick}
+        gameId={gameId}
         pawns={pawns}
         players={players}
       />

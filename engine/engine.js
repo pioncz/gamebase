@@ -9,7 +9,8 @@ export default class Engine extends EventEmitter {
     this.container = props.container;
     this.raycaster = new THREE.Raycaster();
     this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
-    this.initialized = false;
+    this.initializing = false;
+    this.gameId = null;
     
     this.scene = new THREE.Scene();
     this.controls = new Controls({container: this.container});
@@ -113,11 +114,20 @@ export default class Engine extends EventEmitter {
     
     this.emit('click', { pawnIds });
   }
-  initGame({pawns, players}) {
-    if (!this.initialized) {
-      this.initialized = true;
-      this.board.initGame({pawns, players});
+  initGame({gameId, pawns, players}) {
+    if (this.initializing) {
+      console.log('Game is updating already.');
+      return;
     }
+    if (this.gameId === gameId) {
+      console.log('Game ids are the same.');
+      return;
+    }
+
+    console.log('initGame',pawns, players);
+    this.initializing = true;
+    this.board.initGame({pawns, players});
+    this.initializing = false;
   }
   selectPawns(pawnIds) {
     this.board.pawnsController.selectPawns(pawnIds);
