@@ -32,6 +32,7 @@ class Room {
       waitingForAction: false,
       rolled: false,
       diceNumber: 0,
+      queueColors: [],
       playerIds: [],
       players: [],
       selectedPawns: [],

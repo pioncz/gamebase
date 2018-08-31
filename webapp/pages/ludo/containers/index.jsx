@@ -6,6 +6,7 @@ import Button from 'components/button/index';
 import './index.sass';
 import Timer from 'components/timer';
 import Games from 'Games.js';
+import ClassNames from 'classnames';
 
 const Pages = {
   Initial: 'Initial',
@@ -93,6 +94,7 @@ export default class Ludo extends Component {
       queueColors: [],
       currentPlayerId: null,
       gameId: null,
+      player: null, // current player
       players: [],
       pawns: [],
       winner: null,
@@ -101,17 +103,7 @@ export default class Ludo extends Component {
       nextRollLength: null,
       waitingForAction: null,
     };
-    
-    // this.state.currentPlayerId = '2';
-    // this.state.page = 'Game';
-    // this.state.pawns = [];
-    // this.state.players = [
-    //   {id:0, name: 'd1', avatar: null, color: ''},
-    //   {id:1, name: 'd2', avatar: null, color: ''},
-    //   {id:2, name: 'd3', avatar: null, color: ''},
-    //   {id:3, name: 'd4', avatar: null, color: ''},
-    // ];
-    
+        
     this.handleClick = this.handleClick.bind(this);
     this.joinQueue = this.joinQueue.bind(this);
     this.selectColor = this.selectColor.bind(this);
@@ -202,12 +194,24 @@ export default class Ludo extends Component {
 
     connectorInstance.socket.on('roomUpdate', (roomState) => {
       console.log('roomUpdate', roomState);
-      if (roomState.roomState === 'pickColors') {
+      
+      let page = (roomState.roomState === 'pickColors') ? Pages.PickColor : Pages.Initial,
+        state = roomState.roomState;
+      
+      if (state === 'pickColors') {
+        page = Pages.PickColor;
+      } else if (state === 'queue') {
+        page = Pages.Queue;
+      } else {
+        page = Pages.Initial;
+      }
+      
+      // if (roomState.roomState === 'pickColors') {
         this.setState({
-          page: Pages.PickColor,
+          page,
           queueColors: roomState.colorsQueue,
         });
-      }
+      // }
     });
     connectorInstance.socket.on('playerUpdate', (player) => {
       console.log('playerUpdate', player);
@@ -223,44 +227,17 @@ export default class Ludo extends Component {
         handleAction(newAction);
       }
     });
-    
-    connectorInstance.socket.on('startGame', (gameState) => {
-      connectorInstance.addMessage('startGame');
-      connectorInstance.addMessage('currentPlayer: ' + gameState.currentPlayerId + (gameState.yourPlayerId == gameState.currentPlayerId?' it\'s You!':''));
-      this.setState({
-        players: gameState.players,
-        currentPlayerId: gameState.currentPlayerId,
-        yourPlayerId: gameState.yourPlayerId,
-        page: Pages.Game,
-        pawns: gameState.pawns,
-        timestamp: gameState.timestamp,
-      });
-      this.timerComponent.start(gameState.timestamp - Date.now());
+    connectorInstance.socket.on('playerDisconnected', (e) => {
+      console.log('playerDisconnected', e.playerId);
+      const players = this.state.players,
+        playerIndex = players.findIndex(player => player.id === e.playerId);
+      
+      if (e.playerId && playerIndex > -1) {
+        this.setState({
+          players: players.map(player => player.id === e.playerId ? {...player, disconnected: true} : player),
+        });
+      }
     });
-    connectorInstance.socket.on('roll', ({diceNumber}) => {
-      this.gameComponent.engine.board.dice.roll(diceNumber);
-    });
-    connectorInstance.socket.on('pawnMove', (pawnMove) => {
-      connectorInstance.addMessage(`pawnMove length: ${pawnMove.length} diceNumber: ${pawnMove.diceNumber}`);
-      this.gameComponent.movePawn(pawnMove);
-    });
-    connectorInstance.socket.on('updateGame', (newGameState) => {
-      this.setState({
-        currentPlayerId: newGameState.currentPlayerId,
-        winnerId: newGameState.winnerId,
-        page: (newGameState.winnerId?Pages.Winner:this.state.page),
-        nextRollTimestamp: newGameState.nextRollTimestamp,
-        nextRollLength: newGameState.nextRollLength,
-      });
-    });
-    connectorInstance.socket.on('updatePlayers', (newPlayers) => {
-      // Leave game when someone leaves
-      connectorInstance.socket.emit('leaveGame');
-      // Show modal that someone disconnected with cta: search new game
-      this.setState({
-        page: Pages.Disconnected,
-      });
-  });
   }
   selectColor(color) {
     this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.SelectColor(color));
@@ -290,7 +267,7 @@ export default class Ludo extends Component {
       {gameId, page, players, winnerId, pawns, timestamp, nextRollTimestamp, currentPlayerId, nextRollLength} = this.state,
       playersOverlay,
       profiles;
-    
+    console.log(players.filter(player=>!!player.disconnected));
     if (page === Pages.Initial) {
       currentModal = <Modal open={true}>
         <h3>Znajdź grę</h3>
@@ -358,8 +335,14 @@ export default class Ludo extends Component {
   
     let playerProfiles = profiles.map((player, index) => {
       let startTimestamp = null,
-        endTimestamp = null;
-      
+        endTimestamp = null,
+        className = ClassNames({
+          'player': true,
+          ['player-'+ index]: true,
+          'player--hidden': page !== Pages.Game,
+          'player--disconnected': !!player.disconnected,
+        });
+      console.log(!!player.disconnected);
       if (nextRollTimestamp && player.id === currentPlayerId) {
         startTimestamp = nextRollTimestamp - nextRollLength;
         endTimestamp = nextRollTimestamp;
@@ -367,8 +350,8 @@ export default class Ludo extends Component {
         startTimestamp = Date.now();
         endTimestamp = startTimestamp + 8000;
       }
-      
-      return <div key={index} className={"player player-" + index + (page !== Pages.Game?' player--hidden':'')}>
+
+      return <div key={index} className={className}>
         <div className="player-name">
           {player.name}
           {player.id === currentPlayerId && <p className={'arrow ' + (index%2?'right':'left')}></p>}

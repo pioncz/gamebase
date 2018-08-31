@@ -1,3 +1,8 @@
++_destroyConnection nie kasuje pokoju, przez co gracz go nie opuszcza
++obsluzyc update gracza po stronie klienta
+wyszarzenie pionkow i avatara
+skasowac gameState.playerColors
+
 TO DO, PLAN GRY
 - gdy gracz wyjdzie i zostal ostatni gracz to zakoncz gre z winner = ostatni player
 - stan disconnected aplikacji
@@ -22,6 +27,7 @@ TO DO, PLAN GRY
 - jakies info jak rzucic kostka
 
 -1. Refaktor: 
+-eventy socketowe powinny wysylac roomState tylko przy startGame
 -zmienic socketServer na ioConnector
 -testy serwera
 -testy poszczegolnych gier

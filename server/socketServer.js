@@ -60,28 +60,40 @@ class WebsocketServer {
           io.to(room.name).emit('newAction', action);
         });
       },
-      // Remove player from room, update other sockets, remove connections room.
+      _emitePlayerDisconnected = (room, playerId) => {
+        io.to(room.name).emit('playerDisconnected', { playerId });
+      },
       _leaveGame = (socketId) => {
         let connection = connections[socketId],
           roomId = connection && connection.roomId,
           room = roomId && rooms[roomId],
-          playerId = connection && connection.playerId;
-      
+          playerId = connection && connection.playerId,
+          playerIndex = room.gameState.players.findIndex(player => player && player.id === playerId),
+          player = room.gameState.players[playerIndex],
+          activePlayers = room.gameState.players.length;
+
         if (!room || !playerId) return;
       
         // Update room players
-        if (room.playerIds && room.gameState.playerIds.indexOf(playerId) > -1) {
-          room.gameState.playerIds.splice(room.playerIds.indexOf(playerId), 1);
+        if (player) {
+          _log(`player ${player.name} disconnects`);
+          activePlayers--;
+          // player.disconnected = true;          
         }
         // Update connection
         connection.roomId = null;
-      
+
         // Finish game if theres one or less players
-        if (room.gameState.playerIds.length) {
-          // Emit new room state
+        if (activePlayers.length > 1) {
+          _emitePlayerDisconnected(room, playerId);
+        } else if (activePlayers.length === 1) {
+          let lastPlayer = activePlayers[0];
+          room.gameState.winnerId = lastPlayer.id;
+          
+          // _emitePlayerDisconnected(room, playerId);
           _emitRoomState(room);
         } else {
-          // Remove game without players
+          // Remove game
           delete rooms[roomId];
         }
       },
@@ -94,11 +106,7 @@ class WebsocketServer {
         if (connection.roomId) {
           _leaveGame(socketId);
         }
-      
-        if (connection.playerId) {
-          delete players[connection.playerId];
-        }
-      
+              
         delete connections[socketId];
       },
       _createRoom = (gameName) => {

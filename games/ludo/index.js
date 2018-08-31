@@ -28,7 +28,7 @@ const InitialState = () => {
 };
 
 const Config = {
-  MinPlayer: 1,
+  MinPlayer: 2,
 };
 
 const ActionTypes = {
