@@ -1,7 +1,10 @@
 +_destroyConnection nie kasuje pokoju, przez co gracz go nie opuszcza
 +obsluzyc update gracza po stronie klienta
-wyszarzenie pionkow i avatara
-skasowac gameState.playerColors
++wyszarzenie pionkow i avatara
++akcja Disconnected i obsluga na stronie Ludo
++dodac sprawdzanie actywnych graczy w roll handlerze
+jezeli wyszla osoba ktora jest aktualnie, ustaw nastepna osobe
+przy rozlaczeniu gracza jego pionki wracaja na spawn
 
 TO DO, PLAN GRY
 - gdy gracz wyjdzie i zostal ostatni gracz to zakoncz gre z winner = ostatni player

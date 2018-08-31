@@ -190,6 +190,16 @@ export default class Ludo extends Component {
   
         this.timerComponent.stop();
       }
+      if (newAction.type === Games.Ludo.ActionTypes.Disconnected) {
+        const players = this.state.players,
+          playerIndex = players.findIndex(player => player.id === newAction.playerId);
+      
+        if (newAction.playerId && playerIndex > -1) {
+          this.setState({
+            players: players.map(player => player.id === newAction.playerId ? {...player, disconnected: true} : player),
+          });
+        }
+      }
     };
 
     connectorInstance.socket.on('roomUpdate', (roomState) => {
@@ -202,16 +212,17 @@ export default class Ludo extends Component {
         page = Pages.PickColor;
       } else if (state === 'queue') {
         page = Pages.Queue;
+      } else if (roomState.winnerId) {
+        page = Pages.Winner;
       } else {
         page = Pages.Initial;
       }
       
-      // if (roomState.roomState === 'pickColors') {
-        this.setState({
-          page,
-          queueColors: roomState.colorsQueue,
-        });
-      // }
+      this.setState({
+        page,
+        players: roomState.players,
+        queueColors: roomState.colorsQueue,
+      });
     });
     connectorInstance.socket.on('playerUpdate', (player) => {
       console.log('playerUpdate', player);
@@ -229,14 +240,6 @@ export default class Ludo extends Component {
     });
     connectorInstance.socket.on('playerDisconnected', (e) => {
       console.log('playerDisconnected', e.playerId);
-      const players = this.state.players,
-        playerIndex = players.findIndex(player => player.id === e.playerId);
-      
-      if (e.playerId && playerIndex > -1) {
-        this.setState({
-          players: players.map(player => player.id === e.playerId ? {...player, disconnected: true} : player),
-        });
-      }
     });
   }
   selectColor(color) {

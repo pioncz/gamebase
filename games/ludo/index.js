@@ -40,7 +40,8 @@ const ActionTypes = {
   WaitForPlayer: 'WaitForPlayer',
   PickPawn: 'PickPawn',
   SelectPawns: 'SelectPawns',
-  FinishGame: 'FinishGame'
+  FinishGame: 'FinishGame',
+  Disconnected: 'Disconnected',
 };
 
 const AnimationLengths = {
@@ -90,6 +91,10 @@ const SelectPawns = (pawnIds, playerId, startTimestamp, finishTimestamp) => {
 
 const PickPawn = (pawnId, playerId) => {
   return {type: ActionTypes.PickPawn, pawnId, playerId};
+};
+
+const Disconnected = (playerId) => {
+  return {type: ActionTypes.Disconnected, playerId};
 };
 
 const RollHandler = (action, player, roomState) => {
@@ -327,6 +332,28 @@ const PickPawnHandler = (action, player, roomState) => {
   return returnActions;
 };
 
+const DisconnectedHandler = (action, player, room) => {
+  let returnActions = [],
+    activePlayers,
+    playerIndex = room.gameState.playerIds.indexOf(player.id);
+
+  // mark player as disconnected
+  player.disconnected = true;
+  playerIndex && room.gameState.playerIds.splice(playerIndex, 1);
+  activePlayers = room.getActivePlayers();
+
+  // set winner if there's only 1 player left
+  if (activePlayers.length === 1) {
+    room.gameState.winnerId = activePlayers[0].id;
+    returnActions.push(FinishGame(room.getState()))
+  }
+
+  // append Disconnected action to returnActions
+  returnActions.push(action);
+
+  return returnActions;
+};
+
 const Ludo = {
   Name: 'Ludo',
   Config,
@@ -337,11 +364,13 @@ const Ludo = {
     WaitForPlayer,
     PickPawn,
     FinishGame,
+    Disconnected,
   },
   ActionHandlers: {
     SelectColor: SelectColorHandler,
     Roll: RollHandler,
     PickPawn: PickPawnHandler,
+    Disconnected: DisconnectedHandler,
   },
   AnimationLengths,
   ActionTypes,

@@ -68,32 +68,24 @@ class WebsocketServer {
           roomId = connection && connection.roomId,
           room = roomId && rooms[roomId],
           playerId = connection && connection.playerId,
-          playerIndex = room.gameState.players.findIndex(player => player && player.id === playerId),
-          player = room.gameState.players[playerIndex],
-          activePlayers = room.gameState.players.length;
+          playerIndex = room && room.gameState.players.findIndex(player => player.id === playerId),
+          player = room && room.gameState.players[playerIndex],
+          activePlayers = room && room.getActivePlayers(),
+          activePlayersLength = activePlayers && activePlayers.length;
 
-        if (!room || !playerId) return;
-      
-        // Update room players
-        if (player) {
-          _log(`player ${player.name} disconnects`);
-          activePlayers--;
-          // player.disconnected = true;          
+        if (!room || !player) {
+          console.log('no room or player');
+          return;
         }
-        // Update connection
-        connection.roomId = null;
+      
+        let disconnectedAction = Games.Ludo.Actions.Disconnected(player.id),
+          returnActions = Games.Ludo.ActionHandlers.Disconnected(disconnectedAction, player, room);
 
-        // Finish game if theres one or less players
-        if (activePlayers.length > 1) {
-          _emitePlayerDisconnected(room, playerId);
-        } else if (activePlayers.length === 1) {
-          let lastPlayer = activePlayers[0];
-          room.gameState.winnerId = lastPlayer.id;
-          
-          // _emitePlayerDisconnected(room, playerId);
-          _emitRoomState(room);
-        } else {
-          // Remove game
+        _log(`player ${player.name} disconnected`);
+        _emitNewActions(room, returnActions);
+
+        // if there's winnerId remove room
+        if (room.gameState.winnerId) {
           delete rooms[roomId];
         }
       },
@@ -124,7 +116,7 @@ class WebsocketServer {
           const room = rooms[roomId];
           
           if (room.gameName === gameName &&
-            room.gameState.playerIds.length < MinPlayers) {
+            room.gameState.players.length < MinPlayers) {
             return returnRooms.concat(room);
           }
           

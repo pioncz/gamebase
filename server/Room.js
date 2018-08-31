@@ -61,6 +61,10 @@ class Room {
     
     return gameState;
   }
+  getActivePlayers() {
+    const players = this.gameState.players;
+    return players.filter(player => !player.disconnected);
+  }
   startGame(players) {
     this.gameState.players = players;
     this.gameState.roomState = RoomStates.pickColors;
