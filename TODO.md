@@ -1,17 +1,4 @@
-+obsluga disconnected:
- +_destroyConnection nie kasuje pokoju, przez co gracz go nie opuszcza
- +obsluzyc update gracza po stronie klienta
- +wyszarzenie pionkow i avatara
- +akcja Disconnected i obsluga na stronie Ludo
- +dodac sprawdzanie actywnych graczy w roll handlerze
- +jezeli wyszla osoba ktora jest aktualnie, ustaw nastepna osobe
- stworzyc player.order i ustawiac to przy starcie gry
- zamienic wykorzystania playerIndex orderem
- przy rozlaczeniu gracza jego pionki wracaja na spawn
-
-
 TO DO, PLAN GRY
-- gdy gracz wyjdzie i zostal ostatni gracz to zakoncz gre z winner = ostatni player
 - stan disconnected aplikacji
 - gdy gracz zostanie rozlaczony: dialog z rozlaczeniem i timeout reconnectu do gry i stan disconnected
 - gdy sa 2 pionki obok siebie (gora/dol) to w ten wyzej ciezko jest kliknac
@@ -94,3 +81,10 @@ DONE:
 +zaznaczenie aktualnego gracza
 + napraw nowa gre
 + wywalic config z roomState
++obsluga disconnected:
+ +_destroyConnection nie kasuje pokoju, przez co gracz go nie opuszcza
+ +obsluzyc update gracza po stronie klienta
+ +wyszarzenie pionkow i avatara
+ +akcja Disconnected i obsluga na stronie Ludo
+ +dodac sprawdzanie actywnych graczy w roll handlerze
+ +jezeli wyszla osoba ktora jest aktualnie, ustaw nastepna osobe 

@@ -52,6 +52,7 @@ S:skalowalnosc
 #:zrobic liste potrzebnych grafik
 G:zrobienie grafik: strona www (kazda podstrona z tej wersji)
 G:audyt graficzny www, gry
+S:przy rozlaczeniu gracza jego pionki wracaja na spawn
 
 0.9 beta: otwarta na ludzi z kickstartera / reklam, start firmy
 S:testy obciazeniowe

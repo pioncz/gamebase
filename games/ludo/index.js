@@ -141,65 +141,6 @@ const RollHandler = (action, player, roomState) => {
   }
     
   return returnActions;
-  // //check if its this players turn
-  // else if (room.state.currentPlayerId === player.id &&
-  //   !room.rolled &&
-  //   (!room.state.nextRollTimestamp || Date.now() > room.state.nextRollTimestamp)) {
-  //   // look for first pawn he can move
-  //
-  //
-  //   if (moves.length) {
-  //     let move = moves[0],
-  //       pawn = playerPawns.find(p => p.id === move.pawnId),
-  //       lastField = move.fieldSequence[move.fieldSequence.length - 1],
-  //       anotherPawns = room.pawns.filter(pawn =>
-  //         pawn.playerId !== player.id &&
-  //         pawn.x === lastField.x &&
-  //         pawn.z === lastField.z
-  //       ) || [];
-  //
-  //     room.state.nextRollLength = Math.max(config.ludo.animations.movePawn * move.fieldSequence.length, config.ludo.animations.rollDice);
-  //     room.state.nextRollTimestamp = Date.now() + room.state.nextRollLength;
-  //     io.to(room.name).emit('pawnMove', move);
-  //
-  //     pawn.x = lastField.x;
-  //     pawn.z = lastField.z;
-  //
-  //     if (anotherPawns.length) {
-  //       let anotherPawn = anotherPawns[0],
-  //         anotherPawnSpawnFields = BoardUtils.getSpawnFields(room.pawns, anotherPawn.playerIndex),
-  //         spawnField = (anotherPawnSpawnFields && anotherPawnSpawnFields[0]) || null,
-  //         anotherPawnMove = { pawnId: anotherPawn.id, fieldSequence: [spawnField] };
-  //
-  //       if (anotherPawnMove) {
-  //         anotherPawn.x = spawnField.x;
-  //         anotherPawn.z = spawnField.z;
-  //         io.to(room.name).emit('pawnMove', anotherPawnMove);
-  //       }
-  //     }
-  //
-  //     if (lastField.type === FieldType.goal) {
-  //       console.log('player win!');
-  //       if (checkWin(playerPawns)) {
-  //         finishGame(room, player);
-  //       }
-  //     }
-  //   } else {
-  //     room.state.nextRollTimestamp = Date.now() + config.ludo.animations.rollDice;
-  //     console.log('player cant move');
-  //     io.to(room.name).emit('console', 'player ' + player.name + ' roll\'d ' + diceNumber + ' and cant move');
-  //   }
-  //
-  //
-  //   let nextPlayerId = room.players[(playerIndex + 1) % room.players.length].id;
-  //
-  //   io.to(room.name).emit('roll', {diceNumber: diceNumber});
-  //
-  //   room.state.currentPlayerId = nextPlayerId;
-  //   io.to(room.name).emit('updateGame', room.state);
-  // } else {
-  //   console.log('not his turn');
-  // }
 };
 
 const SelectColorHandler = (action, player, roomState) => {
@@ -335,17 +276,41 @@ const PickPawnHandler = (action, player, roomState) => {
 const DisconnectedHandler = (action, player, room) => {
   let returnActions = [],
     activePlayers,
-    playerIndex = room.gameState.playerIds.indexOf(player.id);
+    gameState = room.gameState,
+    playerIndex = gameState.playerIds.indexOf(player.id),
+    spawnFields = BoardUtils.getSpawnFields(gameState.pawns, playerIndex),
+    playerPawns = gameState.pawns.filter(pawn => 
+      pawn.playerId === player.id &&
+      BoardUtils.getFieldByPosition(pawn.x, pawn.z).type !== BoardUtils.FieldTypes.spawn
+    );
 
   // mark player as disconnected
   player.disconnected = true;
-  playerIndex && room.gameState.playerIds.splice(playerIndex, 1);
+  if (playerIndex > -1) {
+    gameState.playerIds.splice(playerIndex, 1);
+  }
   activePlayers = room.getActivePlayers();
+
+  if(gameState.currentPlayerId === player.id) {
+    gameState.currentPlayerId = getNextPlayerId(gameState.playerIds, gameState.currentPlayerId);
+  }
 
   // set winner if there's only 1 player left
   if (activePlayers.length === 1) {
     room.gameState.winnerId = activePlayers[0].id;
     returnActions.push(FinishGame(room.getState()))
+  // if there is no winner, move player pawns to spawn
+  } else {
+    // for every player pawn which is not in goal
+    for(let i = 0; i < playerPawns.length; i++) {
+      let pawn = playerPawns[i],
+        field = spawnFields[i];
+
+      pawn.x = field.x;
+      pawn.z = field.z;
+
+      returnActions.push(MovePawn(pawn.id, [{x: field.x, z: field.z}]));
+    }
   }
 
   // append Disconnected action to returnActions
