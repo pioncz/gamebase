@@ -8,6 +8,7 @@ export default class Connector extends Component {
     this.state = {
       messages: [],
       consoleVisible: false,
+      connected: false,
     };
     
     this.addMessage = this.addMessage.bind(this);
@@ -16,6 +17,9 @@ export default class Connector extends Component {
     
     this.socket.on('console', this.addMessage);
     this.socket.on('connect', () => {
+      this.setState({
+        connected: true,
+      });
       // this.addMessage("connected to socket server");
     });
     this.socket.on('foundGame', () => {
@@ -24,6 +28,11 @@ export default class Connector extends Component {
     this.socket.on('connect_error', (e) => {
       // console.error(e);
       this.addMessage("connection error");
+    });
+    this.socket.on('disconnect', () => {
+      this.setState({
+        connected: false,
+      });
     });
   }
   leaveGame() {
@@ -48,21 +57,22 @@ export default class Connector extends Component {
     });
   }
   render() {
-    if (!this.state.consoleVisible) {
-      return <div></div>;
-    }
-    
+    const {consoleVisible, connected} = this.state;
+        
     let messages = this.state.messages.map((message, i) => {
       return <div key={i}>{message}</div>;
     });
     
-    return (<div className={"console"}>
-      <div className="console-title">Console</div>
-      <div className="console-wrapper">
-        <div className="console-messages">
-          {messages}
+    return (<div className={"connector"}>
+      {consoleVisible && <div className={"console"}>
+        <div className="console-title">Console</div>
+        <div className="console-wrapper">
+          <div className="console-messages">
+            {messages}
+          </div>
         </div>
-      </div>
+      </div>}
+      {!connected && <div className={"offline"}>OFFLINE</div>}
     </div>);
   }
 }
