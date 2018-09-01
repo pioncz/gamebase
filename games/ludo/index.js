@@ -116,7 +116,7 @@ const RollHandler = (action, player, roomState) => {
     return;
   }
   
-  let diceNumber = 1, //parseInt(Math.random()*6)+1, // 1-6
+  let diceNumber = parseInt(Math.random()*6)+1, // 1-6
     // diceNumber=6;
     moves = BoardUtils.checkMoves(roomState, diceNumber, player.id);
   
@@ -129,7 +129,9 @@ const RollHandler = (action, player, roomState) => {
   // no available moves, switch player
   if (!moves.length) {
     animationLength = Date.now() + rollDiceDelay;
-    roomState.currentPlayerId = getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
+    if (player.lastRoll !== 6 || player.previousRoll === 6) {
+      roomState.currentPlayerId = getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
+    }
     roomState.rolled = false;
     returnActions.push(WaitForPlayer(roomState, 0, animationLength));
   } else {
@@ -139,7 +141,10 @@ const RollHandler = (action, player, roomState) => {
     roomState.selectedPawns = pawnIds;
     returnActions.push(SelectPawns(pawnIds, player.id, 0, animationLength));
   }
-    
+      
+  player.previousRoll = player.lastRoll;
+  player.lastRoll = diceNumber;
+  
   return returnActions;
 };
 
@@ -242,7 +247,9 @@ const PickPawnHandler = (action, player, roomState) => {
   animationLength = Date.now() + (AnimationLengths.movePawn * move.fieldSequence.length) + 500;
   roomState.rolled = false;
   roomState.selectedPawns = [];
-  roomState.currentPlayerId = getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
+  if (player.lastRoll !== 6 || player.previousRoll === 6) {
+    roomState.currentPlayerId = getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
+  }
   returnActions.push(MovePawn(action.pawnId, move.fieldSequence));
   
   // check if pawn moves on someone others pawn and move this pawn to spawn

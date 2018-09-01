@@ -1,5 +1,4 @@
 TO DO, PLAN GRY
-- gdy gracz rzuci 6, moze rzucic jeszcze raz
 - brak synchro czasowego 2 graczy. gracz z opoznieniem ma wrazenie, ze moze rzucic kostka wczesniej.
 - gdy sa 2 pionki obok siebie (gora/dol) to w ten wyzej ciezko jest kliknac
 - gracz zmienia sie za wczesnie. jest juz zaznaczony, a nie moze jeszcze wykonac ruchu
@@ -88,3 +87,4 @@ DONE:
  +dodac sprawdzanie actywnych graczy w roll handlerze
  +jezeli wyszla osoba ktora jest aktualnie, ustaw nastepna osobe 
 + stan disconnected aplikacji
++ gdy gracz rzuci 6, moze rzucic jeszcze raz

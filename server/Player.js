@@ -6,5 +6,7 @@ module.exports = function (options) {
     socketId: options.socketId || null,
     roomId: options.roomId || null,
     avatar: '/static/avatar' + parseInt(Math.random() * 6 + 1)+ '.jpg',
+    lastRoll: null,
+    previousRoll: null,
   };
 };
