@@ -8,7 +8,7 @@ export default class Connector extends Component {
     this.state = {
       messages: [],
       consoleVisible: false,
-      connected: false,
+      connected: true,
     };
     
     this.addMessage = this.addMessage.bind(this);
@@ -26,7 +26,9 @@ export default class Connector extends Component {
       this.addMessage("found game");
     });
     this.socket.on('connect_error', (e) => {
-      // console.error(e);
+      this.setState({
+        connected: false,
+      });
       this.addMessage("connection error");
     });
     this.socket.on('disconnect', () => {
