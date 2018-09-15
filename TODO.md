@@ -4,18 +4,9 @@ TO DO, PLAN GRY
 - gracz zmienia sie za wczesnie. jest juz zaznaczony, a nie moze jeszcze wykonac ruchu
 - refaktor games/ludo/index.js
 - optymalizacja builda
-- gdy pionek sie rusza, selectionObject sie nie animuje
-- selectPawn robi unselectPawn na wszystkich innych pawnach
-- dorobic wybor pionka po stronie klienta
-- gracz wysyla pawnMove action (playerId, pawnId) na serwer
-- serwer zwraca sekwencje ruchow pionka
-- skasowac ludo z glownego configa
-- konczenie gry gdy uplynie czas rozgrywki
-- skasowac z room.gameState.players albo playerColors
 - widoczna zmiana gracza (jezeli twoja kolejka, to bardziej widoczna)
-- zawsze jakis efekt klikniecia
-- timer gry
-- timer ruchu gracza
+- timer gry: konczenie gry gdy uplynie czas rozgrywki
+- timer ruchu gracza: konczenie ruchu gdy uplynie czas
 - jakies info jak rzucic kostka
 
 -1. Refaktor: 
