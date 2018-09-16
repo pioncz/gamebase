@@ -231,7 +231,7 @@ export default class Board {
 
     for(let pawnId of Object.keys(this.pawnsController.pawns)) {
       let pawn = this.pawnsController.pawns[pawnId],
-        intersects = raycaster.intersectObject(pawn.$, true);
+        intersects = raycaster.intersectObject(pawn.pawnMesh, true);
 
       if (pawn && intersects.length) {
         pawns.push(pawn);
