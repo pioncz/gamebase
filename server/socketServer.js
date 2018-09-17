@@ -273,7 +273,20 @@ class WebsocketServer {
 
         if (newActions) {
           room.actions = room.actions.concat(newActions);
-          _emitNewActions(room, newActions);
+          
+          //if action has timestamp, emit it separatedly
+          let delayedActions = newActions.filter(action => action.timestamp),
+            newActionsFiltered = newActions.filter(action => !action.timestamp);
+          
+          if (delayedActions.length > -1) {
+            for(let i in delayedActions) {
+              let action = delayedActions[i];
+              actionsStream.emitActions(room.name, [action], action.timestamp);
+            }
+          }
+          if (newActionsFiltered.length) {
+            actionsStream.emitActions(room.name, newActionsFiltered, 0);
+          }
         }
         
         if (room.getState().winnerId) {

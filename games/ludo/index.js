@@ -81,8 +81,8 @@ const FinishGame = (roomState) => {
   return {type: ActionTypes.FinishGame, roomState: roomState};
 };
 
-const WaitForPlayer = (roomState, startTimestamp, finishTimestamp) => {
-  return {type: ActionTypes.WaitForPlayer, playerId: roomState.currentPlayerId, startTimestamp, finishTimestamp};
+const WaitForPlayer = (roomState, startTimestamp, finishTimestamp, timestamp) => {
+  return {type: ActionTypes.WaitForPlayer, playerId: roomState.currentPlayerId, startTimestamp, finishTimestamp, timestamp};
 };
 
 const SelectPawns = (pawnIds, playerId, startTimestamp, finishTimestamp) => {
@@ -133,7 +133,7 @@ const RollHandler = (action, player, roomState) => {
       roomState.currentPlayerId = getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
     }
     roomState.rolled = false;
-    returnActions.push(WaitForPlayer(roomState, 0, animationLength));
+    returnActions.push(WaitForPlayer(roomState, 0, animationLength, animationLength));
   } else {
     let pawnIds = moves.map(move => move.pawnId);
     animationLength = Date.now() + AnimationLengths.rollDice + 500;
@@ -195,7 +195,7 @@ const SelectColorHandler = (action, player, roomState) => {
     roomState.waitingForAction = true;
 
     let startGameAction = StartGame(roomState),
-      waitForPlayer = WaitForPlayer(roomState, Date.now() + 1000);
+      waitForPlayer = WaitForPlayer(roomState, Date.now() + 1000, 0, Date.now() + 1000);
 
     returnActions.push(startGameAction);
     returnActions.push(waitForPlayer);
@@ -275,7 +275,7 @@ const PickPawnHandler = (action, player, roomState) => {
       returnActions.push(FinishGame(roomState));
     }
   }
-  returnActions.push(WaitForPlayer(roomState, 0, animationLength));
+  returnActions.push(WaitForPlayer(roomState, 0, animationLength, animationLength));
 
   return returnActions;
 };
