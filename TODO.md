@@ -80,3 +80,4 @@ DONE:
 + stan disconnected aplikacji
 + gdy gracz rzuci 6, moze rzucic jeszcze raz
 + gdy sa 2 pionki obok siebie (gora/dol) to w ten wyzej ciezko jest kliknac
++ ActionsStream

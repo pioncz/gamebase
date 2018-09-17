@@ -12,6 +12,43 @@ const FieldType = {
   goal: 'goal',
 };
 
+class ActionsStream {
+  constructor(io) {
+    this.io = io;
+    this.queue = [];
+  
+    setInterval(this._update.bind(this), 60);
+  }
+  // timestamp when action should be emitted, 
+  // 0 means as soon as possible
+  emitActions(roomName, newActions, timestamp = 0) {
+    if (!timestamp) {
+      this._emitActions(roomName, newActions);
+    } else {
+      this.queue.push({roomName, newActions, timestamp});
+    }
+  }
+  _emitActions(roomName, newActions) {
+    for (let i = 0; i < newActions.length; i++) {
+      this.io.to(roomName).emit('newAction', newActions[i]);
+    }
+  }
+  _update() {
+    let now = Date.now();
+    
+    if (!this.queue.length) return;
+    
+    for(let i = this.queue.length - 1; i > -1; i--) {
+      let queueItem = this.queue[i];
+      
+      if (queueItem.timestamp < now) {
+        this._emitActions(queueItem.roomName, queueItem.newActions);
+        this.queue.splice(i, 1);
+      }
+    }
+  }
+}
+
 /**
  * Represents a conntector between io and WebsocketServer.
  * Validates api options.
@@ -35,7 +72,8 @@ class WebsocketServer {
     const MinPlayers = Games.Ludo.Config.MinPlayer; //per room to play
     let connections = {}, // [socket.id]: {roomId, playerId}
       rooms = {},
-      players = {};
+      players = {},
+      actionsStream = new ActionsStream(io);
   
     let _nextId = (() => {
       let lastId = 0;
