@@ -11,7 +11,7 @@
 			"#FFEA00"
 		],
 		"animations": {
-			"movePawn": 1000,
+			"movePawn": 500,
 			"rollDice": 800
 		}
 	}
