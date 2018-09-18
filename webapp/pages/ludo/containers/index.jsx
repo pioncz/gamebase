@@ -7,6 +7,7 @@ import './index.sass';
 import Timer from 'components/timer';
 import Games from 'Games.js';
 import ClassNames from 'classnames';
+import DicesImage from 'dices.svg';
 
 const Pages = {
   Initial: 'Initial',
@@ -104,10 +105,10 @@ export default class Ludo extends Component {
       waitingForAction: null,
     };
         
-    this.handleClick = this.handleClick.bind(this);
+    this.handleBoardClick = this.handleBoardClick.bind(this);
+    this.handleDicesClick = this.handleDicesClick.bind(this);
     this.joinQueue = this.joinQueue.bind(this);
     this.selectColor = this.selectColor.bind(this);
-    this.roll = this.roll.bind(this);
     this.initSocketEvents = this.initSocketEvents.bind(this);
   
     this.timerComponent = null;
@@ -142,11 +143,13 @@ export default class Ludo extends Component {
         });
       }
       if (newAction.type === Games.Ludo.ActionTypes.StartGame) {
-        let roomState = newAction.roomState;
+        let roomState = newAction.roomState,
+          yourPlayer = roomState.players.find(player => player.id === this.state.player.id);
         
         this.setState({
           gameId: roomState.id,
           players: roomState.players,
+          player: yourPlayer,
           currentPlayerId: roomState.currentPlayerId,
           page: Pages.Game,
           pawns: roomState.pawns,
@@ -244,19 +247,18 @@ export default class Ludo extends Component {
   }
   selectColor(color) {
     this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.SelectColor(color));
+    this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.SelectColor(this.state.player.id, color));
   }
-  roll() {
+  handleDicesClick() {
     this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.Roll());
   }
-  handleClick(e) {
+  handleBoardClick(e) {
     if (this.state.waitingForAction === Games.Ludo.ActionTypes.PickPawn) {
       if (e && e.pawnIds && e.pawnIds.length) {
         let pawnId = e.pawnIds[0];
 
         this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.PickPawn(pawnId, this.state.yourPlayerId));
       }
-    } else {
-      this.roll();
     }
   }
   joinQueue() {
@@ -267,9 +269,18 @@ export default class Ludo extends Component {
   }
   render() {
     let currentModal,
-      {gameId, page, players, winnerId, pawns, timestamp, nextRollTimestamp, currentPlayerId, nextRollLength} = this.state,
+      {gameId, page, player, players, winnerId, pawns, timestamp, nextRollTimestamp, currentPlayerId, nextRollLength} = this.state,
       playersOverlay,
-      profiles;
+      profiles,
+      diceContainerClass = ClassNames({
+        'dices-container': true,
+        'dices-container--visible': page === Pages.Game,
+        'dices-container--active': player && player.id === currentPlayerId,
+      }),
+      diceContainerStyle = player && player.color && { 
+        boxShadow: `inset 0 0 10px ${player.color}`,
+    };
+
     console.log(players.filter(player=>!!player.disconnected));
     if (page === Pages.Initial) {
       currentModal = <Modal open={true}>
@@ -345,7 +356,7 @@ export default class Ludo extends Component {
           'player--hidden': page !== Pages.Game,
           'player--disconnected': !!player.disconnected,
         });
-      console.log(!!player.disconnected);
+      
       if (nextRollTimestamp && player.id === currentPlayerId) {
         startTimestamp = nextRollTimestamp - nextRollLength;
         endTimestamp = nextRollTimestamp;
@@ -373,13 +384,20 @@ export default class Ludo extends Component {
     return (<div className="ludo">
       <GameComponent
         ref={(element) => {this.gameComponent = element; }}
-        onClick={this.handleClick}
+        onClick={this.handleBoardClick}
         gameId={gameId}
         pawns={pawns}
         players={players}
       />
       {playersOverlay}
       {currentModal}
+      <div 
+        className={diceContainerClass} 
+        style={diceContainerStyle}
+        onClick={this.handleDicesClick}
+      >
+        <DicesImage />
+      </div>
       {timestamp !== null && <Timer ref={(element) => { this.timerComponent = element; }}/>}
     </div>);
   }

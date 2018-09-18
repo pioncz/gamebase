@@ -36,6 +36,20 @@ module.exports = function() {
             presets: ['env', 'react', 'stage-1']
           }
         },
+        {
+          test: /\.svg$/,
+          use: [
+            {
+              loader: "babel-loader"
+            },
+            {
+              loader: "react-svg-loader",
+              options: {
+                jsx: false // true outputs JSX tags
+              }
+            }
+          ]
+        },
         {test: /\.html$/, loader: 'html-loader'},
         { test: /\.sass$/, use: extractSass.extract({
           use: [{
@@ -56,7 +70,7 @@ module.exports = function() {
       ]
     },
     resolve: {
-      modules: ['games', 'engine', 'webapp', 'node_modules'],
+      modules: ['games', 'engine', 'webapp', 'node_modules', 'static'],
       extensions: [ '.tsx', '.ts', '.js', '.jsx' ]
     },
     plugins: [

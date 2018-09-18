@@ -16,7 +16,6 @@ AP: za autenktykacja na osobnym repo, log servera, analityka, statystyki serwero
 W:rankingi gier
 S:rankingi gier
 W:explore: wybor gry, ranking, lista grajacych online
-S,W:czat: textowy, standardowy jak na msgr, zawsze widoczny, tworzy sie automatyczna grupa w trakcie gry
 S,W:system reklam: dla profili free, podczas czekania na gre, w trakcie gry
 W:wparcie wielu przegladarek
 W:wparcie nexusa 5x
@@ -30,6 +29,7 @@ S,W:rejestracja @
 S,W:logowanie @
 S,W:forgetAccount @, GP?, FB?
 E:hotkeye do gry
+S,W:czat: textowy, standardowy jak na msgr, zawsze widoczny, tworzy sie automatyczna grupa w trakcie gry
 S,W:ustawienia: hotkeye
 W:onboarding: opis ui
 E:samouczki do gier

@@ -69,8 +69,8 @@ const MovePawn = (pawnId, fieldSequence) => {
   return {type: ActionTypes.MovePawn, pawnId, fieldSequence};
 };
 
-const SelectColor = (color) => {
-  return {type: ActionTypes.SelectColor, value: color};
+const SelectColor = (playerId, color) => {
+  return {type: ActionTypes.SelectColor, playerId, value: color};
 };
 
 const StartGame = (roomState) => {
@@ -171,7 +171,7 @@ const SelectColorHandler = (action, player, roomState) => {
   roomState.playerColors.push({playerId: player.id, color: action.value});
   player.color = action.value;
   
-  returnActions.push({action: {type: ActionTypes.SelectedColor, value: action.value}});
+  returnActions.push({action: {type: ActionTypes.SelectedColor, playerId: player.id, value: action.value}});
   
   if (roomState.playerColors.length >= Config.MinPlayer && roomState.roomId !== GameStates.game) {
     let initialState = InitialState(); // [Pawns]

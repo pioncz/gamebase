@@ -1,11 +1,11 @@
 TO DO, PLAN GRY
 - bug: inny gracz wygral. zmiana geta na pionki gracza
-- brak synchro czasowego 2 graczy. gracz z opoznieniem ma wrazenie, ze moze rzucic kostka wczesniej.
-- optymalizacja builda
 - widoczna zmiana gracza (jezeli twoja kolejka, to bardziej widoczna)
 - timer gry: konczenie gry gdy uplynie czas rozgrywki
 - timer ruchu gracza: konczenie ruchu gdy uplynie czas
-- jakies info jak rzucic kostka
+- moze kazdy gracz powinien sie widziec w prawym/lewym gornym rogu, zeby nie zmieniac wygladu gry
+- w roomState zamienic playerIds na playersOrder
+- gracz nie jest czyszczony przy F5
 
 -1. Refaktor: 
 -eventy socketowe powinny wysylac roomState tylko przy startGame
@@ -14,9 +14,6 @@ TO DO, PLAN GRY
 -testy poszczegolnych gier
 -testy silnika
 -panel admina - stan polaczen, kolejki, obciazenie serwera
-
-0) Informacje które są zawsze na ekranie (UI):
--badge przy avatarze usera informujacy o stanie polaczenia
 
 1) Gra
 - przy profilu aktualnego gracza, progress jego kolejki
@@ -83,3 +80,7 @@ DONE:
 + w handlerach powinno byc sprawdzanie czy mozna te akcje wykonac
 + refaktor games/ludo/index.js
 + wywalic waitingForAction na serwerze bo nie jest uzywane
+-- optymalizacja builda
+-- brak synchro czasowego 2 graczy. gracz z opoznieniem ma wrazenie, ze moze rzucic kostka wczesniej.
+--badge przy avatarze usera informujacy o stanie polaczenia (gracz offline jest zaznaczony)
++ jakies info jak rzucic kostka
