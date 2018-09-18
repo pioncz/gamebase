@@ -250,11 +250,6 @@ class WebsocketServer {
           _log('player is not in a room.');
           return;
         }
-        
-        if (!room.gameState.waitingForAction) {
-          _log(`room is not waiting for action`);
-          return;
-        }
           
         if (room.gameState.actionExpirationTimestamp && (Date.now() > room.gameState.actionExpirationTimestamp)) {
           _log(`time has expired for this action`);

@@ -202,7 +202,7 @@ const SelectColorHandler = (action, player, roomState) => {
       action: waitForPlayer, 
       timestamp: Date.now() + 1000,
       callback: () => {
-        roomState.waitingForAction = true;
+        roomState.rolled = false;
       },
     });
   }

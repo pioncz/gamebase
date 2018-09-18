@@ -28,14 +28,13 @@ class Room {
       winnerId: null,
       roomState: RoomStates.queue,
       finishTimestamp: null,
-      rolled: false,
+      rolled: true,
       diceNumber: 0,
       queueColors: [],
       playerIds: [],
       players: [],
       selectedPawns: [],
       currentPlayerId: null,
-      waitingForAction: true,
       actionExpirationTimestamp: null,
     };
     this.eta = options.eta || 5*60*60; //18000s
@@ -52,7 +51,6 @@ class Room {
       winnerId: gameState.winnerId,
       roomState: gameState.roomState,
       finishTimestamp: gameState.finishTimestamp,
-      waitingForAction: gameState.waitingForAction,
     };
   
     gameState.playerColors && (returnState.playerColors = gameState.playerColors);
