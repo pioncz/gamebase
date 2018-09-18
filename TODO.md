@@ -1,19 +1,17 @@
-TO DO, PLAN GRY
-- bug: inny gracz wygral. zmiana geta na pionki gracza
-- widoczna zmiana gracza (jezeli twoja kolejka, to bardziej widoczna)
-- timer gry: konczenie gry gdy uplynie czas rozgrywki
-- timer ruchu gracza: konczenie ruchu gdy uplynie czas
-- moze kazdy gracz powinien sie widziec w prawym/lewym gornym rogu, zeby nie zmieniac wygladu gry
+TO DO
+-eventy socketowe powinny wysylac roomState tylko przy startGame
 - w roomState zamienic playerIds na playersOrder
 - gracz nie jest czyszczony przy F5
-
--1. Refaktor: 
--eventy socketowe powinny wysylac roomState tylko przy startGame
 -zmienic socketServer na ioConnector
+- bug: inny gracz wygral. zmiana geta na pionki gracza
+- moze kazdy gracz powinien sie widziec w prawym/lewym gornym rogu, zeby nie zmieniac wygladu gry
 -testy serwera
 -testy poszczegolnych gier
 -testy silnika
 -panel admina - stan polaczen, kolejki, obciazenie serwera
+- timer gry: konczenie gry gdy uplynie czas rozgrywki
+- timer ruchu gracza: konczenie ruchu gdy uplynie czas
+- widoczna zmiana gracza (jezeli twoja kolejka, to bardziej widoczna)
 
 1) Gra
 - przy profilu aktualnego gracza, progress jego kolejki
