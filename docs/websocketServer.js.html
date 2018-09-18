@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>JSDoc: Home</title>
+    <title>JSDoc: Source: websocketServer.js</title>
 
     <script src="scripts/prettify/prettify.js"> </script>
     <script src="scripts/prettify/lang-css.js"> </script>
@@ -17,32 +17,53 @@
 
 <div id="main">
 
-    <h1 class="page-title">Home</h1>
+    <h1 class="page-title">Source: websocketServer.js</h1>
 
     
 
 
 
     
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>const GameNames = {
+  'ludo': 'ludo',
+};
 
+const MinPlayers = 2;
 
-    <h3> </h3>
+/**
+ * Class which provides public websocket api
+ */
+class WebsocketServer {
+  constructor() {
+    this.rooms = {};
+    this.players = {};
+  }
+  findGame() {
+  }
+  sendAction() {
+  
+  }
+  leaveGame() {
+  
+  }
+  onDisconnect() {
+  
+  }
+  onGameUpdate() {
+  
+  }
+  onRoomUpdate() {
+  
+  }
+}
 
+module.exports = WebsocketServer;
 
-
-
-
-
-
-
-
-
-    
-
-
-
-
-
+//export default WebsocketServer;</code></pre>
+        </article>
+    </section>
 
 
 

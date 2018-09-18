@@ -1,2 +1,0 @@
-# WEBSOCKET API
-

@@ -1,4 +1,4 @@
-const FieldType = {
+const FieldTypes = {
   spawn: 'spawn',
   start: 'start',
   goal: 'goal',
@@ -24,20 +24,20 @@ const Fields = require('./Fields'),
       startFieldIndex = Fields.findIndex((field)=> areFieldsEqual(field, pawn)),
       startField = startFieldIndex > -1 && Fields[startFieldIndex],
       isFieldOccupied = (field) => {
-        let fieldOccupied = pawns.find(f => f.z === field.z && f.x === field.x && f.playerId === field.playerId);
+        let fieldOccupied = pawns.find(f => f.z === field.z && f.x === field.x);
         return !!fieldOccupied;
       };
     
     if (!startField) return [];
     
-    if (startField.type === FieldType.spawn) {
-      if (diceNumber === 6) {
+    if (startField.type === FieldTypes.spawn) {
+      if (diceNumber === 6 || diceNumber === 1) {
         let index = startFieldIndex;
         
         while(!fieldSequence.length) {
          let nextField = getField(++index);
 
-          if (nextField.type !== FieldType.spawn) {
+          if (nextField.type !== FieldTypes.spawn) {
             fieldSequence.push(nextField);
           }
         }
@@ -50,18 +50,18 @@ const Fields = require('./Fields'),
         let nextField = getField(++index),
           lastField = fieldSequence.length && fieldSequence[fieldSequence.length - 1];
         
-        if (nextField.type === FieldType.spawn) {
+        if (nextField.type === FieldTypes.spawn) {
           continue;
         }
         if (!isNaN(nextField.playerIndex) &&
           nextField.playerIndex !== playerIndex &&
-          nextField.type !== FieldType.start
+          nextField.type !== FieldTypes.start
         ) {
           continue;
         }
-        if ((startField.type === FieldType.goal ||
-          (lastField && lastField.type === FieldType.goal))
-            && nextField.type !== FieldType.goal) {
+        if ((startField.type === FieldTypes.goal ||
+          (lastField && lastField.type === FieldTypes.goal))
+            && nextField.type !== FieldTypes.goal) {
           fieldSequence = [];
           index = -1;
         }
@@ -71,7 +71,7 @@ const Fields = require('./Fields'),
         }
       }
     }
-
+    
     // If last field is taken by another pawn of same player, return []
     if (fieldSequence.length && isFieldOccupied(fieldSequence[fieldSequence.length - 1])) {
       fieldSequence = [];
@@ -82,7 +82,7 @@ const Fields = require('./Fields'),
   getSpawnFields = (pawns, playerIndex) => {
     let goalFields = Fields.filter(field =>
       field.playerIndex === playerIndex &&
-      field.type === FieldType.spawn
+      field.type === FieldTypes.spawn
     ),
       emptyGoalFields = goalFields.filter(field =>
         pawns.findIndex(pawn => (pawn.x === field.x && pawn.z === field.z)) === -1
@@ -90,16 +90,19 @@ const Fields = require('./Fields'),
     
     return emptyGoalFields;
   },
-  checkMoves = (pawns, diceNumber, playerIndex) => {
+  checkMoves = (roomState, diceNumber, playerId) => {
     let avaiableMoves = [];
     
-    if (!pawns || !diceNumber || (!playerIndex && playerIndex !== 0)) {
+    if (!roomState || !roomState.playerIds || !roomState.pawns || !diceNumber || !playerId) {
       console.error('Wrong params');
     }
+
+    let playerIndex = roomState.playerIds.indexOf(playerId),
+      playerPawns = roomState.pawns.filter(pawn => pawn.playerId === playerId);
   
-    for(let pawnId in pawns) {
-      let pawn = pawns[pawnId],
-        fieldSequence = getFieldSequence(pawns, pawn, diceNumber, playerIndex);
+    for(let pawnId in playerPawns) {
+      let pawn = playerPawns[pawnId],
+        fieldSequence = getFieldSequence(playerPawns, pawn, diceNumber, playerIndex);
       
       if (fieldSequence.length) {
         avaiableMoves.push({pawnId: pawn.id, fieldSequence});
@@ -107,6 +110,12 @@ const Fields = require('./Fields'),
     }
     
     return avaiableMoves;
+  },
+  checkWin = (pawns) => {
+    let fields = pawns.map(pawn => getFieldByPosition(pawn.x, pawn.z)),
+      fieldGoals = fields.map(field => field.type === FieldTypes.goal);
+    
+    return fieldGoals.indexOf(false) === -1;
   };
 
 module.exports = {
@@ -114,4 +123,6 @@ module.exports = {
   checkMoves,
   getFieldByPosition,
   getSpawnFields,
+  checkWin,
+  FieldTypes,
 };

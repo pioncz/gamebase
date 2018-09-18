@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import './index.sass';
-import Game from 'game.js'
+import Engine from 'engine.js'
 
 export default class GameComponent extends Component {
   constructor(props) {
@@ -8,24 +8,27 @@ export default class GameComponent extends Component {
     this.handleClick = this.handleClick.bind(this);
   }
   componentDidMount() {
-    this.engine = new Game({container: this.rendererContainer});
+    this.engine = new Engine({container: this.rendererContainer});
+    this.engine.on('click', this.handleClick);
+  }
+  componentWillUnmount() {
+   this.engine.off(); 
   }
   shouldComponentUpdate(nextProps) {
     if (nextProps.moves && nextProps.moves.length) {
       let move = nextProps.moves[nextProps.moves.length - 1];
       this.engine.board.movePawn(move);
     }
-    let gameShouldInit = nextProps.pawns.length &&
-      nextProps.players && nextProps.players.length;
+    let gameShouldUpdate = this.props.gameId !== nextProps.gameId;
     
-    if (gameShouldInit) {
-      this.engine.initGame({pawns: nextProps.pawns, players: nextProps.players});
+    if (gameShouldUpdate) {
+      this.engine.initGame({gameId: nextProps.gameId, pawns: nextProps.pawns, players: nextProps.players});
     }
     return false;
   }
-  handleClick() {
+  handleClick(e) {
     if (this.props.onClick) {
-      this.props.onClick(this.engine);
+      this.props.onClick(e);
     }
   }
   movePawn(pawnMove) {
@@ -35,7 +38,7 @@ export default class GameComponent extends Component {
     return this.engine.board.checkMoves(pawns, diceNumber, playerIndex);
   }
   render() {
-    return <div className="game" onClick={this.handleClick}>
+    return <div className="game">
       <div ref={(renderer) => {
         this.rendererContainer = renderer;
       }} className="renderer"></div>
