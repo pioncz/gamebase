@@ -1,8 +1,5 @@
 TO DO
--eventy socketowe powinny wysylac roomState tylko przy startGame
-- w roomState zamienic playerIds na playersOrder
 - gracz nie jest czyszczony przy F5
--zmienic socketServer na ioConnector
 - bug: inny gracz wygral. zmiana geta na pionki gracza
 - moze kazdy gracz powinien sie widziec w prawym/lewym gornym rogu, zeby nie zmieniac wygladu gry
 -testy serwera
@@ -12,6 +9,7 @@ TO DO
 - timer gry: konczenie gry gdy uplynie czas rozgrywki
 - timer ruchu gracza: konczenie ruchu gdy uplynie czas
 - widoczna zmiana gracza (jezeli twoja kolejka, to bardziej widoczna)
+- wyczyscic logi w konsoli podczas gry na serwerze i w przegladarce
 
 1) Gra
 - przy profilu aktualnego gracza, progress jego kolejki
@@ -82,3 +80,5 @@ DONE:
 -- brak synchro czasowego 2 graczy. gracz z opoznieniem ma wrazenie, ze moze rzucic kostka wczesniej.
 --badge przy avatarze usera informujacy o stanie polaczenia (gracz offline jest zaznaczony)
 + jakies info jak rzucic kostka
++ eventy socketowe powinny wysylac roomState tylko przy startGame
++zmienic socketServer na ioConnector

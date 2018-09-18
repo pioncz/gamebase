@@ -184,11 +184,11 @@ export default class Ludo extends Component {
         });
       }
       if (newAction.type === Games.Ludo.ActionTypes.FinishGame) {
-        let roomState = newAction.roomState;
+        let winnerId = newAction.winnerId;
   
         this.setState({
-          winnerId: roomState.winnerId,
-          page: (roomState.winnerId?Pages.Winner:this.state.page),
+          winnerId: winnerId,
+          page: (winnerId?Pages.Winner:this.state.page),
         });
   
         this.timerComponent.stop();
@@ -322,16 +322,16 @@ export default class Ludo extends Component {
     }
     
     if (page === Pages.Winner) {
-      let player = players.find(player => player.id === winnerId);
+      let winnerPlayer = players.find(player => player.id === winnerId);
       
       currentModal = <Modal open={true}>
         <h3>Winner!</h3>
-        <div key={player.id} className={"player"}>
-          <img src={player.avatar} style={{
-            borderRight: "3px solid " + player.color
+        <div key={winnerPlayer.id} className={"player"}>
+          <img src={winnerPlayer.avatar} style={{
+            borderRight: "3px solid " + winnerPlayer.color
           }} />
           <div className="player-name">
-            {player.name}
+            {winnerPlayer.name}
           </div>
         </div>
         <Button onClick={this.joinQueue}>NOWA GRA</Button>

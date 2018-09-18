@@ -205,7 +205,6 @@ class WebsocketServer {
       
         if (connection.roomId) {
           console.log('user ' + player.name + ' already in queue or game');
-          // socket.emit('console', 'user already in queue or game');
           return;
         }
         

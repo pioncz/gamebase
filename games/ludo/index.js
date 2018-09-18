@@ -77,8 +77,8 @@ const StartGame = (roomState) => {
   return {type: ActionTypes.StartGame, roomState: roomState};
 };
 
-const FinishGame = (roomState) => {
-  return {type: ActionTypes.FinishGame, roomState: roomState};
+const FinishGame = (winnerId) => {
+  return {type: ActionTypes.FinishGame, winnerId};
 };
 
 const WaitForPlayer = (roomState) => {
@@ -271,10 +271,9 @@ const PickPawnHandler = (action, player, roomState) => {
       return pawn.playerId === player.id;
     });
     if (BoardUtils.checkWin(playerPawns)) {
-      
       console.log(`player ${player.name} wins!`);
       roomState.winnerId = player.id;
-      returnActions.push({action:FinishGame(roomState)});
+      returnActions.push({action:FinishGame(player.id)});
     }
   }
   returnActions.push({
@@ -313,7 +312,7 @@ const DisconnectedHandler = (action, player, room) => {
   // set winner if there's only 1 player left
   if (activePlayers.length === 1) {
     room.gameState.winnerId = activePlayers[0].id;
-    returnActions.push({action:FinishGame(room.getState())})
+    returnActions.push({action:FinishGame(room.gameState.winnerId)})
   // if there is no winner, move player pawns to spawn
   } else {
     // for every player pawn which is not in goal

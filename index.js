@@ -18,7 +18,7 @@ function handleError(req, res, error) {
 
 var configFile = './config/develop.json';
 var config = require(configFile);
-const WebsocketServer = require('./server/socketServer.js');
+const WebsocketServer = require('./server/ioConnector.js');
 const websocketServer = new WebsocketServer(io, config);
 
 /**
