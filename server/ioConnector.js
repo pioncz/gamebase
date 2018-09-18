@@ -119,8 +119,9 @@ class WebsocketServer {
         }
       
         let disconnectedAction = Games.Ludo.Actions.Disconnected(player.id),
-          returnActions = Games.Ludo.ActionHandlers.Disconnected(disconnectedAction, player, room);
-
+          streamActions = Games.Ludo.ActionHandlers.Disconnected(disconnectedAction, player, room),
+          returnActions = streamActions.map(streamAction => streamAction.action);
+  
         _log(`player ${player.name} disconnected`);
         _emitNewActions(room, returnActions);
 
@@ -131,12 +132,17 @@ class WebsocketServer {
       },
       // Leave connections room, remove connections player, remove from connections
       _destroyConnection = (socketId) => {
-        let connection = connections[socketId];
+        let connection = connections[socketId],
+          player = connection.playerId && players[connection.playerId];
       
         if (!connection) return;
       
         if (connection.roomId) {
           _leaveGame(socketId);
+        }
+        
+        if (player) {
+          delete players[connection.playerId];
         }
               
         delete connections[socketId];

@@ -98,7 +98,7 @@ export default class Ludo extends Component {
       player: null, // current player
       players: [],
       pawns: [],
-      winner: null,
+      winnerId: null,
       timestamp: null,
       nextRollTimestamp: null,
       nextRollLength: null,
@@ -187,7 +187,7 @@ export default class Ludo extends Component {
         let winnerId = newAction.winnerId;
   
         this.setState({
-          winnerId: winnerId,
+          winnerId,
           page: (winnerId?Pages.Winner:this.state.page),
         });
   
@@ -235,11 +235,7 @@ export default class Ludo extends Component {
     });
     connectorInstance.socket.on('newAction', (newAction) => {
       console.log('newAction', newAction);
-      if (newAction.startTimestamp && Date.now() < newAction.startTimestamp) {
-        setTimeout(() => handleAction(newAction), Date.now() - newAction.startTimestamp);
-      } else {
-        handleAction(newAction);
-      }
+      handleAction(newAction);
     });
     connectorInstance.socket.on('playerDisconnected', (e) => {
       console.log('playerDisconnected', e.playerId);

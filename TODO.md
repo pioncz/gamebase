@@ -1,5 +1,4 @@
 TO DO
-- gracz nie jest czyszczony przy F5
 - bug: inny gracz wygral. zmiana geta na pionki gracza
 - moze kazdy gracz powinien sie widziec w prawym/lewym gornym rogu, zeby nie zmieniac wygladu gry
 -testy serwera
@@ -11,6 +10,7 @@ TO DO
 - widoczna zmiana gracza (jezeli twoja kolejka, to bardziej widoczna)
 - wyczyscic logi w konsoli podczas gry na serwerze i w przegladarce
 - guzik kostki nie powinien byc zaznaczony gdy gracz nie moze rzucic kostka (roomState.rolled = true)
+- gdy jeden z graczy wyjdzie przez f5, nie mozna znalezc nowej gry
 
 1) Gra
 - przy profilu aktualnego gracza, progress jego kolejki
@@ -83,3 +83,4 @@ DONE:
 + jakies info jak rzucic kostka
 + eventy socketowe powinny wysylac roomState tylko przy startGame
 +zmienic socketServer na ioConnector
++ gracz nie jest czyszczony przy F5
