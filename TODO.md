@@ -10,6 +10,7 @@ TO DO
 - timer ruchu gracza: konczenie ruchu gdy uplynie czas
 - widoczna zmiana gracza (jezeli twoja kolejka, to bardziej widoczna)
 - wyczyscic logi w konsoli podczas gry na serwerze i w przegladarce
+- guzik kostki nie powinien byc zaznaczony gdy gracz nie moze rzucic kostka (roomState.rolled = true)
 
 1) Gra
 - przy profilu aktualnego gracza, progress jego kolejki

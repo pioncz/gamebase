@@ -246,7 +246,6 @@ export default class Ludo extends Component {
     });
   }
   selectColor(color) {
-    this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.SelectColor(color));
     this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.SelectColor(this.state.player.id, color));
   }
   handleDicesClick() {
