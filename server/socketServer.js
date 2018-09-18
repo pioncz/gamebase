@@ -21,15 +21,17 @@ class ActionsStream {
   }
   // timestamp when action should be emitted, 
   // 0 means as soon as possible
-  emitActions(roomName, newActions, timestamp = 0) {
+  emitActions(roomName, newActions, timestamp = 0, callback) {
     if (!timestamp) {
-      this._emitActions(roomName, newActions);
+      this._emitActions(roomName, newActions, callback);
     } else {
-      this.queue.push({roomName, newActions, timestamp});
+      this.queue.push({roomName, newActions, timestamp, callback});
     }
   }
-  _emitActions(roomName, newActions) {
+  _emitActions(roomName, newActions, callback) {
     for (let i = 0; i < newActions.length; i++) {
+      callback && callback();
+      // run action callback
       this.io.to(roomName).emit('newAction', newActions[i]);
     }
   }
@@ -42,7 +44,7 @@ class ActionsStream {
       let queueItem = this.queue[i];
       
       if (queueItem.timestamp < now) {
-        this._emitActions(queueItem.roomName, queueItem.newActions);
+        this._emitActions(queueItem.roomName, queueItem.newActions, queueItem.callback);
         this.queue.splice(i, 1);
       }
     }
@@ -170,7 +172,7 @@ class WebsocketServer {
         newPlayer = new Player({name: 'name' + playerId, id: playerId, socketId: socket.id});
     
       players[playerId] = newPlayer;
-      
+            
       connections[socket.id] = new Connection({
         playerId: newPlayer.id,
         roomId: null,
@@ -242,46 +244,41 @@ class WebsocketServer {
   
         let connection = connections[socket.id],
           player = connection.playerId && players[connection.playerId],
-          room = connection.roomId && rooms[connection.roomId],
-          finishTimestampsSub,
-          startTimestampsSub;
+          room = connection.roomId && rooms[connection.roomId];
           
         if (!connection || !player || !room) {
           _log('player is not in a room.');
           return;
         }
-  
-        finishTimestampsSub = room.gameState.finishTimestamp && 
-          (room.gameState.finishTimestamp - Date.now()) || 0;
         
-        if (finishTimestampsSub > 0) {
-          _log(`actions are blocked for ${parseInt(finishTimestampsSub/100)/10}s`);
+        if (!room.gameState.waitingForAction) {
+          _log(`room is not waiting for action`);
           return;
         }
-
-        startTimestampsSub = room.gameState.startTimestamp && 
-          (room.gameState.startTimestamp - Date.now()) || 0;
-        
-        if (startTimestampsSub > 0) {
-          _log(`actions are blocked for ${parseInt(startTimestampsSub/100)/10}s`);
+          
+        if (room.gameState.actionExpirationTimestamp && (Date.now() > room.gameState.actionExpirationTimestamp)) {
+          _log(`time has expired for this action`);
           return;
         }
         
         _log(`player ${player.name} calls action: ${action.type}`);
         
-        let newActions = room.handleAction(action, player);
+        let streamActions = room.handleAction(action, player) || [],  
+          newActions = [];
 
-        if (newActions) {
-          room.actions = room.actions.concat(newActions);
-          
+        if (streamActions.length) {
           //if action has timestamp, emit it separatedly
-          let delayedActions = newActions.filter(action => action.timestamp),
-            newActionsFiltered = newActions.filter(action => !action.timestamp);
-          
-          if (delayedActions.length > -1) {
+          let delayedActions = streamActions.filter(streamAction => streamAction.timestamp),
+            newActionsFiltered = streamActions
+              .filter(streamAction => !streamAction.timestamp)
+              .map(streamAction => streamAction.action);
+  
+          room.actions = room.actions.concat(streamActions);
+  
+          if (delayedActions.length) {
             for(let i in delayedActions) {
-              let action = delayedActions[i];
-              actionsStream.emitActions(room.name, [action], action.timestamp);
+              let streamAction = delayedActions[i];
+              actionsStream.emitActions(room.name, [streamAction.action], streamAction.timestamp, streamAction.callback);
             }
           }
           if (newActionsFiltered.length) {

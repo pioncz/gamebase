@@ -1,8 +1,8 @@
+- wywalic waitingForAction na serwerze bo nie jest uzywane
+
 TO DO, PLAN GRY
 - bug: inny gracz wygral. zmiana geta na pionki gracza
 - brak synchro czasowego 2 graczy. gracz z opoznieniem ma wrazenie, ze moze rzucic kostka wczesniej.
-- gracz zmienia sie za wczesnie. jest juz zaznaczony, a nie moze jeszcze wykonac ruchu
-- refaktor games/ludo/index.js
 - optymalizacja builda
 - widoczna zmiana gracza (jezeli twoja kolejka, to bardziej widoczna)
 - timer gry: konczenie gry gdy uplynie czas rozgrywki
@@ -81,3 +81,6 @@ DONE:
 + gdy gracz rzuci 6, moze rzucic jeszcze raz
 + gdy sa 2 pionki obok siebie (gora/dol) to w ten wyzej ciezko jest kliknac
 + ActionsStream
++ zmienic model danych zwracanych akcji na [{action, delayTimestamp, callback}]
++ w handlerach powinno byc sprawdzanie czy mozna te akcje wykonac
++ refaktor games/ludo/index.js

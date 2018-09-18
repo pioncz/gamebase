@@ -25,17 +25,18 @@ class Room {
     this.rolled = options.rolled;
     this.gameState = {
       id: options.id,
-      currentPlayerId: null,
       winnerId: null,
       roomState: RoomStates.queue,
       finishTimestamp: null,
-      waitingForAction: false,
       rolled: false,
       diceNumber: 0,
       queueColors: [],
       playerIds: [],
       players: [],
       selectedPawns: [],
+      currentPlayerId: null,
+      waitingForAction: true,
+      actionExpirationTimestamp: null,
     };
     this.eta = options.eta || 5*60*60; //18000s
     this.actions = [];
@@ -80,32 +81,7 @@ class Room {
   handleAction(action, player) {
     let actionHandler = Games.Ludo.ActionHandlers[action.type],
       returnActions = (actionHandler && actionHandler(action, player, this.gameState)) || [];
-
-    if (returnActions.length) {
-      let startTimestamps = returnActions.reduce((prevValue, currentValue) => {
-          prevValue.push(currentValue.startTimestamp ? currentValue.startTimestamp : 0);
-          return prevValue;
-        }, []),
-        maxStartTimestamp = startTimestamps.length && startTimestamps.reduce((prevValue, currentValue) => {
-          return Math.max(prevValue, currentValue);
-        }),
-        finishTimestamps = returnActions.reduce((prevValue, currentValue) => {
-          prevValue.push(currentValue.finishTimestamp ? currentValue.finishTimestamp : 0);
-          return prevValue;
-        }, []),
-        maxFinishTimestamp = finishTimestamps.length && finishTimestamps.reduce((prevValue, currentValue) => {
-          return Math.max(prevValue, currentValue);
-        });
-      
-      if (maxFinishTimestamp) {
-        this.gameState.finishTimestamp = maxFinishTimestamp;
-      }
-
-      if (maxStartTimestamp) {
-        this.gameState.startTimestamp = maxStartTimestamp;
-      }
-    }
-    
+        
     return returnActions;
   }
 }
