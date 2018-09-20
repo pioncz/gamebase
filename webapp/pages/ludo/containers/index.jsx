@@ -276,7 +276,6 @@ export default class Ludo extends Component {
         boxShadow: `inset 0 0 10px ${player.color}`,
     };
 
-    console.log(players.filter(player=>!!player.disconnected));
     if (page === Pages.Initial) {
       currentModal = <Modal open={true}>
         <h3>Znajdź grę</h3>

@@ -1,9 +1,6 @@
 TO DO
 - bug: inny gracz wygral. zmiana geta na pionki gracza
 - moze kazdy gracz powinien sie widziec w prawym/lewym gornym rogu, zeby nie zmieniac wygladu gry
--testy serwera
--testy poszczegolnych gier
--testy silnika
 -panel admina - stan polaczen, kolejki, obciazenie serwera
 - timer gry: konczenie gry gdy uplynie czas rozgrywki
 - timer ruchu gracza: konczenie ruchu gdy uplynie czas
@@ -11,6 +8,7 @@ TO DO
 - wyczyscic logi w konsoli podczas gry na serwerze i w przegladarce
 - guzik kostki nie powinien byc zaznaczony gdy gracz nie moze rzucic kostka (roomState.rolled = true)
 - gdy jeden z graczy wyjdzie przez f5, nie mozna znalezc nowej gry
+- pionek wraca na spawn, tuz przed zbiciem
 
 1) Gra
 - przy profilu aktualnego gracza, progress jego kolejki
@@ -84,3 +82,4 @@ DONE:
 + eventy socketowe powinny wysylac roomState tylko przy startGame
 +zmienic socketServer na ioConnector
 + gracz nie jest czyszczony przy F5
++ pierwszy test jednostkowy

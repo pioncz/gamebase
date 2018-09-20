@@ -292,7 +292,7 @@ const DisconnectedHandler = (action, player, room) => {
     activePlayers,
     gameState = room.gameState,
     playerIndex = gameState.playerIds.indexOf(player.id),
-    spawnFields = BoardUtils.getSpawnFields(gameState.pawns, playerIndex),
+    spawnFields = gameState.pawns && BoardUtils.getSpawnFields(gameState.pawns, playerIndex),
     playerPawns = gameState.pawns.filter(pawn => 
       pawn.playerId === player.id &&
       BoardUtils.getFieldByPosition(pawn.x, pawn.z).type !== BoardUtils.FieldTypes.spawn

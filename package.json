@@ -6,6 +6,7 @@
   "scripts": {
     "serve": "webpack-dev-server",
     "start": "node index.js",
+    "test": "jest --notify --config=tests.config.json",
     "docs": "jsdoc -c jsdoc.conf.json --readme README.md",
     "build": "webpack --watch"
   },
@@ -58,6 +59,7 @@
     "webpack": "^3.8.1"
   },
   "devDependencies": {
+    "jest": "^23.6.0",
     "typescript": "^2.7.1",
     "webpack-dev-server": "^2.9.4"
   }
