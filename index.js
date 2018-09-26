@@ -8,18 +8,32 @@ const fs = require('fs');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
-var cors = require('cors');
-var io = require('socket.io')(http);
+const cors = require('cors');
+const io = require('socket.io')(http);
+const MongoClient = require('mongodb').MongoClient;
+const assert = require('assert');
+const jwt = require('./server/jwt');
+const errorHandler = require('./server/error-handler');
 
 function handleError(req, res, error) {
   console.error(error.statusCode, error.error, error.options.uri);
   res.send(error.statusCode);
 }
 
-var configFile = './config/develop.json';
-var config = require(configFile);
+var config = require('./server/config');
 const WebsocketServer = require('./server/ioConnector.js');
 const websocketServer = new WebsocketServer(io, config);
+const dbUrl = 'mongodb://localhost:27017';
+const dbName = 'gamebase';
+
+MongoClient.connect(dbUrl, function(err, client) {
+  assert.equal(null, err);
+  console.log("Connected successfully to database server");
+  
+  const db = client.db(dbName);
+  
+  client.close();
+});
 
 /**
 * Module variables
@@ -33,6 +47,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ inflate: false }));
 app.use(cookieParser());
 app.use(cors());
+// app.use(jwt());
 
 app.use('/ping', function(req, res) {
   console.log((new Date()).toISOString());
