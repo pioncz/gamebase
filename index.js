@@ -26,12 +26,12 @@ const websocketServer = new WebsocketServer(io, config);
 const dbUrl = 'mongodb://localhost:27017';
 const dbName = 'gamebase';
 
-MongoClient.connect(dbUrl, function(err, client) {
+MongoClient.connect(dbUrl, { useNewUrlParser: true } , function(err, client) {
   assert.equal(null, err);
   console.log("Connected successfully to database server");
-  
+
   const db = client.db(dbName);
-  
+
   client.close();
 });
 
