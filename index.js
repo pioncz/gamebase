@@ -14,6 +14,7 @@ const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 const jwt = require('./server/jwt');
 const errorHandler = require('./server/error-handler');
+const playersController = require('./server/players/players.controller');
 
 function handleError(req, res, error) {
   console.error(error.statusCode, error.error, error.options.uri);
@@ -47,7 +48,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ inflate: false }));
 app.use(cookieParser());
 app.use(cors());
-// app.use(jwt());
+app.use(jwt());
+
+app.use('/api/players/', playersController);
 
 app.use('/ping', function(req, res) {
   console.log((new Date()).toISOString());

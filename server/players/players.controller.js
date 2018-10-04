@@ -3,7 +3,7 @@ const router = express.Router();
 const playerService = require('./player.service.js');
 
 // routes
-router.post('/authenticate', authenticate);
+router.post('/login', authenticate);
 router.post('/register', register);
 router.get('/', getAll);
 router.get('/current', getCurrent);
@@ -15,7 +15,10 @@ module.exports = router;
 
 function authenticate(req, res, next) {
   playerService.authenticate(req.body)
-    .then(player => player ? res.json(player) : res.status(400).json({ message: 'Username or password is incorrect' }))
+    .then(player => 
+      player ? 
+        res.cookie('token', player.token ).json(player) :
+        res.status(400).json({ message: 'Email or password is incorrect' }))
     .catch(err => next(err));
 }
 

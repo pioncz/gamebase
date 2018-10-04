@@ -10,7 +10,7 @@ import PropTypes from 'prop-types'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import { selectors, actions } from 'shared/redux/api'
-import Ludo from "./pages/ludo/containers";
+import { LoginModal, RegistrationModal } from 'modals/';
 
 class Main extends Component {
   constructor(props) {
@@ -19,9 +19,15 @@ class Main extends Component {
     this.state = {
       connectorInstance: null,
       player: null,
+      loginModalVisible: true,
+      registrationModalVisible: false,
     };
     
     this.setConnector = this.setConnector.bind(this);
+    this.toggleLoginModal = this.toggleLoginModal.bind(this);
+    this.sendLoginModal = this.sendLoginModal.bind(this);
+    this.toggleRegistrationModal = this.toggleRegistrationModal.bind(this);
+    this.sendRegistrationModal = this.sendRegistrationModal.bind(this);
   }
   getChildContext() {
     return {connectorInstance: this.state.connectorInstance};
@@ -36,19 +42,51 @@ class Main extends Component {
       })
     });
   }
+  toggleLoginModal() {
+    this.setState({
+      loginModalVisible: !this.state.loginModalVisible,
+    });
+  }
+  toggleRegistrationModal() {
+    this.setState({
+      registrationModalVisible: !this.state.registrationModalVisible,
+    });
+  }
+  sendRegistrationModal(values) {
+    this.props.registerPlayer(values);
+  };
+  sendLoginModal(values) {
+    this.props.loginPlayer(values);
+  };
   render() {
-    let { player } = this.state;
+    let { player, loginModalVisible, registrationModalVisible } = this.state,
+      { profile } = this.props;
     
     return (<Router>
       <div className={this.props.inGame?'inGame':''}>
         <Connector ref={this.setConnector}/>
-        <Header user={player}/>
+        <Header 
+          player={player} 
+          profile={profile}
+          toggleLoginModal={this.toggleLoginModal}
+          toggleRegistrationModal={this.toggleRegistrationModal}
+        />
         <div className="main">
           <Route exact path="/" component={Pages.Home}/>
           <Route path="/ludo" component={Pages.Ludo}/>
           <Route path="/engine" component={Pages.Engine}/>
           <Route path="/admin" component={Pages.Admin}/>
         </div>
+        {loginModalVisible && 
+          <LoginModal
+            onClose={this.toggleLoginModal}
+            onSubmit={this.sendLoginModal}
+          />}
+        {registrationModalVisible && 
+          <RegistrationModal
+            onClose={this.toggleRegistrationModal}
+            onSubmit={this.sendRegistrationModal}
+          />}
       </div>
     </Router>);
   }
@@ -59,16 +97,28 @@ Main.childContextTypes = {
 };
 
 const {
-  getCurrentUser,
+  getCurrentProfile,
   isInGame,
 } = selectors;
 
+const {
+  registerPlayer,
+  loginPlayer,
+} = actions;
+
 const mapStateToProps = state => ({
-  currentUser: getCurrentUser(state),
+  profile: getCurrentProfile(state),
   inGame: isInGame(state),
+});
+
+const mapDispatchToProps = dispatch => ({
+  ...bindActionCreators({
+    registerPlayer,
+    loginPlayer,
+  }, dispatch),
 });
 
 export default connect(
   mapStateToProps,
-  null,
+  mapDispatchToProps,
 )(Main);

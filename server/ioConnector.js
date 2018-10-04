@@ -184,7 +184,7 @@ class WebsocketServer {
         roomId: null,
       });
   
-      _log('connected to socket server. currently ' + _getTotalNumPlayers() + ' online.');
+      _log(`New player connected (name: ${newPlayer.name}, sockeId: ${socket.id}). currently ${_getTotalNumPlayers()} online.`);
     
       socket.emit('playerUpdate', newPlayer);
       

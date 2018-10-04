@@ -1,9 +1,9 @@
 {
-  "apiUrl": "",
+  "apiUrl": "https://localhost:5000",
   "server": {
     "port": 5000,
     "jwtSecret": "kjh43hf7qx",
-    "mongooseConnectionString": "mongodb://localhost/node-mongo-registration-login-api"
+    "mongooseConnectionString": "mongodb://localhost:27017/gamebase"
   },
   "ludo": {
     "colors": [

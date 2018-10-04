@@ -11,23 +11,18 @@ const getState = state => state[name];
 
 const prefix = `${name}/`;
 
-// const FETCH_CURRENT_USER = `${prefix}FETCH_CURRENT_USER`;
-
 const  SET_IN_GAME = `${prefix}SET_IN_GAME`;
 const  UNSET_IN_GAME = `${prefix}UNSET_IN_GAME`;
+const  REGISTER_PLAYER = `${prefix}REGISTER_PLAYER`;
+const  REGISTER_PLAYER_SUCCESS = `${prefix}REGISTER_PLAYER_SUCCESS`;
+const  REGISTER_PLAYER_FAIL = `${prefix}REGISTER_PLAYER_FAIL`;
+const  LOGIN_PLAYER = `${prefix}LOGIN_PLAYER`;
+const  LOGIN_PLAYER_SUCCESS = `${prefix}LOGIN_PLAYER_SUCCESS`;
+const  LOGIN_PLAYER_FAIL = `${prefix}LOGIN_PLAYER_FAIL`;
 
 /*
  * ACTIONS
  */
-
-// const fetchCurrentUser = options => ({
-//   type: FETCH_CURRENT_USER,
-//   payload: {
-//     url: Config.baseUrl + '/api/v1/users/currentUser',
-//     method: 'get',
-//     ...options
-//   },
-// });
 
 const setInGame = () => ({
   type: SET_IN_GAME,
@@ -37,26 +32,62 @@ const unsetInGame = () => ({
   type: UNSET_IN_GAME,
 });
 
+const registerPlayer = (payload) => ({
+  type: REGISTER_PLAYER,
+  payload: {
+    url: '/api/players/register',
+    method: 'post',
+    data: { ...payload },
+  },
+});
+
+const registerPlayerSuccess = (payload) => ({
+  type: REGISTER_PLAYER_SUCCESS,
+  payload,
+});
+
+const registerPlayerFail = (payload) => ({
+  type: REGISTER_PLAYER_FAIL,
+  payload,
+});
+
+const loginPlayer = (payload) => ({
+  type: LOGIN_PLAYER,
+  payload: {
+    url: '/api/players/login',
+    method: 'post',
+    data: { ...payload },
+  },
+});
+
+const loginPlayerSuccess = (payload) => ({
+  type: LOGIN_PLAYER_SUCCESS,
+  payload,
+});
+
+const loginPlayerFail = (payload) => ({
+  type: LOGIN_PLAYER_FAIL,
+  payload,
+});
+
 /*
  * REDUCER
  */
 
 const initialState = {
-  currentUser: {
-    name: 'Pioncz',
-    avatar: '',
-    level: 1,
-    id: 1,
+  profile: {
+    state: 'loggedOut',
+  },
+  registration: {
+    loading: false,
+    registered: false,
+    error: false,
   },
   inGame: false,
 };
 
 const reducer = (state = initialState, action) => {
   const actions = {
-    // [FETCH_CURRENT_USER]: () => ({
-    //   ...state,
-    //   state: 'loading'
-    // }),
     [SET_IN_GAME]: () => ({
       ...state,
       inGame: true,
@@ -64,6 +95,30 @@ const reducer = (state = initialState, action) => {
     [UNSET_IN_GAME]: () => ({
       ...state,
       inGame: false,
+    }),
+    [REGISTER_PLAYER]: () => ({
+      ...state,
+      registration: {
+        loading: true,
+        registered: false,
+        error: false,
+      },
+    }),
+    [REGISTER_PLAYER_SUCCESS]: () => ({
+      ...state,
+      registration: {
+        loading: false,
+        registered: true,
+        error: false,
+      },
+    }),
+    [REGISTER_PLAYER_FAIL]: () => ({
+      ...state,
+      registration: {
+        loading: false,
+        registered: false,
+        error: action.payload,
+      },
     }),
   };
 
@@ -74,26 +129,35 @@ const reducer = (state = initialState, action) => {
  * LOGIC
  */
 
-// const fetchCurrentUserLogic = createLogic({
-//   type: [
-//     FETCH_CURRENT_USER,
-//     LOGIN_SUCCESS,
-//   ],
-//   cancelType: [ FETCH_CURRENT_USER_FAIL ],
-//   latest: true,
-//   process({ action: { payload }, httpClient, cancelled$ }) {
-//     return httpClient.cancellable(payload, cancelled$)
-//       .then(
-//         response => { return fetchCurrentUserSuccess(response.data)},
-//         fetchCurrentUserFail);
-//   },
-// });
+const registerPlayerLogic = createLogic({
+  type: [
+    REGISTER_PLAYER,
+  ],
+  process({ action: { payload }, httpClient, cancelled$ }) {
+    return httpClient.cancellable(payload, cancelled$)
+      .then(
+        registerPlayerSuccess,
+        registerPlayerFail);
+  },
+});
+
+const loginPlayerLogic = createLogic({
+  type: [
+    LOGIN_PLAYER,
+  ],
+  process({ action: { payload }, httpClient, cancelled$ }) {
+    return httpClient.cancellable(payload, cancelled$)
+      .then(
+        loginPlayerSuccess,
+        loginPlayerFail);
+  },
+});
 
 /*
  * SELECTORS
  */
 
-const getCurrentUser = state => getState(state).currentUser;
+const getCurrentProfile = state => getState(state).profile;
 
 const isInGame = state => getState(state).inGame;
 
@@ -107,17 +171,16 @@ export const actions = {
 //  fetchCurrentUser,
   setInGame,
   unsetInGame,
-};
-
-export const types = {
-//  FETCH_CURRENT_USER,
+  registerPlayer,
+  loginPlayer,
 };
 
 export const logic = {
-//  fetchCurrentUserLogic,
+  registerPlayerLogic,
+  loginPlayerLogic,
 };
 
 export const selectors = {
-  getCurrentUser: getCurrentUser,
-  isInGame: isInGame,
+  getCurrentProfile,
+  isInGame,
 };

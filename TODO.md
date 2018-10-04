@@ -1,3 +1,32 @@
+AUTENTYKACJA
+- player wchodzi na strone
+niezalogowany:
+ - widzi index.html z defaultState reduxowym user: { player: { authenticated: false, ...player} }
+ - connector tworzy tymczasowego playera
+ - widzi guzik login i register
+ - modal login
+ - modal register
+rejestracja:
+ - podczas rejestracji player jest przypisywany do playera
+ - jesli player nie istnieje w trakcie rejestracji, tworzony jest nowy
+ - pola: email, login, password
+logowanie:
+ - pola: email, login, password
+ - po zalogowaniu aktualizowany jest player (updatePlayer socket event)
+po zalogowaniu:
+ - dodać obsługe default state: dla zalogowanego i niezalogowanego playera, profile.loginState rozny
+ - widzi index.html z defaultState reduxowym user: { state: loggedIn, player: player }
+potwierdzenie maila:
+
+Dalszy rozwój:
+- token powinien byc revoked gdy gracz sie wyloguje: /logout 
+- ustalic maxAge w configu i wykorzystac w player.service.js:authenticate i players.controller.js:authenticate
+- przeniesienie modelu zalogowanego playera do stanu socketowego 
+- wylogowywanie
+- registration: password confirmation
+- player tymczasowy jest kasowany po 10 minutach od ostatniego wylogowania playera
+- spójny model danych: player = profile. nie ma sensu rozdzielac te modele
+
 TO DO
 - bug: inny gracz wygral. zmiana geta na pionki gracza
 - moze kazdy gracz powinien sie widziec w prawym/lewym gornym rogu, zeby nie zmieniac wygladu gry
@@ -9,6 +38,7 @@ TO DO
 - guzik kostki nie powinien byc zaznaczony gdy gracz nie moze rzucic kostka (roomState.rolled = true)
 - gdy jeden z graczy wyjdzie przez f5, nie mozna znalezc nowej gry
 - pionek wraca na spawn, tuz przed zbiciem
+- na telefonach domyslnie orientacja landscape
 
 1) Gra
 - przy profilu aktualnego gracza, progress jego kolejki
