@@ -1,11 +1,13 @@
-module.exports = function (options) {
+module.exports = function ({id, email, login, diceType, color, socketId, roomId, avatar }) {
   return {
-    id: options.id,
-    name: options.name,
-    color: options.color || null,
-    socketId: options.socketId || null,
-    roomId: options.roomId || null,
-    avatar: '/static/avatar' + parseInt(Math.random() * 6 + 1)+ '.jpg',
+    id,
+    login,
+    email,
+    color,
+    socketId,
+    roomId,
+    avatar,
+    diceType: null,
     lastRoll: null,
     previousRoll: null,
   };

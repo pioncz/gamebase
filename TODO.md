@@ -1,3 +1,15 @@
+- metoda reduxowa fetchCurrentPlayer
+- odpalac metode w Main.jsx
+- odpalac fetchCurrentPlayer po zalogowaniu
+- wywalic zwracanie odpowiedzi przy login
+- index.js: jesli socket nie jest autoryzowany to stworz tymaczasowego playera
+- uspojnienie modelu playera (niezalogowany, tymczasowy, zalogowany, trwaly)
+- update playera socketowego po zalogowaniu
+- posprzatac cala autoryzacje - najlepiej zamknac w 1 pliku
+- revoke token gdy kasujesz usera
+- logi: player sie zalogowal, nie zalogowal (err), zarejestrowal, nie zarejestrowal (err)
+- rzeczy z modelu socketowego playera zwiazane z rozgrywka przeniesc do gameState, dodac pole gameState: null, w modelu z bazy
+
 AUTENTYKACJA
 - player wchodzi na strone
 niezalogowany:
@@ -20,17 +32,15 @@ potwierdzenie maila:
 
 Dalszy rozwój:
 - token powinien byc revoked gdy gracz sie wyloguje: /logout 
-- ustalic maxAge w configu i wykorzystac w player.service.js:authenticate i players.controller.js:authenticate
-- przeniesienie modelu zalogowanego playera do stanu socketowego 
-- wylogowywanie
+- ustalic maxAge w configu i wykorzystac w player.service.js:authenticate i players.controller.js:authenticate 
 - registration: password confirmation
 - player tymczasowy jest kasowany po 10 minutach od ostatniego wylogowania playera
-- spójny model danych: player = profile. nie ma sensu rozdzielac te modele
 
 TO DO
+- formularze login i register: wyswietlanie errow z serwera
 - bug: inny gracz wygral. zmiana geta na pionki gracza
 - moze kazdy gracz powinien sie widziec w prawym/lewym gornym rogu, zeby nie zmieniac wygladu gry
--panel admina - stan polaczen, kolejki, obciazenie serwera
+- panel admina - stan polaczen, kolejki, obciazenie serwera
 - timer gry: konczenie gry gdy uplynie czas rozgrywki
 - timer ruchu gracza: konczenie ruchu gdy uplynie czas
 - widoczna zmiana gracza (jezeli twoja kolejka, to bardziej widoczna)
@@ -113,3 +123,5 @@ DONE:
 +zmienic socketServer na ioConnector
 + gracz nie jest czyszczony przy F5
 + pierwszy test jednostkowy
++ rejestracja: logika + ui
++ logowanie: logika + ui

@@ -19,6 +19,10 @@ const  REGISTER_PLAYER_FAIL = `${prefix}REGISTER_PLAYER_FAIL`;
 const  LOGIN_PLAYER = `${prefix}LOGIN_PLAYER`;
 const  LOGIN_PLAYER_SUCCESS = `${prefix}LOGIN_PLAYER_SUCCESS`;
 const  LOGIN_PLAYER_FAIL = `${prefix}LOGIN_PLAYER_FAIL`;
+const  FETCH_CURRENT_PLAYER = `${prefix}FETCH_CURRENT_PLAYER`;
+const  FETCH_CURRENT_PLAYER_SUCCESS = `${prefix}FETCH_CURRENT_PLAYER_SUCCESS`;
+const  FETCH_CURRENT_PLAYER_FAIL = `${prefix}FETCH_CURRENT_PLAYER_FAIL`;
+const  LOGOUT = `${prefix}LOGOUT`;
 
 /*
  * ACTIONS
@@ -60,9 +64,9 @@ const loginPlayer = (payload) => ({
   },
 });
 
-const loginPlayerSuccess = (payload) => ({
+const loginPlayerSuccess = (response) => ({
   type: LOGIN_PLAYER_SUCCESS,
-  payload,
+  payload: response.data,
 });
 
 const loginPlayerFail = (payload) => ({
@@ -70,17 +74,46 @@ const loginPlayerFail = (payload) => ({
   payload,
 });
 
+const fetchCurrentPlayer = () => ({
+  type: FETCH_CURRENT_PLAYER,
+});
+
+const fetchCurrentPlayerSuccess = (response) => ({
+  type: FETCH_CURRENT_PLAYER_SUCCESS,
+  payload: response.data,
+});
+
+const fetchCurrentPlayerFail = () => ({
+  type: FETCH_CURRENT_PLAYER_FAIL,
+});
+
+const logout = () => ({
+  type: LOGOUT,
+  payload: {
+    url: '/api/logout',
+    method: 'get',
+  },
+});
+
+const logoutSuccess = () => ({
+  type: LOGOUT_SUCCESS,
+});
+
 /*
  * REDUCER
  */
 
 const initialState = {
-  profile: {
+  player: {
     state: 'loggedOut',
   },
   registration: {
     loading: false,
     registered: false,
+    error: false,
+  },
+  login: {
+    loading: false,
     error: false,
   },
   inGame: false,
@@ -120,6 +153,52 @@ const reducer = (state = initialState, action) => {
         error: action.payload,
       },
     }),
+    [LOGIN_PLAYER]: () => ({
+      ...state,
+      login: {
+        loading: true,
+      }
+    }),
+    [LOGIN_PLAYER_SUCCESS]: () => ({
+      ...state,
+      login: {
+        loading: false,
+        error: null,
+      },
+    }),
+    [LOGIN_PLAYER_FAIL]: () => ({
+      ...state,
+      login: {
+        loading: false,
+        error: 'Invalid email or password',
+      }
+    }),
+    [FETCH_CURRENT_PLAYER]: () => ({
+      ...state,
+      player: {
+        state: 'loading',
+        ...action.payload,
+      }
+    }),
+    [FETCH_CURRENT_PLAYER_SUCCESS]: () => ({
+      ...state,
+      player: {
+        state: 'loggedIn',
+        ...action.payload,
+      }
+    }),
+    [FETCH_CURRENT_PLAYER_FAIL]: () => ({
+      ...state,
+      player: {
+        state: 'loggedOut',
+      }
+    }),
+    [LOGOUT]: () => ({
+      ...state,
+      player: {
+        state: 'loggedOut',
+      }
+    }),
   };
 
   return (actions[action.type] && actions[action.type]()) || state;
@@ -153,11 +232,38 @@ const loginPlayerLogic = createLogic({
   },
 });
 
+const fetchCurrentPlayerLogic = createLogic({
+  type: [
+    REGISTER_PLAYER_SUCCESS,
+    LOGIN_PLAYER_SUCCESS,
+    FETCH_CURRENT_PLAYER,
+  ],
+  process({ action: payload, httpClient, cancelled$ }) {
+    return httpClient.cancellable({ url: '/api/currentPlayer',  method: 'get' }, cancelled$)
+      .then(
+        fetchCurrentPlayerSuccess,
+        fetchCurrentPlayerFail);
+  },
+});
+
+const logoutLogic = createLogic({
+  type: [
+    LOGOUT,
+  ],
+  process({ action: { payload }, httpClient, cancelled$ }) {
+    return httpClient.cancellable(payload, cancelled$)
+      .then(
+        logoutSuccess,
+        logoutSuccess);
+  },
+});
+
+
 /*
  * SELECTORS
  */
 
-const getCurrentProfile = state => getState(state).profile;
+const getCurrentPlayer = state => getState(state).player;
 
 const isInGame = state => getState(state).inGame;
 
@@ -168,19 +274,22 @@ const isInGame = state => getState(state).inGame;
 export default reducer;
 
 export const actions = {
-//  fetchCurrentUser,
   setInGame,
   unsetInGame,
   registerPlayer,
   loginPlayer,
+  fetchCurrentPlayer,
+  logout,
 };
 
 export const logic = {
   registerPlayerLogic,
   loginPlayerLogic,
+  fetchCurrentPlayerLogic,
+  logoutLogic,
 };
 
 export const selectors = {
-  getCurrentProfile,
+  getCurrentPlayer,
   isInGame,
 };

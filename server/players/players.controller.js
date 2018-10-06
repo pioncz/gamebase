@@ -17,15 +17,18 @@ function authenticate(req, res, next) {
   playerService.authenticate(req.body)
     .then(player => 
       player ? 
-        res.cookie('token', player.token ).json(player) :
+        res.cookie('token', player.token ).json({}) :
         res.status(400).json({ message: 'Email or password is incorrect' }))
-    .catch(err => next(err));
+    .catch(err => res.status(400).json({error: err}));
 }
 
 function register(req, res, next) {
   playerService.create(req.body)
-    .then(() => res.json({}))
-    .catch(err => next(err));
+    .then(player =>
+      player ?
+        res.cookie('token', player.token ).json({}) :
+        res.status(400).json({ message: 'Email or password is incorrect' }))
+    .catch(err => res.status(400).json({error: err}));
 }
 
 function getAll(req, res, next) {

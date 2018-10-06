@@ -18,8 +18,7 @@ class Main extends Component {
   
     this.state = {
       connectorInstance: null,
-      player: null,
-      loginModalVisible: true,
+      loginModalVisible: false,
       registrationModalVisible: false,
     };
     
@@ -28,6 +27,20 @@ class Main extends Component {
     this.sendLoginModal = this.sendLoginModal.bind(this);
     this.toggleRegistrationModal = this.toggleRegistrationModal.bind(this);
     this.sendRegistrationModal = this.sendRegistrationModal.bind(this);
+    this.logout = this.logout.bind(this);
+  }
+  componentWillMount() {
+    this.props.fetchCurrentPlayer();
+  }
+  componentWillReceiveProps(nextProps) {
+    const { player } = this.props;
+    
+    if (nextProps.player.state === 'loggedIn' && player.state !== 'loggedIn') {
+      this.setState({
+        loginModalVisible: false,
+        registrationModalVisible: false,
+      });
+    }
   }
   getChildContext() {
     return {connectorInstance: this.state.connectorInstance};
@@ -54,22 +67,26 @@ class Main extends Component {
   }
   sendRegistrationModal(values) {
     this.props.registerPlayer(values);
-  };
+  }
   sendLoginModal(values) {
     this.props.loginPlayer(values);
-  };
+  }
+  logout() {
+    this.props.logout();
+  }
   render() {
-    let { player, loginModalVisible, registrationModalVisible } = this.state,
-      { profile } = this.props;
+    let { loginModalVisible, registrationModalVisible } = this.state,
+      { player } = this.props;
     
     return (<Router>
-      <div className={this.props.inGame?'inGame':''}>
+      {/*<div className={this.props.inGame?'inGame':''}>*/}
+      <div>
         <Connector ref={this.setConnector}/>
         <Header 
-          player={player} 
-          profile={profile}
+          player={player}
           toggleLoginModal={this.toggleLoginModal}
           toggleRegistrationModal={this.toggleRegistrationModal}
+          logout={this.logout}
         />
         <div className="main">
           <Route exact path="/" component={Pages.Home}/>
@@ -97,17 +114,19 @@ Main.childContextTypes = {
 };
 
 const {
-  getCurrentProfile,
+  getCurrentPlayer,
   isInGame,
 } = selectors;
 
 const {
   registerPlayer,
   loginPlayer,
+  fetchCurrentPlayer,
+  logout,
 } = actions;
 
 const mapStateToProps = state => ({
-  profile: getCurrentProfile(state),
+  player: getCurrentPlayer(state),
   inGame: isInGame(state),
 });
 
@@ -115,6 +134,8 @@ const mapDispatchToProps = dispatch => ({
   ...bindActionCreators({
     registerPlayer,
     loginPlayer,
+    fetchCurrentPlayer,
+    logout,
   }, dispatch),
 });
 

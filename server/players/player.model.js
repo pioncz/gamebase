@@ -7,6 +7,7 @@ const schema = new Schema({
   hash: { type: String, required: true },
   role: { type: String, default: 'PLAYER' },
   diceType: { type: String },
+  avatar: { type: String },
   createdDate: { type: Date, default: Date.now }
 });
 

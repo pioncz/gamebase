@@ -17,7 +17,7 @@ async function authenticate({ email, password }) {
   const player = await Player.findOne({ email });
   if (player && bcrypt.compareSync(password, player.hash)) {
     const { hash, ...playerWithoutHash } = player.toObject();
-    const token = jwt.sign({ sub: player.id }, config.server.jwtSecret);
+    const token = jwt.sign({ playerId: player.id }, config.server.jwtSecret);
     return {
       ...playerWithoutHash,
       token
@@ -41,7 +41,7 @@ async function create(playerParam) {
   if (await Player.findOne({ login: playerParam.login })) {
     throw 'Login "' + playerParam.login + '" is already taken';
   }
-  
+  playerParam.avatar = '/static/avatar' + parseInt(Math.random() * 6 + 1)+ '.jpg';
   const player = new Player(playerParam);
   
   // hash password
@@ -49,7 +49,7 @@ async function create(playerParam) {
     player.hash = bcrypt.hashSync(playerParam.password, 10);
   }
   
-  const token = jwt.sign({ sub: player.id }, config.server.jwtSecret);
+  const token = jwt.sign({ playerId: player.id }, config.server.jwtSecret);
   // save user
   await player.save();
   

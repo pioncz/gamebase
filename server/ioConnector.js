@@ -72,11 +72,12 @@ class ActionsStream {
 class WebsocketServer {
   constructor (io, config) {
     const MinPlayers = Games.Ludo.Config.MinPlayer; //per room to play
-    let connections = {}, // [socket.id]: {roomId, playerId}
-      rooms = {},
-      players = {},
-      actionsStream = new ActionsStream(io);
   
+    this.connections = {}, // [socket.id]: {roomId, playerId}
+    this.rooms = {};
+    this.players = {};
+    this.actionsStream = new ActionsStream(io);
+    
     let _nextId = (() => {
       let lastId = 0;
   
@@ -104,9 +105,9 @@ class WebsocketServer {
         io.to(room.name).emit('playerDisconnected', { playerId });
       },
       _leaveGame = (socketId) => {
-        let connection = connections[socketId],
+        let connection = this.connections[socketId],
           roomId = connection && connection.roomId,
-          room = roomId && rooms[roomId],
+          room = roomId && this.rooms[roomId],
           playerId = connection && connection.playerId,
           playerIndex = room && room.gameState.players.findIndex(player => player.id === playerId),
           player = room && room.gameState.players[playerIndex],
@@ -127,13 +128,13 @@ class WebsocketServer {
 
         // if there's winnerId remove room
         if (room.gameState.winnerId) {
-          delete rooms[roomId];
+          delete this.rooms[roomId];
         }
       },
       // Leave connections room, remove connections player, remove from connections
       _destroyConnection = (socketId) => {
-        let connection = connections[socketId],
-          player = connection.playerId && players[connection.playerId];
+        let connection = this.connections[socketId],
+          player = connection.playerId && this.players[connection.playerId];
       
         if (!connection) return;
       
@@ -142,10 +143,10 @@ class WebsocketServer {
         }
         
         if (player) {
-          delete players[connection.playerId];
+          delete this.players[connection.playerId];
         }
               
-        delete connections[socketId];
+        delete this.connections[socketId];
       },
       _createRoom = (gameName) => {
         let id = _nextId(),
@@ -158,8 +159,8 @@ class WebsocketServer {
         return room;
       },
       _findRoom = (gameName) => {
-        let matchingRooms = Object.keys(rooms).reduce((returnRooms, roomId) => {
-          const room = rooms[roomId];
+        let matchingRooms = Object.keys(this.rooms).reduce((returnRooms, roomId) => {
+          const room = this.rooms[roomId];
           
           if (room.gameName === gameName &&
             room.gameState.players.length < MinPlayers) {
@@ -173,18 +174,18 @@ class WebsocketServer {
         return room;
       };
   
-    io.on('connection', function (socket) {
+    io.on('connection', (socket) => {
       let playerId = _nextId(),
-        newPlayer = new Player({name: 'name' + playerId, id: playerId, socketId: socket.id});
+        newPlayer = new Player({login: 'name' + playerId, id: playerId, socketId: socket.id});
     
-      players[playerId] = newPlayer;
+      this.players[playerId] = newPlayer;
             
-      connections[socket.id] = new Connection({
+      this.connections[socket.id] = new Connection({
         playerId: newPlayer.id,
         roomId: null,
       });
   
-      _log(`New player connected (name: ${newPlayer.name}, sockeId: ${socket.id}). currently ${_getTotalNumPlayers()} online.`);
+      _log(`New player connected (login: ${newPlayer.login}, sockeId: ${socket.id}). currently ${_getTotalNumPlayers()} online.`);
     
       socket.emit('playerUpdate', newPlayer);
       
@@ -196,13 +197,13 @@ class WebsocketServer {
         _leaveGame(socket.id);
       });
     
-      socket.on('findRoom', function (options) {
+      socket.on('findRoom', (options) => {
         let game = options.game,
           room,
-          connection = connections[socket.id],
-          player = connection.playerId && players[connection.playerId];
-      
-        _log(`player ${player.name} requests findRoom`);
+          connection = this.connections[socket.id],
+          player = connection.playerId && this.players[connection.playerId];
+
+        _log(`player ${player.login} requests findRoom`);
 
         if (!game || !connection || !player) {
           _log('Invalid data, cannot find room.');
@@ -218,7 +219,7 @@ class WebsocketServer {
         if (!room) {
           _log('create new room');
           room = _createRoom(Games.Ludo.Name);
-          rooms[room.id] = room;
+          this.rooms[room.id] = room;
         }
         connection.roomId = room.id;
         room.gameState.playerIds.push(player.id);
@@ -231,7 +232,7 @@ class WebsocketServer {
           let playersFromRoom = [];
   
           room.gameState.playerIds.forEach(playerId => {
-            playersFromRoom.push(players[playerId]);
+            playersFromRoom.push(this.players[playerId]);
           });
           
           room.startGame(playersFromRoom);
@@ -247,9 +248,9 @@ class WebsocketServer {
           return;
         }
   
-        let connection = connections[socket.id],
-          player = connection.playerId && players[connection.playerId],
-          room = connection.roomId && rooms[connection.roomId];
+        let connection = this.connections[socket.id],
+          player = connection.playerId && this.players[connection.playerId],
+          room = connection.roomId && this.rooms[connection.roomId];
           
         if (!connection || !player || !room) {
           _log('player is not in a room.');
@@ -292,18 +293,29 @@ class WebsocketServer {
         
       });
   
-      socket.on('getStats', function () {
+      socket.on('getStats', () => {
         let roomsFiltered = {};
-        for (let roomId in rooms) {
-          roomsFiltered[roomId] = rooms[roomId].getState();
+        for (let roomId in this.rooms) {
+          roomsFiltered[roomId] = this.rooms[roomId].getState();
         }
         socket.emit('statsUpdate', {
-          connections,
+          connections: this.connections,
           rooms: roomsFiltered,
-          players,
+          players: this.players,
         });
       });
     });
+  }
+  // When user is authorized, his player should be updated
+  updatePlayer(socketId, player) {
+    const connection = this.connections[socketId],
+      temporaryPlayer = connection.playerId && this.players[connection.playerId];
+  
+    if (temporaryPlayer) {
+      delete this.players[connection.playerId];
+    }
+    this.players[player.id] = player;
+    connection.playerId = player.id;
   }
 }
 

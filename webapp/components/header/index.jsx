@@ -12,7 +12,7 @@ export default class Header extends Component {
     super(props);
   }
   render() {
-    const { player, profile }  = this.props;
+    const { player }  = this.props;
         
     return <header>
       <div className="left-pane">
@@ -22,9 +22,9 @@ export default class Header extends Component {
         <Link to='/admin'>Admin</Link>
       </div>
       <div className="right-pane">
-        {profile.state === 'loggedIn' && <Profile user={player}></Profile>}
-        {profile.state === 'loading' && <div>Loading</div>}
-        {profile.state === 'loggedOut' && 
+        {player.state === 'loggedIn' && <Profile player={player} onClick={this.props.logout}></Profile>}
+        {player.state === 'loading' && <div>Loading</div>}
+        {player.state === 'loggedOut' && 
           <div>
             <a onClick={this.props.toggleLoginModal}>Login</a>
             <a onClick={this.props.toggleRegistrationModal}>Register</a>
