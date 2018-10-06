@@ -1,7 +1,4 @@
-- metoda reduxowa fetchCurrentPlayer
-- odpalac metode w Main.jsx
-- odpalac fetchCurrentPlayer po zalogowaniu
-- wywalic zwracanie odpowiedzi przy login
+- player zalogowany w expresie, nie zalogowany w serwerze socketowym (po restarcie serwera)
 - index.js: jesli socket nie jest autoryzowany to stworz tymaczasowego playera
 - uspojnienie modelu playera (niezalogowany, tymczasowy, zalogowany, trwaly)
 - update playera socketowego po zalogowaniu
@@ -9,6 +6,9 @@
 - revoke token gdy kasujesz usera
 - logi: player sie zalogowal, nie zalogowal (err), zarejestrowal, nie zarejestrowal (err)
 - rzeczy z modelu socketowego playera zwiazane z rozgrywka przeniesc do gameState, dodac pole gameState: null, w modelu z bazy
+- rozwazyc przypadek gdy ktos sie loguje w trakcie gry
+- napis offline widoczny tez w grze
+- po wylogowaniu updatePlayera do temporary
 
 AUTENTYKACJA
 - player wchodzi na strone

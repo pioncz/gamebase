@@ -51,6 +51,14 @@ class ActionsStream {
   }
 }
 
+const _nextId = (() => {
+  let lastId = 0;
+  
+  return () => {
+    return ''+(lastId++);
+  };
+})();
+
 /**
  * Represents a conntector between io and WebsocketServer.
  * Validates api options.
@@ -70,22 +78,16 @@ class ActionsStream {
  * @param {object} config - Config json
  */
 class WebsocketServer {
-  constructor (io, config) {
+  constructor (io, playerService, config) {
     const MinPlayers = Games.Ludo.Config.MinPlayer; //per room to play
   
     this.connections = {}, // [socket.id]: {roomId, playerId}
     this.rooms = {};
     this.players = {};
     this.actionsStream = new ActionsStream(io);
+    this.io = io;
     
-    let _nextId = (() => {
-      let lastId = 0;
-  
-      return () => {
-        return ''+(lastId++);
-      };
-    })(),
-      _log = (msg) => {
+    let _log = (msg) => {
         console.log(msg);
       },
       _getTotalNumPlayers = () => {
@@ -93,7 +95,16 @@ class WebsocketServer {
         return Object.keys(clients).length
       },
       _emitRoomState = (room) => {
-        io.to(room.name).emit('roomUpdate', room.getState());
+        // copy player states to return state
+        let roomState = room.getState();
+  
+        roomState.players = [];
+        for(let playerId in roomState.playerIds) {
+          console.log(playerId, this.players);
+          roomState.players.push({...this.players[playerId]});
+        }
+        
+        io.to(room.name).emit('roomUpdate', roomState);
       },
       _emitNewActions = (room, newActions) => {
         newActions.forEach(action => {
@@ -101,7 +112,7 @@ class WebsocketServer {
           io.to(room.name).emit('newAction', action);
         });
       },
-      _emitePlayerDisconnected = (room, playerId) => {
+      _emitPlayerDisconnected = (room, playerId) => {
         io.to(room.name).emit('playerDisconnected', { playerId });
       },
       _leaveGame = (socketId) => {
@@ -123,7 +134,7 @@ class WebsocketServer {
           streamActions = Games.Ludo.ActionHandlers.Disconnected(disconnectedAction, player, room),
           returnActions = streamActions.map(streamAction => streamAction.action);
   
-        _log(`player ${player.name} disconnected`);
+        _log(`player ${player.login} disconnected`);
         _emitNewActions(room, returnActions);
 
         // if there's winnerId remove room
@@ -174,20 +185,56 @@ class WebsocketServer {
         return room;
       };
   
-    io.on('connection', (socket) => {
-      let playerId = _nextId(),
-        newPlayer = new Player({login: 'name' + playerId, id: playerId, socketId: socket.id});
-    
-      this.players[playerId] = newPlayer;
-            
-      this.connections[socket.id] = new Connection({
-        playerId: newPlayer.id,
-        roomId: null,
-      });
+    // Authorization
+    io.use((socket, next) => {
+      let handshakeData = socket.request,
+        regex = /token=([^;]*)/g,
+        cookie = handshakeData.headers.cookie,
+        match = cookie && cookie.match(regex),
+        str = match && match[0],
+        token = str && str.slice(str.indexOf('=') + 1, str.length),
+        connection = this.connections[socket.id];
+
+      if (!connection) {
+        this.connections[socket.id] = new Connection({
+          playerId: null,
+          roomId: null,
+        });
+        connection = this.connections[socket.id]; 
+      }
   
-      _log(`New player connected (login: ${newPlayer.login}, sockeId: ${socket.id}). currently ${_getTotalNumPlayers()} online.`);
+      const createTempPlayer = () => {
+        const nextId = _nextId(),
+          tempPlayer = new Player({id : nextId, temporary: true, login: `Name ${nextId}`, socketId: socket.id});
+  
+        connection.playerId = tempPlayer.id;
+        console.log(`Unauthorized. Created temporary player '${tempPlayer.login}'`);
+        this.updatePlayer(socket.id, tempPlayer);
+      };
+      
+      if (token) {
+        const playerPromise = playerService.verify({token});
+        
+        playerPromise
+          .then(playerId => {
+            playerService.getById(playerId)
+              .then(player => {
+                player.socketId = socket.id;
+  
+                console.log(`Authorized as ${player.login}`);
+                this.updatePlayer(socket.id, player);
+              }, createTempPlayer);
+          })
+          .catch(createTempPlayer);
+      } else {
+        createTempPlayer();
+      }
     
-      socket.emit('playerUpdate', newPlayer);
+      next();
+    });
+  
+    io.on('connection', (socket) => {
+      _log(`New connection (sockeId: ${socket.id}). currently ${_getTotalNumPlayers()} online.`);
       
       socket.on('disconnect', () => {
         _destroyConnection(socket.id);
@@ -211,7 +258,7 @@ class WebsocketServer {
         }
       
         if (connection.roomId) {
-          console.log('user ' + player.name + ' already in queue or game');
+          console.log('user ' + player.login + ' already in queue or game');
           return;
         }
         
@@ -226,16 +273,16 @@ class WebsocketServer {
         socket.join(room.name);
         player.roomId = room.id;
         
-        console.log(`player ${player.name} joins queue(${room.gameState.playerIds.length}/${MinPlayers}) in ${room.name}`);
+        console.log(`player ${player.login} joins queue(${room.gameState.playerIds.length}/${MinPlayers}) in ${room.name}`);
         
         if (room.gameState.playerIds.length >= MinPlayers) {
           let playersFromRoom = [];
   
           room.gameState.playerIds.forEach(playerId => {
-            playersFromRoom.push(this.players[playerId]);
+            playersFromRoom.push(playerId);
           });
           
-          room.startGame(playersFromRoom);
+          room.startGame();
           console.log('game started in room: ' + room.name);
         }
   
@@ -262,7 +309,7 @@ class WebsocketServer {
           return;
         }
         
-        _log(`player ${player.name} calls action: ${action.type}`);
+        _log(`player ${player.login} calls action: ${action.type}`);
         
         let streamActions = room.handleAction(action, player) || [],  
           newActions = [];
@@ -279,11 +326,11 @@ class WebsocketServer {
           if (delayedActions.length) {
             for(let i in delayedActions) {
               let streamAction = delayedActions[i];
-              actionsStream.emitActions(room.name, [streamAction.action], streamAction.timestamp, streamAction.callback);
+              this.actionsStream.emitActions(room.name, [streamAction.action], streamAction.timestamp, streamAction.callback);
             }
           }
           if (newActionsFiltered.length) {
-            actionsStream.emitActions(room.name, newActionsFiltered, 0);
+            this.actionsStream.emitActions(room.name, newActionsFiltered, 0);
           }
         }
         
@@ -305,17 +352,22 @@ class WebsocketServer {
         });
       });
     });
+    
+    this.updatePlayer = this.updatePlayer.bind(this); 
   }
   // When user is authorized, his player should be updated
   updatePlayer(socketId, player) {
     const connection = this.connections[socketId],
-      temporaryPlayer = connection.playerId && this.players[connection.playerId];
+      temporaryPlayer = connection && connection.playerId && this.players[connection.playerId];
   
     if (temporaryPlayer) {
       delete this.players[connection.playerId];
     }
+    
     this.players[player.id] = player;
     connection.playerId = player.id;
+    
+    this.io.to(socketId).emit('playerUpdate', player);
   }
 }
 

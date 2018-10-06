@@ -77,10 +77,9 @@ class Main extends Component {
   render() {
     let { loginModalVisible, registrationModalVisible } = this.state,
       { player } = this.props;
-    
+    console.log(player);
     return (<Router>
-      {/*<div className={this.props.inGame?'inGame':''}>*/}
-      <div>
+      <div className={this.props.inGame?'inGame':''}>
         <Connector ref={this.setConnector}/>
         <Header 
           player={player}

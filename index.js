@@ -25,48 +25,19 @@ function handleError(req, res, error) {
 
 var config = require('./server/config');
 const WebsocketServer = require('./server/ioConnector.js');
-const websocketServer = new WebsocketServer(io, config);
+const websocketServer = new WebsocketServer(io, playerService, config);
 
-io.use(function(socket, next) {
-  let handshakeData = socket.request,
-    regex = /token=([^\s]*)/g,
-    cookie = handshakeData.headers.cookie,
-    match = cookie && cookie.match(regex),
-    str = match && match[0],
-    token = str && str.slice(str.indexOf('=') + 1, str.length);
-  
-  if (token) {
-    try {
-      let credentials = jwt.verify(token, config.server.jwtSecret),
-        playerId = credentials.playerId,
-        playerPromise = playerId && playerService.getById(playerId);
-  
-      playerPromise.then((player) => {
-        console.log('Socket connection athorized for player ' + player.login);
-        websocketServer.updatePlayer(socket.id, player);
-      }, (e) => {
-        console.error('Couldnt get player');
-        console.error(e);
-      });
-    } catch (e) {
-      console.error('Socket connection unathorized');
-    }
-  }
-
-  next();
-});
-
-const dbUrl = 'mongodb://localhost:27017';
-const dbName = 'gamebase';
-
-MongoClient.connect(dbUrl, { useNewUrlParser: true } , function(err, client) {
-  assert.equal(null, err);
-  console.log("Connected successfully to database server");
-
-  const db = client.db(dbName);
-
-  client.close();
-});
+// const dbUrl = 'mongodb://localhost:27017';
+// const dbName = 'gamebase';
+//
+// MongoClient.connect(dbUrl, { useNewUrlParser: true } , function(err, client) {
+//   assert.equal(null, err);
+//   console.log("Connected successfully to database server");
+//
+//   const db = client.db(dbName);
+//
+//   client.close();
+// });
 
 /**
 * Module variables
@@ -93,22 +64,34 @@ app.use('/', express.static(path.join(__dirname, 'dist')));
 app.use('/static/', express.static(path.join(__dirname, 'static')));
 
 app.use('/api/currentPlayer', (req, res) => {
-  let playerId = req.user && req.user.playerId,
-    playerPromise = playerId && playerService.getById(playerId);
+  const token = req.cookies.token,
+    socketId = req.cookies.io;
   
-  if (!playerPromise) {
+  if (!token) {
     res.status(400).send({error: 'Unauthorized'});
     return;
   }
   
-  playerPromise.then((player) => {    
-    res.send(player);
-  }, () => {
-    res.status(400).send({error: 'Unauthorized'});
-  });
+  playerService.verify({token})
+    .then(playerId => {
+      playerService.getById(playerId)
+        .then(player => {
+          if (socketId) {
+            websocketServer.updatePlayer(socketId, player);
+          }
+          
+          res.status(200).send(player);
+        }, e => {
+          res.status(400).send({error: 'Unauthorized'});
+        });
+    })
+    .catch(e => {
+      res.status(400).send({error: 'Unauthorized'});
+    });
 });
 
 app.use('/api/logout', (req, res) => {
+  delete req.user;
   res.cookie('token', '').status(200).send({});
 });
 

@@ -325,7 +325,7 @@ export default class Ludo extends Component {
             borderRight: "3px solid " + winnerPlayer.color
           }} />
           <div className="player-name">
-            {winnerPlayer.name}
+            {winnerPlayer.login}
           </div>
         </div>
         <Button onClick={this.joinQueue}>NOWA GRA</Button>
@@ -361,7 +361,7 @@ export default class Ludo extends Component {
 
       return <div key={index} className={className}>
         <div className="player-name">
-          {player.name}
+          {player.login}
           {player.id === currentPlayerId && <p className={'arrow ' + (index%2?'right':'left')}></p>}
           <Progress startTimestamp={startTimestamp} endTimestamp={endTimestamp} />
         </div>

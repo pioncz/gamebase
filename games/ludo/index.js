@@ -28,7 +28,7 @@ const InitialState = () => {
 };
 
 const Config = {
-  MinPlayer: 2,
+  MinPlayer: 1,
 };
 
 const ActionTypes = {
@@ -118,7 +118,7 @@ const RollHandler = (action, player, roomState) => {
   
   roomState.rolled = true;
   
-  console.log(`player ${player.name} rolled ${diceNumber}`);
+  console.log(`player ${player.login} rolled ${diceNumber}`);
   
   roomState.diceNumber = diceNumber;
 
@@ -232,7 +232,7 @@ const PickPawnHandler = (action, player, roomState) => {
     return; 
   }
 
-  console.log(`player ${player.name} picks pawn ${action.pawnId}`);
+  console.log(`player ${player.login} picks pawn ${action.pawnId}`);
 
   let move = (moves.filter(move => move.pawnId === action.pawnId))[0],
     pawn = roomState.pawns.filter(pawn => pawn.id === move.pawnId)[0],
@@ -271,7 +271,7 @@ const PickPawnHandler = (action, player, roomState) => {
       return pawn.playerId === player.id;
     });
     if (BoardUtils.checkWin(playerPawns)) {
-      console.log(`player ${player.name} wins!`);
+      console.log(`player ${player.login} wins!`);
       roomState.winnerId = player.id;
       returnActions.push({action:FinishGame(player.id)});
     }

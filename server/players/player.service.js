@@ -6,6 +6,7 @@ const Player = db.Player;
 
 module.exports = {
   authenticate,
+  verify,
   getAll,
   getById,
   create,
@@ -23,6 +24,21 @@ async function authenticate({ email, password }) {
       token
     };
   }
+}
+
+// Verify token and return player or reject.
+function verify({ token }) {
+  return new Promise((resolve, reject) => {
+    jwt.verify(token, config.server.jwtSecret, (err, decoded) => {
+      if (err) reject('Invalid token');
+    
+      if (decoded.playerId) {
+        resolve(decoded.playerId);
+      } else {
+        reject('No assigned player');
+      }
+    });
+  });
 }
 
 async function getAll() {
