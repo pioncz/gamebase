@@ -99,9 +99,11 @@ class WebsocketServer {
         let roomState = room.getState();
   
         roomState.players = [];
-        for(let playerId in roomState.playerIds) {
-          console.log(playerId, this.players);
-          roomState.players.push({...this.players[playerId]});
+        for(let i = 0; i < roomState.playerIds.length; i++) {
+          let playerId = roomState.playerIds[i],
+            player = playerId && this.players[playerId];
+
+          roomState.players.push({...player});
         }
         
         io.to(room.name).emit('roomUpdate', roomState);
@@ -134,7 +136,6 @@ class WebsocketServer {
           streamActions = Games.Ludo.ActionHandlers.Disconnected(disconnectedAction, player, room),
           returnActions = streamActions.map(streamAction => streamAction.action);
   
-        _log(`player ${player.login} disconnected`);
         _emitNewActions(room, returnActions);
 
         // if there's winnerId remove room
@@ -154,6 +155,7 @@ class WebsocketServer {
         }
         
         if (player) {
+          _log(`player ${player.login} disconnected`);
           delete this.players[connection.playerId];
         }
               

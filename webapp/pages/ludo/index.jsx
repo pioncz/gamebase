@@ -2,7 +2,7 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 import Ludo from './containers/index.jsx'
 import { selectors as ludoSelectors, actions as ludoActions } from 'shared/redux/ludo'
-import { actions } from 'shared/redux/api'
+import { selectors, actions } from 'shared/redux/api'
 
 const {
   setInGame,
@@ -13,11 +13,11 @@ const {
 } = ludoActions;
 
 const {
-  getPawns
-} = ludoSelectors;
+    getCurrentPlayer,
+} = selectors;
 
 const mapStateToProps = state => ({
-//  pawns: getPawns(state),
+  player: getCurrentPlayer(state),
 });
 
 const mapDispatchToProps = dispatch => ({

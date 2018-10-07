@@ -95,7 +95,7 @@ export default class Ludo extends Component {
       queueColors: [],
       currentPlayerId: null,
       gameId: null,
-      player: null, // current player
+      player: props.player, // current player
       players: [],
       pawns: [],
       winnerId: null,
