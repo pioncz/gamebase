@@ -103,7 +103,7 @@ class WebsocketServer {
           let playerId = roomState.playerIds[i],
             player = playerId && this.players[playerId];
 
-          roomState.players.push({...player});
+          roomState.players.push(player);
         }
         
         io.to(room.name).emit('roomUpdate', roomState);

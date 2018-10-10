@@ -28,7 +28,7 @@ const InitialState = () => {
 };
 
 const Config = {
-  MinPlayer: 1,
+  MinPlayer: 2,
 };
 
 const ActionTypes = {
@@ -197,7 +197,7 @@ const SelectColorHandler = (action, player, roomState) => {
     let startGameAction = StartGame(roomState),
       waitForPlayer = WaitForPlayer(roomState);
 
-    returnActions.push({action:startGameAction});
+    returnActions.push({action: startGameAction});
     returnActions.push({
       action: waitForPlayer, 
       timestamp: Date.now() + 1000,

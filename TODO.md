@@ -1,4 +1,4 @@
-- player zalogowany w expresie, nie zalogowany w serwerze socketowym (po restarcie serwera)
+- player zalogowany w expresie, niezalogowany w serwerze socketowym (po restarcie serwera)
 - index.js: jesli socket nie jest autoryzowany to stworz tymaczasowego playera
 - uspojnienie modelu playera (niezalogowany, tymczasowy, zalogowany, trwaly)
 - update playera socketowego po zalogowaniu
@@ -125,3 +125,4 @@ DONE:
 + pierwszy test jednostkowy
 + rejestracja: logika + ui
 + logowanie: logika + ui
++ wykorzystanie modelu playera z bazy danych

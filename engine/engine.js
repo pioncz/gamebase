@@ -123,8 +123,7 @@ export default class Engine extends EventEmitter {
       console.log('Game ids are the same.');
       return;
     }
-
-    console.log('initGame',pawns, players);
+    
     this.initializing = true;
     this.board.initGame({pawns, players});
     this.initializing = false;
