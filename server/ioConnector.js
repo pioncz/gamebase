@@ -16,8 +16,6 @@ class ActionsStream {
   constructor(io) {
     this.io = io;
     this.queue = [];
-  
-    setInterval(this._update.bind(this), 60);
   }
   // timestamp when action should be emitted, 
   // 0 means as soon as possible
@@ -35,7 +33,7 @@ class ActionsStream {
       this.io.to(roomName).emit('newAction', newActions[i]);
     }
   }
-  _update() {
+  update() {
     let now = Date.now();
     
     if (!this.queue.length) return;
@@ -356,6 +354,9 @@ class WebsocketServer {
     });
     
     this.updatePlayer = this.updatePlayer.bind(this); 
+    this.update = this.update.bind(this);
+  
+    setInterval(this.update.bind(this), 60);
   }
   // When user is authorized, his player should be updated
   updatePlayer(socketId, player) {
@@ -370,6 +371,10 @@ class WebsocketServer {
     connection.playerId = player.id;
     
     this.io.to(socketId).emit('playerUpdate', player);
+  }
+  // Runs to: finish game if time is up, remove empty rooms, reset room search if it takes too long, update action stream
+  update() {
+    this.actionsStream.update();
   }
 }
 

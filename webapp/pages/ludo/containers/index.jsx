@@ -146,6 +146,13 @@ export default class Ludo extends Component {
         let roomState = newAction.roomState,
           yourPlayer = roomState.players.find(player => player.id === this.state.player.id);
         
+        for(let playerIndex in roomState.players) {
+          let player = roomState.players[playerIndex],
+            playerColor = roomState.playerColors.find(playerColor => playerColor.playerId === player.id);
+          
+          player.color = playerColor.color;
+        }
+        
         this.setState({
           gameId: roomState.id,
           players: roomState.players,
