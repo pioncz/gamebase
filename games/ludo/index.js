@@ -28,7 +28,8 @@ const InitialState = () => {
 };
 
 const Config = {
-  MinPlayer: 2,
+  MinPlayer: 1,
+  GameLength: (15 * 60 * 1000), //15 minutes
 };
 
 const ActionTypes = {
@@ -73,8 +74,8 @@ const SelectColor = (playerId, color) => {
   return {type: ActionTypes.SelectColor, playerId, value: color};
 };
 
-const StartGame = (roomState) => {
-  return {type: ActionTypes.StartGame, roomState: roomState};
+const StartGame = (roomState, finishTimestamp) => {
+  return {type: ActionTypes.StartGame, roomState: roomState, finishTimestamp};
 };
 
 const FinishGame = (winnerId) => {
@@ -194,7 +195,7 @@ const SelectColorHandler = (action, player, roomState) => {
 
     roomState.currentPlayerId = roomState.playerIds[0];
 
-    let startGameAction = StartGame(roomState),
+    let startGameAction = StartGame(roomState, Date.now() + Config.GameLength),
       waitForPlayer = WaitForPlayer(roomState);
 
     returnActions.push({action: startGameAction});

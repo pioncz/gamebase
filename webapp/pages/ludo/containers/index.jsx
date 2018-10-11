@@ -153,9 +153,10 @@ export default class Ludo extends Component {
           currentPlayerId: roomState.currentPlayerId,
           page: Pages.Game,
           pawns: roomState.pawns,
-          timestamp: roomState.timestamp,
+          finishTimestamp: newAction.finishTimestamp,
         });
         this.timerComponent.start(roomState.finishTimestamp - Date.now());
+        this.timerComponent.start(newAction.finishTimestamp - Date.now());
       }
       if (newAction.type === Games.Ludo.ActionTypes.WaitForPlayer) {
         this.setState({
@@ -264,7 +265,7 @@ export default class Ludo extends Component {
   }
   render() {
     let currentModal,
-      {gameId, page, player, players, winnerId, pawns, timestamp, nextRollTimestamp, currentPlayerId, nextRollLength} = this.state,
+      {gameId, page, player, players, winnerId, pawns, finishTimestamp, nextRollTimestamp, currentPlayerId, nextRollLength} = this.state,
       playersOverlay,
       profiles,
       diceContainerClass = ClassNames({
@@ -392,7 +393,7 @@ export default class Ludo extends Component {
       >
         <DicesImage />
       </div>
-      {timestamp !== null && <Timer ref={(element) => { this.timerComponent = element; }}/>}
+      {finishTimestamp !== null && <Timer ref={(element) => { this.timerComponent = element; }}/>}
     </div>);
   }
 }
