@@ -1,3 +1,4 @@
+- blad wygranej gracza: akcja finishGame leci dwukrotnie, raz z poprawnym wygranym a raz z drugim
 - player zalogowany w expresie, niezalogowany w serwerze socketowym (po restarcie serwera)
 - index.js: jesli socket nie jest autoryzowany to stworz tymaczasowego playera
 - uspojnienie modelu playera (niezalogowany, tymczasowy, zalogowany, trwaly)

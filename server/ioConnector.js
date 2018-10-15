@@ -355,7 +355,7 @@ class WebsocketServer {
     
     this.updatePlayer = this.updatePlayer.bind(this); 
     this.update = this.update.bind(this);
-  
+  //this.update();
     setInterval(this.update.bind(this), 60);
   }
   // When user is authorized, his player should be updated
@@ -375,6 +375,19 @@ class WebsocketServer {
   // Runs to: finish game if time is up, remove empty rooms, reset room search if it takes too long, update action stream
   update() {
     this.actionsStream.update();
+    
+    const now = Date.now();
+    
+    for (let roomIndex in this.rooms) {
+      let room = this.rooms[roomIndex];
+      
+      if (room.gameState.finishTimestamp) {
+        if (now > room.gameState.finishTimestamp) {
+          // wyslij akcje FinishGame bez winnerId
+          // wyjdz kazdym graczem z pokoju
+        }
+      }
+    }
   }
 }
 
