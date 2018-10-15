@@ -57,7 +57,6 @@ export default class PawnsController {
       this.animations.removeAnimation('enterPawn' + pawnId);
       pawn.unselect();
       this.$.remove(pawn.$);
-      console.log(pawnId);
       delete this.pawns[pawnId];
     }
   }

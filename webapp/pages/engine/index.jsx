@@ -8,8 +8,6 @@ import Ludo from "ludo";
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
 
-const NumberOfPlayers = 2;
-
 const nextId = (()=>{
   let id = 0;
   return () => {
@@ -58,6 +56,62 @@ const nextId = (()=>{
       name: 'Name ' + id,
       index: null,
     }
+  },
+  PawnSets = {
+    'initial': [
+        {id: '12', x: 0, z: 0}, // first player
+        {id: '13', x: 1, z: 0}, // first player
+        {id: '14', x: 0, z: 1}, // first player
+        {id: '15', x: 1, z: 1}, // first player
+        {id: '4', x: 9, z: 0}, // second player
+        {id: '5', x: 10, z: 0}, // second player
+        {id: '6', x: 9, z: 1}, // second player
+        {id: '7', x: 10, z: 1}, // second player
+        {id: '8', x: 0, z: 9}, // third player
+        {id: '9', x: 1, z: 9}, // third player
+        {id: '10', x: 0, z: 10}, // third player
+        {id: '11', x: 1, z: 10}, // third player
+        {id: '0', x: 9, z: 10}, // fourth player
+        {id: '1', x: 10, z: 10}, // fourth player
+        {id: '2', x: 9, z: 9}, // fourth player
+        {id: '3', x: 10, z: 9}, // fourth player
+    ],
+    'movePawnBack': [
+        {id: '12', x: 0, z: 4}, // first player
+        {id: '13', x: 1, z: 0}, // first player
+        {id: '14', x: 0, z: 1}, // first player
+        {id: '15', x: 1, z: 1}, // first player
+        {id: '4', x: 3, z: 4}, // second player
+        {id: '5', x: 10, z: 0}, // second player
+        {id: '6', x: 9, z: 1}, // second player
+        {id: '7', x: 10, z: 1}, // second player
+        {id: '8', x: 0, z: 9}, // third player
+        {id: '9', x: 1, z: 9}, // third player
+        {id: '10', x: 0, z: 10}, // third player
+        {id: '11', x: 1, z: 10}, // third player
+        {id: '0', x: 9, z: 10}, // fourth player
+        {id: '1', x: 10, z: 10}, // fourth player
+        {id: '2', x: 9, z: 9}, // fourth player
+        {id: '3', x: 10, z: 9}, // fourth player
+    ],
+    'win': [
+        {id: '12', x: 0, z: 5}, // first player
+        {id: '13', x: 2, z: 5}, // first player
+        {id: '14', x: 3, z: 5}, // first player
+        {id: '15', x: 4, z: 5}, // first player
+        {id: '4', x: 9, z: 0}, // second player
+        {id: '5', x: 10, z: 0}, // second player
+        {id: '6', x: 9, z: 1}, // second player
+        {id: '7', x: 10, z: 1}, // second player
+        {id: '8', x: 0, z: 9}, // third player
+        {id: '9', x: 1, z: 9}, // third player
+        {id: '10', x: 0, z: 10}, // third player
+        {id: '11', x: 1, z: 10}, // third player
+        {id: '0', x: 9, z: 10}, // fourth player
+        {id: '1', x: 10, z: 10}, // fourth player
+        {id: '2', x: 9, z: 9}, // fourth player
+        {id: '3', x: 10, z: 9}, // fourth player
+    ],
   };
 
 class Engine extends Component {
@@ -72,8 +126,10 @@ class Engine extends Component {
       selectedPawnId: null,
       currentPlayerId: null,
       gameId: null,
+      numberOfPlayers: localStorage.numberOfPlayers || 1,
+      pawnSet: localStorage.pawnSet || 'initial',
     };
-  
+
     this.gameComponent = null;
     this.timerComponent = null;
     this.connectorInstance = this.props.connectorInstance;
@@ -174,16 +230,17 @@ class Engine extends Component {
     });
   }
   initGame() {
+    const { numberOfPlayers, pawnSet } = this.state;
     let newPlayers = [],
       newPawns;
   
-    for(let i = 0; i < NumberOfPlayers; i++) {
+    for(let i = 0; i < numberOfPlayers; i++) {
       let newPlayer = randomPlayer();
       newPlayer.index = newPlayers.length;
       newPlayers.push(newPlayer);
     }
     
-    newPawns = Ludo.InitialState().pawns.slice(0,4*NumberOfPlayers);
+    newPawns = PawnSets[pawnSet].slice(0,4*numberOfPlayers);
     
     for(let pawnI in newPawns) {
       let pawn = newPawns[pawnI],
@@ -201,7 +258,10 @@ class Engine extends Component {
       currentPlayerId: newPawns[0].playerId,
       gameId: nextId(),
     });
-    
+    setTimeout(() => {
+      this.gameComponent.engine.selectPawns([newPawns[0].id]);
+    }, 50);
+
     this.timerComponent.start(5*60*1000);
   }
   onPawnClick(pawnId) {
@@ -211,30 +271,47 @@ class Engine extends Component {
     });
   }
   render() {
-    let pawns = this.state.pawns.map(pawn => {
+    const { pawns, selectedPawnId, pawnInput, numberOfPlayers, pawnSet } = this.state,
+      pawnsElements = pawns.map(pawn => {
       return <div key={pawn.id}
-                  className={'pawn' + (pawn.id===this.state.selectedPawnId?' pawn--selected':'')}
+                  className={'pawn' + (pawn.id===selectedPawnId?' pawn--selected':'')}
       onClick={() => { this.onPawnClick(pawn.id)} }>
         {`${pawn.id}:${pawn.color}:${pawn.x},${pawn.z}`}
       </div>;
-    }),
-      player = nextId();
+    });
     
     return <div className="engine-page">
       <div className="settings">
         <div className="settings-title">Settings</div>
         <div className="settings-body">
+          <div className="input-row">
+              <div>Number of players</div>
+              <div>
+                  <input tabIndex={1} type="number" min={1} max={4} value={numberOfPlayers} name="numberOfPlayers" onChange={this.handleInputChange}/>
+              </div>
+          </div>
+            <div className="input-row">
+                <div>Pawns set</div>
+                <div>
+                  <select name="pawnSet" onChange={this.handleInputChange}>
+                    <option value="initial" selected={pawnSet === 'initial'}>Initial</option>
+                    <option value="movePawnBack" selected={pawnSet === 'movePawnBack'}>Move pawn back</option>
+                    <option value="win" selected={pawnSet === 'win'}>Win</option>
+                  </select>
+                </div>
+            </div>
+          <button type="button" onClick={this.initGame}>Init game</button>
+          <hr />
           <form onSubmit={this.onSubmit}>
             <div className="pawns">
               <div className="pawns-title">Pawns:</div>
               <div className="pawns-body">
-                {pawns}
+                {pawnsElements}
               </div>
             </div>
-            <button type="button" onClick={this.initGame}>Init game</button>
             <div className="input-row">
               <div>move pawn</div>
-              <div><input tabIndex={1} type="number" min={1} max={6} value={this.state.pawnInput} name="pawnInput" onChange={this.handleInputChange}/></div>
+              <div><input tabIndex={1} type="number" min={1} max={6} value={pawnInput} name="pawnInput" onChange={this.handleInputChange}/></div>
             </div>
             <input type="submit" />
           </form>
