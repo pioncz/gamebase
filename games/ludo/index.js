@@ -28,7 +28,7 @@ const InitialState = () => {
 };
 
 const Config = {
-  MinPlayer: 1,
+  MinPlayer: 2,
   GameLength: (15 * 60 * 1000), //15 minutes
 };
 
@@ -74,8 +74,8 @@ const SelectColor = (playerId, color) => {
   return {type: ActionTypes.SelectColor, playerId, value: color};
 };
 
-const StartGame = (roomState, finishTimestamp) => {
-  return {type: ActionTypes.StartGame, roomState: roomState, finishTimestamp};
+const StartGame = (roomState) => {
+  return {type: ActionTypes.StartGame, roomState: roomState};
 };
 
 const FinishGame = (winnerId) => {
@@ -194,8 +194,9 @@ const SelectColorHandler = (action, player, roomState) => {
     initialState.pawns.splice(roomState.playerIds.length * 4, (4 - roomState.playerIds.length) * 4);
 
     roomState.currentPlayerId = roomState.playerIds[0];
-
-    let startGameAction = StartGame(roomState, Date.now() + Config.GameLength),
+    roomState.finishTimestamp = Date.now() + Config.GameLength;
+    
+    let startGameAction = StartGame(roomState),
       waitForPlayer = WaitForPlayer(roomState);
 
     returnActions.push({action: startGameAction});
@@ -266,6 +267,7 @@ const PickPawnHandler = (action, player, roomState) => {
     
     returnActions.push({action: MovePawn(lastFieldPawn.id, fieldSequence)});
   }
+  
   //check win
   if (lastField.type === BoardUtils.FieldTypes.goal) {
     let playerPawns = roomState.pawns.filter(pawn => {

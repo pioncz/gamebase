@@ -28,7 +28,7 @@ class Room {
       winnerId: null,
       roomState: RoomStates.queue,
       finishTimestamp: null,
-      rolled: true,
+      rolled: false,
       diceNumber: 0,
       queueColors: [],
       playerIds: [],
