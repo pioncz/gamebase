@@ -1,5 +1,13 @@
-- test 4 graczy
-- przerobki na szybko przed weekendowym releasem (piecioklik generuje salto planszy)
+RELEASE
+- ekran wyboru gry
+- obrot ekranu na telefonie do landscape'u
+- dostosowac do mobilek
+- moj gracz na pierwszym miejscu
+- plansza obrocona o 15st.
+- tlo animowane
+- hamburger menu pod esc
+- menu: nowa gra, fullscreen, pomoc (skroty)
+- test innej gry? zmiana ukladu pol na planszy
 
 - blad wygranej gracza: akcja finishGame leci dwukrotnie, raz z poprawnym wygranym a raz z drugim
 - player zalogowany w expresie, niezalogowany w serwerze socketowym (po restarcie serwera)
@@ -130,3 +138,4 @@ DONE:
 + logowanie: logika + ui
 + wykorzystanie modelu playera z bazy danych
 + pionek wraca na spawn, tuz przed zbiciem
++ test 4 graczy
