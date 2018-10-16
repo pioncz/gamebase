@@ -4,7 +4,6 @@ import './index.sass';
 import BoardUtils from 'ludo/BoardUtils';
 import Timer from 'components/timer';
 import { actions } from 'shared/redux/api';
-import Ludo from "ludo";
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
 
@@ -135,7 +134,7 @@ class Engine extends Component {
     this.connectorInstance = this.props.connectorInstance;
     
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
+    this.movePawn = this.movePawn.bind(this);
     this.initGame = this.initGame.bind(this);
     this.onPawnClick = this.onPawnClick.bind(this);
   }
@@ -145,9 +144,11 @@ class Engine extends Component {
   componentWillUnmount() {
     this.props.unsetInGame();
   }
-  onSubmit(e) {
-    const { pawns, selectedPawnId, pawnInput, } = this.state,
-      pawn = pawns.find(pawn => pawn.id === selectedPawnId);
+  movePawn(e) {
+    const { pawns, selectedPawnId, pawnInput, players } = this.state,
+      pawn = pawns.find(pawn => pawn.id === selectedPawnId),
+      playerIds = players.map(player => player.id),
+      roomState = {pawns, playerIds};
   
     if (!selectedPawnId) {
       log('No pawn');
@@ -162,7 +163,7 @@ class Engine extends Component {
     }
     
     try {
-      let moves = this.gameComponent.checkMoves(pawns, +pawnInput, this.state.currentPlayerId);
+      let moves = this.gameComponent.checkMoves(roomState, +pawnInput, this.state.currentPlayerId);
       
       if (moves.length) {
         let move = moves.find(move => move.pawnId === selectedPawnId);
@@ -302,19 +303,17 @@ class Engine extends Component {
             </div>
           <button type="button" onClick={this.initGame}>Init game</button>
           <hr />
-          <form onSubmit={this.onSubmit}>
-            <div className="pawns">
-              <div className="pawns-title">Pawns:</div>
-              <div className="pawns-body">
-                {pawnsElements}
-              </div>
+          <div className="pawns">
+            <div className="pawns-title">Pawns:</div>
+            <div className="pawns-body">
+              {pawnsElements}
             </div>
-            <div className="input-row">
-              <div>move pawn</div>
-              <div><input tabIndex={1} type="number" min={1} max={6} value={pawnInput} name="pawnInput" onChange={this.handleInputChange}/></div>
-            </div>
-            <input type="submit" />
-          </form>
+          </div>
+          <div className="input-row">
+            <div>move pawn</div>
+            <div><input tabIndex={1} type="number" min={1} max={6} value={pawnInput} name="pawnInput" onChange={this.handleInputChange}/></div>
+          </div>
+          <button onClick={this.movePawn}>RUSZ PIONKA</button>
         </div>
       </div>
       <GameComponent

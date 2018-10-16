@@ -265,7 +265,10 @@ const PickPawnHandler = (action, player, roomState) => {
     lastFieldPawn.x = spawnPosition.x;
     lastFieldPawn.z = spawnPosition.z;
     
-    returnActions.push({action: MovePawn(lastFieldPawn.id, fieldSequence)});
+    returnActions.push({
+      action: MovePawn(lastFieldPawn.id, fieldSequence),
+      timestamp: Date.now() + (AnimationLengths.movePawn * (move.fieldSequence.length - 1)),
+    });
   }
   
   //check win

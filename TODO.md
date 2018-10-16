@@ -1,3 +1,6 @@
+- test 4 graczy
+- przerobki na szybko przed weekendowym releasem
+
 - blad wygranej gracza: akcja finishGame leci dwukrotnie, raz z poprawnym wygranym a raz z drugim
 - player zalogowany w expresie, niezalogowany w serwerze socketowym (po restarcie serwera)
 - index.js: jesli socket nie jest autoryzowany to stworz tymaczasowego playera
@@ -48,7 +51,6 @@ TO DO
 - wyczyscic logi w konsoli podczas gry na serwerze i w przegladarce
 - guzik kostki nie powinien byc zaznaczony gdy gracz nie moze rzucic kostka (roomState.rolled = true)
 - gdy jeden z graczy wyjdzie przez f5, nie mozna znalezc nowej gry
-- pionek wraca na spawn, tuz przed zbiciem
 - na telefonach domyslnie orientacja landscape
 
 1) Gra
@@ -127,3 +129,4 @@ DONE:
 + rejestracja: logika + ui
 + logowanie: logika + ui
 + wykorzystanie modelu playera z bazy danych
++ pionek wraca na spawn, tuz przed zbiciem
