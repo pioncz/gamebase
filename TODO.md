@@ -1,5 +1,5 @@
 - test 4 graczy
-- przerobki na szybko przed weekendowym releasem
+- przerobki na szybko przed weekendowym releasem (piecioklik generuje salto planszy)
 
 - blad wygranej gracza: akcja finishGame leci dwukrotnie, raz z poprawnym wygranym a raz z drugim
 - player zalogowany w expresie, niezalogowany w serwerze socketowym (po restarcie serwera)
