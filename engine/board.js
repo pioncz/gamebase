@@ -42,7 +42,7 @@ export default class Board {
   // Color fields, create pawns
   initGame(props) {
     this.clearGame();
-    const players = props.players;
+    const { players, firstPlayerId } = props;
     
     // Set field colors
     for(let fieldIndex in this.fields) {
@@ -62,6 +62,19 @@ export default class Board {
     this.drawBoard();
     // create pawns
     this.pawnsController.createPawns({pawns: props.pawns});
+  
+    console.log('firstPlayerId: ', firstPlayerId);
+    let firstPlayerIndex = players.findIndex(player => player.id === firstPlayerId);
+    console.log('index:', firstPlayerIndex);
+    if (firstPlayerIndex) {
+      this.animations.create({
+        update: (progress) => {
+          this.$.rotation.y = (Math.PI/2) * firstPlayerIndex * progress;
+        },
+        easing: EASING.InQuad,
+        length: 2000 * firstPlayerIndex,
+      });
+    }
   }
   clearGame() {
     console.log('clearGame');

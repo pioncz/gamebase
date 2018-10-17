@@ -419,6 +419,7 @@ export default class Ludo extends Component {
         gameId={gameId}
         pawns={pawns}
         players={players}
+        firstPlayerId={player.id}
       />
       {playersOverlay}
       {currentModal}

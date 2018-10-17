@@ -12,7 +12,7 @@ export default class GameComponent extends Component {
     this.engine.on('click', this.handleClick);
   }
   componentWillUnmount() {
-   this.engine.off(); 
+   this.engine.off('click', this.handleClick); 
   }
   shouldComponentUpdate(nextProps) {
     if (nextProps.moves && nextProps.moves.length) {
@@ -22,7 +22,11 @@ export default class GameComponent extends Component {
     let gameShouldUpdate = this.props.gameId !== nextProps.gameId;
     
     if (gameShouldUpdate) {
-      this.engine.initGame({gameId: nextProps.gameId, pawns: nextProps.pawns, players: nextProps.players});
+      this.engine.initGame({
+          gameId: nextProps.gameId, 
+          pawns: nextProps.pawns, 
+          players: nextProps.players}, 
+        nextProps.firstPlayerId);
     }
     return false;
   }
