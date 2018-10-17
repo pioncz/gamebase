@@ -110,6 +110,7 @@ export default class Ludo extends Component {
     this.joinQueue = this.joinQueue.bind(this);
     this.selectColor = this.selectColor.bind(this);
     this.initSocketEvents = this.initSocketEvents.bind(this);
+    this.onKeyUp = this.onKeyUp.bind(this);
   
     this.timerComponent = null;
     this.connectorInstance = this.props.connectorInstance;
@@ -121,12 +122,14 @@ export default class Ludo extends Component {
       this.connectorInstance = this.props.connectorInstance;
       this.initSocketEvents(this.connectorInstance);
     }
+    document.addEventListener('keypress', this.onKeyUp);
   }
   componentWillUnmount() {
     if (this.connectorInstance) {
       this.connectorInstance.leaveGame();
     }
     this.props.unsetInGame();
+    document.removeEventListener('keypress', this.onKeyUp);
   }
   initSocketEvents(connectorInstance) {
     const handleAction = (newAction) => {
@@ -268,6 +271,11 @@ export default class Ludo extends Component {
       game: Games.Ludo.Name,
     });
     this.setState({page: Pages.Queue});
+  }
+  onKeyUp(e) {
+    if (e.key && e.key === ' ') {
+      this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.Roll());
+    }
   }
   render() {
     let currentModal,
