@@ -83,6 +83,28 @@ class Progress extends Component {
   }
 }
 
+const filterPlayers = (players, firstPlayerId) => {
+  let playerIndex = players && players.findIndex(player => player.id === firstPlayerId),
+    parsedPlayers = players && players.slice(0, players.length);
+  
+  if (!firstPlayerId || !players || playerIndex === -1) {
+    return [];
+  }
+  
+  if (playerIndex === 0) {
+    return players;
+  }
+  
+  if (parsedPlayers.length < 4) {
+    parsedPlayers = parsedPlayers.concat(new Array(4 - parsedPlayers.length));
+  }
+  parsedPlayers.slice(playerIndex,parsedPlayers.length).concat(parsedPlayers.slice(0,playerIndex));
+  
+  console.log(parsedPlayers);
+  
+  return parsedPlayers;
+};
+
 export default class Ludo extends Component {
   constructor(props) {
     super(props);
@@ -348,7 +370,7 @@ export default class Ludo extends Component {
     }
     
     if (players && players.length) {
-      profiles = players;
+      profiles = filterPlayers(players, player.id);
     } else {
       profiles = [{id:0, name: '', avatar: null, color: ''},
         {id:1, name: '', avatar: null, color: ''},
