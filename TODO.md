@@ -1,10 +1,17 @@
 RELEASE
 - ekran wyboru gry
+- pierwsza animacja: 
+1. plansza 'opakowuje' sie w teksture (skaluj prostokaty)
+2. pionki wjezdzaja od gory
+3. pionki ruszaja sie na zmiane
+
+- modal wyboru koloru -> wybor pionka, planszy i tla
 - obrot ekranu na telefonie do landscape'u
 - dostosowac do mobilek
 - moj gracz na pierwszym miejscu
 - plansza obrocona o 15st.
 - tlo animowane
+- loader: cien ruszajacego sie pionka
 - hamburger menu pod esc
 - menu: nowa gra, fullscreen, pomoc (skroty)
 - test innej gry? zmiana ukladu pol na planszy
