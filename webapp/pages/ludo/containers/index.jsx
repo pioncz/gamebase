@@ -95,13 +95,11 @@ const filterPlayers = (players, firstPlayerId) => {
     return players;
   }
   
-  if (parsedPlayers.length < 4) {
-    parsedPlayers = parsedPlayers.concat(new Array(4 - parsedPlayers.length));
+  while (parsedPlayers.length < 4) {
+    parsedPlayers.push({name: '', avatar: null, color: ''});
   }
-  parsedPlayers.slice(playerIndex,parsedPlayers.length).concat(parsedPlayers.slice(0,playerIndex));
-  
-  console.log(parsedPlayers);
-  
+  parsedPlayers = parsedPlayers.slice(playerIndex,parsedPlayers.length).concat(parsedPlayers.slice(0,playerIndex));
+
   return parsedPlayers;
 };
 
@@ -387,7 +385,9 @@ export default class Ludo extends Component {
           'player--hidden': page !== Pages.Game,
           'player--disconnected': !!player.disconnected,
         });
-      
+
+      if (!player.login) return null;
+
       if (nextRollTimestamp && player.id === currentPlayerId) {
         startTimestamp = nextRollTimestamp - nextRollLength;
         endTimestamp = nextRollTimestamp;
@@ -399,11 +399,11 @@ export default class Ludo extends Component {
       return <div key={index} className={className}>
         <div className="player-name">
           {player.login}
-          {player.id === currentPlayerId && <p className={'arrow ' + (index%2?'right':'left')}></p>}
+          {player.id === currentPlayerId && <p className={'arrow ' + (index%3?'right':'left')}></p>}
           <Progress startTimestamp={startTimestamp} endTimestamp={endTimestamp} />
         </div>
         <img src={player.avatar} style={{
-          [(index%2?'borderLeft':'borderRight')]: "3px solid " + player.color
+          [(index%3?'borderLeft':'borderRight')]: "3px solid " + player.color
         }} />
       </div>;
     });

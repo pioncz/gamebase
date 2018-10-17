@@ -1,4 +1,9 @@
 RELEASE
+- obracamy tylko plansze i pionki
+- fix zaznaczenia pionka
+- zamienic miejscami profile
+- wyrownac pozycje pionka
+
 - plansza obrocona o 15st.
 - moj gracz na pierwszym miejscu
 - ukryc navbar, hamburger menu (uruchamiany pod esc), profil po lewej, fullscreen po prawej na dole (pod f)  
