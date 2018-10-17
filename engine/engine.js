@@ -31,7 +31,9 @@ export default class Engine extends EventEmitter {
       -this.frustumSize,
       1,
       1000);
+    // this.camera = new THREE.PerspectiveCamera( 30, aspect, 1, 1000 );
     this.camera.position.set( 20, 20, 20 );
+    // this.camera.position.set( 60, 60, 60 );
     this.camera.lookAt( new THREE.Vector3(0,0,0) );
     this.renderer.setPixelRatio( window.devicePixelRatio );
     this.renderer.setSize( width, height );
