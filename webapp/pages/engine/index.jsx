@@ -259,7 +259,6 @@ class Engine extends Component {
     firstPlayer = firstPlayerIndex && newPlayers[firstPlayerIndex-1];
     firstPlayerId = (firstPlayer && firstPlayer.id) || 0;
     
-    console.log(firstPlayerIndex, newPlayers);
     this.setState({
       pawns: newPawns,
       players: newPlayers,
@@ -309,10 +308,10 @@ class Engine extends Component {
           <div className="input-row">
               <div>Pawns set</div>
               <div>
-                <select name="pawnSet" onChange={this.handleInputChange}>
-                  <option value="initial" selected={pawnSet === 'initial'}>Initial</option>
-                  <option value="movePawnBack" selected={pawnSet === 'movePawnBack'}>Move pawn back</option>
-                  <option value="win" selected={pawnSet === 'win'}>Win</option>
+                <select name="pawnSet" onChange={this.handleInputChange} value={pawnSet}>
+                  <option value="initial">Initial</option>
+                  <option value="movePawnBack">Move pawn back</option>
+                  <option value="win">Win</option>
                 </select>
               </div>
           </div>

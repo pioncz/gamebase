@@ -131,11 +131,8 @@ export default class Engine extends EventEmitter {
     let firstPlayerIndex = players.findIndex(player => player.id === firstPlayerId);
     this.board.initGame({pawns, players});
 
-    if (firstPlayerIndex) {
-      let newRotation = (Math.PI/2) * firstPlayerIndex;
-
-      this.board.rotateBoard(newRotation);
-    }
+    let newRotation = (Math.PI/2) * firstPlayerIndex;
+    this.board.rotateBoard(newRotation);
 
     this.initializing = false;
   }

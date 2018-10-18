@@ -250,7 +250,7 @@ export default class Board {
       let pawn = this.pawnsController.pawns[pawnIndex];
 
       if (pawn) {
-        pawn.selectionObject.rotation.y = newRotation;
+        pawn.selectionObject.rotation.y = newRotation + Math.PI / 4;
       }
     }
   }
