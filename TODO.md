@@ -1,6 +1,4 @@
 RELEASE
-- plansza obrocona o 15st.
-- moj gracz na pierwszym miejscu
 - ukryc navbar, hamburger menu (uruchamiany pod esc), profil po lewej, fullscreen po prawej na dole (pod f)  
 - tlo animowane
 - loader: cien ruszajacego sie pionka - w trakcie ladowania strony
@@ -150,3 +148,10 @@ DONE:
 --obrot ekranu na telefonie do landscape'u
 + fix buga przy disconnectcie
 + rzut kostką - spacją
+--plansza obrocona o 15st.
++ moj gracz na pierwszym miejscu
++ obracamy tylko plansze i pionki
++ fix zaznaczenia pionka
++ zamienic miejscami profile
++ wyrownac pozycje pionka
++ engine: ktorys kolejny init nie powoduje obrotu planszy

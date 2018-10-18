@@ -42,7 +42,7 @@ export default class Board {
   // Color fields, create pawns
   initGame(props) {
     this.clearGame();
-    const players = props.players;
+    const { players, firstPlayerId } = props;
     
     // Set field colors
     for(let fieldIndex in this.fields) {
@@ -160,6 +160,9 @@ export default class Board {
   
     this.$ = new THREE.Mesh(this.geometry, new THREE.MeshFaceMaterial(this.materials));
     this.$.name = 'BoardMesh';
+    this.$.position.x = 0;
+    this.$.position.y = 0;
+    this.$.position.z = 0;
     this.scene.add(this.$);
   }
   getFieldsSequence(pawnData, length) {
@@ -239,5 +242,16 @@ export default class Board {
     }
 
     return pawns;
+  }
+  rotateBoard(newRotation) {
+    this.pawnsController.$.rotation.y = newRotation;
+    this.$.rotation.y = newRotation;
+    for(let pawnIndex in this.pawnsController.pawns) {
+      let pawn = this.pawnsController.pawns[pawnIndex];
+
+      if (pawn) {
+        pawn.selectionObject.rotation.y = newRotation + Math.PI / 4;
+      }
+    }
   }
 }

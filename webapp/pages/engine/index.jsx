@@ -46,7 +46,7 @@ const nextId = (()=>{
     });
   },
   randomPlayer = () => {
-    let id = nextId();
+    let id = nextId() + 'playerId';
   
     return {
       id,
@@ -127,6 +127,8 @@ class Engine extends Component {
       gameId: null,
       numberOfPlayers: localStorage.numberOfPlayers || 1,
       pawnSet: localStorage.pawnSet || 'initial',
+      firstPlayerIndex: localStorage.firstPlayerIndex || 1,
+      firstPlayerId: null,
     };
 
     this.gameComponent = null;
@@ -231,9 +233,11 @@ class Engine extends Component {
     });
   }
   initGame() {
-    const { numberOfPlayers, pawnSet } = this.state;
+    const { numberOfPlayers, pawnSet, firstPlayerIndex } = this.state;
     let newPlayers = [],
-      newPawns;
+      newPawns,
+      firstPlayer,
+      firstPlayerId;
   
     for(let i = 0; i < numberOfPlayers; i++) {
       let newPlayer = randomPlayer();
@@ -251,13 +255,17 @@ class Engine extends Component {
       pawn.playerId = player.id;
       pawn.playerIndex = player.index;
     }
-
+  
+    firstPlayer = firstPlayerIndex && newPlayers[firstPlayerIndex-1];
+    firstPlayerId = (firstPlayer && firstPlayer.id) || 0;
+    
     this.setState({
       pawns: newPawns,
       players: newPlayers,
       selectedPawnId: newPawns[0].id,
       currentPlayerId: newPawns[0].playerId,
       gameId: nextId(),
+      firstPlayerId,
     });
     setTimeout(() => {
       this.gameComponent.engine.selectPawns([newPawns[0].id]);
@@ -272,7 +280,7 @@ class Engine extends Component {
     });
   }
   render() {
-    const { pawns, selectedPawnId, pawnInput, numberOfPlayers, pawnSet } = this.state,
+    const { pawns, selectedPawnId, pawnInput, numberOfPlayers, pawnSet, firstPlayerIndex, firstPlayerId } = this.state,
       pawnsElements = pawns.map(pawn => {
       return <div key={pawn.id}
                   className={'pawn' + (pawn.id===selectedPawnId?' pawn--selected':'')}
@@ -291,16 +299,22 @@ class Engine extends Component {
                   <input tabIndex={1} type="number" min={1} max={4} value={numberOfPlayers} name="numberOfPlayers" onChange={this.handleInputChange}/>
               </div>
           </div>
-            <div className="input-row">
-                <div>Pawns set</div>
-                <div>
-                  <select name="pawnSet" onChange={this.handleInputChange}>
-                    <option value="initial" selected={pawnSet === 'initial'}>Initial</option>
-                    <option value="movePawnBack" selected={pawnSet === 'movePawnBack'}>Move pawn back</option>
-                    <option value="win" selected={pawnSet === 'win'}>Win</option>
-                  </select>
-                </div>
+          <div className="input-row">
+            <div>First player</div>
+            <div>
+              <input type="number" min={1} max={numberOfPlayers} value={firstPlayerIndex} name="firstPlayerIndex" onChange={this.handleInputChange}/>
             </div>
+          </div>
+          <div className="input-row">
+              <div>Pawns set</div>
+              <div>
+                <select name="pawnSet" onChange={this.handleInputChange} value={pawnSet}>
+                  <option value="initial">Initial</option>
+                  <option value="movePawnBack">Move pawn back</option>
+                  <option value="win">Win</option>
+                </select>
+              </div>
+          </div>
           <button type="button" onClick={this.initGame}>Init game</button>
           <hr />
           <div className="pawns">
@@ -323,6 +337,7 @@ class Engine extends Component {
         players={this.state.players}
         moves={this.state.moves}
         gameId={this.state.gameId}
+        firstPlayerId={firstPlayerId}
       />
       <Timer ref={(element) => { this.timerComponent = element; }}/>
     </div>;

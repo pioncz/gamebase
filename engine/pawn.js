@@ -22,7 +22,7 @@ export default class Pawn {
     let pawnMesh = new THREE.Mesh(geometry, material);
     this.parsedX = props.parsedX;
     this.parsedZ = props.parsedZ;
-    this.moveTo(props.parsedX, 22.8, props.parsedZ);
+    this.moveTo(props.parsedX, 20, props.parsedZ);
     this.$.name = 'PawnMesh';
     this.$.add(pawnMesh);
     this.pawnMesh = pawnMesh;
@@ -56,15 +56,16 @@ export default class Pawn {
     
     this.selectionObject = new THREE.Mesh( selectionGeometry, selectionMaterial );
     this.selectionObject.rotation.y = Math.PI / 4;
+
     this.selectionObject.position.y = 3;
     this.selectionObject.material.opacity = 0;
     
     this.$.add( this.selectionObject );
   }
   moveTo(x, y, z) {
-    this.$.position.x = x + 0.4;
-    this.$.position.y = y;
-    this.$.position.z = z + 0.4;
+    this.$.position.x = x;
+    this.$.position.y = y + .42;
+    this.$.position.z = z;
   }
   select() {
     //create enter animation
