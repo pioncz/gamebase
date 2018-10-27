@@ -14,13 +14,14 @@ export default class Board {
     this.scene = props.scene;
     this.animations = props.context.animations;
     this.context = props.context;
-    this.width = props.width;
-    this.height = props.height;
+    this.canvasWidth = 512;
+    this.canvasHeight = 512;
     this.renderer = props.renderer;
     this.columnsLength = 11;
     this.fieldLength = 40 / this.columnsLength;
     this.canvas = Utils.$({element: 'canvas'});
     this.texture = null;
+    this.rotation = 0;
     
     this.fields = Fields;
     this.createBoard();
@@ -42,7 +43,7 @@ export default class Board {
   // Color fields, create pawns
   initGame(props) {
     this.clearGame();
-    const { players, firstPlayerId } = props;
+    const { players, firstPlayerId, firstPlayerIndex } = props;
     
     // Set field colors
     for(let fieldIndex in this.fields) {
@@ -62,6 +63,9 @@ export default class Board {
     this.drawBoard();
     // create pawns
     this.pawnsController.createPawns({pawns: props.pawns});
+    
+    let newRotation = (Math.PI/2) * firstPlayerIndex;
+    this.rotateBoard(newRotation);
   }
   clearGame() {
     console.log('clearGame');
@@ -79,8 +83,8 @@ export default class Board {
   drawBoard() {
     let canvas = this.canvas,
       ctx = canvas.getContext('2d'),
-      width = this.width,
-      height = this.height;
+      width = this.canvasWidth,
+      height = this.canvasHeight;
   
     canvas.width = width;
     canvas.height = height;
@@ -141,12 +145,15 @@ export default class Board {
   }
   createBoard() {
     let canvas = this.canvas,
-      texture = new THREE.Texture(canvas);
+      texture = new THREE.Texture(canvas),
+      width = 40,
+      depth = 2,
+      height = 40;
     this.materials = [
       new THREE.MeshBasicMaterial({map: texture}),
       new THREE.MeshBasicMaterial({color: 'rgba(61, 72, 97, 0.8)'})
     ];
-    this.geometry = new THREE.BoxGeometry(40, 2, 40);
+    this.geometry = new THREE.BoxGeometry(width, depth, height);
     this.texture = texture;
     
     texture.needsUpdate = true;
@@ -164,6 +171,17 @@ export default class Board {
     this.$.position.y = 0;
     this.$.position.z = 0;
     this.scene.add(this.$);
+  }
+  /* setSize
+    rotate board if it shoudl be scaled less then 0.7
+   */
+  setSize(scale) {
+    if (scale < .7 && !(this.rotation % (Math.PI / 2))) {
+      this.rotateBoard(this.rotation + Math.PI / 4);
+    }
+    if (scale >= .7 && (this.rotation % (Math.PI / 2))) {
+      this.rotateBoard(this.rotation - Math.PI / 4);
+    }
   }
   getFieldsSequence(pawnData, length) {
     let currentField,
@@ -244,13 +262,18 @@ export default class Board {
     return pawns;
   }
   rotateBoard(newRotation) {
+    this.rotation = newRotation;
     this.pawnsController.$.rotation.y = newRotation;
     this.$.rotation.y = newRotation;
     for(let pawnIndex in this.pawnsController.pawns) {
       let pawn = this.pawnsController.pawns[pawnIndex];
 
-      if (pawn) {
-        pawn.selectionObject.rotation.y = newRotation + Math.PI / 4;
+      if (pawn) { 
+        if (newRotation % (Math.PI / 2)) {
+          pawn.selectionObject.rotation.y = newRotation - Math.PI / 4; 
+        } else {
+          pawn.selectionObject.rotation.y = newRotation + Math.PI / 4;
+        }
       }
     }
   }

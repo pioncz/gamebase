@@ -155,3 +155,5 @@ DONE:
 + zamienic miejscami profile
 + wyrownac pozycje pionka
 + engine: ktorys kolejny init nie powoduje obrotu planszy
++ na telefonie plansza obrocona pod katem 0 st.
++ rozmiar planszy dostosowany do mobilek
