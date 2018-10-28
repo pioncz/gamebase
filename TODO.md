@@ -1,7 +1,8 @@
 RELEASE
-- ukryc navbar, hamburger menu (uruchamiany pod esc), profil po lewej, fullscreen po prawej na dole (pod f)  
+- fullscreen po prawej na dole (pod f)  
 - tlo animowane
 - loader: cien ruszajacego sie pionka - w trakcie ladowania strony
+- profile graczy blizej planszy (responsywnie)
 
 - dostosowac do mobilek
 - menu: nowa gra, fullscreen, pomoc (skroty)
@@ -157,3 +158,4 @@ DONE:
 + engine: ktorys kolejny init nie powoduje obrotu planszy
 + na telefonie plansza obrocona pod katem 0 st.
 + rozmiar planszy dostosowany do mobilek
++ ukryc navbar, hamburger menu, 
