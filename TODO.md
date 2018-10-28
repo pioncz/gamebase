@@ -1,8 +1,6 @@
-RELEASE
-- fullscreen po prawej na dole (pod f)  
-- tlo animowane
-- loader: cien ruszajacego sie pionka - w trakcie ladowania strony
+RELEASE  
 - profile graczy blizej planszy (responsywnie)
+- loader: cien ruszajacego sie pionka - w trakcie ladowania strony
 
 - dostosowac do mobilek
 - menu: nowa gra, fullscreen, pomoc (skroty)
@@ -27,6 +25,7 @@ RELEASE
 - rozwazyc przypadek gdy ktos sie loguje w trakcie gry
 - napis offline widoczny tez w grze
 - po wylogowaniu updatePlayera do temporary
+- tlo animowane
 
 AUTENTYKACJA
 - player wchodzi na strone
@@ -159,3 +158,4 @@ DONE:
 + na telefonie plansza obrocona pod katem 0 st.
 + rozmiar planszy dostosowany do mobilek
 + ukryc navbar, hamburger menu, 
++ fullscreen po prawej na dole (pod f)

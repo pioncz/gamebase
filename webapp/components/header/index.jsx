@@ -7,6 +7,8 @@ import {
 import './index.sass'
 import Profile from 'components/profile/index'
 import Classnames from 'classnames'
+import FullscreenIcon from 'full-screen.svg'
+import FullscreenExitIcon from 'full-screen-exit.svg'
 
 export default class Header extends Component {
   constructor(props) {
@@ -14,18 +16,59 @@ export default class Header extends Component {
     
     this.state = {
       menuOpen: false, 
+      fullscreen: false,
     };
     
     this.toggleMenu = this.toggleMenu.bind(this);
+    this.toggleFullscreen = this.toggleFullscreen.bind(this);
+    this.onKeyUp = this.onKeyUp.bind(this);
+  }
+  componentDidMount() {
+    document.addEventListener('keypress', this.onKeyUp);
+  }
+  componentWillUnmount() {
+    document.removeEventListener('keypress', this.onKeyUp);
+  }
+  onKeyUp(e) {
+    if (e.key && e.key.toUpperCase() === 'F') {
+      this.toggleFullscreen();
+    }
   }
   toggleMenu() {
     this.setState({
       menuOpen: !this.state.menuOpen,
     });
   }
+  toggleFullscreen() {
+    const { fullscreen } = this.state;
+    
+    if (fullscreen) {
+      if(document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if(document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if(document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
+    } else {
+      if(document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen();
+      } else if(document.documentElement.mozRequestFullScreen) {
+        document.documentElement.mozRequestFullScreen();
+      } else if(document.documentElement.webkitRequestFullscreen) {
+        document.documentElement.webkitRequestFullscreen();
+      } else if(document.documentElement.msRequestFullscreen) {
+        document.documentElement.msRequestFullscreen();
+      }
+    }
+    
+    this.setState({
+      fullscreen: !fullscreen,
+    });
+  }
   render() {
     const { player }  = this.props,
-      { menuOpen } = this.state,
+      { menuOpen, fullscreen } = this.state,
       headerClass = Classnames({
         'header': true,
         'header--open': menuOpen,
@@ -39,6 +82,10 @@ export default class Header extends Component {
             <span></span>
             <span></span>
           </div>
+        </div>
+        <div className="fs-icon" onClick={this.toggleFullscreen}>
+          {fullscreen && <FullscreenExitIcon/>}
+          {!fullscreen && <FullscreenIcon />}
         </div>
       </div>
       <div className="menu-container">
