@@ -1,17 +1,10 @@
-header
+.header
   position: fixed
   z-index: 100
   top: 0
   left: 0
+  height: 100%
   width: 100%
-  background: rgba(86,114,124,1)
-  display: flex
-  justify-content: space-between
-  padding: 8px 0
-
-  .left-pane, .right-pane
-    display: flex
-    align-items: center
 
   a
     color: #D9E9EF
@@ -20,10 +13,134 @@ header
     cursor: pointer
     user-select: none
 
-  .profile
-    position: fixed
-    top: 8px
-    right: 0px
 
-.inGame header
-  top: -52px
+  .links-container
+    position: absolute
+    display: flex
+    align-items: center
+    z-index: 200
+    width: 100%
+    height: 100%
+    pointer-events: none
+    
+    > div
+      pointer-events: all
+    .nav-icon
+      position: absolute
+      top: 0
+      left: 0
+      background: rgba(28, 70, 86, 0.7)
+      border-radius: 4px
+      margin: 6px
+      cursor: pointer
+      border: 1px solid #D9E9EF
+      
+      > div
+        width: 32px
+        height: 32px
+        position: relative
+        transform: rotate(0deg)
+        transition: .5s ease-in-out
+        margin: 4px 10px
+    
+      span
+        display: block
+        position: absolute
+        height: 2px
+        width: 100%
+        background: #D9E9EF
+        border-radius: 9px
+        opacity: 1
+        left: 0
+        transform: rotate(0deg)
+        transition: .25s ease-in-out
+        &:nth-child(1)
+          top: 4px
+        &:nth-child(2)
+          top: 15px
+        &:nth-child(3)
+          top: 26px
+    .fs-icon
+      position: absolute
+      bottom: 0
+      right: 0
+      background: rgba(28, 70, 86, 0.7)
+      border-radius: 4px
+      margin: 6px
+      cursor: pointer
+      border: 1px solid #D9E9EF
+      height: 42px
+      width: 54px
+      > svg
+        width: 32px
+        height: 32px
+        margin: 4px 10px
+        fill: #D9E9EF
+    
+  .menu-container
+    position: absolute
+    z-index: 100
+    top: 0
+    left: 0
+    width: 100%
+    height: 100%
+    background: rgba(0,0,0,.8)
+    pointer-events: none
+    display: flex
+    align-items: center
+    flex-direction: column
+    justify-content: center
+    opacity: 0
+    transition: .2s all ease-in-out
+    .menu
+      width: 400px
+      display: flex
+      flex-direction: column
+      text-align: center
+      a
+        position: relative
+        transition: .2s all linear
+        top: -200px
+        opacity: 0
+        font-size: 22px
+        &:nth-child(2)
+          transition-delay: .05s
+        &:nth-child(3)
+          transition-delay: .1s
+        &:nth-child(4)
+          transition-delay: .15s
+        &:nth-child(5)
+          transition-delay: .2s
+        &:nth-child(6)
+          transition-delay: .25s
+        &:nth-child(7)
+          transition-delay: .3s
+        &:nth-child(8)
+          transition-delay: .35s
+        
+  &--open
+    .menu-container
+      pointer-events: all
+      opacity: 1
+      .menu a
+        top: 0
+        opacity: 1
+
+    .links-container .nav-icon span
+      &:nth-child(1)
+        top: 15px
+        transform: rotate(135deg)
+      &:nth-child(2)
+        opacity: 0
+        left: -60px
+      &:nth-child(3)
+        top: 15px
+        transform: rotate(-135deg)
+          
+  .profile
+    margin: 10px
+    cursor: pointer
+    
+.inGame .header
+  .profile
+    display: none

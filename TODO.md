@@ -1,5 +1,17 @@
-- test 4 graczy
-- przerobki na szybko przed weekendowym releasem (piecioklik generuje salto planszy)
+RELEASE  
+- profile graczy blizej planszy (responsywnie)
+- loader: cien ruszajacego sie pionka - w trakcie ladowania strony
+
+- dostosowac do mobilek
+- menu: nowa gra, fullscreen, pomoc (skroty)
+- modal wyboru koloru -> wybor pionka, planszy i tla
+- test innej gry? zmiana ukladu pol na planszy, zasady ruchu
+- ekran wyboru gry
+- pierwsza animacja: 
+1. plansza 'opakowuje' sie w teksture (skaluj prostokaty)
+2. pionki wjezdzaja od gory
+3. pionki ruszaja sie na zmiane
+- ekran zachety przejscia do fullscreena
 
 - blad wygranej gracza: akcja finishGame leci dwukrotnie, raz z poprawnym wygranym a raz z drugim
 - player zalogowany w expresie, niezalogowany w serwerze socketowym (po restarcie serwera)
@@ -13,6 +25,7 @@
 - rozwazyc przypadek gdy ktos sie loguje w trakcie gry
 - napis offline widoczny tez w grze
 - po wylogowaniu updatePlayera do temporary
+- tlo animowane
 
 AUTENTYKACJA
 - player wchodzi na strone
@@ -52,6 +65,7 @@ TO DO
 - guzik kostki nie powinien byc zaznaczony gdy gracz nie moze rzucic kostka (roomState.rolled = true)
 - gdy jeden z graczy wyjdzie przez f5, nie mozna znalezc nowej gry
 - na telefonach domyslnie orientacja landscape
+- config powinien byc uzywany tylko na serwerze i zawierac klucze prywatne
 
 1) Gra
 - przy profilu aktualnego gracza, progress jego kolejki
@@ -130,3 +144,18 @@ DONE:
 + logowanie: logika + ui
 + wykorzystanie modelu playera z bazy danych
 + pionek wraca na spawn, tuz przed zbiciem
++ test 4 graczy
+--obrot ekranu na telefonie do landscape'u
++ fix buga przy disconnectcie
++ rzut kostką - spacją
+--plansza obrocona o 15st.
++ moj gracz na pierwszym miejscu
++ obracamy tylko plansze i pionki
++ fix zaznaczenia pionka
++ zamienic miejscami profile
++ wyrownac pozycje pionka
++ engine: ktorys kolejny init nie powoduje obrotu planszy
++ na telefonie plansza obrocona pod katem 0 st.
++ rozmiar planszy dostosowany do mobilek
++ ukryc navbar, hamburger menu, 
++ fullscreen po prawej na dole (pod f)

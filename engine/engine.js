@@ -16,7 +16,6 @@ export default class Engine extends EventEmitter {
     this.controls = new Controls({container: this.container});
     this.animations = new Animations();
     this.raycaster = new THREE.Raycaster();
-    this.context = {animations: this.animations, controls: this.controls};
     
     let width = this.container.offsetWidth,
       height = this.container.offsetHeight,
@@ -31,7 +30,9 @@ export default class Engine extends EventEmitter {
       -this.frustumSize,
       1,
       1000);
+    // this.camera = new THREE.PerspectiveCamera( 30, aspect, 1, 1000 );
     this.camera.position.set( 20, 20, 20 );
+    // this.camera.position.set( 60, 60, 60 );
     this.camera.lookAt( new THREE.Vector3(0,0,0) );
     this.renderer.setPixelRatio( window.devicePixelRatio );
     this.renderer.setSize( width, height );
@@ -61,10 +62,14 @@ export default class Engine extends EventEmitter {
     // Handle canvas events
     window.addEventListener('resize', this.onResize.bind(this), true);
     window.addEventListener('click', this.onClick.bind(this), true);
+  
+    this.context = {
+      animations: this.animations, 
+      controls: this.controls,
+      camera: this.camera,
+    };
     
     this.board = new Board({
-      width: 512,
-      height: 512,
       scene: this.scene,
       renderer: this.renderer,
       pawns: [],
@@ -85,21 +90,26 @@ export default class Engine extends EventEmitter {
         this.animate();
       }
     });
+    
+    this.onResize();
   }
   onResize() {
     let width = this.container.offsetWidth,
       height = this.container.offsetHeight,
-      aspect = width / height;
-    
+      aspect = width / height,
+      gameScale = width < 1400 ? width / 1400 : 1;
+
     this.windowWidth = width;
     this.windowHeight = height;
     this.renderer.setSize(width, height);
     
-    this.camera.left   = - this.frustumSize * aspect;
-    this.camera.right  =   this.frustumSize * aspect;
-    this.camera.top    =   this.frustumSize;
-    this.camera.bottom = - this.frustumSize;
+    this.camera.left   = - this.frustumSize * aspect / gameScale;
+    this.camera.right  =   this.frustumSize * aspect / gameScale;
+    this.camera.top    =   this.frustumSize / gameScale;
+    this.camera.bottom = - this.frustumSize / gameScale;
     this.camera.updateProjectionMatrix();
+    
+    this.board.setSize(gameScale);
   }
   onClick(e) {
     let mouse = { 
@@ -114,7 +124,7 @@ export default class Engine extends EventEmitter {
     
     this.emit('click', { pawnIds });
   }
-  initGame({gameId, pawns, players}) {
+  initGame({gameId, pawns, players}, firstPlayerId) {
     if (this.initializing) {
       console.log('Game is updating already.');
       return;
@@ -125,7 +135,10 @@ export default class Engine extends EventEmitter {
     }
     
     this.initializing = true;
-    this.board.initGame({pawns, players});
+
+    let firstPlayerIndex = players.findIndex(player => player.id === firstPlayerId);
+    this.board.initGame({pawns, players, firstPlayerIndex});
+    this.onResize();
     this.initializing = false;
   }
   selectPawns(pawnIds) {

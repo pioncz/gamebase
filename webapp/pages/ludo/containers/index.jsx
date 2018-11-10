@@ -83,6 +83,26 @@ class Progress extends Component {
   }
 }
 
+const filterPlayers = (players, firstPlayerId) => {
+  let playerIndex = players && players.findIndex(player => player.id === firstPlayerId),
+    parsedPlayers = players && players.slice(0, players.length);
+  
+  if (!firstPlayerId || !players || playerIndex === -1) {
+    return [];
+  }
+  
+  if (playerIndex === 0) {
+    return players;
+  }
+  
+  while (parsedPlayers.length < 4) {
+    parsedPlayers.push({name: '', avatar: null, color: ''});
+  }
+  parsedPlayers = parsedPlayers.slice(playerIndex,parsedPlayers.length).concat(parsedPlayers.slice(0,playerIndex));
+
+  return parsedPlayers;
+};
+
 export default class Ludo extends Component {
   constructor(props) {
     super(props);
@@ -110,6 +130,7 @@ export default class Ludo extends Component {
     this.joinQueue = this.joinQueue.bind(this);
     this.selectColor = this.selectColor.bind(this);
     this.initSocketEvents = this.initSocketEvents.bind(this);
+    this.onKeyUp = this.onKeyUp.bind(this);
   
     this.timerComponent = null;
     this.connectorInstance = this.props.connectorInstance;
@@ -121,12 +142,14 @@ export default class Ludo extends Component {
       this.connectorInstance = this.props.connectorInstance;
       this.initSocketEvents(this.connectorInstance);
     }
+    document.addEventListener('keypress', this.onKeyUp);
   }
   componentWillUnmount() {
     if (this.connectorInstance) {
       this.connectorInstance.leaveGame();
     }
     this.props.unsetInGame();
+    document.removeEventListener('keypress', this.onKeyUp);
   }
   initSocketEvents(connectorInstance) {
     const handleAction = (newAction) => {
@@ -269,6 +292,11 @@ export default class Ludo extends Component {
     });
     this.setState({page: Pages.Queue});
   }
+  onKeyUp(e) {
+    if (e.key && e.key === ' ') {
+      this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.Roll());
+    }
+  }
   render() {
     let currentModal,
       {gameId, page, player, players, winnerId, pawns, finishTimestamp, nextRollTimestamp, currentPlayerId, nextRollLength} = this.state,
@@ -340,7 +368,7 @@ export default class Ludo extends Component {
     }
     
     if (players && players.length) {
-      profiles = players;
+      profiles = filterPlayers(players, player.id);
     } else {
       profiles = [{id:0, name: '', avatar: null, color: ''},
         {id:1, name: '', avatar: null, color: ''},
@@ -357,7 +385,9 @@ export default class Ludo extends Component {
           'player--hidden': page !== Pages.Game,
           'player--disconnected': !!player.disconnected,
         });
-      
+
+      if (!player.login) return null;
+
       if (nextRollTimestamp && player.id === currentPlayerId) {
         startTimestamp = nextRollTimestamp - nextRollLength;
         endTimestamp = nextRollTimestamp;
@@ -369,11 +399,11 @@ export default class Ludo extends Component {
       return <div key={index} className={className}>
         <div className="player-name">
           {player.login}
-          {player.id === currentPlayerId && <p className={'arrow ' + (index%2?'right':'left')}></p>}
+          {player.id === currentPlayerId && <p className={'arrow ' + (index%3?'right':'left')}></p>}
           <Progress startTimestamp={startTimestamp} endTimestamp={endTimestamp} />
         </div>
         <img src={player.avatar} style={{
-          [(index%2?'borderLeft':'borderRight')]: "3px solid " + player.color
+          [(index%3?'borderLeft':'borderRight')]: "3px solid " + player.color
         }} />
       </div>;
     });
@@ -389,6 +419,7 @@ export default class Ludo extends Component {
         gameId={gameId}
         pawns={pawns}
         players={players}
+        firstPlayerId={player.id}
       />
       {playersOverlay}
       {currentModal}

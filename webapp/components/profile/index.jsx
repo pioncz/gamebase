@@ -18,12 +18,12 @@ class Profile extends Component {
     className = className || '';
     
     return <div className={`profile ${className}`} onClick={this.onClick}>
-      {player && <div className='name'>{player.login}</div>}
       {player && <div className='avatar' style={{
         backgroundImage: `url(${player.avatar})`,
         backgroundSize: 'cover',
         borderRadius: '50%',
       }}></div>}
+      {player && <div className='name'>{player.login}</div>}
     </div>;
   }
 }
