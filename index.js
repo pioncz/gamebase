@@ -66,12 +66,12 @@ app.use('/static/', express.static(path.join(__dirname, 'static')));
 app.use('/api/currentPlayer', (req, res) => {
   const token = req.cookies.token,
     socketId = req.cookies.io;
-  
+
   if (!token) {
     res.status(400).send({error: 'Unauthorized'});
     return;
   }
-  
+
   playerService.verify({token})
     .then(playerId => {
       playerService.getById(playerId)
@@ -79,7 +79,7 @@ app.use('/api/currentPlayer', (req, res) => {
           if (socketId) {
             websocketServer.updatePlayer(socketId, player);
           }
-          
+
           res.status(200).send(player);
         }, e => {
           res.status(400).send({error: 'Unauthorized'});
@@ -93,6 +93,14 @@ app.use('/api/currentPlayer', (req, res) => {
 app.use('/api/logout', (req, res) => {
   delete req.user;
   res.cookie('token', '').status(200).send({});
+});
+
+app.use((err, req, res, next) => {
+  if (err.name === 'UnauthorizedError') {
+    res.cookie('token', '').status(401).send('invalid token...');
+  } else {
+    next();
+  }
 });
 
 app.use(function (req, res) {

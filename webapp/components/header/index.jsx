@@ -7,8 +7,9 @@ import {
 import './index.sass'
 import Profile from 'components/profile/index'
 import Classnames from 'classnames'
-import FullscreenIcon from 'full-screen.svg'
-import FullscreenExitIcon from 'full-screen-exit.svg'
+import MenuIcon from '@material-ui/icons/Menu'
+import FullscreenIcon from '@material-ui/icons/Fullscreen'
+import FullscreenExitIcon from '@material-ui/icons/FullscreenExit'
 
 export default class Header extends Component {
   constructor(props) {
@@ -77,13 +78,9 @@ export default class Header extends Component {
     return <header className={headerClass}>
       <div className="links-container">
         <div className="nav-icon" onClick={this.toggleMenu}>
-          <div>
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
+          <MenuIcon />
         </div>
-        <div className="fs-icon" onClick={this.toggleFullscreen}>
+        <div className="nav-icon nav-icon--bottom" onClick={this.toggleFullscreen}>
           {fullscreen && <FullscreenExitIcon/>}
           {!fullscreen && <FullscreenIcon />}
         </div>

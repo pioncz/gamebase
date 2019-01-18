@@ -45,19 +45,19 @@ class Room {
    */
   getState() {
     const gameState = this.gameState;
-    
+
     let returnState = {
       currentPlayerId: gameState.currentPlayerId,
       winnerId: gameState.winnerId,
       roomState: gameState.roomState,
       finishTimestamp: gameState.finishTimestamp,
     };
-  
+
     gameState.playerColors && (returnState.playerColors = gameState.playerColors);
     gameState.colorsQueue && (returnState.colorsQueue = gameState.colorsQueue);
     gameState.pawns && (returnState.pawns = gameState.pawns);
     gameState.players && (returnState.players = gameState.players);
-    
+
     return gameState;
   }
   getActivePlayers() {
@@ -77,8 +77,14 @@ class Room {
   }
   handleAction(action, player) {
     let actionHandler = Games.Ludo.ActionHandlers[action.type],
-      returnActions = (actionHandler && actionHandler(action, player, this.gameState)) || [];
-        
+      returnActions = [];
+
+    try {
+      returnActions = (actionHandler && actionHandler(action, player, this.gameState));
+    } catch(e) {
+      console.error(e);
+    }
+
     return returnActions;
   }
 }

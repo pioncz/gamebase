@@ -28,7 +28,7 @@ const InitialState = () => {
 };
 
 const Config = {
-  MinPlayer: 2,
+  MinPlayer: 1,
   GameLength: (15 * 60 * 1000), //15 minutes
 };
 
@@ -98,34 +98,29 @@ const Disconnected = (playerId) => {
   return {type: ActionTypes.Disconnected, playerId};
 };
 
-const RollHandler = (action, player, roomState) => {
+// For diceNumber 0 number will be generated randomly from 1 to 6
+const RollHandler = (action, player, roomState, diceNumber = 0) => {
   let returnActions = [],
     animationLength = 0,
     rollDiceDelay = AnimationLengths.rollDice + 500;
 
   if (player.id !== roomState.currentPlayerId) {
-    console.log(`its not this player turn`);
-    return;
+    throw new Error('its not this player turn');
   }
 
   if (roomState.rolled) {
-    console.log('This player already rolled in this room. Pick pawn!');
-    return;
+    throw new Error('This player already rolled in this room. Pick pawn!');
   }
 
-  let diceNumber = parseInt(Math.random()*6)+1, // 1-6
-    // diceNumber=6;
-    moves = BoardUtils.checkMoves(roomState, diceNumber, player.id);
+  let generatedDiceNumber = (diceNumber > 0 && diceNumber < 7 && diceNumber)
+    || parseInt(Math.random()*6)+1, // 1-6
+    moves = BoardUtils.checkMoves(roomState, generatedDiceNumber, player.id);
 
   roomState.rolled = true;
+  roomState.diceNumber = generatedDiceNumber;
+  returnActions.push({action: Roll(generatedDiceNumber)});
 
-  console.log(`player ${player.login} rolled ${diceNumber}`);
-
-  roomState.diceNumber = diceNumber;
-
-  returnActions.push({action: Roll(diceNumber)});
-
-  // no available moves, switch player
+  // if no available moves, switch player
   if (!moves.length) {
     animationLength = Date.now() + rollDiceDelay;
     if (player.lastRoll !== 6 || player.previousRoll === 6) {
@@ -183,7 +178,7 @@ const SelectColorHandler = (action, player, roomState) => {
     roomState.pawns = initialState.pawns;
     // Connect pawns and players
     roomState.playerIds.forEach((playerId, i) => {
-      playerColor = roomState.playerColors.find(playerColor => playerColor.playerId === playerId);
+      let playerColor = roomState.playerColors.find(playerColor => playerColor.playerId === playerId);
 
       for(let j = 0; j < 4; j++) {
         initialState.pawns[(i * 4 + j)].playerId = playerColor.playerId;

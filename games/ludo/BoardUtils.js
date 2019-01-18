@@ -27,13 +27,13 @@ const Fields = require('./Fields'),
         let fieldOccupied = pawns.find(f => f.z === field.z && f.x === field.x);
         return !!fieldOccupied;
       };
-    
+
     if (!startField) return [];
-    
+
     if (startField.type === FieldTypes.spawn) {
       if (diceNumber === 6 || diceNumber === 1) {
         let index = startFieldIndex;
-        
+
         while(!fieldSequence.length) {
          let nextField = getField(++index);
 
@@ -49,7 +49,7 @@ const Fields = require('./Fields'),
       while(fieldSequence.length !== diceNumber && index !== -1) {
         let nextField = getField(++index),
           lastField = fieldSequence.length && fieldSequence[fieldSequence.length - 1];
-        
+
         if (nextField.type === FieldTypes.spawn) {
           continue;
         }
@@ -65,18 +65,18 @@ const Fields = require('./Fields'),
           fieldSequence = [];
           index = -1;
         }
-        
+
         if (index !== -1) {
           fieldSequence.push(nextField);
         }
       }
     }
-    
+
     // If last field is taken by another pawn of same player, return []
     if (fieldSequence.length && isFieldOccupied(fieldSequence[fieldSequence.length - 1])) {
       fieldSequence = [];
     }
-    
+
     return fieldSequence;
   },
   getSpawnFields = (pawns, playerIndex) => {
@@ -87,34 +87,34 @@ const Fields = require('./Fields'),
       emptyGoalFields = goalFields.filter(field =>
         pawns.findIndex(pawn => (pawn.x === field.x && pawn.z === field.z)) === -1
       );
-    
+
     return emptyGoalFields;
   },
   checkMoves = (roomState, diceNumber, playerId) => {
     let avaiableMoves = [];
-    
+
     if (!roomState || !roomState.playerIds || !roomState.pawns || !diceNumber || !playerId) {
       console.error('Wrong params');
     }
 
     let playerIndex = roomState.playerIds.indexOf(playerId),
       playerPawns = roomState.pawns.filter(pawn => pawn.playerId === playerId);
-  
+
     for(let pawnId in playerPawns) {
       let pawn = playerPawns[pawnId],
         fieldSequence = getFieldSequence(playerPawns, pawn, diceNumber, playerIndex);
-      
+
       if (fieldSequence.length) {
         avaiableMoves.push({pawnId: pawn.id, fieldSequence});
       }
     }
-    
+
     return avaiableMoves;
   },
   checkWin = (pawns) => {
     let fields = pawns.map(pawn => getFieldByPosition(pawn.x, pawn.z)),
       fieldGoals = fields.map(field => field.type === FieldTypes.goal);
-    
+
     return fieldGoals.indexOf(false) === -1;
   };
 
