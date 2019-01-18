@@ -1,8 +1,4 @@
-RELEASE  
-- profile graczy blizej planszy (responsywnie)
-- loader: cien ruszajacego sie pionka - w trakcie ladowania strony
-
-- dostosowac do mobilek
+RELEASE
 - menu: nowa gra, fullscreen, pomoc (skroty)
 - modal wyboru koloru -> wybor pionka, planszy i tla
 - test innej gry? zmiana ukladu pol na planszy, zasady ruchu
@@ -159,3 +155,5 @@ DONE:
 + rozmiar planszy dostosowany do mobilek
 + ukryc navbar, hamburger menu, 
 + fullscreen po prawej na dole (pod f)
++ redesign
++ loader-aplikacji
