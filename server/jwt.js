@@ -3,11 +3,12 @@ const expressJwt = require('express-jwt');
 const playerService = require('./players/player.service');
 
 async function isRevoked(req, payload, done) {
-  // const player = await playerService.getById(payload.playerId);
+  const player = await playerService.getById(payload.playerId);
   // revoke token if user no longer exists
-  // if (!player) {
-  //   return done(null, true);
-  // }
+  if (!player) {
+    console.error('Player token revoked - user no longer exists.')
+    return done(null, true);
+  }
 
   done();
 };

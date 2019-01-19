@@ -205,9 +205,14 @@ class WebsocketServer {
 
       const createTempPlayer = () => {
         const nextId = _nextId(),
-          tempPlayer = new Player({id : nextId, temporary: true, login: `Name ${nextId}`, socketId: socket.id});
+          tempPlayer = new Player({
+            id : nextId, 
+            temporary: true, 
+            login: `Name ${nextId}`, 
+            socketId: socket.id,
+            avatar: `/static/avatar${Math.floor(Math.random()*6)+1}.jpg`,
+          });
 
-        connection.playerId = tempPlayer.id;
         console.log(`Unauthorized. Created temporary player '${tempPlayer.login}'`);
         this.updatePlayer(socket.id, tempPlayer);
       };
@@ -235,6 +240,8 @@ class WebsocketServer {
 
     io.on('connection', (socket) => {
       _log(`New connection (sockeId: ${socket.id}). currently ${_getTotalNumPlayers()} online.`);
+
+      socket.emit('playerUpdate', this.players[this.connections[socket.id].playerId]);
 
       socket.on('disconnect', () => {
         _destroyConnection(socket.id);
@@ -351,15 +358,14 @@ class WebsocketServer {
 
     this.updatePlayer = this.updatePlayer.bind(this);
     this.update = this.update.bind(this);
-  //this.update();
     setInterval(this.update.bind(this), 60);
   }
-  // When user is authorized, his player should be updated
+  // When user is updated emit the update
   updatePlayer(socketId, player) {
     const connection = this.connections[socketId],
-      temporaryPlayer = connection && connection.playerId && this.players[connection.playerId];
+      connectionPlayer = connection && connection.playerId && this.players[connection.playerId];
 
-    if (temporaryPlayer) {
+    if (connectionPlayer) {
       delete this.players[connection.playerId];
     }
 

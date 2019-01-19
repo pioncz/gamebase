@@ -65,10 +65,16 @@ app.use('/static/', express.static(path.join(__dirname, 'static')));
 
 app.use('/api/currentPlayer', (req, res) => {
   const token = req.cookies.token,
-    socketId = req.cookies.io;
-
+    socketId = req.cookies.io,
+    // player from websocketServer may be temporary
+    tempPlayer = socketId && websocketServer.connections[socketId] && websocketServer.players[websocketServer.connections[socketId].playerId];
+    
   if (!token) {
-    res.status(400).send({error: 'Unauthorized'});
+    if (tempPlayer) {
+      res.status(200).send(tempPlayer);
+    } else {
+      res.status(400).send({error: 'Unauthorized'});
+    }
     return;
   }
 
@@ -76,17 +82,21 @@ app.use('/api/currentPlayer', (req, res) => {
     .then(playerId => {
       playerService.getById(playerId)
         .then(player => {
-          if (socketId) {
-            websocketServer.updatePlayer(socketId, player);
-          }
-
           res.status(200).send(player);
         }, e => {
-          res.status(400).send({error: 'Unauthorized'});
+          if (tempPlayer) {
+            res.status(200).send(tempPlayer);
+          } else {
+            res.status(400).send({error: 'Unauthorized'});
+          }
         });
     })
     .catch(e => {
-      res.status(400).send({error: 'Unauthorized'});
+      if (tempPlayer) {
+        res.status(200).send(tempPlayer);
+      } else {
+        res.status(400).send({error: 'Unauthorized'});
+      }
     });
 });
 

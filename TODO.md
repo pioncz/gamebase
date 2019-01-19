@@ -23,26 +23,6 @@ RELEASE
 - po wylogowaniu updatePlayera do temporary
 - tlo animowane
 
-AUTENTYKACJA
-- player wchodzi na strone
-niezalogowany:
- - widzi index.html z defaultState reduxowym user: { player: { authenticated: false, ...player} }
- - connector tworzy tymczasowego playera
- - widzi guzik login i register
- - modal login
- - modal register
-rejestracja:
- - podczas rejestracji player jest przypisywany do playera
- - jesli player nie istnieje w trakcie rejestracji, tworzony jest nowy
- - pola: email, login, password
-logowanie:
- - pola: email, login, password
- - po zalogowaniu aktualizowany jest player (updatePlayer socket event)
-po zalogowaniu:
- - dodać obsługe default state: dla zalogowanego i niezalogowanego playera, profile.loginState rozny
- - widzi index.html z defaultState reduxowym user: { state: loggedIn, player: player }
-potwierdzenie maila:
-
 Dalszy rozwój:
 - token powinien byc revoked gdy gracz sie wyloguje: /logout 
 - ustalic maxAge w configu i wykorzystac w player.service.js:authenticate i players.controller.js:authenticate 
@@ -157,3 +137,5 @@ DONE:
 + fullscreen po prawej na dole (pod f)
 + redesign
 + loader-aplikacji
++ currentPlayer odpowie temporary playerem jesli takiego posiada
++ update playera zaraz po inicjalizacji socketa
