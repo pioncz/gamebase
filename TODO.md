@@ -1,3 +1,7 @@
+zmienic board.setSize na board.setRotation(true/false)
+mayksymalna wysokosc (zeby zmiescili sie gracze)
+lepsza pozycja dla graczy
+
 RELEASE
 - menu: nowa gra, fullscreen, pomoc (skroty)
 - modal wyboru koloru -> wybor pionka, planszy i tla

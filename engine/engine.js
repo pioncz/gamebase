@@ -22,7 +22,7 @@ export default class Engine extends EventEmitter {
       aspect = width / height;
 
     this._lastRender = 0;
-    this.frustumSize = 15;
+    this.frustumSize = 22;
     this.camera = new THREE.OrthographicCamera(
       -this.frustumSize * aspect,
       this.frustumSize * aspect,
@@ -31,7 +31,7 @@ export default class Engine extends EventEmitter {
       1,
       1000);
     // this.camera = new THREE.PerspectiveCamera( 30, aspect, 1, 1000 );
-    this.camera.position.set( 50, 50, 50 );
+    this.camera.position.set( 40, 50, 40 );
     // this.camera.position.set( 60, 60, 60 );
     this.camera.lookAt( new THREE.Vector3(0,0,0) );
     this.renderer.setPixelRatio( window.devicePixelRatio );
@@ -97,19 +97,26 @@ export default class Engine extends EventEmitter {
     let width = this.container.offsetWidth,
       height = this.container.offsetHeight,
       aspect = width / height,
-      gameScale = width < 1400 ? width / 1400 : 1;
+      gameScale = width < 1000 ? width / 1000 : 1;
 
     this.windowWidth = width;
     this.windowHeight = height;
     this.renderer.setSize(width, height);
 
-    this.camera.left   = - this.frustumSize * aspect / gameScale;
-    this.camera.right  =   this.frustumSize * aspect / gameScale;
-    this.camera.top    =   this.frustumSize / gameScale;
-    this.camera.bottom = - this.frustumSize / gameScale;
+    if (aspect < 1.3) {
+      this.camera.left   = - this.frustumSize;
+      this.camera.right  =   this.frustumSize;
+      this.camera.top    =   this.frustumSize / aspect;
+      this.camera.bottom = - this.frustumSize / aspect;
+      this.board.setSize(.6); //rotates board
+    } else {
+      this.camera.left   = - this.frustumSize * aspect;
+      this.camera.right  =   this.frustumSize * aspect;
+      this.camera.top    =   this.frustumSize;
+      this.camera.bottom = - this.frustumSize;
+      this.board.setSize(1); //rotates board
+    }
     this.camera.updateProjectionMatrix();
-
-    this.board.setSize(gameScale);
   }
   onClick(e) {
     let mouse = {
