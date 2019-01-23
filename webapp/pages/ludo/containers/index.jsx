@@ -367,7 +367,7 @@ export default class Ludo extends Component {
       </Modal>
     }
     
-    if (players && players.length) {
+    if (player && players && players.length) {
       profiles = filterPlayers(players, player.id);
     } else {
       profiles = [{id:0, name: '', avatar: null, color: ''},
