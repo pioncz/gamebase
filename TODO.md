@@ -1,6 +1,4 @@
-zmienic board.setSize na board.setRotation(true/false)
-mayksymalna wysokosc (zeby zmiescili sie gracze)
-lepsza pozycja dla graczy
+-gdy gracz wyrzuci 6 to moze rzucic jeszcze raz
 
 RELEASE
 - menu: nowa gra, fullscreen, pomoc (skroty)
@@ -114,10 +112,10 @@ DONE:
 + wywalic waitingForAction na serwerze bo nie jest uzywane
 -- optymalizacja builda
 -- brak synchro czasowego 2 graczy. gracz z opoznieniem ma wrazenie, ze moze rzucic kostka wczesniej.
---badge przy avatarze usera informujacy o stanie polaczenia (gracz offline jest zaznaczony)
+-- badge przy avatarze usera informujacy o stanie polaczenia (gracz offline jest zaznaczony)
 + jakies info jak rzucic kostka
 + eventy socketowe powinny wysylac roomState tylko przy startGame
-+zmienic socketServer na ioConnector
++ zmienic socketServer na ioConnector
 + gracz nie jest czyszczony przy F5
 + pierwszy test jednostkowy
 + rejestracja: logika + ui
@@ -125,10 +123,10 @@ DONE:
 + wykorzystanie modelu playera z bazy danych
 + pionek wraca na spawn, tuz przed zbiciem
 + test 4 graczy
---obrot ekranu na telefonie do landscape'u
+-- obrot ekranu na telefonie do landscape'u
 + fix buga przy disconnectcie
 + rzut kostką - spacją
---plansza obrocona o 15st.
+-- plansza obrocona o 15st.
 + moj gracz na pierwszym miejscu
 + obracamy tylko plansze i pionki
 + fix zaznaczenia pionka
@@ -143,3 +141,9 @@ DONE:
 + loader-aplikacji
 + currentPlayer odpowie temporary playerem jesli takiego posiada
 + update playera zaraz po inicjalizacji socketa
++ powinien byc inny frustrumSize dla aspectRatio > 1
++ zmienic board.setSize na board.setRotation(true/false)
++ mayksymalna wysokosc (zeby zmiescili sie gracze)
++ osobny komponent: PlayerProfiles
++ lepsza pozycja dla graczy
++ gracze w zlych miejscach

@@ -6,6 +6,7 @@ import Timer from 'components/timer';
 import { actions } from 'shared/redux/api';
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
+import PlayerProfiles from 'components/PlayerProfiles';
 
 const nextId = (()=>{
   let id = 0;
@@ -52,7 +53,7 @@ const nextId = (()=>{
       id,
       color: randomColor('rgb'),
       avatar: '/static/avatar6.jpg',
-      name: 'Name ' + id,
+      login: 'Name ' + id,
       index: null,
     }
   },
@@ -66,14 +67,14 @@ const nextId = (()=>{
         {id: '5', x: 10, z: 0}, // second player
         {id: '6', x: 9, z: 1}, // second player
         {id: '7', x: 10, z: 1}, // second player
-        {id: '8', x: 0, z: 9}, // third player
-        {id: '9', x: 1, z: 9}, // third player
-        {id: '10', x: 0, z: 10}, // third player
-        {id: '11', x: 1, z: 10}, // third player
-        {id: '0', x: 9, z: 10}, // fourth player
-        {id: '1', x: 10, z: 10}, // fourth player
-        {id: '2', x: 9, z: 9}, // fourth player
-        {id: '3', x: 10, z: 9}, // fourth player
+        {id: '0', x: 9, z: 10}, // third player
+        {id: '1', x: 10, z: 10}, // third player
+        {id: '2', x: 9, z: 9}, // third player
+        {id: '3', x: 10, z: 9}, // third player
+        {id: '8', x: 0, z: 9}, // fourth player
+        {id: '9', x: 1, z: 9}, // fourth player
+        {id: '10', x: 0, z: 10}, // fourth player
+        {id: '11', x: 1, z: 10}, // fourth player
     ],
     'movePawnBack': [
         {id: '12', x: 0, z: 4}, // first player
@@ -84,14 +85,14 @@ const nextId = (()=>{
         {id: '5', x: 10, z: 0}, // second player
         {id: '6', x: 9, z: 1}, // second player
         {id: '7', x: 10, z: 1}, // second player
-        {id: '8', x: 0, z: 9}, // third player
-        {id: '9', x: 1, z: 9}, // third player
-        {id: '10', x: 0, z: 10}, // third player
-        {id: '11', x: 1, z: 10}, // third player
-        {id: '0', x: 9, z: 10}, // fourth player
-        {id: '1', x: 10, z: 10}, // fourth player
-        {id: '2', x: 9, z: 9}, // fourth player
-        {id: '3', x: 10, z: 9}, // fourth player
+        {id: '0', x: 9, z: 10}, // third player
+        {id: '1', x: 10, z: 10}, // third player
+        {id: '2', x: 9, z: 9}, // third player
+        {id: '3', x: 10, z: 9}, // third player
+        {id: '8', x: 0, z: 9}, // fourth player
+        {id: '9', x: 1, z: 9}, 
+        {id: '10', x: 0, z: 10}, 
+        {id: '11', x: 1, z: 10}, 
     ],
     'win': [
         {id: '12', x: 0, z: 5}, // first player
@@ -102,14 +103,14 @@ const nextId = (()=>{
         {id: '5', x: 10, z: 0}, // second player
         {id: '6', x: 9, z: 1}, // second player
         {id: '7', x: 10, z: 1}, // second player
-        {id: '8', x: 0, z: 9}, // third player
-        {id: '9', x: 1, z: 9}, // third player
-        {id: '10', x: 0, z: 10}, // third player
-        {id: '11', x: 1, z: 10}, // third player
-        {id: '0', x: 9, z: 10}, // fourth player
-        {id: '1', x: 10, z: 10}, // fourth player
-        {id: '2', x: 9, z: 9}, // fourth player
-        {id: '3', x: 10, z: 9}, // fourth player
+        {id: '0', x: 9, z: 10}, // third player
+        {id: '1', x: 10, z: 10}, // third player
+        {id: '2', x: 9, z: 9}, // third player
+        {id: '3', x: 10, z: 9}, // third player
+        {id: '8', x: 0, z: 9}, // fourth player
+        {id: '9', x: 1, z: 9}, 
+        {id: '10', x: 0, z: 10},
+        {id: '11', x: 1, z: 10},
     ],
   };
 
@@ -280,7 +281,7 @@ class Engine extends Component {
     });
   }
   render() {
-    const { pawns, selectedPawnId, pawnInput, numberOfPlayers, pawnSet, firstPlayerIndex, firstPlayerId } = this.state,
+    const { players, pawns, selectedPawnId, pawnInput, numberOfPlayers, pawnSet, firstPlayerIndex, firstPlayerId } = this.state,
       pawnsElements = pawns.map(pawn => {
       return <div key={pawn.id}
                   className={'pawn' + (pawn.id===selectedPawnId?' pawn--selected':'')}
@@ -288,7 +289,7 @@ class Engine extends Component {
         {`${pawn.id}:${pawn.color}:${pawn.x},${pawn.z}`}
       </div>;
     });
-    
+
     return <div className="engine-page">
       <div className="settings">
         <div className="settings-title">Settings</div>
@@ -338,6 +339,13 @@ class Engine extends Component {
         moves={this.state.moves}
         gameId={this.state.gameId}
         firstPlayerId={firstPlayerId}
+        players={players}
+      />
+      <PlayerProfiles 
+        players={players} 
+        firstPlayerId={firstPlayerId}
+        currentPlayerId={firstPlayerId}
+        hidden={false}
       />
       <Timer ref={(element) => { this.timerComponent = element; }}/>
     </div>;

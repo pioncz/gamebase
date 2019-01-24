@@ -1,81 +1,6 @@
 .ludo
   user-select: none
 
-  .player
-    display: flex
-
-    .player-name
-      padding: 6px 20px
-      min-width: 150px
-      color: #fff
-      font-size: 22px
-      user-select: none
-      background: rgba(0,0,0,0.2)
-    .player-progress
-      height: 2px
-      position: absolute
-      width: 0%
-      background: #fff
-      left: 0
-      bottom: 0
-    img
-      height: 39px
-      width: 39px
-
-  .player-profiles
-    position: fixed
-    width: 100%
-    height: 100%
-    top: 0
-    left: 0
-    pointer-events: none
-    z-index: 100
-
-    .player
-      position: absolute
-      transition: all ease-in-out .2s
-      .player-name
-        position: absolute
-        left: 100%
-        padding: 6px 20px
-        min-width: 150px
-        color: #fff
-        font-size: 22px
-        user-select: none
-        .arrow
-          position: absolute
-          right: 12px
-          top: 50%
-    .player-0
-      top: 56px
-    .player-1
-      top: 10px
-      transition-delay: .1s
-    .player-2
-      bottom: 10px
-      transition-delay: .2s
-    .player-3
-      bottom: 10px
-      transition-delay: .3s
-    .player-0, .player-3
-      left: 10px
-      &.player--hidden
-        left: -200px
-    .player-1, .player-2
-      right: 10px
-      &.player--hidden
-        right: -200px
-    .player-1 .player-name, .player-2 .player-name
-      right: 100%
-      left: auto
-      text-align: right
-      .arrow
-        right: auto
-        left: 12px
-    .player--disconnected
-      opacity: 0.5
-      
-
   .colors-container
     display: flex
     justify-content: space-between
@@ -100,7 +25,7 @@
     background: rgba(0, 0, 0, 0.2)
     padding: 10px
     left: -200px
-    top: 106px
+    top: 98px
     text-align: center
     pointer-events: none
     transition: all ease-in-out .2s
@@ -110,7 +35,7 @@
       path
         fill: #848484
     &--visible
-      left: 10px
+      left: 6px
     &--active
       cursor: pointer
       pointer-events: all

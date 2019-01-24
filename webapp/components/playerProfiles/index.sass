@@ -1,0 +1,73 @@
+.player-profiles
+    position: fixed
+    width: 100%
+    height: 100%
+    top: 50%
+    transform: translateY(-50%)
+    left: 0
+    pointer-events: none
+    z-index: 100
+
+    .player
+      position: absolute
+      transition: all ease-in-out .2s
+      display: flex
+
+      .player-name
+        background: rgba(0,0,0,0.2)
+        position: absolute
+        left: 100%
+        padding: 6px 20px
+        width: 100%
+        min-width: 150px
+        color: #fff
+        font-size: 22px
+        user-select: none
+        white-space: nowrap
+        overflow: hidden
+        text-overflow: ellipsis
+
+        .arrow
+          position: absolute
+          right: 12px
+          top: 50%
+
+      .player-progress
+        height: 2px
+        position: absolute
+        width: 0%
+        background: #fff
+        left: 0
+        bottom: 0
+      img
+        height: 39px
+        width: 39px
+    .player-0
+      top: 52px
+    .player-1
+      top: 52px
+      transition-delay: .1s
+    .player-2
+      bottom: 52px
+      transition-delay: .2s
+    .player-3
+      bottom: 52px
+      transition-delay: .3s
+    .player-0, .player-3
+      left: 6px
+      &.player--hidden
+        left: -200px
+    .player-1, .player-2
+      right: 6px
+      &.player--hidden
+        right: -200px
+    .player-1 .player-name, .player-2 .player-name
+      right: 100%
+      left: auto
+      text-align: right
+      .arrow
+        right: auto
+        left: 12px
+    .player--disconnected
+      opacity: 0.5
+      

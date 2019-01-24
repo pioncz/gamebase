@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import GameComponent from 'components/gameComponent/';
-import InitialPage from './initialPage';
 import Modal from 'components/modal/index';
 import Button from 'components/button/index';
 import './index.sass';
@@ -8,6 +7,7 @@ import Timer from 'components/timer';
 import Games from 'Games.js';
 import ClassNames from 'classnames';
 import DicesImage from 'dices.svg';
+import PlayerProfiles from 'components/PlayerProfiles';
 
 const Pages = {
   Initial: 'Initial',
@@ -98,6 +98,7 @@ const filterPlayers = (players, firstPlayerId) => {
   while (parsedPlayers.length < 4) {
     parsedPlayers.push({name: '', avatar: null, color: ''});
   }
+
   parsedPlayers = parsedPlayers.slice(playerIndex,parsedPlayers.length).concat(parsedPlayers.slice(0,playerIndex));
 
   return parsedPlayers;
@@ -300,8 +301,6 @@ export default class Ludo extends Component {
   render() {
     let currentModal,
       {gameId, page, player, players, winnerId, pawns, finishTimestamp, nextRollTimestamp, currentPlayerId, nextRollLength} = this.state,
-      playersOverlay,
-      profiles,
       diceContainerClass = ClassNames({
         'dices-container': true,
         'dices-container--visible': page === Pages.Game,
@@ -366,52 +365,7 @@ export default class Ludo extends Component {
         <Button onClick={this.joinQueue}>NOWA GRA</Button>
       </Modal>
     }
-    
-    if (player && players && players.length) {
-      profiles = filterPlayers(players, player.id);
-    } else {
-      profiles = [{id:0, name: '', avatar: null, color: ''},
-        {id:1, name: '', avatar: null, color: ''},
-        {id:2, name: '', avatar: null, color: ''},
-        {id:3, name: '', avatar: null, color: ''}];
-    }
-  
-    let playerProfiles = profiles.map((player, index) => {
-      let startTimestamp = null,
-        endTimestamp = null,
-        className = ClassNames({
-          'player': true,
-          ['player-'+ index]: true,
-          'player--hidden': page !== Pages.Game,
-          'player--disconnected': !!player.disconnected,
-        });
-
-      if (!player.login) return null;
-
-      if (nextRollTimestamp && player.id === currentPlayerId) {
-        startTimestamp = nextRollTimestamp - nextRollLength;
-        endTimestamp = nextRollTimestamp;
-  
-        startTimestamp = Date.now();
-        endTimestamp = startTimestamp + 8000;
-      }
-
-      return <div key={index} className={className}>
-        <div className="player-name">
-          {player.login}
-          {player.id === currentPlayerId && <p className={'arrow ' + (index%3?'right':'left')}></p>}
-          <Progress startTimestamp={startTimestamp} endTimestamp={endTimestamp} />
-        </div>
-        <img src={player.avatar} style={{
-          [(index%3?'borderLeft':'borderRight')]: "3px solid " + player.color
-        }} />
-      </div>;
-    });
-  
-    playersOverlay = <div className="player-profiles">
-      {playerProfiles}
-    </div>;
-
+        
     return (<div className="ludo">
       <GameComponent
         ref={(element) => {this.gameComponent = element; }}
@@ -421,7 +375,12 @@ export default class Ludo extends Component {
         players={players}
         firstPlayerId={player.id}
       />
-      {playersOverlay}
+      <PlayerProfiles 
+        players={players} 
+        firstPlayerId={player.id}
+        currentPlayerId={currentPlayerId}
+        hidden={page !== Pages.Game}
+      />
       {currentModal}
       <div 
         className={diceContainerClass} 

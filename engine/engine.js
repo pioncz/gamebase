@@ -108,20 +108,21 @@ export default class Engine extends EventEmitter {
       this.camera.right  =   this.frustumSize;
       this.camera.top    =   this.frustumSize / aspect;
       this.camera.bottom = - this.frustumSize / aspect;
-      this.board.setSize(.6); //rotates board
+      this.board.setRotation(false); //rotates board
     } else {
       this.camera.left   = - this.frustumSize * aspect;
       this.camera.right  =   this.frustumSize * aspect;
       this.camera.top    =   this.frustumSize;
       this.camera.bottom = - this.frustumSize;
-      this.board.setSize(1); //rotates board
+      this.board.setRotation(true); //rotates board
     }
     this.camera.updateProjectionMatrix();
   }
   onClick(e) {
+    const boundingRect = this.renderer.domElement.getBoundingClientRect();
     let mouse = {
-      x: ( e.clientX / this.renderer.domElement.clientWidth ) * 2 - 1,
-      y: - ( e.clientY / this.renderer.domElement.clientHeight ) * 2 + 1,
+      x: ( (e.clientX - boundingRect.left) / this.renderer.domElement.clientWidth ) * 2 - 1,
+      y: - ( (e.clientY - boundingRect.top) / this.renderer.domElement.clientHeight ) * 2 + 1,
     };
 
     this.raycaster.setFromCamera( mouse, this.camera );

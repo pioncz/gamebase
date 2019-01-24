@@ -43,7 +43,7 @@ export default class Board {
   // Color fields, create pawns
   initGame(props) {
     this.clearGame();
-    const { players, firstPlayerId, firstPlayerIndex } = props;
+    const { players, firstPlayerIndex } = props;
     
     // Set field colors
     for(let fieldIndex in this.fields) {
@@ -172,14 +172,14 @@ export default class Board {
     this.$.position.z = 0;
     this.scene.add(this.$);
   }
-  /* setSize
-    rotate board if it shoudl be scaled less then 0.7
+  /* setRotation
+    rotate if rotate param is true
    */
-  setSize(scale) {
-    if (scale < .7 && !(this.rotation % (Math.PI / 2))) {
+  setRotation(rotate) {
+    if (!rotate && !(this.rotation % (Math.PI / 2))) {
       this.rotateBoard(this.rotation + Math.PI / 4);
     }
-    if (scale >= .7 && (this.rotation % (Math.PI / 2))) {
+    if (rotate && (this.rotation % (Math.PI / 2))) {
       this.rotateBoard(this.rotation - Math.PI / 4);
     }
   }
