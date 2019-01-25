@@ -90,8 +90,8 @@ const SelectPawns = (pawnIds, playerId) => {
   return {type: ActionTypes.SelectPawns, pawnIds, playerId};
 };
 
-const PickPawn = (pawnId, playerId) => {
-  return {type: ActionTypes.PickPawn, pawnId, playerId};
+const PickPawn = (pawnId) => {
+  return {type: ActionTypes.PickPawn, pawnId};
 };
 
 const Disconnected = (playerId) => {

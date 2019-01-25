@@ -111,7 +111,6 @@ export default class Ludo extends Component {
     this.state = {
       menuOpened: false,
       page: Pages.Initial,
-      yourPlayerId: null,
       // colors that players can pick from
       queueColors: [],
       currentPlayerId: null,
@@ -283,7 +282,7 @@ export default class Ludo extends Component {
       if (e && e.pawnIds && e.pawnIds.length) {
         let pawnId = e.pawnIds[0];
 
-        this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.PickPawn(pawnId, this.state.yourPlayerId));
+        this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.PickPawn(pawnId, this.state.player.id));
       }
     }
   }
