@@ -131,6 +131,8 @@ class WebsocketServer {
           return;
         }
 
+        connection.roomId = null;
+
         let disconnectedAction = Games.Ludo.Actions.Disconnected(player.id),
           streamActions = Games.Ludo.ActionHandlers.Disconnected(disconnectedAction, player, room),
           returnActions = streamActions.map(streamAction => streamAction.action);
@@ -139,6 +141,14 @@ class WebsocketServer {
 
         // if there's winnerId remove room
         if (room.gameState.winnerId) {
+          // remove roomIds from connections of last player
+          const winnerPlayer = this.players[room.gameState.winnerId];
+          const winnerConnection = winnerPlayer && this.connections[winnerPlayer.socketId];
+
+          if (winnerConnection) {
+            winnerConnection.roomId = null;
+          }
+
           delete this.rooms[roomId];
         }
       },

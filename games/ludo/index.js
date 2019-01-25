@@ -306,10 +306,6 @@ const DisconnectedHandler = (action, player, room) => {
   }
   activePlayers = room.getActivePlayers();
 
-  if(gameState.currentPlayerId === player.id) {
-    gameState.currentPlayerId = getNextPlayerId(gameState.playerIds, gameState.currentPlayerId);
-  }
-
   // set winner if there's only 1 player left
   if (activePlayers.length === 1) {
     room.gameState.winnerId = activePlayers[0].id;
@@ -325,6 +321,13 @@ const DisconnectedHandler = (action, player, room) => {
       pawn.z = field.z;
 
       returnActions.push({action: MovePawn(pawn.id, [{x: field.x, z: field.z}])});
+    }
+    // switch player if disconnected current
+    if(gameState.currentPlayerId === player.id) {
+      gameState.currentPlayerId = getNextPlayerId(gameState.playerIds, gameState.currentPlayerId);
+      returnActions.push({
+        action: WaitForPlayer(gameState),
+      });
     }
   }
 

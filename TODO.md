@@ -151,3 +151,6 @@ DONE:
 + gdy gracz wyrzuci 6 to moze rzucic jeszcze raz
 + ioConnector -> WebsocketServer
 + ws: authenticate nastepuje przed akcja connect - zawsze mamy dostep do gracza
++ Nie działa nowa gra gdy ktos wygra
++ Nie działa nowa gra gdy ktos sie rozlaczy
++ jesli w trakcie odlaczenia jest kolej gracza odlaczanego gracza to jest bug
