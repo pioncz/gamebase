@@ -353,9 +353,9 @@ export default class Ludo extends Component {
       
       currentModal = <Modal open={true}>
         <h3>Winner!</h3>
-        <div key={winnerPlayer.id} className={"player"}>
+        <div className={"player"}>
           <img src={winnerPlayer.avatar} style={{
-            borderRight: "3px solid " + winnerPlayer.color
+            border: "6px solid " + winnerPlayer.color
           }} />
           <div className="player-name">
             {winnerPlayer.login}
