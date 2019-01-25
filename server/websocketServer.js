@@ -1,17 +1,10 @@
 const Player = require('./Player.js');
-const Fields = require('./../games/ludo/Fields.js');
+const Fields = require('../games/ludo/Fields.js');
 const Connection = require('./Connection.js');
 const { Room } = require('./Room.js');
-const Games = require('./../games/Games.js');
+const Games = require('../games/Games.js');
 
-let fields = Fields;
-
-const FieldType = {
-  spawn: 'spawn',
-  start: 'start',
-  goal: 'goal',
-};
-
+// Run delayed actions
 class ActionsStream {
   constructor(io) {
     this.io = io;
@@ -48,6 +41,16 @@ class ActionsStream {
     }
   }
 }
+
+// // usun gracza po jakims czasie
+// player.lastConnection = Date.now();
+// actionId = actionStream.create({action: () => {
+//   if (player.lastConnection)
+// }, timestamp: Date.now() + 10*1000});
+
+// //
+
+// actionsStream.remove(actionId);
 
 const _nextId = (() => {
   let lastId = 0;
@@ -86,7 +89,8 @@ class WebsocketServer {
     this.io = io;
 
     let _log = (msg) => {
-        console.log(msg);
+        const prefix = ['[ws]: '];
+        console.log(Array.isArray(msg) ? [prefix].concat(msg) : prefix + msg);
       },
       _getTotalNumPlayers = () => {
         let clients = io.sockets.clients().connected;
@@ -111,9 +115,6 @@ class WebsocketServer {
           _log(`newAction emitted: ${action.type}`);
           io.to(room.name).emit('newAction', action);
         });
-      },
-      _emitPlayerDisconnected = (room, playerId) => {
-        io.to(room.name).emit('playerDisconnected', { playerId });
       },
       _leaveGame = (socketId) => {
         let connection = this.connections[socketId],
@@ -215,6 +216,7 @@ class WebsocketServer {
 
         console.log(`Unauthorized. Created temporary player '${tempPlayer.login}'`);
         this.updatePlayer(socket.id, tempPlayer);
+        next();
       };
 
       if (token) {
@@ -228,20 +230,20 @@ class WebsocketServer {
 
                 console.log(`Authorized as ${player.login}`);
                 this.updatePlayer(socket.id, player);
+                next();
               }, createTempPlayer);
           })
           .catch(createTempPlayer);
       } else {
         createTempPlayer();
       }
-
-      next();
     });
 
     io.on('connection', (socket) => {
-      _log(`New connection (sockeId: ${socket.id}). currently ${_getTotalNumPlayers()} online.`);
+      const player = this.players[this.connections[socket.id].playerId];
+      _log(`New connection {sockeId: ${socket.id}, legin: ${player.login}, temp: ${player.temporary}}. currently ${_getTotalNumPlayers()} online.`);
 
-      socket.emit('playerUpdate', this.players[this.connections[socket.id].playerId]);
+      socket.emit('playerUpdate', player);
 
       socket.on('disconnect', () => {
         _destroyConnection(socket.id);
@@ -359,8 +361,10 @@ class WebsocketServer {
     this.updatePlayer = this.updatePlayer.bind(this);
     this.update = this.update.bind(this);
     setInterval(this.update.bind(this), 60);
+
+    // test actionStream
   }
-  // When user is updated emit the update
+  // update user and emit the update
   updatePlayer(socketId, player) {
     const connection = this.connections[socketId],
       connectionPlayer = connection && connection.playerId && this.players[connection.playerId];

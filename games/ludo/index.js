@@ -140,7 +140,7 @@ const RollHandler = (action, player, roomState, diceNumber = 0) => {
   }
 
   player.previousRoll = player.lastRoll;
-  player.lastRoll = diceNumber;
+  player.lastRoll = generatedDiceNumber;
 
   return returnActions;
 };

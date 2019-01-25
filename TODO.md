@@ -1,4 +1,5 @@
--gdy gracz wyrzuci 6 to moze rzucic jeszcze raz
+Reconnect:
+- gracz traci polaczenie / odswieza strone - do 10s moze wrocic do pokoju bez przegranej
 
 RELEASE
 - menu: nowa gra, fullscreen, pomoc (skroty)
@@ -147,3 +148,6 @@ DONE:
 + osobny komponent: PlayerProfiles
 + lepsza pozycja dla graczy
 + gracze w zlych miejscach
++ gdy gracz wyrzuci 6 to moze rzucic jeszcze raz
++ ioConnector -> WebsocketServer
++ ws: authenticate nastepuje przed akcja connect - zawsze mamy dostep do gracza
