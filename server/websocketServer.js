@@ -214,7 +214,6 @@ class WebsocketServer {
             avatar: `/static/avatar${Math.floor(Math.random()*6)+1}.jpg`,
           });
 
-        console.log(`Unauthorized. Created temporary player '${tempPlayer.login}'`);
         this.updatePlayer(socket.id, tempPlayer);
         next();
       };
@@ -228,7 +227,6 @@ class WebsocketServer {
               .then(player => {
                 player.socketId = socket.id;
 
-                console.log(`Authorized as ${player.login}`);
                 this.updatePlayer(socket.id, player);
                 next();
               }, createTempPlayer);
