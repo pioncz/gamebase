@@ -1,4 +1,5 @@
 Reconnect:
+- actionsStream robiacy dowolne akcje odlozone w czasie
 - gracz traci polaczenie / odswieza strone - do 10s moze wrocic do pokoju bez przegranej
 
 RELEASE
@@ -12,22 +13,12 @@ RELEASE
 3. pionki ruszaja sie na zmiane
 - ekran zachety przejscia do fullscreena
 
-- blad wygranej gracza: akcja finishGame leci dwukrotnie, raz z poprawnym wygranym a raz z drugim
-- player zalogowany w expresie, niezalogowany w serwerze socketowym (po restarcie serwera)
-- index.js: jesli socket nie jest autoryzowany to stworz tymaczasowego playera
-- uspojnienie modelu playera (niezalogowany, tymczasowy, zalogowany, trwaly)
-- update playera socketowego po zalogowaniu
-- posprzatac cala autoryzacje - najlepiej zamknac w 1 pliku
-- revoke token gdy kasujesz usera
-- logi: player sie zalogowal, nie zalogowal (err), zarejestrowal, nie zarejestrowal (err)
-- rzeczy z modelu socketowego playera zwiazane z rozgrywka przeniesc do gameState, dodac pole gameState: null, w modelu z bazy
-- rozwazyc przypadek gdy ktos sie loguje w trakcie gry
+- rozwazyc przypadek gdy ktos sie loguje w trakcie gry (playersUpdate do graczy z pokoju)
 - napis offline widoczny tez w grze
 - po wylogowaniu updatePlayera do temporary
 - tlo animowane
 
 Dalszy rozwój:
-- token powinien byc revoked gdy gracz sie wyloguje: /logout 
 - ustalic maxAge w configu i wykorzystac w player.service.js:authenticate i players.controller.js:authenticate 
 - registration: password confirmation
 - player tymczasowy jest kasowany po 10 minutach od ostatniego wylogowania playera
@@ -35,20 +26,16 @@ Dalszy rozwój:
 TO DO
 - formularze login i register: wyswietlanie errow z serwera
 - bug: inny gracz wygral. zmiana geta na pionki gracza
-- moze kazdy gracz powinien sie widziec w prawym/lewym gornym rogu, zeby nie zmieniac wygladu gry
 - panel admina - stan polaczen, kolejki, obciazenie serwera
 - timer gry: konczenie gry gdy uplynie czas rozgrywki
 - timer ruchu gracza: konczenie ruchu gdy uplynie czas
 - widoczna zmiana gracza (jezeli twoja kolejka, to bardziej widoczna)
 - wyczyscic logi w konsoli podczas gry na serwerze i w przegladarce
 - guzik kostki nie powinien byc zaznaczony gdy gracz nie moze rzucic kostka (roomState.rolled = true)
-- gdy jeden z graczy wyjdzie przez f5, nie mozna znalezc nowej gry
-- na telefonach domyslnie orientacja landscape
-- config powinien byc uzywany tylko na serwerze i zawierac klucze prywatne
+- config powinien byc uzywany tylko na serwerze i zawierac klucze prywatne (albo podzielic config na private / public)
 
 1) Gra
 - przy profilu aktualnego gracza, progress jego kolejki
-- testy wychodzenia z gry / disconnect / szukanie nowej rozgrywki
 - koniec rozgrywki gdy sie skonczy czas
 
 2) Strona Ludo
@@ -66,13 +53,13 @@ DONE:
 + blokada stania na tym samym polu
 + początkowy stan w Room.js powinien byc brany z klasy gry
 + wywalic stare metody z serwera
-+zbudowac dokumentacje, poprawic
-+wszystkie pliki ludo wrzucic do games/ludo
-+dodac ludo do Games
-+profil aktualnie zalogowanego gracza
-+wyglad navbara w trakcie gry
-+wyłącz grę jak ktoś wyjdzie - dialog z ponownym wyszukaniem
-+obsluga rozlaczenia sie gracza
++ zbudowac dokumentacje, poprawic
++ wszystkie pliki ludo wrzucic do games/ludo
++ dodac ludo do Games
++ profil aktualnie zalogowanego gracza
++ wyglad navbara w trakcie gry
++ wyłącz grę jak ktoś wyjdzie - dialog z ponownym wyszukaniem
++ obsluga rozlaczenia sie gracza
 + przekazywanie ustawien graczy do gry
 + niedorobiona kreska w grafica jednego pola
 + pola graczy ktorych nie ma wyszarzone
@@ -88,21 +75,21 @@ DONE:
 + naprawic nowa rozgrywke
 + profile graczy przy starcie wysuwaja sie z prawej i lewej strony
 -- najpierw leci kostka, a potem pionek sie rusza - nie na raz
-+ekran wyszukiwania z przewidywanym czasem
-+wybór koloru
-+ekran gry
++ ekran wyszukiwania z przewidywanym czasem
++ wybór koloru
++ ekran gry
 + wybor pionka
-+przerobienie wygladu profili
-+zaznaczenie aktualnego gracza
++ przerobienie wygladu profili
++ zaznaczenie aktualnego gracza
 + napraw nowa gre
 + wywalic config z roomState
-+obsluga disconnected:
- +_destroyConnection nie kasuje pokoju, przez co gracz go nie opuszcza
- +obsluzyc update gracza po stronie klienta
- +wyszarzenie pionkow i avatara
- +akcja Disconnected i obsluga na stronie Ludo
- +dodac sprawdzanie actywnych graczy w roll handlerze
- +jezeli wyszla osoba ktora jest aktualnie, ustaw nastepna osobe 
++ obsluga disconnected:
+ + _destroyConnection nie kasuje pokoju, przez co gracz go nie opuszcza
+ + obsluzyc update gracza po stronie klienta
+ + wyszarzenie pionkow i avatara
+ + akcja Disconnected i obsluga na stronie Ludo
+ + dodac sprawdzanie actywnych graczy w roll handlerze
+ + jezeli wyszla osoba ktora jest aktualnie, ustaw nastepna osobe 
 + stan disconnected aplikacji
 + gdy gracz rzuci 6, moze rzucic jeszcze raz
 + gdy sa 2 pionki obok siebie (gora/dol) to w ten wyzej ciezko jest kliknac
@@ -154,3 +141,4 @@ DONE:
 + Nie działa nowa gra gdy ktos wygra
 + Nie działa nowa gra gdy ktos sie rozlaczy
 + jesli w trakcie odlaczenia jest kolej gracza odlaczanego gracza to jest bug
++ blad wygranej gracza: akcja finishGame leci dwukrotnie, raz z poprawnym wygranym a raz z drugim

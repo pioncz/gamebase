@@ -113,8 +113,24 @@ class WebsocketServer {
       _emitNewActions = (room, newActions) => {
         newActions.forEach(action => {
           _log(`newAction emitted: ${action.type}`);
+          _log(JSON.stringify(action));
           io.to(room.name).emit('newAction', action);
         });
+      },
+      // set connected connections roomIds to null, delete room
+      _closeRoom = (roomId) => {
+        const room = this.rooms[roomId];
+
+        if (!room) return;
+        
+        const socketIds = room.gameState.players.map(player => player.socketId);
+        for (let i = 0; i < socketIds.length; i++) {
+          const socketId = socketIds[i];
+
+          this.connections[socketId].roomId = null;
+        }
+
+        delete this.rooms[roomId];
       },
       _leaveGame = (socketId) => {
         let connection = this.connections[socketId],
@@ -122,9 +138,7 @@ class WebsocketServer {
           room = roomId && this.rooms[roomId],
           playerId = connection && connection.playerId,
           playerIndex = room && room.gameState.players.findIndex(player => player.id === playerId),
-          player = room && room.gameState.players[playerIndex],
-          activePlayers = room && room.getActivePlayers(),
-          activePlayersLength = activePlayers && activePlayers.length;
+          player = room && room.gameState.players[playerIndex];
 
         if (!room || !player) {
           console.log('no room or player');
@@ -141,15 +155,7 @@ class WebsocketServer {
 
         // if there's winnerId remove room
         if (room.gameState.winnerId) {
-          // remove roomIds from connections of last player
-          const winnerPlayer = this.players[room.gameState.winnerId];
-          const winnerConnection = winnerPlayer && this.connections[winnerPlayer.socketId];
-
-          if (winnerConnection) {
-            winnerConnection.roomId = null;
-          }
-
-          delete this.rooms[roomId];
+          _closeRoom(room.id);
         }
       },
       // Leave connections room, remove connections player, remove from connections
@@ -322,8 +328,7 @@ class WebsocketServer {
 
         _log(`Player: ${player.login} calls action: ${JSON.stringify(action)}`);
 
-        let streamActions = room.handleAction(action, player) || [],
-          newActions = [];
+        let streamActions = room.handleAction(action, player) || [];
 
         if (streamActions.length) {
           //if action has timestamp, emit it separatedly
@@ -333,9 +338,6 @@ class WebsocketServer {
               .map(streamAction => streamAction.action);
 
           room.actions = room.actions.concat(streamActions);
-
-          _log('Action handler returned actions:');
-          _log(JSON.stringify(streamActions));
 
           if (delayedActions.length) {
             for(let i in delayedActions) {
@@ -349,7 +351,7 @@ class WebsocketServer {
         }
 
         if (room.getState().winnerId) {
-          _leaveGame(socket.id);
+          _closeRoom(room.id);
         }
       });
 
@@ -369,8 +371,6 @@ class WebsocketServer {
     this.updatePlayer = this.updatePlayer.bind(this);
     this.update = this.update.bind(this);
     setInterval(this.update.bind(this), 60);
-
-    // test actionStream
   }
   // update user and emit the update
   updatePlayer(socketId, player) {
