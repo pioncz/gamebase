@@ -1,53 +1,14 @@
 const Player = require('./Player.js');
-const Fields = require('../games/ludo/Fields.js');
 const Connection = require('./Connection.js');
 const { Room } = require('./Room.js');
 const Games = require('../games/Games.js');
-
-// Run delayed actions
-class ActionsStream {
-  constructor(io) {
-    this.io = io;
-    this.queue = [];
-  }
-  // timestamp when action should be emitted,
-  // 0 means as soon as possible
-  emitActions(roomName, newActions, timestamp = 0, callback) {
-    if (!timestamp) {
-      this._emitActions(roomName, newActions, callback);
-    } else {
-      this.queue.push({roomName, newActions, timestamp, callback});
-    }
-  }
-  _emitActions(roomName, newActions, callback) {
-    for (let i = 0; i < newActions.length; i++) {
-      callback && callback();
-      // run action callback
-      this.io.to(roomName).emit('newAction', newActions[i]);
-    }
-  }
-  update() {
-    let now = Date.now();
-
-    if (!this.queue.length) return;
-
-    for(let i = this.queue.length - 1; i > -1; i--) {
-      let queueItem = this.queue[i];
-
-      if (queueItem.timestamp < now) {
-        this._emitActions(queueItem.roomName, queueItem.newActions, queueItem.callback);
-        this.queue.splice(i, 1);
-      }
-    }
-  }
-}
+const ActionsStream = require('./actions-stream');
 
 // // usun gracza po jakims czasie
-// player.lastConnection = Date.now();
+// player.lastDisconnection = Date.now();
 // actionId = actionStream.create({action: () => {
 //   if (player.lastConnection)
 // }, timestamp: Date.now() + 10*1000});
-
 // //
 
 // actionsStream.remove(actionId);
@@ -85,7 +46,7 @@ class WebsocketServer {
     this.connections = {}, // [socket.id]: {roomId, playerId}
     this.rooms = {};
     this.players = {};
-    this.actionsStream = new ActionsStream(io);
+    this.actionsStream = new ActionsStream();
     this.io = io;
 
     let _log = (msg) => {
@@ -116,6 +77,15 @@ class WebsocketServer {
           _log(JSON.stringify(action));
           io.to(room.name).emit('newAction', action);
         });
+      },
+      _emitRoomActions = (roomName, actions, callback) => {
+        if (!roomName || !actions || !actions.length) return;
+
+        callback && callback();
+
+        for (let i = 0; i < actions.length; i++) {
+          this.io.to(roomName).emit('newAction', actions[i]);
+        }
       },
       // set connected connections roomIds to null, delete room
       _closeRoom = (roomId) => {
@@ -342,11 +312,15 @@ class WebsocketServer {
           if (delayedActions.length) {
             for(let i in delayedActions) {
               let streamAction = delayedActions[i];
-              this.actionsStream.emitActions(room.name, [streamAction.action], streamAction.timestamp, streamAction.callback);
+              this.actionsStream.addAction(() => {
+                _emitRoomActions(room.name, [streamAction.action], streamAction.callback);
+              }, streamAction.timestamp);
             }
           }
           if (newActionsFiltered.length) {
-            this.actionsStream.emitActions(room.name, newActionsFiltered, 0);
+            this.actionsStream.addAction(() => {
+              _emitRoomActions(room.name, newActionsFiltered);
+            }, 0);
           }
         }
 

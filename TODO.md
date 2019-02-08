@@ -1,5 +1,5 @@
 Reconnect:
-- actionsStream robiacy dowolne akcje odlozone w czasie
++ actionsStream robiacy dowolne akcje odlozone w czasie
 - gracz traci polaczenie / odswieza strone - do 10s moze wrocic do pokoju bez przegranej
 
 RELEASE
@@ -14,18 +14,16 @@ RELEASE
 - ekran zachety przejscia do fullscreena
 
 - rozwazyc przypadek gdy ktos sie loguje w trakcie gry (playersUpdate do graczy z pokoju)
-- napis offline widoczny tez w grze
 - po wylogowaniu updatePlayera do temporary
 - tlo animowane
 
 Dalszy rozwój:
 - ustalic maxAge w configu i wykorzystac w player.service.js:authenticate i players.controller.js:authenticate 
 - registration: password confirmation
-- player tymczasowy jest kasowany po 10 minutach od ostatniego wylogowania playera
+- player tymczasowy jest kasowany po: 10 minutach od ostatniego wylogowania playera lub zalogowania playera
 
 TO DO
 - formularze login i register: wyswietlanie errow z serwera
-- bug: inny gracz wygral. zmiana geta na pionki gracza
 - panel admina - stan polaczen, kolejki, obciazenie serwera
 - timer gry: konczenie gry gdy uplynie czas rozgrywki
 - timer ruchu gracza: konczenie ruchu gdy uplynie czas

@@ -5,7 +5,7 @@ S:refaktor
 #:nazwa strony, nazwy gier
 E:gry w pelni testowalne automatycznie
 +E:gry: mozliwosc grania na tel'
-E:ludo: dzialajaca rozgrywka, nowa gra
++E:ludo: dzialajaca rozgrywka, nowa gra
 E:labirynt: dzialajaca rozgrywka, nowa gra
 D:rozbicie na repozytoria (testowalne osobno)
 S:zapisywanie profili po stronie serwera
@@ -21,7 +21,7 @@ W:wparcie wielu przegladarek
 W:wparcie nexusa 5x
 W:internacjonalizacja
 D:wystawienie online
-S:blokada 1 konta na przegladarce
+S:blokada 1 gry na koncie/przegladarce
 S:boty do gry: (ukryte, losowej trudnosci), zawyzajace statystyki w explore
 
 0.8 Beta: (do wystartowania) otwieramy zamknieta bete

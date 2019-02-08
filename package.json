@@ -6,7 +6,7 @@
   "scripts": {
     "serve": "webpack-dev-server",
     "start": "node index.js",
-    "test": "jest --notify --config=tests.config.json",
+    "test": "jest --notify --watch --config=tests.config.json",
     "docs": "jsdoc -c jsdoc.conf.json --readme README.md",
     "build": "webpack --watch"
   },
