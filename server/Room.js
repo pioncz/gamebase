@@ -40,26 +40,6 @@ class Room {
     this.eta = options.eta || 5*60*60; //18000s
     this.actions = [];
   }
-  /**
-   * Returns this.state
-   */
-  getState() {
-    const gameState = this.gameState;
-
-    let returnState = {
-      currentPlayerId: gameState.currentPlayerId,
-      winnerId: gameState.winnerId,
-      roomState: gameState.roomState,
-      finishTimestamp: gameState.finishTimestamp,
-    };
-
-    gameState.playerColors && (returnState.playerColors = gameState.playerColors);
-    gameState.colorsQueue && (returnState.colorsQueue = gameState.colorsQueue);
-    gameState.pawns && (returnState.pawns = gameState.pawns);
-    gameState.players && (returnState.players = gameState.players);
-
-    return gameState;
-  }
   getActivePlayers() {
     const players = this.gameState.players;
     return players.filter(player => !player.disconnected);
