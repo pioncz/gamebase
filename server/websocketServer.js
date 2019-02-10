@@ -4,15 +4,6 @@ const { Room, RoomStates } = require('./Room.js');
 const Games = require('../games/Games.js');
 const ActionsStream = require('./actions-stream');
 
-// // usun gracza po jakims czasie
-// player.lastDisconnection = Date.now();
-// actionId = actionStream.create({action: () => {
-//   if (player.lastConnection)
-// }, timestamp: Date.now() + 10*1000});
-// //
-
-// actionsStream.remove(actionId);
-
 const _nextId = (() => {
   let lastId = 0;
 

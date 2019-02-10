@@ -1,12 +1,8 @@
-+ stan gracza websocketowego przechowywany w reduxie
-+ gdy gracz wejdzie na strone / a potem /ludo to nie leci playerUpdate
-- zakoncz gre jesli jest po czasie
-- ws: _closeRoom -> this.closeRoom
-- skasowac properte player.color - korzystajmy z playerColors
-- koniec gry gdy gameState === RoomStates.Finished, a nie samo winnerId
 - zmien gracza jesli skonczyla sie jego kolejka
-Reconnect:
-+ actionsStream robiacy dowolne akcje odlozone w czasie
+- czas gry wysylany ze startGame jako timeLength [ms]
+- _closeRoom zamienic na this.closeRoom
+- skasowac properte player.color - korzystajmy z playerColors
+- koniec gry gdy gameState === RoomStates.Finished, a nie samo winnerId (w przyszlosci obsluga remisu)
 - zalogowany gracz traci polaczenie / odswieza strone - do 10s moze wrocic do pokoju bez przegranej
 
 RELEASE
@@ -147,3 +143,7 @@ DONE:
 + Nie działa nowa gra gdy ktos sie rozlaczy
 + jesli w trakcie odlaczenia jest kolej gracza odlaczanego gracza to jest bug
 + blad wygranej gracza: akcja finishGame leci dwukrotnie, raz z poprawnym wygranym a raz z drugim
++ actionsStream robiacy dowolne akcje odlozone w czasie
++ stan gracza websocketowego przechowywany w reduxie
++ gdy gracz wejdzie na strone / a potem /ludo to nie leci playerUpdate
++ zakoncz gre jesli jest po czasie
