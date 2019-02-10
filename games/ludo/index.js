@@ -274,6 +274,7 @@ const PickPawnHandler = (action, player, roomState) => {
     if (BoardUtils.checkWin(playerPawns)) {
       console.log(`player ${player.login} wins!`);
       roomState.winnerId = player.id;
+      roomState.roomState = GameStates.finished;
       returnActions.push({action:FinishGame(player.id)});
     }
   }
@@ -309,6 +310,7 @@ const DisconnectedHandler = (action, player, room) => {
   // set winner if there's only 1 player left
   if (activePlayers.length === 1) {
     room.gameState.winnerId = activePlayers[0].id;
+    room.gameState.roomState = GameStates.finished;
     returnActions.push({action:FinishGame(room.gameState.winnerId)})
   // if there is no winner, move player pawns to spawn
   } else if (playerPawns) {
@@ -340,6 +342,7 @@ const DisconnectedHandler = (action, player, room) => {
 const TimeoutHandler = (roomState) => {
   const winnerId = BoardUtils.getWinningPlayer(roomState);
   roomState.winnerId = winnerId;
+  roomState.roomState = GameStates.finished;
   return [{action:FinishGame(roomState.winnerId)}];
 };
 

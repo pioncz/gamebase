@@ -57,7 +57,6 @@ class WebsocketServer {
         });
       },
       // set connected connections roomIds to null, delete room
-      _closeRoom = this.closeRoom,
       _leaveGame = (socketId) => {
         let connection = this.connections[socketId],
           roomId = connection && connection.roomId,
@@ -80,8 +79,8 @@ class WebsocketServer {
         _emitNewActions(room, returnActions);
 
         // if there's winnerId remove room
-        if (room.gameState.winnerId) {
-          _closeRoom(room.id);
+        if (!room.gameState.playerIds.length || room.gameState.roomState === RoomStates.finished) {
+          this.closeRoom(room.id);
         }
       },
       // Leave connections room, remove connections player, remove from connections
@@ -201,8 +200,8 @@ class WebsocketServer {
       room.actions = room.actions.concat(streamActions);
       this.emitRoomActions(room.name, streamActions);
 
-      if (room.gameState.winnerId) {
-        _closeRoom(room.id);
+      if (!room.gameState.playerIds.length || room.gameState.roomState === RoomStates.finished) {
+        this.closeRoom(room.id);
       }
     };
     const _handleGetStats = socket => () => {
@@ -301,7 +300,7 @@ class WebsocketServer {
 
       this.emitRoomActions(room.name, streamActions);
 
-      if (room.gameState.roomState === RoomStates.finished) {
+      if (!room.gameState.playerIds.length || room.gameState.roomState === RoomStates.finished) {
         this.closeRoom(room.id);
       }
     }

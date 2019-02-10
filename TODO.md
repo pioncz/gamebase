@@ -1,6 +1,6 @@
 - zmien gracza jesli skonczyla sie jego kolejka
+- zastapic emitNewActions na this.emitRoomActions, dodac concat room actions
 - czas gry wysylany ze startGame jako timeLength [ms]
-- _closeRoom zamienic na this.closeRoom
 - skasowac properte player.color - korzystajmy z playerColors
 - koniec gry gdy gameState === RoomStates.Finished, a nie samo winnerId (w przyszlosci obsluga remisu)
 - zalogowany gracz traci polaczenie / odswieza strone - do 10s moze wrocic do pokoju bez przegranej
@@ -147,3 +147,4 @@ DONE:
 + stan gracza websocketowego przechowywany w reduxie
 + gdy gracz wejdzie na strone / a potem /ludo to nie leci playerUpdate
 + zakoncz gre jesli jest po czasie
++ _closeRoom zamienic na this.closeRoom
