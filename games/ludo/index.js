@@ -337,6 +337,12 @@ const DisconnectedHandler = (action, player, room) => {
   return returnActions;
 };
 
+const TimeoutHandler = (roomState) => {
+  const winnerId = BoardUtils.getWinningPlayer(roomState);
+  roomState.winnerId = winnerId;
+  return [{action:FinishGame(roomState.winnerId)}];
+};
+
 const Ludo = {
   Name: 'Ludo',
   Config,
@@ -354,6 +360,7 @@ const Ludo = {
     Roll: RollHandler,
     PickPawn: PickPawnHandler,
     Disconnected: DisconnectedHandler,
+    Timeout: TimeoutHandler,
   },
   AnimationLengths,
   ActionTypes,

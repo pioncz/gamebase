@@ -90,6 +90,27 @@ const Fields = require('./Fields'),
 
     return emptyGoalFields;
   },
+  getWinningPlayer = (roomState) => {
+    let playerPoints = [];
+    for(let i = 0; i < roomState.playerIds.length; i++) {
+      const playerId = roomState.playerIds[i];
+      const playerPawns = roomState.pawns.filter(pawn => pawn.playerId === playerId);
+      let points = Fields.length * playerPawns.length;
+      for(let j = 0; j < playerPawns.length; j++) {
+        const pawn = playerPawns[j];
+        let fieldIndex = Fields.findIndex(field => field.x === pawn.x && field.z === pawn.z);
+        let field = Fields[fieldIndex];
+        while (field.type !== FieldTypes.goal || field.playerIndex !== i) {
+          points--;
+          field = getField(++fieldIndex);
+        }
+      }
+      playerPoints.push({playerId, points});
+    }
+
+    playerPoints = playerPoints.sort((a, b) => b.points - a.points);
+    return playerPoints[0].playerId;
+  },
   checkMoves = (roomState, diceNumber, playerId) => {
     let avaiableMoves = [];
 
@@ -123,6 +144,7 @@ module.exports = {
   checkMoves,
   getFieldByPosition,
   getSpawnFields,
+  getWinningPlayer,
   checkWin,
   FieldTypes,
 };

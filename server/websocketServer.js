@@ -1,6 +1,6 @@
 const Player = require('./Player.js');
 const Connection = require('./Connection.js');
-const { Room } = require('./Room.js');
+const { Room, RoomStates } = require('./Room.js');
 const Games = require('../games/Games.js');
 const ActionsStream = require('./actions-stream');
 
@@ -65,30 +65,8 @@ class WebsocketServer {
           io.to(room.name).emit('newAction', action);
         });
       },
-      _emitRoomActions = (roomName, actions, callback) => {
-        if (!roomName || !actions || !actions.length) return;
-
-        callback && callback();
-
-        for (let i = 0; i < actions.length; i++) {
-          this.io.to(roomName).emit('newAction', actions[i]);
-        }
-      },
       // set connected connections roomIds to null, delete room
-      _closeRoom = (roomId) => {
-        const room = this.rooms[roomId];
-
-        if (!room) return;
-        
-        const socketIds = room.gameState.players.map(player => player.socketId);
-        for (let i = 0; i < socketIds.length; i++) {
-          const socketId = socketIds[i];
-
-          this.connections[socketId].roomId = null;
-        }
-
-        delete this.rooms[roomId];
-      },
+      _closeRoom = this.closeRoom,
       _leaveGame = (socketId) => {
         let connection = this.connections[socketId],
           roomId = connection && connection.roomId,
@@ -229,29 +207,8 @@ class WebsocketServer {
 
       let streamActions = room.handleAction(action, player) || [];
 
-      if (streamActions.length) {
-        //if action has timestamp, emit it separatedly
-        let delayedActions = streamActions.filter(streamAction => streamAction.timestamp),
-          newActionsFiltered = streamActions
-            .filter(streamAction => !streamAction.timestamp)
-            .map(streamAction => streamAction.action);
-
-        room.actions = room.actions.concat(streamActions);
-
-        if (delayedActions.length) {
-          for(let i in delayedActions) {
-            let streamAction = delayedActions[i];
-            this.actionsStream.addAction(() => {
-              _emitRoomActions(room.name, [streamAction.action], streamAction.callback);
-            }, streamAction.timestamp);
-          }
-        }
-        if (newActionsFiltered.length) {
-          this.actionsStream.addAction(() => {
-            _emitRoomActions(room.name, newActionsFiltered);
-          }, 0);
-        }
-      }
+      room.actions = room.actions.concat(streamActions);
+      this.emitRoomActions(room.name, streamActions);
 
       if (room.gameState.winnerId) {
         _closeRoom(room.id);
@@ -302,7 +259,6 @@ class WebsocketServer {
             socketId: socket.id,
             avatar: `/static/avatar${Math.floor(Math.random()*6)+1}.jpg`,
           });
-        console.log('create temp');
         updatePlayer(tempPlayer);
         return tempPlayer;
       };
@@ -348,16 +304,41 @@ class WebsocketServer {
     this.actionsStream.update();
 
     const now = Date.now();
-
     for (let roomIndex in this.rooms) {
-      let room = this.rooms[roomIndex];
+      const room = this.rooms[roomIndex];
+      const streamActions = room.handleUpdate(now);
 
-      if (room.gameState.finishTimestamp) {
-        if (now > room.gameState.finishTimestamp) {
-          // wyslij akcje FinishGame bez winnerId
-          // wyjdz kazdym graczem z pokoju
-        }
+      this.emitRoomActions(room.name, streamActions);
+
+      if (room.gameState.roomState === RoomStates.finished) {
+        this.closeRoom(room.id);
       }
+    }
+  }
+  closeRoom(roomId) {
+    const room = this.rooms[roomId];
+
+    if (!room) return;
+    
+    const socketIds = room.gameState.players.map(player => player.socketId);
+    for (let i = 0; i < socketIds.length; i++) {
+      const socketId = socketIds[i];
+
+      this.connections[socketId].roomId = null;
+    }
+
+    delete this.rooms[roomId];
+  }
+  emitRoomActions(roomName, streamActions) {
+    if (!roomName || !streamActions) return;
+
+    for(let i = 0; i < streamActions.length; i++) {
+      const { timestamp, callback, action } = streamActions[i];
+      this.actionsStream.addAction(() => {
+        callback && callback();
+
+        this.io.to(roomName).emit('newAction', action);
+      }, timestamp);
     }
   }
 }

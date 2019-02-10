@@ -121,3 +121,34 @@ describe('PickPawnHandler - user picks pawn to move', () => {
     expect(waitAction.playerId).toBe('1');
   });
 });
+
+describe('TimeoutHandler', () => {
+  test('2 players, both on spawn', () => {
+    const roomState = createInitialRoomState();
+    const actions = Ludo.ActionHandlers.Timeout(roomState);
+    expect(actions[0].action.type).toBe(Ludo.ActionTypes.FinishGame);
+    expect(actions[0].action.winnerId).toBe(roomState.playerIds[0]);
+  });
+  test('2 players, second has 1 pawn further', () => {
+    const roomState = createInitialRoomState();
+    roomState.pawns[4].x = 4;
+    roomState.pawns[4].z = 4;
+    const actions = Ludo.ActionHandlers.Timeout(roomState);
+    expect(actions[0].action.type).toBe(Ludo.ActionTypes.FinishGame);
+    expect(actions[0].action.winnerId).toBe(roomState.playerIds[1]);
+  });
+  test('2 players, second has pawns in goals', () => {
+    const roomState = createInitialRoomState();
+    roomState.pawns[4].x = 5;
+    roomState.pawns[4].z = 1;
+    roomState.pawns[5].x = 5;
+    roomState.pawns[5].z = 2;
+    roomState.pawns[6].x = 5;
+    roomState.pawns[6].z = 3;
+    roomState.pawns[7].x = 5;
+    roomState.pawns[7].z = 4;
+    const actions = Ludo.ActionHandlers.Timeout(roomState);
+    expect(actions[0].action.type).toBe(Ludo.ActionTypes.FinishGame);
+    expect(actions[0].action.winnerId).toBe(roomState.playerIds[1]);
+  });
+});

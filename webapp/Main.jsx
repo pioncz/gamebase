@@ -29,9 +29,6 @@ class Main extends Component {
     this.sendRegistrationModal = this.sendRegistrationModal.bind(this);
     this.logout = this.logout.bind(this);
   }
-  componentWillMount() {
-    this.props.fetchCurrentPlayer();
-  }
   componentWillReceiveProps(nextProps) {
     const { player } = this.props;
     
@@ -47,12 +44,11 @@ class Main extends Component {
   }
   setConnector(connectorInstance) {
     this.setState({
-      connectorInstance: connectorInstance,
+      connectorInstance,
     });
-    connectorInstance.socket.on('player', player => {
-      this.setState({
-        player: player,
-      })
+    connectorInstance.socket.on('playerUpdate', (player) => {
+      console.log('playerUpdate', player);
+      this.props.setCurrentPlayer(player);
     });
   }
   toggleLoginModal() {
@@ -120,7 +116,7 @@ const {
 const {
   registerPlayer,
   loginPlayer,
-  fetchCurrentPlayer,
+  setCurrentPlayer,
   logout,
 } = actions;
 
@@ -133,7 +129,7 @@ const mapDispatchToProps = dispatch => ({
   ...bindActionCreators({
     registerPlayer,
     loginPlayer,
-    fetchCurrentPlayer,
+    setCurrentPlayer,
     logout,
   }, dispatch),
 });

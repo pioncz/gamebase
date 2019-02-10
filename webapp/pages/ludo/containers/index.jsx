@@ -8,6 +8,9 @@ import Games from 'Games.js';
 import ClassNames from 'classnames';
 import DicesImage from 'dices.svg';
 import PlayerProfiles from 'components/PlayerProfiles';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { selectors } from 'shared/redux/api';
 
 const Pages = {
   Initial: 'Initial',
@@ -104,7 +107,7 @@ const filterPlayers = (players, firstPlayerId) => {
   return parsedPlayers;
 };
 
-export default class Ludo extends Component {
+class Ludo extends Component {
   constructor(props) {
     super(props);
     
@@ -113,9 +116,9 @@ export default class Ludo extends Component {
       page: Pages.Initial,
       // colors that players can pick from
       queueColors: [],
+      playerColors: [],
       currentPlayerId: null,
       gameId: null,
-      player: props.player, // current player
       players: [],
       pawns: [],
       winnerId: null,
@@ -166,9 +169,8 @@ export default class Ludo extends Component {
         });
       }
       if (newAction.type === Games.Ludo.ActionTypes.StartGame) {
-        let roomState = newAction.roomState,
-          yourPlayer = roomState.players.find(player => player.id === this.state.player.id);
-        
+        let roomState = newAction.roomState;
+
         for(let playerIndex in roomState.players) {
           let player = roomState.players[playerIndex],
             playerColor = roomState.playerColors.find(playerColor => playerColor.playerId === player.id);
@@ -179,11 +181,12 @@ export default class Ludo extends Component {
         this.setState({
           gameId: roomState.id,
           players: roomState.players,
-          player: yourPlayer,
+          playerColors: roomState.playerColors,
           currentPlayerId: roomState.currentPlayerId,
           page: Pages.Game,
           pawns: roomState.pawns,
           finishTimestamp: roomState.finishTimestamp,
+          waitingForAction: Games.Ludo.ActionTypes.Roll,
         });
         this.timerComponent.start(roomState.finishTimestamp - Date.now());
       }
@@ -205,7 +208,7 @@ export default class Ludo extends Component {
       }
       if (newAction.type === Games.Ludo.ActionTypes.SelectPawns) {
         // highlight pawns only for current player
-        if (this.state.player && newAction.playerId !== this.state.player.id) return;
+        if (this.props.player && newAction.playerId !== this.props.player.id) return;
 
         this.gameComponent.engine.selectPawns(newAction.pawnIds);
         
@@ -257,12 +260,6 @@ export default class Ludo extends Component {
         queueColors: roomState.colorsQueue,
       });
     });
-    connectorInstance.socket.on('playerUpdate', (player) => {
-      console.log('playerUpdate', player);
-      this.setState({
-        player,
-      });
-    });
     connectorInstance.socket.on('newAction', (newAction) => {
       console.log('newAction', newAction);
       handleAction(newAction);
@@ -272,7 +269,7 @@ export default class Ludo extends Component {
     });
   }
   selectColor(color) {
-    this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.SelectColor(this.state.player.id, color));
+    this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.SelectColor(this.props.player.id, color));
   }
   handleDicesClick() {
     this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.Roll());
@@ -282,7 +279,7 @@ export default class Ludo extends Component {
       if (e && e.pawnIds && e.pawnIds.length) {
         let pawnId = e.pawnIds[0];
 
-        this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.PickPawn(pawnId, this.state.player.id));
+        this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.PickPawn(pawnId, this.props.player.id));
       }
     }
   }
@@ -299,14 +296,16 @@ export default class Ludo extends Component {
   }
   render() {
     let currentModal,
-      {gameId, page, player, players, winnerId, pawns, finishTimestamp, nextRollTimestamp, currentPlayerId, nextRollLength} = this.state,
+      {gameId, page, players, playerColors, winnerId, pawns, finishTimestamp, nextRollTimestamp, currentPlayerId, nextRollLength, waitingForAction} = this.state,
+      {player} = this.props,
       diceContainerClass = ClassNames({
         'dices-container': true,
         'dices-container--visible': page === Pages.Game,
-        'dices-container--active': player && player.id === currentPlayerId,
+        'dices-container--active': player && player.id === currentPlayerId && waitingForAction === Games.Ludo.ActionTypes.Roll,
       }),
-      diceContainerStyle = player && player.color && { 
-        boxShadow: `inset 0 0 10px ${player.color}`,
+      playerColor = player && playerColors.find(playerColor => playerColor.playerId === player.id),
+      diceContainerStyle = playerColor && { 
+        boxShadow: `inset 0 0 10px ${playerColor.color}`,
     };
 
     if (page === Pages.Initial) {
@@ -392,3 +391,21 @@ export default class Ludo extends Component {
     </div>);
   }
 }
+
+const {
+  getCurrentPlayer,
+} = selectors;
+
+const mapStateToProps = state => ({
+  player: getCurrentPlayer(state),
+});
+
+const mapDispatchToProps = dispatch => ({
+  ...bindActionCreators({
+  }, dispatch),
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Ludo);

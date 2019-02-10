@@ -23,6 +23,7 @@ const  FETCH_CURRENT_PLAYER = `${prefix}FETCH_CURRENT_PLAYER`;
 const  FETCH_CURRENT_PLAYER_SUCCESS = `${prefix}FETCH_CURRENT_PLAYER_SUCCESS`;
 const  FETCH_CURRENT_PLAYER_FAIL = `${prefix}FETCH_CURRENT_PLAYER_FAIL`;
 const  LOGOUT = `${prefix}LOGOUT`;
+const  SET_PLAYER = `${prefix}SET_PLAYER`;
 
 /*
  * ACTIONS
@@ -98,6 +99,13 @@ const logout = () => ({
 const logoutSuccess = () => ({
   type: LOGOUT_SUCCESS,
 });
+
+const setCurrentPlayer = player => ({
+  type: SET_PLAYER,
+  payload: {
+    player,
+  },
+})
 
 /*
  * REDUCER
@@ -199,6 +207,10 @@ const reducer = (state = initialState, action) => {
         state: 'loggedOut',
       }
     }),
+    [SET_PLAYER]: () => ({
+      ...state,
+      player: action.payload.player,
+    })
   };
 
   return (actions[action.type] && actions[action.type]()) || state;
@@ -280,6 +292,7 @@ export const actions = {
   loginPlayer,
   fetchCurrentPlayer,
   logout,
+  setCurrentPlayer,
 };
 
 export const logic = {

@@ -1,6 +1,13 @@
++ stan gracza websocketowego przechowywany w reduxie
++ gdy gracz wejdzie na strone / a potem /ludo to nie leci playerUpdate
+- zakoncz gre jesli jest po czasie
+- ws: _closeRoom -> this.closeRoom
+- skasowac properte player.color - korzystajmy z playerColors
+- koniec gry gdy gameState === RoomStates.Finished, a nie samo winnerId
+- zmien gracza jesli skonczyla sie jego kolejka
 Reconnect:
 + actionsStream robiacy dowolne akcje odlozone w czasie
-- gracz traci polaczenie / odswieza strone - do 10s moze wrocic do pokoju bez przegranej
+- zalogowany gracz traci polaczenie / odswieza strone - do 10s moze wrocic do pokoju bez przegranej
 
 RELEASE
 - menu: nowa gra, fullscreen, pomoc (skroty)

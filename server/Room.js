@@ -62,10 +62,23 @@ class Room {
     try {
       returnActions = (actionHandler && actionHandler(action, player, this.gameState));
     } catch(e) {
-      console.error(e);
+      console.error(e.message ? e.message : e);
     }
 
     return returnActions;
+  }
+  handleUpdate(now) {
+    if (this.gameState.finishTimestamp && now > this.gameState.finishTimestamp) {
+      let returnActions = [];
+
+      try {
+        returnActions = Games.Ludo.ActionHandlers.Timeout(this.gameState);
+      } catch(e) {
+        console.error(e.message ? e.message : e);
+      }
+
+      return returnActions;
+    }
   }
 }
 
