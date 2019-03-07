@@ -323,9 +323,9 @@ class WebsocketServer {
     if (!roomName || !streamActions) return;
     let room;
 
-    for (const roomId in rooms) {
-      if (rooms.hasOwnProperty(roomId) && room.name === roomName) {
-        room = rooms[roomId];
+    for (const roomId in this.rooms) {
+      if (this.rooms.hasOwnProperty(roomId) && this.rooms[roomId].name === roomName) {
+        room = this.rooms[roomId];
       }
     }
     if (!room) return;
