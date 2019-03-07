@@ -207,7 +207,7 @@ class WebsocketServer {
     const _handleGetStats = socket => () => {
       let roomsFiltered = {};
       for (let roomId in this.rooms) {
-        roomsFiltered[roomId] = this.rooms[roomId].gameState;
+        roomsFiltered[roomId] = this.rooms[roomId];
       }
       socket.emit('statsUpdate', {
         connections: this.connections,
@@ -321,11 +321,22 @@ class WebsocketServer {
   }
   emitRoomActions(roomName, streamActions) {
     if (!roomName || !streamActions) return;
+    let room;
+
+    for (const roomId in rooms) {
+      if (rooms.hasOwnProperty(roomId) && room.name === roomName) {
+        room = rooms[roomId];
+      }
+    }
+    if (!room) return;
 
     for(let i = 0; i < streamActions.length; i++) {
       const { timestamp, callback, action } = streamActions[i];
       this.actionsStream.addAction(() => {
-        callback && callback();
+        let callbackActions = (callback && callback()) || [];
+
+        room.actions = room.actions.concat(callbackActions);
+        this.emitRoomActions(roomName, callbackActions);
 
         this.io.to(roomName).emit('newAction', action);
       }, timestamp);

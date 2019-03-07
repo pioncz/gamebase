@@ -23,90 +23,6 @@ const Pages = {
   Winner: 'Winner',
 };
 
-class Progress extends Component {
-  constructor(props) {
-    super(props);
-    
-    this.update = this.update.bind(this);
-    
-    let interval = null;
-  
-    if (props.startTimestamp && props.endTimestamp) {
-      interval = window.setInterval(this.update, 50);
-    }
-    
-    this.state = {
-      startTimestamp: props.startTimestamp,
-      endTimestamp: props.endTimestamp,
-      length: 0,
-      interval: interval,
-    };
-  }
-  componentWillReceiveProps(nextProps) {
-    const { startTimestamp, endTimestamp } = this.props,
-      timestampsChanged = startTimestamp !== nextProps.startTimestamp || endTimestamp !== nextProps.endTimestamp;
-    
-    if (timestampsChanged) {
-      this.stop();
-      
-    }
-  }
-  stop() {
-    const { interval } = this.state;
-  
-    interval && window.clearInterval(interval);
-    this.setState({
-      interval: null,
-      startTimestamp: null,
-      endTimestamp: null,
-      length: 0,
-    });
-  }
-  update() {
-    const { startTimestamp, endTimestamp} = this.state;
-    let length = (Date.now() - startTimestamp)/(endTimestamp - startTimestamp);
-    if (length < 0) {
-      window.clearInterval(this.state.interval);
-    }
-    length = Math.min(Math.max(Math.round((length*100)), 0), 1);
-    
-    this.setState({
-      length,
-    });
-  }
-  render() {
-    const { length } = this.state;
-    
-    let progressStyle = {
-      width: length + '%',
-      background: '#fff',
-    };
-    
-    return <div className="player-progress" style={progressStyle} />;
-  }
-}
-
-const filterPlayers = (players, firstPlayerId) => {
-  let playerIndex = players && players.findIndex(player => player.id === firstPlayerId),
-    parsedPlayers = players && players.slice(0, players.length);
-  
-  if (!firstPlayerId || !players || playerIndex === -1) {
-    return [];
-  }
-  
-  if (playerIndex === 0) {
-    return players;
-  }
-  
-  while (parsedPlayers.length < 4) {
-    parsedPlayers.push({name: '', avatar: null, color: ''});
-  }
-
-  parsedPlayers = parsedPlayers.slice(playerIndex,parsedPlayers.length).concat(parsedPlayers.slice(0,playerIndex));
-
-  return parsedPlayers;
-};
-
 class Ludo extends Component {
   constructor(props) {
     super(props);
@@ -190,9 +106,16 @@ class Ludo extends Component {
         });
         this.timerComponent.start(roomState.finishTimestamp - Date.now());
       }
+      if (newAction.type === Games.Ludo.ActionTypes.RestartProgress) {
+        this.profilesComponent.restartProgress();
+      }
+      if (newAction.type === Games.Ludo.ActionTypes.StopProgress) {
+        this.profilesComponent.stopProgress();
+      }
       if (newAction.type === Games.Ludo.ActionTypes.WaitForPlayer) {
         this.setState({
           currentPlayerId: newAction.playerId,
+          waitingForAction: newAction.expectedAction,
         });
       }
       if (newAction.type === Games.Ludo.ActionTypes.Roll) {
@@ -200,21 +123,13 @@ class Ludo extends Component {
       }
       if (newAction.type === Games.Ludo.ActionTypes.MovePawn) {
         this.gameComponent.movePawn({pawnId: newAction.pawnId, fieldSequence: newAction.fieldSequence});
-        this.gameComponent.engine.selectPawns([]);
-
-        this.setState({
-          waitingForAction: Games.Ludo.ActionTypes.Roll,
-        });
       }
       if (newAction.type === Games.Ludo.ActionTypes.SelectPawns) {
         // highlight pawns only for current player
         if (this.props.player && newAction.playerId !== this.props.player.id) return;
 
         this.gameComponent.engine.selectPawns(newAction.pawnIds);
-        
-        this.setState({
-          waitingForAction: Games.Ludo.ActionTypes.PickPawn,
-        });
+        this.profilesComponent.restartProgress();
       }
       if (newAction.type === Games.Ludo.ActionTypes.FinishGame) {
         let winnerId = newAction.winnerId;
@@ -223,7 +138,6 @@ class Ludo extends Component {
           winnerId,
           page: (winnerId?Pages.Winner:this.state.page),
         });
-  
         this.timerComponent.stop();
       }
       if (newAction.type === Games.Ludo.ActionTypes.Disconnected) {
@@ -378,6 +292,8 @@ class Ludo extends Component {
         firstPlayerId={player.id}
         currentPlayerId={currentPlayerId}
         hidden={page !== Pages.Game}
+        roundLength={Games.Ludo.Config.RoundLength}
+        ref={(element) => {this.profilesComponent = element; }}
       />
       {currentModal}
       <div 

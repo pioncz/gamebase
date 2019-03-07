@@ -100,6 +100,9 @@ const Fields = require('./Fields'),
         const pawn = playerPawns[j];
         let fieldIndex = Fields.findIndex(field => field.x === pawn.x && field.z === pawn.z);
         let field = Fields[fieldIndex];
+        if (field.type === FieldTypes.goal) {
+          points += Fields.length * playerPawns.length;
+        }
         while (field.type !== FieldTypes.goal || field.playerIndex !== i) {
           points--;
           field = getField(++fieldIndex);

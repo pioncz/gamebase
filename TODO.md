@@ -1,6 +1,9 @@
-- zmien gracza jesli skonczyla sie jego kolejka
-- zastapic emitNewActions na this.emitRoomActions, dodac concat room actions
-- czas gry wysylany ze startGame jako timeLength [ms]
+- guzik kostki nie powinien byc zaznaczony gdy gracz nie moze rzucic kostka (roomState.rolled = true)
+- test nowej gry
+- config powinien byc uzywany tylko na serwerze i zawierac klucze prywatne (albo podzielic config na private / public)
+- test na randomowe akcje od gracza w roznych momentach najpelniejszego testu rzutu kostka
+- w pages/ludo przy starcie gry ustawiac czas z configa
+- wywalic configa ze stanu pokoju - musi byc brany na bierzaco z aktualnej gry
 - skasowac properte player.color - korzystajmy z playerColors
 - koniec gry gdy gameState === RoomStates.Finished, a nie samo winnerId (w przyszlosci obsluga remisu)
 - zalogowany gracz traci polaczenie / odswieza strone - do 10s moze wrocic do pokoju bez przegranej
@@ -28,12 +31,6 @@ Dalszy rozwój:
 TO DO
 - formularze login i register: wyswietlanie errow z serwera
 - panel admina - stan polaczen, kolejki, obciazenie serwera
-- timer gry: konczenie gry gdy uplynie czas rozgrywki
-- timer ruchu gracza: konczenie ruchu gdy uplynie czas
-- widoczna zmiana gracza (jezeli twoja kolejka, to bardziej widoczna)
-- wyczyscic logi w konsoli podczas gry na serwerze i w przegladarce
-- guzik kostki nie powinien byc zaznaczony gdy gracz nie moze rzucic kostka (roomState.rolled = true)
-- config powinien byc uzywany tylko na serwerze i zawierac klucze prywatne (albo podzielic config na private / public)
 
 1) Gra
 - przy profilu aktualnego gracza, progress jego kolejki
@@ -148,3 +145,7 @@ DONE:
 + gdy gracz wejdzie na strone / a potem /ludo to nie leci playerUpdate
 + zakoncz gre jesli jest po czasie
 + _closeRoom zamienic na this.closeRoom
++ test na TimeoutHandler: 1 pole w spawni vs 4 w terenie
++ zmien gracza jesli skonczyla sie jego kolejka:
++ czas gry wysylany ze startGame jako timeLength [ms]
++ zastapic emitNewActions na this.emitRoomActions, dodac concat room actions

@@ -28,6 +28,7 @@ class Room {
       winnerId: null,
       roomState: RoomStates.queue,
       finishTimestamp: null,
+      roundTimestamp: null,
       rolled: false,
       diceNumber: 0,
       queueColors: [],
@@ -68,6 +69,18 @@ class Room {
     return returnActions;
   }
   handleUpdate(now) {
+    if (this.gameState.roundTimestamp && now > this.gameState.roundTimestamp) {
+      let returnActions = [];
+
+      try {
+        returnActions = Games.Ludo.ActionHandlers.RoundEnd(this.gameState);
+      } catch(e) {
+        console.error(e.message ? e.message : e);
+      }
+
+      return returnActions;
+    }
+
     if (this.gameState.finishTimestamp && now > this.gameState.finishTimestamp) {
       let returnActions = [];
 

@@ -7,6 +7,7 @@ import { actions } from 'shared/redux/api';
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
 import PlayerProfiles from 'components/PlayerProfiles';
+import { Config } from 'ludo';
 
 const nextId = (()=>{
   let id = 0;
@@ -143,6 +144,17 @@ class Engine extends Component {
   }
   componentDidMount() {
     this.props.setInGame();
+    this.initGame();
+    this.profilesComponent.restartProgress();
+    setInterval(() => {
+      const { players, currentPlayerId } = this.state;
+      let currentPlayerIndex = players.findIndex(player => player.id === currentPlayerId);
+      let nextPlayer = players[(currentPlayerIndex + 1) % players.length];
+      this.profilesComponent.restartProgress();
+      this.setState({
+        currentPlayerId: nextPlayer.id,
+      })
+    }, 5000);
   }
   componentWillUnmount() {
     this.props.unsetInGame();
@@ -281,7 +293,7 @@ class Engine extends Component {
     });
   }
   render() {
-    const { players, pawns, selectedPawnId, pawnInput, numberOfPlayers, pawnSet, firstPlayerIndex, firstPlayerId } = this.state,
+    const { players, pawns, selectedPawnId, pawnInput, numberOfPlayers, pawnSet, firstPlayerIndex, firstPlayerId, currentPlayerId } = this.state,
       pawnsElements = pawns.map(pawn => {
       return <div key={pawn.id}
                   className={'pawn' + (pawn.id===selectedPawnId?' pawn--selected':'')}
@@ -344,8 +356,10 @@ class Engine extends Component {
       <PlayerProfiles 
         players={players} 
         firstPlayerId={firstPlayerId}
-        currentPlayerId={firstPlayerId}
+        currentPlayerId={currentPlayerId}
         hidden={false}
+        roundLength={Config.RoundLength}
+        ref={(element) => {this.profilesComponent = element; }}
       />
       <Timer ref={(element) => { this.timerComponent = element; }}/>
     </div>;
