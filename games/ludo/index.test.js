@@ -194,25 +194,47 @@ describe('User make full move', () => {
     const rollAction = returnActions[0];
     const waitAction = returnActions[1];
     const stopProgressAction = returnActions[2];
-    expect(rollAction.action.type).toBe(Ludo.ActionTypes.Roll);
-    expect(rollAction.action.diceNumber).toBe(3);
-    expect(waitAction.action.type).toBe(Ludo.ActionTypes.WaitForPlayer);
-    expect(waitAction.timestamp).toBe(currentTime + Ludo.AnimationLengths.rollDice);
-    expect(waitAction.action.expectedAction).toBe(Ludo.ActionTypes.PickPawn);
+    expect(rollAction).toMatchObject({
+      action: {
+        type: Ludo.ActionTypes.Roll,
+        diceNumber: 3,
+      }
+    });
+    expect(waitAction).toMatchObject({
+      action: {
+        type: Ludo.ActionTypes.WaitForPlayer,
+        expectedAction: Ludo.ActionTypes.PickPawn,
+        playerId: roomState.playerIds[0],
+      },
+      timestamp: currentTime + Ludo.AnimationLengths.rollDice,
+      callback: waitAction.callback,
+    });
     expect(isFunction(waitAction.callback)).toBe(true);
-    expect(stopProgressAction.action.type).toBe(Ludo.ActionTypes.StopProgress);
+    expect(stopProgressAction).toMatchObject({
+      action: {
+        type: Ludo.ActionTypes.StopProgress,
+      },
+    });
 
     currentTime++;
     const callbackActions = waitAction.callback();
     expect(roomState.rolled).toBe(true);
     expect(callbackActions.length).toBe(2);
-    const selectPawnsAction = callbackActions[0].action;
-    const resetProgressAction = callbackActions[1].action;
+    const selectPawnsAction = callbackActions[0];
+    const resetProgressAction = callbackActions[1];
 
-    expect(selectPawnsAction.type).toBe(Ludo.ActionTypes.SelectPawns);
-    expect(selectPawnsAction.pawnIds).toEqual(["12"]);
-    expect(selectPawnsAction.playerId).toBe('1');
-    expect(resetProgressAction.type).toBe(Ludo.ActionTypes.RestartProgress);
+    expect(selectPawnsAction).toMatchObject({
+      action: {
+        type: Ludo.ActionTypes.SelectPawns,
+        pawnIds: ["12"],
+        playerId: roomState.playerIds[0],
+      },
+    });
+    expect(resetProgressAction).toMatchObject({
+      action: {
+        type: Ludo.ActionTypes.RestartProgress,
+      },
+    });
     expect(roomState.roundTimestamp).toBe(currentTime + Ludo.Config.RoundLength);
   });
 });
