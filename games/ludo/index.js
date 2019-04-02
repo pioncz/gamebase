@@ -1,4 +1,6 @@
 const BoardUtils = require('./BoardUtils.js');
+const Board = require('./Board.js');
+const Fields = require('./Fields.js');
 
 const getNextPlayerId = (playerIds, playerId) => {
   return playerIds[(playerIds.indexOf(playerId) + 1) % playerIds.length];
@@ -172,8 +174,8 @@ const RollHandler = (action, player, roomState, diceNumber = 0) => {
 const SelectColorHandler = (action, player, roomState) => {
   const returnActions = [];
   let playerColor = roomState.playerColors.find(playerColor => {
-    return playerColor.playerId === player.id;
-  }),
+      return playerColor.playerId === player.id;
+    }),
     valueColor = roomState.playerColors.find(playerColor => {
       return playerColor.color === action.value;
     });
@@ -418,6 +420,8 @@ const Ludo = {
     Timeout: TimeoutHandler,
     RoundEnd: RoundEndHandler,
   },
+  Board,
+  Fields,
   AnimationLengths,
   ActionTypes,
   InitialState,

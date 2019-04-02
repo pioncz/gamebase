@@ -23,6 +23,7 @@ module.exports = function() {
       publicPath: '/',
     },
     devtool: 'source-map',
+    mode: 'development',
     module: {
       rules: [
         {

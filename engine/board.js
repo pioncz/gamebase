@@ -3,9 +3,9 @@ import Pawn from './pawn'
 import {EASING, TIMES} from "./utils/animations";
 import PawnsController from 'pawnsController';
 import Config from 'config.js';
-import Fields from './../games/ludo/Fields.js';
 import Dice from './dice';
 import BoardUtils from './../games/ludo/BoardUtils.js';
+import Games from 'Games.js';
 
 const GridAmount = 11;
 
@@ -23,10 +23,9 @@ export default class Board {
     this.texture = null;
     this.rotation = 0;
     
-    this.fields = Fields;
     this.createBoard();
-    this.drawBoard();
-    
+    this.changeGame(props.gameName);
+
     this.pawnsController = new PawnsController({
       context: this.context,
       scene: this.scene,
@@ -81,24 +80,13 @@ export default class Board {
     this.pawnsController.removePawns();
   }
   drawBoard() {
-    let canvas = this.canvas,
-      ctx = canvas.getContext('2d'),
+    let ctx = this.canvas.getContext('2d'),
       width = this.canvasWidth,
       height = this.canvasHeight;
-  
-    canvas.width = width;
-    canvas.height = height;
-  
-    ctx.clearRect(0, 0, width, height);
-  
-    // background
-    var grd = ctx.createLinearGradient(0, 0, width, height);
-    grd.addColorStop(.1, "#0fb8ad");
-    grd.addColorStop(.4, "#1fc8db");
-    grd.addColorStop(.7, "#2cb5e8");
-    ctx.fillStyle = grd;
-    ctx.fillRect(0, 0, width, width);
-  
+    this.canvas.width = width,
+    this.canvas.height = height;
+    Games[this.gameName].Board.drawBoard(this.canvas);
+      
     //fields
     let drawField = (field) => {
       let x = field.x,
@@ -276,5 +264,10 @@ export default class Board {
         }
       }
     }
+  }
+  changeGame(gameName) {
+    this.gameName = gameName;
+    this.fields = Games[this.gameName].Fields;
+    this.drawBoard();
   }
 }

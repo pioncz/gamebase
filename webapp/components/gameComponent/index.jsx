@@ -8,7 +8,11 @@ export default class GameComponent extends Component {
     this.handleClick = this.handleClick.bind(this);
   }
   componentDidMount() {
-    this.engine = new Engine({container: this.rendererContainer});
+    const { gameName } = this.props;
+    this.engine = new Engine({
+      container: this.rendererContainer,
+      gameName,
+    });
     this.engine.on('click', this.handleClick);
   }
   componentWillUnmount() {

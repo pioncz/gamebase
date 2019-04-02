@@ -59,7 +59,8 @@ const nextId = (()=>{
     }
   },
   PawnSets = {
-    'initial': [
+    Ludo: {
+      'initial': [
         {id: '12', x: 0, z: 0}, // first player
         {id: '13', x: 1, z: 0}, // first player
         {id: '14', x: 0, z: 1}, // first player
@@ -113,6 +114,27 @@ const nextId = (()=>{
         {id: '10', x: 0, z: 10},
         {id: '11', x: 1, z: 10},
     ],
+    },
+    Kira: {
+      'initial': [
+        {id: '12', x: 1, z: 1},// first player
+        {id: '13', x: 1, z: 3},
+        {id: '14', x: 3, z: 1},
+        {id: '15', x: 3, z: 3},
+        {id: '0', x: 7, z: 1}, // second player
+        {id: '1', x: 7, z: 3},
+        {id: '2', x: 9, z: 1}, 
+        {id: '3', x: 9, z: 3}, 
+        {id: '4', x: 9, z: 9}, // third player
+        {id: '5', x: 7, z: 9}, 
+        {id: '6', x: 9, z: 7}, 
+        {id: '7', x: 7, z: 7}, 
+        {id: '8', x: 1, z: 7}, // fourth player
+        {id: '9', x: 1, z: 9},
+        {id: '10', x: 3, z: 7},
+        {id: '11', x: 3, z: 9},  
+      ],
+    },
   };
 
 class Engine extends Component {
@@ -120,7 +142,7 @@ class Engine extends Component {
     super(props);
   
     this.state = {
-      game: Games.Ludo,
+      gameName: localStorage.gameName || Games.Ludo.Name,
       pawns: [],
       moves: [],
       players: [],
@@ -146,7 +168,7 @@ class Engine extends Component {
   }
   componentDidMount() {
     this.props.setInGame();
-    // this.initGame();
+    this.initGame();
     this.profilesComponent.restartProgress();
     setInterval(() => {
       const { players, currentPlayerId } = this.state;
@@ -248,7 +270,7 @@ class Engine extends Component {
     });
   }
   initGame() {
-    const { numberOfPlayers, pawnSet, firstPlayerIndex } = this.state;
+    const { numberOfPlayers, pawnSet, firstPlayerIndex, gameName } = this.state;
     let newPlayers = [],
       newPawns,
       firstPlayer,
@@ -260,7 +282,7 @@ class Engine extends Component {
       newPlayers.push(newPlayer);
     }
     
-    newPawns = PawnSets[pawnSet].slice(0,4*numberOfPlayers);
+    newPawns = PawnSets[gameName][pawnSet].slice(0,4*numberOfPlayers);
     
     for(let pawnI in newPawns) {
       let pawn = newPawns[pawnI],
@@ -295,17 +317,20 @@ class Engine extends Component {
     });
   }
   handleGameChange(e) {
-    console.log('handleGameChange');
+    const pawnSet = Object.keys(PawnSets[e.target.value])[0];
+    localStorage.setItem(e.target.name, e.target.value);
+    localStorage.setItem('pawnSet', pawnSet);
     this.gameComponent.engine.changeGame(e.target.value);
     this.setState({
-      game: e.target.value,
+      gameName: e.target.value,
+      pawnSet,
     });
   }
   handleSetGame() {
     console.log('handleSetGame');
   }
   render() {
-    const { game, players, pawns, selectedPawnId, pawnInput, numberOfPlayers, pawnSet, firstPlayerIndex, firstPlayerId, currentPlayerId } = this.state,
+    const { players, pawns, selectedPawnId, pawnInput, numberOfPlayers, pawnSet, firstPlayerIndex, firstPlayerId, currentPlayerId, gameName } = this.state,
       pawnsElements = pawns.map(pawn => {
       return <div key={pawn.id}
                   className={'pawn' + (pawn.id===selectedPawnId?' pawn--selected':'')}
@@ -314,14 +339,14 @@ class Engine extends Component {
       </div>;
     });
     const games = Object.keys(Games);
-    console.log(games);
+
     return <div className="engine-page">
       <div className="settings">
       <div className="settings-title">Game</div>
       <div className="input-row">
               <div>Choose game</div>
               <div>
-                <select name="pawnSet" onChange={this.handleGameChange} value={game}>
+                <select name="gameName" onChange={this.handleGameChange} value={gameName}>
                   {games.map(gameName => (
                     <option value={gameName} key={gameName} >{gameName}</option>
                   ))}
@@ -349,9 +374,9 @@ class Engine extends Component {
               <div>Pawns set</div>
               <div>
                 <select name="pawnSet" onChange={this.handleInputChange} value={pawnSet}>
-                  <option value="initial">Initial</option>
-                  <option value="movePawnBack">Move pawn back</option>
-                  <option value="win">Win</option>
+                  {Object.keys(PawnSets[gameName]).map( pawnSetName => (
+                    <option value={pawnSetName} key={`${gameName}-${pawnSetName}`}>{`${gameName} - ${pawnSetName}`}</option>
+                  ))}
                 </select>
               </div>
           </div>
@@ -377,6 +402,7 @@ class Engine extends Component {
         players={this.state.players}
         moves={this.state.moves}
         gameId={this.state.gameId}
+        gameName={this.state.gameName}
         firstPlayerId={firstPlayerId}
         players={players}
       />

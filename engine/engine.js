@@ -5,13 +5,13 @@ import EventEmitter from 'event-emitter-es6'
 import Games from 'Games.js'
 
 export default class Engine extends EventEmitter {
-  constructor(props) {
+  constructor( { container, gameName }) {
     super();
-    this.container = props.container;
+    this.container = container;
     this.raycaster = new THREE.Raycaster();
     this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
     this.initializing = false;
-    this.gameName = null;
+    this.gameName = gameName;
     this.gameId = null;
 
     this.scene = new THREE.Scene();
@@ -76,7 +76,9 @@ export default class Engine extends EventEmitter {
       renderer: this.renderer,
       pawns: [],
       context: this.context,
+      gameName: this.gameName,
     });
+
 
     WebFont.load({
       custom: {
@@ -163,6 +165,6 @@ export default class Engine extends EventEmitter {
     window.requestAnimationFrame(this.animate.bind(this));
   }
   changeGame(gameName) {
-    console.log('gameName', gameName);
+    this.board.changeGame(gameName);
   }
 }

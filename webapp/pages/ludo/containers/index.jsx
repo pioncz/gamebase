@@ -35,6 +35,7 @@ class Ludo extends Component {
       playerColors: [],
       currentPlayerId: null,
       gameId: null,
+      gameName: Games.Ludo.Name,
       players: [],
       pawns: [],
       winnerId: null,
@@ -210,7 +211,7 @@ class Ludo extends Component {
   }
   render() {
     let currentModal,
-      {gameId, page, players, playerColors, winnerId, pawns, finishTimestamp, nextRollTimestamp, currentPlayerId, nextRollLength, waitingForAction} = this.state,
+      {gameId, page, players, playerColors, winnerId, pawns, finishTimestamp, nextRollTimestamp, currentPlayerId, nextRollLength, waitingForAction, gameName} = this.state,
       {player} = this.props,
       diceContainerClass = ClassNames({
         'dices-container': true,
@@ -283,6 +284,7 @@ class Ludo extends Component {
         ref={(element) => {this.gameComponent = element; }}
         onClick={this.handleBoardClick}
         gameId={gameId}
+        gameName={gameName}
         pawns={pawns}
         players={players}
         firstPlayerId={player.id}
