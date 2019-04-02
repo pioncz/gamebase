@@ -8,7 +8,7 @@ import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
 import PlayerProfiles from 'components/PlayerProfiles';
 import { Config } from 'ludo';
-
+import Games from 'Games.js';
 const nextId = (()=>{
   let id = 0;
   return () => {
@@ -120,6 +120,7 @@ class Engine extends Component {
     super(props);
   
     this.state = {
+      game: Games.Ludo,
       pawns: [],
       moves: [],
       players: [],
@@ -141,10 +142,11 @@ class Engine extends Component {
     this.movePawn = this.movePawn.bind(this);
     this.initGame = this.initGame.bind(this);
     this.onPawnClick = this.onPawnClick.bind(this);
+    this.handleGameChange = this.handleGameChange.bind(this);
   }
   componentDidMount() {
     this.props.setInGame();
-    this.initGame();
+    // this.initGame();
     this.profilesComponent.restartProgress();
     setInterval(() => {
       const { players, currentPlayerId } = this.state;
@@ -292,8 +294,18 @@ class Engine extends Component {
       selectedPawnId: pawnId,
     });
   }
+  handleGameChange(e) {
+    console.log('handleGameChange');
+    this.gameComponent.engine.changeGame(e.target.value);
+    this.setState({
+      game: e.target.value,
+    });
+  }
+  handleSetGame() {
+    console.log('handleSetGame');
+  }
   render() {
-    const { players, pawns, selectedPawnId, pawnInput, numberOfPlayers, pawnSet, firstPlayerIndex, firstPlayerId, currentPlayerId } = this.state,
+    const { game, players, pawns, selectedPawnId, pawnInput, numberOfPlayers, pawnSet, firstPlayerIndex, firstPlayerId, currentPlayerId } = this.state,
       pawnsElements = pawns.map(pawn => {
       return <div key={pawn.id}
                   className={'pawn' + (pawn.id===selectedPawnId?' pawn--selected':'')}
@@ -301,10 +313,25 @@ class Engine extends Component {
         {`${pawn.id}:${pawn.color}:${pawn.x},${pawn.z}`}
       </div>;
     });
-
+    const games = Object.keys(Games);
+    console.log(games);
     return <div className="engine-page">
       <div className="settings">
-        <div className="settings-title">Settings</div>
+      <div className="settings-title">Game</div>
+      <div className="input-row">
+              <div>Choose game</div>
+              <div>
+                <select name="pawnSet" onChange={this.handleGameChange} value={game}>
+                  {games.map(gameName => (
+                    <option value={gameName} key={gameName} >{gameName}</option>
+                  ))}
+                </select>
+              </div>
+              <button type="button" onClick={this.handleSetGame}>Set game</button>
+          </div>
+      <div className="settings-body">
+      </div>
+      <div className="settings-title">Settings</div>
         <div className="settings-body">
           <div className="input-row">
               <div>Number of players</div>
