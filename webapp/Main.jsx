@@ -76,7 +76,6 @@ class Main extends Component {
 
     return (<Router>
       <div className={this.props.inGame?'inGame':''}>
-        <Connector ref={this.setConnector}/>
         <Header 
           player={player}
           toggleLoginModal={this.toggleLoginModal}
@@ -85,7 +84,7 @@ class Main extends Component {
         />
         <div className="main">
           <Route exact path="/" component={Pages.Home}/>
-          <Route path="/ludo" component={Pages.Ludo}/>
+          <Route path="/room/:roomId" component={Pages.Room}/>
           <Route path="/engine" component={Pages.Engine}/>
           <Route path="/admin" component={Pages.Admin}/>
         </div>
@@ -99,6 +98,7 @@ class Main extends Component {
             onClose={this.toggleRegistrationModal}
             onSubmit={this.sendRegistrationModal}
           />}
+        <Connector ref={this.setConnector}/>
       </div>
     </Router>);
   }

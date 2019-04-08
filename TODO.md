@@ -1,6 +1,13 @@
-- guzik kostki nie powinien byc zaznaczony gdy gracz nie moze rzucic kostka (roomState.rolled = true)
 - test nowej gry
-- config powinien byc uzywany tylko na serwerze i zawierac klucze prywatne (albo podzielic config na private / public)
+- w kirze ruch jest wykonywany: 
+1) select pawns and paths (semi transparent) 
+2) pawn selection 
+3) paths are highlighted on hover
+*) Serwer wysyla SelectPaths (pawns i paths w srodku)
+- font awesome moze byc niedoladowany gdy engine zrobi swoje pierwszy render ( /engine )
+- guzik kostki nie powinien byc zaznaczony gdy gracz nie moze rzucic kostka (roomState.rolled = true)
+- konfigurowac za pomoca zmiennych srodowiskowych, dopisac w readme obsluge, w webpapp wstawic frontowe configi do config.js
+- skasowac ui connectora?
 - test na randomowe akcje od gracza w roznych momentach najpelniejszego testu rzutu kostka
 - w pages/ludo przy starcie gry ustawiac czas z configa
 - wywalic configa ze stanu pokoju - musi byc brany na bierzaco z aktualnej gry

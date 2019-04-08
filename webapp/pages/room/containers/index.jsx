@@ -23,7 +23,7 @@ const Pages = {
   Winner: 'Winner',
 };
 
-class Ludo extends Component {
+class Room extends Component {
   constructor(props) {
     super(props);
     
@@ -326,4 +326,4 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(Ludo);
+)(Room);

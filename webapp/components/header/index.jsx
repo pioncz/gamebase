@@ -92,7 +92,6 @@ export default class Header extends Component {
           {(player.state === 'loggedOut' || player.temporary) && <a onClick={this.props.toggleLoginModal}>Login</a>}
           {(player.state === 'loggedOut' || player.temporary) && <a onClick={this.props.toggleRegistrationModal}>Register</a>}
           <Link to='/'>Home</Link>
-          <Link to='/ludo'>Ludo</Link>
           <Link to='/engine'>Engine</Link>
           <Link to='/admin'>Admin</Link>
         </div>
