@@ -14,6 +14,7 @@
 - skasowac properte player.color - korzystajmy z playerColors
 - koniec gry gdy gameState === RoomStates.Finished, a nie samo winnerId (w przyszlosci obsluga remisu)
 - zalogowany gracz traci polaczenie / odswieza strone - do 10s moze wrocic do pokoju bez przegranej
+- TEST end to end pelnej rozgrywki graczy testowych z serwerem - 1-3 testy, z porownaniem screenow
 
 RELEASE
 - menu: nowa gra, fullscreen, pomoc (skroty)
@@ -34,6 +35,7 @@ Dalszy rozwój:
 - ustalic maxAge w configu i wykorzystac w player.service.js:authenticate i players.controller.js:authenticate 
 - registration: password confirmation
 - player tymczasowy jest kasowany po: 10 minutach od ostatniego wylogowania playera lub zalogowania playera
+- TEST end to end pelnej rozgrywki graczy testowych z serwerem - dodac wiecej testow(?) z porownaniem screenow z roznych rozdzielczosci
 
 TO DO
 - formularze login i register: wyswietlanie errow z serwera
