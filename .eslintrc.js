@@ -25,5 +25,6 @@ module.exports = {
         "comma-dangle": ["error", "always"],
         "no-trailing-spaces": ["error"],
         "no-multiple-empty-lines": ["error", { "max": 2 }],
+        "max-line-length": [true, 100],
     }
 };

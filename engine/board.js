@@ -22,9 +22,9 @@ export default class Board {
     this.canvas = Utils.$({element: 'canvas',});
     this.texture = null;
     this.rotation = 0;
+    this.gameName = props.gameName;
 
     this.createBoard();
-    this.changeGame(props.gameName);
 
     this.pawnsController = new PawnsController({
       context: this.context,
@@ -37,7 +37,8 @@ export default class Board {
     this.dice = new Dice({
       scene: this.scene,
       context: props.context,
-    })
+    });
+    this.changeGame(props.gameName);
   }
   // Color fields, create pawns
   initGame(props) {
@@ -266,9 +267,8 @@ export default class Board {
     }
   }
   changeGame(gameName) {
-    this.clearGame();
     this.gameName = gameName;
     this.fields = Games[this.gameName].Fields;
-    this.drawBoard();
+    this.clearGame();
   }
 }

@@ -1,21 +1,21 @@
 import Controls from './utils/controls'
-import { EASING, TIMES, Animations } from './utils/animations'
+import { EASING, TIMES, Animations, } from './utils/animations'
 import Board from './board'
 import EventEmitter from 'event-emitter-es6'
 import Games from 'Games.js'
 
 export default class Engine extends EventEmitter {
-  constructor( { container, gameName }) {
+  constructor( { container, gameName, }) {
     super();
     this.container = container;
     this.raycaster = new THREE.Raycaster();
-    this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
+    this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true,});
     this.initializing = false;
     this.gameName = gameName;
     this.gameId = null;
 
     this.scene = new THREE.Scene();
-    this.controls = new Controls({container: this.container});
+    this.controls = new Controls({container: this.container,});
     this.animations = new Animations();
     this.raycaster = new THREE.Raycaster();
 
@@ -71,6 +71,29 @@ export default class Engine extends EventEmitter {
       camera: this.camera,
     };
 
+    if (this.gameName) {
+      this.createBoard();
+    }
+
+
+    WebFont.load({
+      custom: {
+        families: ['FontAwesome',],
+        urls: [
+          'https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css',
+        ],
+        testStrings: {
+          'FontAwesome': '\uf001',
+        },
+      },
+      active: () => {
+        this.animate();
+      },
+    });
+
+    this.onResize();
+  }
+  createBoard() {
     this.board = new Board({
       scene: this.scene,
       renderer: this.renderer,
@@ -78,23 +101,6 @@ export default class Engine extends EventEmitter {
       context: this.context,
       gameName: this.gameName,
     });
-
-
-    WebFont.load({
-      custom: {
-        families: ['FontAwesome'],
-        urls: [
-          'https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css',
-        ],
-        testStrings: {
-          'FontAwesome': '\uf001'
-        }
-      },
-      active: () => {
-        this.animate();
-      }
-    });
-
     this.onResize();
   }
   onResize() {
@@ -112,17 +118,23 @@ export default class Engine extends EventEmitter {
       this.camera.right  =   this.frustumSize;
       this.camera.top    =   this.frustumSize / aspect;
       this.camera.bottom = - this.frustumSize / aspect;
-      this.board.setRotation(false); //rotates board
+      if (this.board) {
+        this.board.setRotation(false); //rotates board
+      }
     } else {
       this.camera.left   = - this.frustumSize * aspect;
       this.camera.right  =   this.frustumSize * aspect;
       this.camera.top    =   this.frustumSize;
       this.camera.bottom = - this.frustumSize;
-      this.board.setRotation(true); //rotates board
+      if (this.board) {
+        this.board.setRotation(true); //rotates board
+      }
     }
     this.camera.updateProjectionMatrix();
   }
   onClick(e) {
+    if (!this.gameName) return;
+
     const boundingRect = this.renderer.domElement.getBoundingClientRect();
     let mouse = {
       x: ( (e.clientX - boundingRect.left) / this.renderer.domElement.clientWidth ) * 2 - 1,
@@ -134,9 +146,9 @@ export default class Engine extends EventEmitter {
     let pawns = this.board.handleClick(this.raycaster),
       pawnIds = pawns.map(pawn => pawn.id );
 
-    this.emit('click', { pawnIds });
+    this.emit('click', { pawnIds, });
   }
-  initGame({gameId, pawns, players}, firstPlayerId) {
+  initGame({gameId, gameName, pawns, players,}, firstPlayerId) {
     if (this.initializing) {
       console.log('Game is updating already.');
       return;
@@ -146,10 +158,14 @@ export default class Engine extends EventEmitter {
       return;
     }
 
+    if (this.gameName !== gameName) {
+      this.changeGame(gameName);
+    }
+
     this.initializing = true;
 
     let firstPlayerIndex = players.findIndex(player => player.id === firstPlayerId);
-    this.board.initGame({pawns, players, firstPlayerIndex});
+    this.board.initGame({pawns, players, firstPlayerIndex,});
     this.onResize();
     this.initializing = false;
   }
@@ -165,6 +181,12 @@ export default class Engine extends EventEmitter {
     window.requestAnimationFrame(this.animate.bind(this));
   }
   changeGame(gameName) {
-    this.board.changeGame(gameName);
+    if (this.gameName !== gameName) {
+      this.gameName = gameName;
+      if (!this.board) {
+        this.createBoard();
+      }
+      this.board.changeGame(gameName);
+    }
   }
 }

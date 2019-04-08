@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, } from 'react';
 import GameComponent from 'components/gameComponent/';
 import Modal from 'components/modal/index';
 import Button from 'components/button/index';
@@ -8,9 +8,10 @@ import Games from 'Games.js';
 import ClassNames from 'classnames';
 import DicesImage from 'dices.svg';
 import PlayerProfiles from 'components/PlayerProfiles';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { selectors } from 'shared/redux/api';
+import { bindActionCreators, } from 'redux';
+import { connect, } from 'react-redux';
+import { selectors, } from 'shared/redux/api';
+import SearchingRoom from 'modals/SearchingRoom'
 
 const Pages = {
   Initial: 'Initial',
@@ -26,7 +27,7 @@ const Pages = {
 class Room extends Component {
   constructor(props) {
     super(props);
-    
+
     this.state = {
       menuOpened: false,
       page: Pages.Initial,
@@ -35,7 +36,7 @@ class Room extends Component {
       playerColors: [],
       currentPlayerId: null,
       gameId: null,
-      gameName: Games.Ludo.Name,
+      gameName: null,
       players: [],
       pawns: [],
       winnerId: null,
@@ -44,17 +45,17 @@ class Room extends Component {
       nextRollLength: null,
       waitingForAction: null,
     };
-        
+
     this.handleBoardClick = this.handleBoardClick.bind(this);
     this.handleDicesClick = this.handleDicesClick.bind(this);
     this.joinQueue = this.joinQueue.bind(this);
     this.selectColor = this.selectColor.bind(this);
     this.initSocketEvents = this.initSocketEvents.bind(this);
     this.onKeyUp = this.onKeyUp.bind(this);
-  
+
     this.timerComponent = null;
     this.connectorInstance = this.props.connectorInstance;
-    
+
     this.props.setInGame();
   }
   componentDidMount() {
@@ -76,11 +77,11 @@ class Room extends Component {
       if (newAction.type === Games.Ludo.ActionTypes.SelectedColor) {
         let queueColors = this.state.queueColors,
           queueColor = queueColors.find(color => color.color === newAction.value);
-  
+
         if (queueColor) {
           queueColor.selected = true;
         }
-  
+
         this.setState({
           queueColors: queueColors,
         });
@@ -91,10 +92,10 @@ class Room extends Component {
         for(let playerIndex in roomState.players) {
           let player = roomState.players[playerIndex],
             playerColor = roomState.playerColors.find(playerColor => playerColor.playerId === player.id);
-          
+
           player.color = playerColor.color;
         }
-        
+
         this.setState({
           gameId: roomState.id,
           players: roomState.players,
@@ -123,7 +124,7 @@ class Room extends Component {
         this.gameComponent.engine.board.dice.roll(newAction.diceNumber);
       }
       if (newAction.type === Games.Ludo.ActionTypes.MovePawn) {
-        this.gameComponent.movePawn({pawnId: newAction.pawnId, fieldSequence: newAction.fieldSequence});
+        this.gameComponent.movePawn({pawnId: newAction.pawnId, fieldSequence: newAction.fieldSequence,});
       }
       if (newAction.type === Games.Ludo.ActionTypes.SelectPawns) {
         // highlight pawns only for current player
@@ -134,7 +135,7 @@ class Room extends Component {
       }
       if (newAction.type === Games.Ludo.ActionTypes.FinishGame) {
         let winnerId = newAction.winnerId;
-  
+
         this.setState({
           winnerId,
           page: (winnerId?Pages.Winner:this.state.page),
@@ -144,10 +145,10 @@ class Room extends Component {
       if (newAction.type === Games.Ludo.ActionTypes.Disconnected) {
         const players = this.state.players,
           playerIndex = players.findIndex(player => player.id === newAction.playerId);
-      
+
         if (newAction.playerId && playerIndex > -1) {
           this.setState({
-            players: players.map(player => player.id === newAction.playerId ? {...player, disconnected: true} : player),
+            players: players.map(player => player.id === newAction.playerId ? {...player, disconnected: true,} : player),
           });
         }
       }
@@ -155,10 +156,10 @@ class Room extends Component {
 
     connectorInstance.socket.on('roomUpdate', (roomState) => {
       console.log('roomUpdate', roomState);
-      
+
       let page = (roomState.roomState === 'pickColors') ? Pages.PickColor : Pages.Initial,
         state = roomState.roomState;
-      
+
       if (state === 'pickColors') {
         page = Pages.PickColor;
       } else if (state === 'queue') {
@@ -168,7 +169,7 @@ class Room extends Component {
       } else {
         page = Pages.Initial;
       }
-      
+
       this.setState({
         page,
         players: roomState.players,
@@ -199,10 +200,15 @@ class Room extends Component {
     }
   }
   joinQueue() {
+    const gameName = Games.Ludo.Name;
+
     this.connectorInstance.socket.emit('findRoom', {
-      game: Games.Ludo.Name,
+      game: gameName,
     });
-    this.setState({page: Pages.Queue});
+    this.setState({
+      page: Pages.Queue,
+      gameName: gameName,
+    });
   }
   onKeyUp(e) {
     if (e.key && e.key === ' ') {
@@ -211,17 +217,17 @@ class Room extends Component {
   }
   render() {
     let currentModal,
-      {gameId, page, players, playerColors, winnerId, pawns, finishTimestamp, nextRollTimestamp, currentPlayerId, nextRollLength, waitingForAction, gameName} = this.state,
-      {player} = this.props,
+      {gameId, gameName, page, players, playerColors, winnerId, pawns, finishTimestamp, nextRollTimestamp, currentPlayerId, nextRollLength, waitingForAction, } = this.state,
+      {player,} = this.props,
       diceContainerClass = ClassNames({
         'dices-container': true,
         'dices-container--visible': page === Pages.Game,
         'dices-container--active': player && player.id === currentPlayerId && waitingForAction === Games.Ludo.ActionTypes.Roll,
       }),
       playerColor = player && playerColors.find(playerColor => playerColor.playerId === player.id),
-      diceContainerStyle = playerColor && { 
+      diceContainerStyle = playerColor && {
         boxShadow: `inset 0 0 10px ${playerColor.color}`,
-    };
+      };
 
     if (page === Pages.Initial) {
       currentModal = <Modal open={true}>
@@ -231,45 +237,42 @@ class Room extends Component {
         </div>
       </Modal>
     }
-    
+
     if (page === Pages.Queue) {
-      currentModal = <Modal open={true}>
-        <h3>Szukanie graczy</h3>
-        <p>Przewidywany czas 2min</p>
-      </Modal>;
+      currentModal = <SearchingRoom />
     }
-    
+
     if (page === Pages.PickColor) {
       let colors = this.state.queueColors.map((queueColor) => {
         return <div
           className={"color" + (queueColor.selected ? " selected":"")}
           key={queueColor.color}
-          style={{background: queueColor.color}}
+          style={{background: queueColor.color,}}
           onClick={() => { this.selectColor(queueColor.color)}}
         ></div>
       });
-      
+
       currentModal = <Modal open={true}>
         <h3>Wybierz kolor</h3>
         <div className="colors-container">{colors}</div>
       </Modal>;
     }
-    
+
     if (page === Pages.Disconnected) {
       currentModal = <Modal open={true}>
         <h3>Gracz się rozłączył</h3>
         <Button onClick={this.joinQueue}>NOWA GRA</Button>
       </Modal>;
     }
-    
+
     if (page === Pages.Winner) {
       let winnerPlayer = players.find(player => player.id === winnerId);
-      
+
       currentModal = <Modal open={true}>
         <h3>Winner!</h3>
         <div className={"player"}>
           <img src={winnerPlayer.avatar} style={{
-            border: "6px solid " + winnerPlayer.color
+            border: "6px solid " + winnerPlayer.color,
           }} />
           <div className="player-name">
             {winnerPlayer.login}
@@ -278,7 +281,7 @@ class Room extends Component {
         <Button onClick={this.joinQueue}>NOWA GRA</Button>
       </Modal>
     }
-        
+
     return (<div className="ludo">
       <GameComponent
         ref={(element) => {this.gameComponent = element; }}
@@ -289,8 +292,8 @@ class Room extends Component {
         players={players}
         firstPlayerId={player.id}
       />
-      <PlayerProfiles 
-        players={players} 
+      <PlayerProfiles
+        players={players}
         firstPlayerId={player.id}
         currentPlayerId={currentPlayerId}
         hidden={page !== Pages.Game}
@@ -298,8 +301,8 @@ class Room extends Component {
         ref={(element) => {this.profilesComponent = element; }}
       />
       {currentModal}
-      <div 
-        className={diceContainerClass} 
+      <div
+        className={diceContainerClass}
         style={diceContainerStyle}
         onClick={this.handleDicesClick}
       >
