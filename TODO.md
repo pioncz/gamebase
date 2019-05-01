@@ -1,3 +1,5 @@
+- przy rozlaczeniu trzeba sprawdzic czy skasowac spectatora
+
 - test nowej gry
 - w kirze ruch jest wykonywany: 
 1) select pawns and paths (semi transparent) 
@@ -15,6 +17,7 @@
 - koniec gry gdy gameState === RoomStates.Finished, a nie samo winnerId (w przyszlosci obsluga remisu)
 - zalogowany gracz traci polaczenie / odswieza strone - do 10s moze wrocic do pokoju bez przegranej
 - TEST end to end pelnej rozgrywki graczy testowych z serwerem - 1-3 testy, z porownaniem screenow
+- obsluga wielu kart: na drugiej karcie mozesz tylko dolaczyc jako widz do pokoju
 
 RELEASE
 - menu: nowa gra, fullscreen, pomoc (skroty)

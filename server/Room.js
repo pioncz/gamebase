@@ -34,6 +34,7 @@ class Room {
       queueColors: [],
       playerIds: [],
       players: [],
+      spectatorIds: [],
       selectedPawns: [],
       currentPlayerId: null,
       actionExpirationTimestamp: null,
@@ -95,4 +96,4 @@ class Room {
   }
 }
 
-module.exports = { Room, RoomStates };
+module.exports = { Room, RoomStates, };

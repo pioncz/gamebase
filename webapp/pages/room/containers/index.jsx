@@ -28,9 +28,11 @@ class Room extends Component {
   constructor(props) {
     super(props);
 
+    const roomId = props.match.params.roomId;
+
     this.state = {
       menuOpened: false,
-      page: Pages.Initial,
+      page: roomId ? Pages.Queue : Pages.Initial,
       // colors that players can pick from
       queueColors: [],
       playerColors: [],
@@ -57,6 +59,10 @@ class Room extends Component {
     this.connectorInstance = this.props.connectorInstance;
 
     this.props.setInGame();
+
+    if (roomId) {
+      this.joinRoom(roomId);
+    }
   }
   componentDidMount() {
     if (this.connectorInstance) {
@@ -183,6 +189,11 @@ class Room extends Component {
     connectorInstance.socket.on('playerDisconnected', (e) => {
       console.log('playerDisconnected', e.playerId);
     });
+    connectorInstance.socket.on('socketError', (e) => {
+      if (e.code === 1) {
+
+      }
+    });
   }
   selectColor(color) {
     this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.SelectColor(this.props.player.id, color));
@@ -209,6 +220,15 @@ class Room extends Component {
       page: Pages.Queue,
       gameName: gameName,
     });
+  }
+  joinRoom = (roomId) => {
+    this.connectorInstance.socket.emit('joinRoom', {
+      roomId,
+    });
+    this.setState({
+      page: Pages.Queue,
+      gameId: roomId,
+    })
   }
   onKeyUp(e) {
     if (e.key && e.key === ' ') {
@@ -282,7 +302,7 @@ class Room extends Component {
       </Modal>
     }
 
-    return (<div className="ludo">
+    return (<div className="room">
       <GameComponent
         ref={(element) => {this.gameComponent = element; }}
         onClick={this.handleBoardClick}
