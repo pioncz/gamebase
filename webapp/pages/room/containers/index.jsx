@@ -322,7 +322,7 @@ class Room extends Component {
       >
         <DicesImage />
       </div>
-      {finishTimestamp && <Timer ref={(element) => { this.timerComponent = element; }}/>}
+      <Timer ref={(element) => { this.timerComponent = element; }}/>
     </div>);
   }
 }

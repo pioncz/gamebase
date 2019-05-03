@@ -72,8 +72,8 @@ class WebsocketServer {
 
         connection.roomId = null;
 
-        let disconnectedAction = Games.Ludo.Actions.Disconnected(player.id),
-          streamActions = Games.Ludo.ActionHandlers.Disconnected(disconnectedAction, player, room),
+        let disconnectedAction = Games[room.gameState.gameName].Actions.Disconnected(player.id),
+          streamActions = Games[room.gameState.gameName].ActionHandlers.Disconnected(disconnectedAction, player, room),
           returnActions = streamActions.map(streamAction => streamAction.action);
 
         _emitNewActions(room, returnActions);
@@ -155,7 +155,7 @@ class WebsocketServer {
       room = _findRoom(gameName);
       if (!room) {
         _log('create new room');
-        room = _createRoom(Games.Ludo.Name);
+        room = _createRoom(gameName);
         this.rooms[room.id] = room;
       }
       connection.roomId = room.id;
