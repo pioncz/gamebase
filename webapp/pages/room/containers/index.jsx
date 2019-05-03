@@ -11,7 +11,8 @@ import PlayerProfiles from 'components/PlayerProfiles';
 import { bindActionCreators, } from 'redux';
 import { connect, } from 'react-redux';
 import { selectors, } from 'shared/redux/api';
-import SearchingRoom from 'modals/SearchingRoom'
+import SearchingRoom from 'modals/SearchingRoom';
+import { withRouter, } from 'react-router-dom';
 
 const Pages = {
   Initial: 'Initial',
@@ -342,4 +343,4 @@ const mapDispatchToProps = dispatch => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(Room);
+)(withRouter(Room));

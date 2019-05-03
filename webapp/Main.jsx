@@ -3,6 +3,7 @@ import Pages from "./pages";
 import {
   BrowserRouter as Router,
   Route,
+  Switch,
 } from 'react-router-dom'
 import Header from 'components/header/index.jsx'
 import Connector from 'components/connector/index.jsx'
@@ -83,11 +84,13 @@ class Main extends Component {
           logout={this.logout}
         />
         <div className="main">
-          <Route exact path="/" component={Pages.Home}/>
-          <Route exact path="/room/:roomId" component={Pages.Room}/>
-          <Route exact path="/room" component={Pages.Room}/>
-          <Route path="/engine" component={Pages.Engine}/>
-          <Route path="/admin" component={Pages.Admin}/>
+          <Switch>
+            <Route exact path="/" component={Pages.Home}/>
+            <Route path="/room/:roomId" component={Pages.Room}/>
+            <Route path="/engine" component={Pages.Engine}/>
+            <Route path="/admin" component={Pages.Admin}/>
+            <Route path="/" component={Pages.Home}/>
+          </Switch>
         </div>
         {loginModalVisible &&
           <LoginModal
