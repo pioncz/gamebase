@@ -116,7 +116,7 @@ class WebsocketServer {
         const matchingRooms = Object.keys(this.rooms).reduce((returnRooms, roomId) => {
           const room = this.rooms[roomId];
 
-          if (room.gameName === gameName &&
+          if (room.gameState.gameName === gameName &&
             room.gameState.players.length < minPlayers) {
             return returnRooms.concat(room);
           }
@@ -232,10 +232,10 @@ class WebsocketServer {
       }
 
       if (room) {
-        // jezeli gracz jest w tym pokoju, wyslij mu error
+        // jezeli gracz jest w tym pokoju, wyslij mu stan pokoju
         if (room.id === roomId) {
-          _log('Player tried to join same room second time');
-          socket.emit('socketError', {code: 1, msg: 'Player is already in this room',});
+          _log('Player tried to join same room second time, roomState emitted');
+          _emitRoomState(room);
         // jezeli gracz jest w innym pokoju, dodaj go jako spectatora
         } else {
           room.gameState.spectatorIds.push(player.id);

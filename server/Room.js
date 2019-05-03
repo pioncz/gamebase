@@ -21,11 +21,11 @@ class Room {
     this.id = options.id;
     this.config = options.config;
     this.name = '/room' + options.id;
-    this.gameName = options.gameName;
     this.rolled = options.rolled;
     this.gameState = {
       id: options.id,
       winnerId: null,
+      gameName: options.gameName,
       roomState: RoomStates.queue,
       finishTimestamp: null,
       roundTimestamp: null,

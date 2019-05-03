@@ -1,3 +1,15 @@
+Wejscie do gry:
+ Z home:
+  + User wybiera gre, wysyla findRoom(gameName)
+  + Serwer wysyla updateRoom z informacja o jego nowym pokoju
+  + User jest przekierowany na room/:id
+ Z room/:id
+  - jesli nie ma roomId to przekierowanie na home
+  - wysyla joinRoom(gameId)
+  - jesli nie ma takiej gry, to user widzi modal: 'Taka gra nie istnieje, worc na glowna'
+  - jesli jest taka gra, ale nie ma miejsc do grania, user dolacza jako spectator (bedzie otrzymywal roomUpdate)
+  - jestli jest taka gra i jest miejsce dla gracza, to user dolacza do pokoju jako gracz
+
 - przy rozlaczeniu trzeba sprawdzic czy skasowac spectatora
 
 - test nowej gry

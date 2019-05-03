@@ -149,6 +149,11 @@ export default class Engine extends EventEmitter {
     this.emit('click', { pawnIds, });
   }
   initGame({gameId, gameName, pawns, players,}, firstPlayerId) {
+    if (!this.board) {
+      this.gameName = gameName;
+      this.createBoard();
+    }
+
     if (this.initializing) {
       console.log('Game is updating already.');
       return;

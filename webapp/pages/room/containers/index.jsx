@@ -37,7 +37,7 @@ class Room extends Component {
       queueColors: [],
       playerColors: [],
       currentPlayerId: null,
-      gameId: null,
+      roomId: null,
       gameName: null,
       players: [],
       pawns: [],
@@ -48,18 +48,10 @@ class Room extends Component {
       waitingForAction: null,
     };
 
-    this.handleBoardClick = this.handleBoardClick.bind(this);
-    this.handleDicesClick = this.handleDicesClick.bind(this);
-    this.joinQueue = this.joinQueue.bind(this);
-    this.selectColor = this.selectColor.bind(this);
-    this.initSocketEvents = this.initSocketEvents.bind(this);
-    this.onKeyUp = this.onKeyUp.bind(this);
-
     this.timerComponent = null;
     this.connectorInstance = this.props.connectorInstance;
 
     this.props.setInGame();
-
     if (roomId) {
       this.joinRoom(roomId);
     }
@@ -78,7 +70,7 @@ class Room extends Component {
     this.props.unsetInGame();
     document.removeEventListener('keypress', this.onKeyUp);
   }
-  initSocketEvents(connectorInstance) {
+  initSocketEvents = (connectorInstance) => {
     const handleAction = (newAction) => {
       if (newAction.type === Games.Ludo.ActionTypes.SelectedColor) {
         let queueColors = this.state.queueColors,
@@ -103,7 +95,7 @@ class Room extends Component {
         }
 
         this.setState({
-          gameId: roomState.id,
+          roomId: roomState.id,
           players: roomState.players,
           playerColors: roomState.playerColors,
           currentPlayerId: roomState.currentPlayerId,
@@ -180,6 +172,7 @@ class Room extends Component {
         page,
         players: roomState.players,
         queueColors: roomState.colorsQueue,
+        gameName: roomState.gameName,
       });
     });
     connectorInstance.socket.on('newAction', (newAction) => {
@@ -195,13 +188,13 @@ class Room extends Component {
       }
     });
   }
-  selectColor(color) {
+  selectColor = (color) => {
     this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.SelectColor(this.props.player.id, color));
   }
-  handleDicesClick() {
+  handleDicesClick = () => {
     this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.Roll());
   }
-  handleBoardClick(e) {
+  handleBoardClick = (e) => {
     if (this.state.waitingForAction === Games.Ludo.ActionTypes.PickPawn) {
       if (e && e.pawnIds && e.pawnIds.length) {
         let pawnId = e.pawnIds[0];
@@ -210,7 +203,7 @@ class Room extends Component {
       }
     }
   }
-  joinQueue() {
+  joinQueue = () => {
     const gameName = Games.Ludo.Name;
 
     this.connectorInstance.socket.emit('findRoom', {
@@ -227,17 +220,17 @@ class Room extends Component {
     });
     this.setState({
       page: Pages.Queue,
-      gameId: roomId,
+      roomId: roomId,
     })
   }
-  onKeyUp(e) {
+  onKeyUp = (e) => {
     if (e.key && e.key === ' ') {
       this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.Roll());
     }
   }
   render() {
     let currentModal,
-      {gameId, gameName, page, players, playerColors, winnerId, pawns, finishTimestamp, nextRollTimestamp, currentPlayerId, nextRollLength, waitingForAction, } = this.state,
+      {roomId, gameName, page, players, playerColors, winnerId, pawns, finishTimestamp, nextRollTimestamp, currentPlayerId, nextRollLength, waitingForAction, } = this.state,
       {player,} = this.props,
       diceContainerClass = ClassNames({
         'dices-container': true,
@@ -306,7 +299,7 @@ class Room extends Component {
       <GameComponent
         ref={(element) => {this.gameComponent = element; }}
         onClick={this.handleBoardClick}
-        gameId={gameId}
+        gameId={roomId}
         gameName={gameName}
         pawns={pawns}
         players={players}

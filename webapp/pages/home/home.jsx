@@ -1,31 +1,27 @@
-import React, { Component, } from 'react'
+import React, { Component, } from 'react';
 import './index.sass'
 import Games from 'Games.js';
-import SearchingRoom from 'modals/SearchingRoom'
+import { withRouter, } from 'react-router-dom';
 
 const Modals = {
   searchingRoom: 'searchingRoom',
 };
 
-export default class Home extends Component {
+class Home extends Component {
   constructor(props) {
     super(props);
-
-    this.state = {
-      modalOpened: null,
-    };
   }
   joinQueue = (gameName) => {
+    const { history, } = this.props;
+
+    this.props.connectorInstance.socket.on('roomUpdate', roomState => {
+      history.push(`/room/${roomState.id}`);
+    });
     this.props.connectorInstance.socket.emit('findRoom', {
       game: gameName,
     });
-    this.setState({
-      modalOpened: Modals.searchingRoom,
-    });
   }
   render() {
-    const { modalOpened, } = this.state;
-
     return (
       <div className="home-page">
         <h1>Wybierz grę.</h1>
@@ -39,10 +35,9 @@ export default class Home extends Component {
             <button onClick={() => {this.joinQueue(Games.Kira.Name)}}>Find game</button>
           </div>
         </div>
-        {modalOpened && (
-          <SearchingRoom />
-        )}
       </div>
     );
   }
 }
+
+export default withRouter(Home);
