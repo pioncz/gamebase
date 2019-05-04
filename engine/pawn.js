@@ -6,9 +6,10 @@ export default class Pawn {
     this.x = props.x;
     this.z = props.z;
     this.id = props.id;
+    this.color = props.color;
     var geometry = new THREE.ConeGeometry(1.2, 2.8, 8, 1, true, 0, 6.3);
     var material = new THREE.MeshPhongMaterial({
-      color: props.color,
+      color: this.color,
       flatShading: true,
       specular: 0x000000,
       shininess: 0,
@@ -21,7 +22,7 @@ export default class Pawn {
     let pawnMesh = new THREE.Mesh(geometry, material);
     this.parsedX = props.parsedX;
     this.parsedZ = props.parsedZ;
-    this.moveTo(props.parsedX, 22.8, props.parsedZ);
+    this.moveTo(props.parsedX, 20, props.parsedZ);
     this.$.name = 'PawnMesh';
     this.$.add(pawnMesh);
     this.pawnMesh = pawnMesh;
@@ -49,22 +50,22 @@ export default class Pawn {
     ctx.textBaseline = "middle";
     ctx.textAlign = "center";
     ctx.fillText(String.fromCharCode(61703), canvas.width / 2, canvas.height / 2);
+    ctx.strokeStyle='rgba(0,0,0,0.7)';
+    ctx.strokeText(String.fromCharCode(61703), canvas.width / 2, canvas.height / 2);
     texture.needsUpdate = true;
     
     this.selectionObject = new THREE.Mesh( selectionGeometry, selectionMaterial );
     this.selectionObject.rotation.y = Math.PI / 4;
+
     this.selectionObject.position.y = 3;
     this.selectionObject.material.opacity = 0;
     
     this.$.add( this.selectionObject );
   }
-  _removeAnimations() {
-    
-  }
   moveTo(x, y, z) {
-    this.$.position.x = x + 0.4;
-    this.$.position.y = y;
-    this.$.position.z = z + 0.4;
+    this.$.position.x = x;
+    this.$.position.y = y + .42;
+    this.$.position.z = z;
   }
   select() {
     //create enter animation
@@ -96,7 +97,6 @@ export default class Pawn {
     });
   }
   unselect() {
-    console.log('remove pawnAnimation' + this.id);
     this.context.animations.removeAnimation('pawnAnimation' + this.id);
     this.selectionObject.material.opacity = 0;
   }

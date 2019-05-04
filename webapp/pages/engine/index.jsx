@@ -4,11 +4,10 @@ import './index.sass';
 import BoardUtils from 'ludo/BoardUtils';
 import Timer from 'components/timer';
 import { actions } from 'shared/redux/api';
-import Ludo from "ludo";
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
-
-const NumberOfPlayers = 2;
+import PlayerProfiles from 'components/PlayerProfiles';
+import { Config } from 'ludo';
 
 const nextId = (()=>{
   let id = 0;
@@ -49,15 +48,71 @@ const nextId = (()=>{
     });
   },
   randomPlayer = () => {
-    let id = nextId();
+    let id = nextId() + 'playerId';
   
     return {
       id,
       color: randomColor('rgb'),
       avatar: '/static/avatar6.jpg',
-      name: 'Name ' + id,
+      login: 'Name ' + id,
       index: null,
     }
+  },
+  PawnSets = {
+    'initial': [
+        {id: '12', x: 0, z: 0}, // first player
+        {id: '13', x: 1, z: 0}, // first player
+        {id: '14', x: 0, z: 1}, // first player
+        {id: '15', x: 1, z: 1}, // first player
+        {id: '4', x: 9, z: 0}, // second player
+        {id: '5', x: 10, z: 0}, // second player
+        {id: '6', x: 9, z: 1}, // second player
+        {id: '7', x: 10, z: 1}, // second player
+        {id: '0', x: 9, z: 10}, // third player
+        {id: '1', x: 10, z: 10}, // third player
+        {id: '2', x: 9, z: 9}, // third player
+        {id: '3', x: 10, z: 9}, // third player
+        {id: '8', x: 0, z: 9}, // fourth player
+        {id: '9', x: 1, z: 9}, // fourth player
+        {id: '10', x: 0, z: 10}, // fourth player
+        {id: '11', x: 1, z: 10}, // fourth player
+    ],
+    'movePawnBack': [
+        {id: '12', x: 0, z: 4}, // first player
+        {id: '13', x: 1, z: 0}, // first player
+        {id: '14', x: 0, z: 1}, // first player
+        {id: '15', x: 1, z: 1}, // first player
+        {id: '4', x: 3, z: 4}, // second player
+        {id: '5', x: 10, z: 0}, // second player
+        {id: '6', x: 9, z: 1}, // second player
+        {id: '7', x: 10, z: 1}, // second player
+        {id: '0', x: 9, z: 10}, // third player
+        {id: '1', x: 10, z: 10}, // third player
+        {id: '2', x: 9, z: 9}, // third player
+        {id: '3', x: 10, z: 9}, // third player
+        {id: '8', x: 0, z: 9}, // fourth player
+        {id: '9', x: 1, z: 9}, 
+        {id: '10', x: 0, z: 10}, 
+        {id: '11', x: 1, z: 10}, 
+    ],
+    'win': [
+        {id: '12', x: 0, z: 5}, // first player
+        {id: '13', x: 2, z: 5}, // first player
+        {id: '14', x: 3, z: 5}, // first player
+        {id: '15', x: 4, z: 5}, // first player
+        {id: '4', x: 9, z: 0}, // second player
+        {id: '5', x: 10, z: 0}, // second player
+        {id: '6', x: 9, z: 1}, // second player
+        {id: '7', x: 10, z: 1}, // second player
+        {id: '0', x: 9, z: 10}, // third player
+        {id: '1', x: 10, z: 10}, // third player
+        {id: '2', x: 9, z: 9}, // third player
+        {id: '3', x: 10, z: 9}, // third player
+        {id: '8', x: 0, z: 9}, // fourth player
+        {id: '9', x: 1, z: 9}, 
+        {id: '10', x: 0, z: 10},
+        {id: '11', x: 1, z: 10},
+    ],
   };
 
 class Engine extends Component {
@@ -72,26 +127,43 @@ class Engine extends Component {
       selectedPawnId: null,
       currentPlayerId: null,
       gameId: null,
+      numberOfPlayers: localStorage.numberOfPlayers || 1,
+      pawnSet: localStorage.pawnSet || 'initial',
+      firstPlayerIndex: localStorage.firstPlayerIndex || 1,
+      firstPlayerId: null,
     };
-  
+
     this.gameComponent = null;
     this.timerComponent = null;
     this.connectorInstance = this.props.connectorInstance;
     
     this.handleInputChange = this.handleInputChange.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
+    this.movePawn = this.movePawn.bind(this);
     this.initGame = this.initGame.bind(this);
     this.onPawnClick = this.onPawnClick.bind(this);
   }
   componentDidMount() {
     this.props.setInGame();
+    this.initGame();
+    this.profilesComponent.restartProgress();
+    setInterval(() => {
+      const { players, currentPlayerId } = this.state;
+      let currentPlayerIndex = players.findIndex(player => player.id === currentPlayerId);
+      let nextPlayer = players[(currentPlayerIndex + 1) % players.length];
+      this.profilesComponent.restartProgress();
+      this.setState({
+        currentPlayerId: nextPlayer.id,
+      })
+    }, 5000);
   }
   componentWillUnmount() {
     this.props.unsetInGame();
   }
-  onSubmit(e) {
-    const { pawns, selectedPawnId, pawnInput, } = this.state,
-      pawn = pawns.find(pawn => pawn.id === selectedPawnId);
+  movePawn(e) {
+    const { pawns, selectedPawnId, pawnInput, players } = this.state,
+      pawn = pawns.find(pawn => pawn.id === selectedPawnId),
+      playerIds = players.map(player => player.id),
+      roomState = {pawns, playerIds};
   
     if (!selectedPawnId) {
       log('No pawn');
@@ -106,7 +178,7 @@ class Engine extends Component {
     }
     
     try {
-      let moves = this.gameComponent.checkMoves(pawns, +pawnInput, this.state.currentPlayerId);
+      let moves = this.gameComponent.checkMoves(roomState, +pawnInput, this.state.currentPlayerId);
       
       if (moves.length) {
         let move = moves.find(move => move.pawnId === selectedPawnId);
@@ -174,16 +246,19 @@ class Engine extends Component {
     });
   }
   initGame() {
+    const { numberOfPlayers, pawnSet, firstPlayerIndex } = this.state;
     let newPlayers = [],
-      newPawns;
+      newPawns,
+      firstPlayer,
+      firstPlayerId;
   
-    for(let i = 0; i < NumberOfPlayers; i++) {
+    for(let i = 0; i < numberOfPlayers; i++) {
       let newPlayer = randomPlayer();
       newPlayer.index = newPlayers.length;
       newPlayers.push(newPlayer);
     }
     
-    newPawns = Ludo.InitialState().pawns.slice(0,4*NumberOfPlayers);
+    newPawns = PawnSets[pawnSet].slice(0,4*numberOfPlayers);
     
     for(let pawnI in newPawns) {
       let pawn = newPawns[pawnI],
@@ -193,15 +268,22 @@ class Engine extends Component {
       pawn.playerId = player.id;
       pawn.playerIndex = player.index;
     }
-
+  
+    firstPlayer = firstPlayerIndex && newPlayers[firstPlayerIndex-1];
+    firstPlayerId = (firstPlayer && firstPlayer.id) || 0;
+    
     this.setState({
       pawns: newPawns,
       players: newPlayers,
       selectedPawnId: newPawns[0].id,
       currentPlayerId: newPawns[0].playerId,
       gameId: nextId(),
+      firstPlayerId,
     });
-    
+    setTimeout(() => {
+      this.gameComponent.engine.selectPawns([newPawns[0].id]);
+    }, 50);
+
     this.timerComponent.start(5*60*1000);
   }
   onPawnClick(pawnId) {
@@ -211,33 +293,54 @@ class Engine extends Component {
     });
   }
   render() {
-    let pawns = this.state.pawns.map(pawn => {
+    const { players, pawns, selectedPawnId, pawnInput, numberOfPlayers, pawnSet, firstPlayerIndex, firstPlayerId, currentPlayerId } = this.state,
+      pawnsElements = pawns.map(pawn => {
       return <div key={pawn.id}
-                  className={'pawn' + (pawn.id===this.state.selectedPawnId?' pawn--selected':'')}
+                  className={'pawn' + (pawn.id===selectedPawnId?' pawn--selected':'')}
       onClick={() => { this.onPawnClick(pawn.id)} }>
         {`${pawn.id}:${pawn.color}:${pawn.x},${pawn.z}`}
       </div>;
-    }),
-      player = nextId();
-    
+    });
+
     return <div className="engine-page">
       <div className="settings">
         <div className="settings-title">Settings</div>
         <div className="settings-body">
-          <form onSubmit={this.onSubmit}>
-            <div className="pawns">
-              <div className="pawns-title">Pawns:</div>
-              <div className="pawns-body">
-                {pawns}
+          <div className="input-row">
+              <div>Number of players</div>
+              <div>
+                  <input tabIndex={1} type="number" min={1} max={4} value={numberOfPlayers} name="numberOfPlayers" onChange={this.handleInputChange}/>
               </div>
+          </div>
+          <div className="input-row">
+            <div>First player</div>
+            <div>
+              <input type="number" min={1} max={numberOfPlayers} value={firstPlayerIndex} name="firstPlayerIndex" onChange={this.handleInputChange}/>
             </div>
-            <button type="button" onClick={this.initGame}>Init game</button>
-            <div className="input-row">
-              <div>move pawn</div>
-              <div><input tabIndex={1} type="number" min={1} max={6} value={this.state.pawnInput} name="pawnInput" onChange={this.handleInputChange}/></div>
+          </div>
+          <div className="input-row">
+              <div>Pawns set</div>
+              <div>
+                <select name="pawnSet" onChange={this.handleInputChange} value={pawnSet}>
+                  <option value="initial">Initial</option>
+                  <option value="movePawnBack">Move pawn back</option>
+                  <option value="win">Win</option>
+                </select>
+              </div>
+          </div>
+          <button type="button" onClick={this.initGame}>Init game</button>
+          <hr />
+          <div className="pawns">
+            <div className="pawns-title">Pawns:</div>
+            <div className="pawns-body">
+              {pawnsElements}
             </div>
-            <input type="submit" />
-          </form>
+          </div>
+          <div className="input-row">
+            <div>move pawn</div>
+            <div><input tabIndex={1} type="number" min={1} max={6} value={pawnInput} name="pawnInput" onChange={this.handleInputChange}/></div>
+          </div>
+          <button onClick={this.movePawn}>RUSZ PIONKA</button>
         </div>
       </div>
       <GameComponent
@@ -247,6 +350,16 @@ class Engine extends Component {
         players={this.state.players}
         moves={this.state.moves}
         gameId={this.state.gameId}
+        firstPlayerId={firstPlayerId}
+        players={players}
+      />
+      <PlayerProfiles 
+        players={players} 
+        firstPlayerId={firstPlayerId}
+        currentPlayerId={currentPlayerId}
+        hidden={false}
+        roundLength={Config.RoundLength}
+        ref={(element) => {this.profilesComponent = element; }}
       />
       <Timer ref={(element) => { this.timerComponent = element; }}/>
     </div>;

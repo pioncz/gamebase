@@ -1,7 +1,7 @@
 import Controls from './utils/controls'
 import { EASING, TIMES, Animations } from './utils/animations'
 import Board from './board'
-import EventEmitter from 'event-emitter-es6';
+import EventEmitter from 'event-emitter-es6'
 
 export default class Engine extends EventEmitter {
   constructor(props) {
@@ -11,19 +11,18 @@ export default class Engine extends EventEmitter {
     this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true});
     this.initializing = false;
     this.gameId = null;
-    
+
     this.scene = new THREE.Scene();
     this.controls = new Controls({container: this.container});
     this.animations = new Animations();
     this.raycaster = new THREE.Raycaster();
-    this.context = {animations: this.animations, controls: this.controls};
-    
+
     let width = this.container.offsetWidth,
       height = this.container.offsetHeight,
       aspect = width / height;
-    
+
     this._lastRender = 0;
-    this.frustumSize = 20;
+    this.frustumSize = 22;
     this.camera = new THREE.OrthographicCamera(
       -this.frustumSize * aspect,
       this.frustumSize * aspect,
@@ -31,12 +30,14 @@ export default class Engine extends EventEmitter {
       -this.frustumSize,
       1,
       1000);
-    this.camera.position.set( 20, 20, 20 );
+    // this.camera = new THREE.PerspectiveCamera( 30, aspect, 1, 1000 );
+    this.camera.position.set( 40, 50, 40 );
+    // this.camera.position.set( 60, 60, 60 );
     this.camera.lookAt( new THREE.Vector3(0,0,0) );
     this.renderer.setPixelRatio( window.devicePixelRatio );
     this.renderer.setSize( width, height );
     this.container.appendChild(this.renderer.domElement);
-    
+
     var ambientLight = new THREE.AmbientLight( 0x000000 );
     this.scene.add( ambientLight );
     var lights = [],
@@ -45,32 +46,36 @@ export default class Engine extends EventEmitter {
     lights[ 1 ] = new THREE.PointLight( 0xffffff, intensity, 0 );
     lights[ 2 ] = new THREE.PointLight( 0xffffff, intensity, 0 );
     lights[ 3 ] = new THREE.PointLight( 0xffffff, intensity, 0 );
-    
+
     let dist = 60,
       distH = 20;
     lights[ 0 ].position.set( dist, distH, 0 );
     lights[ 1 ].position.set( -dist, distH, 0 );
     lights[ 2 ].position.set( 0, distH, dist );
     lights[ 3 ].position.set( 0, distH, -dist );
-    
+
     this.scene.add( lights[ 0 ] );
     this.scene.add( lights[ 1 ] );
     this.scene.add( lights[ 2 ] );
     this.scene.add( lights[ 3 ] );
-    
+
     // Handle canvas events
     window.addEventListener('resize', this.onResize.bind(this), true);
     window.addEventListener('click', this.onClick.bind(this), true);
-    
+
+    this.context = {
+      animations: this.animations,
+      controls: this.controls,
+      camera: this.camera,
+    };
+
     this.board = new Board({
-      width: 512,
-      height: 512,
       scene: this.scene,
       renderer: this.renderer,
       pawns: [],
       context: this.context,
     });
-  
+
     WebFont.load({
       custom: {
         families: ['FontAwesome'],
@@ -85,36 +90,49 @@ export default class Engine extends EventEmitter {
         this.animate();
       }
     });
+
+    this.onResize();
   }
   onResize() {
     let width = this.container.offsetWidth,
       height = this.container.offsetHeight,
-      aspect = width / height;
-    
+      aspect = width / height,
+      gameScale = width < 1000 ? width / 1000 : 1;
+
     this.windowWidth = width;
     this.windowHeight = height;
     this.renderer.setSize(width, height);
-    
-    this.camera.left   = - this.frustumSize * aspect;
-    this.camera.right  =   this.frustumSize * aspect;
-    this.camera.top    =   this.frustumSize;
-    this.camera.bottom = - this.frustumSize;
+
+    if (aspect < 1.3) {
+      this.camera.left   = - this.frustumSize;
+      this.camera.right  =   this.frustumSize;
+      this.camera.top    =   this.frustumSize / aspect;
+      this.camera.bottom = - this.frustumSize / aspect;
+      this.board.setRotation(false); //rotates board
+    } else {
+      this.camera.left   = - this.frustumSize * aspect;
+      this.camera.right  =   this.frustumSize * aspect;
+      this.camera.top    =   this.frustumSize;
+      this.camera.bottom = - this.frustumSize;
+      this.board.setRotation(true); //rotates board
+    }
     this.camera.updateProjectionMatrix();
   }
   onClick(e) {
-    let mouse = { 
-      x: ( e.clientX / this.renderer.domElement.clientWidth ) * 2 - 1, 
-      y: - ( e.clientY / this.renderer.domElement.clientHeight ) * 2 + 1,
+    const boundingRect = this.renderer.domElement.getBoundingClientRect();
+    let mouse = {
+      x: ( (e.clientX - boundingRect.left) / this.renderer.domElement.clientWidth ) * 2 - 1,
+      y: - ( (e.clientY - boundingRect.top) / this.renderer.domElement.clientHeight ) * 2 + 1,
     };
 
     this.raycaster.setFromCamera( mouse, this.camera );
 
     let pawns = this.board.handleClick(this.raycaster),
       pawnIds = pawns.map(pawn => pawn.id );
-    
+
     this.emit('click', { pawnIds });
   }
-  initGame({gameId, pawns, players}) {
+  initGame({gameId, pawns, players}, firstPlayerId) {
     if (this.initializing) {
       console.log('Game is updating already.');
       return;
@@ -124,9 +142,11 @@ export default class Engine extends EventEmitter {
       return;
     }
 
-    console.log('initGame',pawns, players);
     this.initializing = true;
-    this.board.initGame({pawns, players});
+
+    let firstPlayerIndex = players.findIndex(player => player.id === firstPlayerId);
+    this.board.initGame({pawns, players, firstPlayerIndex});
+    this.onResize();
     this.initializing = false;
   }
   selectPawns(pawnIds) {
@@ -134,7 +154,7 @@ export default class Engine extends EventEmitter {
   }
   animate(timestamp) {
     let delta = Math.min(Date.now() - this._lastRender, 500);
-    
+
     this.renderer.render(this.scene, this.camera);
     this.animations.tick(delta);
     this._lastRender = Date.now();

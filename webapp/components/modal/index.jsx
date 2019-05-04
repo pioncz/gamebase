@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import './index.sass';
 import { CSSTransitionGroup } from 'react-transition-group';
+import Close from 'components/close/';
 
 export default class Modal extends Component {
   constructor(props) {
@@ -13,6 +14,7 @@ export default class Modal extends Component {
       modalItems = [
         (<div className="modal-body" key="modal-body">
           {this.props.children}
+          {this.props.onClose && <Close onClick={this.props.onClose}/>}
         </div>),
         (<div className="overlay" key="overlay"></div>)];
     }

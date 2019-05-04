@@ -6,8 +6,10 @@ export default class Button extends Component {
     super(props);
   }
   render() {
-    return (<div className="button" onClick={this.props.onClick}>
-      {this.props.children}
-    </div>);
+    const { children, ...restProps } = this.props; 
+    
+    return (<button className="button" {...restProps}>
+      {children}
+    </button>);
   }
 }

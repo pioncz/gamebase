@@ -1,28 +1,39 @@
-TO DO, PLAN GRY
-- bug: inny gracz wygral. zmiana geta na pionki gracza
-- brak synchro czasowego 2 graczy. gracz z opoznieniem ma wrazenie, ze moze rzucic kostka wczesniej.
-- gracz zmienia sie za wczesnie. jest juz zaznaczony, a nie moze jeszcze wykonac ruchu
-- refaktor games/ludo/index.js
-- optymalizacja builda
-- widoczna zmiana gracza (jezeli twoja kolejka, to bardziej widoczna)
-- timer gry: konczenie gry gdy uplynie czas rozgrywki
-- timer ruchu gracza: konczenie ruchu gdy uplynie czas
-- jakies info jak rzucic kostka
+- guzik kostki nie powinien byc zaznaczony gdy gracz nie moze rzucic kostka (roomState.rolled = true)
+- test nowej gry
+- config powinien byc uzywany tylko na serwerze i zawierac klucze prywatne (albo podzielic config na private / public)
+- test na randomowe akcje od gracza w roznych momentach najpelniejszego testu rzutu kostka
+- w pages/ludo przy starcie gry ustawiac czas z configa
+- wywalic configa ze stanu pokoju - musi byc brany na bierzaco z aktualnej gry
+- skasowac properte player.color - korzystajmy z playerColors
+- koniec gry gdy gameState === RoomStates.Finished, a nie samo winnerId (w przyszlosci obsluga remisu)
+- zalogowany gracz traci polaczenie / odswieza strone - do 10s moze wrocic do pokoju bez przegranej
 
--1. Refaktor: 
--eventy socketowe powinny wysylac roomState tylko przy startGame
--zmienic socketServer na ioConnector
--testy serwera
--testy poszczegolnych gier
--testy silnika
--panel admina - stan polaczen, kolejki, obciazenie serwera
+RELEASE
+- menu: nowa gra, fullscreen, pomoc (skroty)
+- modal wyboru koloru -> wybor pionka, planszy i tla
+- test innej gry? zmiana ukladu pol na planszy, zasady ruchu
+- ekran wyboru gry
+- pierwsza animacja: 
+1. plansza 'opakowuje' sie w teksture (skaluj prostokaty)
+2. pionki wjezdzaja od gory
+3. pionki ruszaja sie na zmiane
+- ekran zachety przejscia do fullscreena
 
-0) Informacje które są zawsze na ekranie (UI):
--badge przy avatarze usera informujacy o stanie polaczenia
+- rozwazyc przypadek gdy ktos sie loguje w trakcie gry (playersUpdate do graczy z pokoju)
+- po wylogowaniu updatePlayera do temporary
+- tlo animowane
+
+Dalszy rozwój:
+- ustalic maxAge w configu i wykorzystac w player.service.js:authenticate i players.controller.js:authenticate 
+- registration: password confirmation
+- player tymczasowy jest kasowany po: 10 minutach od ostatniego wylogowania playera lub zalogowania playera
+
+TO DO
+- formularze login i register: wyswietlanie errow z serwera
+- panel admina - stan polaczen, kolejki, obciazenie serwera
 
 1) Gra
 - przy profilu aktualnego gracza, progress jego kolejki
-- testy wychodzenia z gry / disconnect / szukanie nowej rozgrywki
 - koniec rozgrywki gdy sie skonczy czas
 
 2) Strona Ludo
@@ -40,13 +51,13 @@ DONE:
 + blokada stania na tym samym polu
 + początkowy stan w Room.js powinien byc brany z klasy gry
 + wywalic stare metody z serwera
-+zbudowac dokumentacje, poprawic
-+wszystkie pliki ludo wrzucic do games/ludo
-+dodac ludo do Games
-+profil aktualnie zalogowanego gracza
-+wyglad navbara w trakcie gry
-+wyłącz grę jak ktoś wyjdzie - dialog z ponownym wyszukaniem
-+obsluga rozlaczenia sie gracza
++ zbudowac dokumentacje, poprawic
++ wszystkie pliki ludo wrzucic do games/ludo
++ dodac ludo do Games
++ profil aktualnie zalogowanego gracza
++ wyglad navbara w trakcie gry
++ wyłącz grę jak ktoś wyjdzie - dialog z ponownym wyszukaniem
++ obsluga rozlaczenia sie gracza
 + przekazywanie ustawien graczy do gry
 + niedorobiona kreska w grafica jednego pola
 + pola graczy ktorych nie ma wyszarzone
@@ -62,21 +73,79 @@ DONE:
 + naprawic nowa rozgrywke
 + profile graczy przy starcie wysuwaja sie z prawej i lewej strony
 -- najpierw leci kostka, a potem pionek sie rusza - nie na raz
-+ekran wyszukiwania z przewidywanym czasem
-+wybór koloru
-+ekran gry
++ ekran wyszukiwania z przewidywanym czasem
++ wybór koloru
++ ekran gry
 + wybor pionka
-+przerobienie wygladu profili
-+zaznaczenie aktualnego gracza
++ przerobienie wygladu profili
++ zaznaczenie aktualnego gracza
 + napraw nowa gre
 + wywalic config z roomState
-+obsluga disconnected:
- +_destroyConnection nie kasuje pokoju, przez co gracz go nie opuszcza
- +obsluzyc update gracza po stronie klienta
- +wyszarzenie pionkow i avatara
- +akcja Disconnected i obsluga na stronie Ludo
- +dodac sprawdzanie actywnych graczy w roll handlerze
- +jezeli wyszla osoba ktora jest aktualnie, ustaw nastepna osobe 
++ obsluga disconnected:
+ + _destroyConnection nie kasuje pokoju, przez co gracz go nie opuszcza
+ + obsluzyc update gracza po stronie klienta
+ + wyszarzenie pionkow i avatara
+ + akcja Disconnected i obsluga na stronie Ludo
+ + dodac sprawdzanie actywnych graczy w roll handlerze
+ + jezeli wyszla osoba ktora jest aktualnie, ustaw nastepna osobe 
 + stan disconnected aplikacji
 + gdy gracz rzuci 6, moze rzucic jeszcze raz
 + gdy sa 2 pionki obok siebie (gora/dol) to w ten wyzej ciezko jest kliknac
++ ActionsStream
++ zmienic model danych zwracanych akcji na [{action, delayTimestamp, callback}]
++ w handlerach powinno byc sprawdzanie czy mozna te akcje wykonac
++ refaktor games/ludo/index.js
++ wywalic waitingForAction na serwerze bo nie jest uzywane
+-- optymalizacja builda
+-- brak synchro czasowego 2 graczy. gracz z opoznieniem ma wrazenie, ze moze rzucic kostka wczesniej.
+-- badge przy avatarze usera informujacy o stanie polaczenia (gracz offline jest zaznaczony)
++ jakies info jak rzucic kostka
++ eventy socketowe powinny wysylac roomState tylko przy startGame
++ zmienic socketServer na ioConnector
++ gracz nie jest czyszczony przy F5
++ pierwszy test jednostkowy
++ rejestracja: logika + ui
++ logowanie: logika + ui
++ wykorzystanie modelu playera z bazy danych
++ pionek wraca na spawn, tuz przed zbiciem
++ test 4 graczy
+-- obrot ekranu na telefonie do landscape'u
++ fix buga przy disconnectcie
++ rzut kostką - spacją
+-- plansza obrocona o 15st.
++ moj gracz na pierwszym miejscu
++ obracamy tylko plansze i pionki
++ fix zaznaczenia pionka
++ zamienic miejscami profile
++ wyrownac pozycje pionka
++ engine: ktorys kolejny init nie powoduje obrotu planszy
++ na telefonie plansza obrocona pod katem 0 st.
++ rozmiar planszy dostosowany do mobilek
++ ukryc navbar, hamburger menu, 
++ fullscreen po prawej na dole (pod f)
++ redesign
++ loader-aplikacji
++ currentPlayer odpowie temporary playerem jesli takiego posiada
++ update playera zaraz po inicjalizacji socketa
++ powinien byc inny frustrumSize dla aspectRatio > 1
++ zmienic board.setSize na board.setRotation(true/false)
++ mayksymalna wysokosc (zeby zmiescili sie gracze)
++ osobny komponent: PlayerProfiles
++ lepsza pozycja dla graczy
++ gracze w zlych miejscach
++ gdy gracz wyrzuci 6 to moze rzucic jeszcze raz
++ ioConnector -> WebsocketServer
++ ws: authenticate nastepuje przed akcja connect - zawsze mamy dostep do gracza
++ Nie działa nowa gra gdy ktos wygra
++ Nie działa nowa gra gdy ktos sie rozlaczy
++ jesli w trakcie odlaczenia jest kolej gracza odlaczanego gracza to jest bug
++ blad wygranej gracza: akcja finishGame leci dwukrotnie, raz z poprawnym wygranym a raz z drugim
++ actionsStream robiacy dowolne akcje odlozone w czasie
++ stan gracza websocketowego przechowywany w reduxie
++ gdy gracz wejdzie na strone / a potem /ludo to nie leci playerUpdate
++ zakoncz gre jesli jest po czasie
++ _closeRoom zamienic na this.closeRoom
++ test na TimeoutHandler: 1 pole w spawni vs 4 w terenie
++ zmien gracza jesli skonczyla sie jego kolejka:
++ czas gry wysylany ze startGame jako timeLength [ms]
++ zastapic emitNewActions na this.emitRoomActions, dodac concat room actions

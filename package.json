@@ -6,6 +6,7 @@
   "scripts": {
     "serve": "webpack-dev-server",
     "start": "node index.js",
+    "test": "jest --notify --watch --config=tests.config.json",
     "docs": "jsdoc -c jsdoc.conf.json --readme README.md",
     "build": "webpack --watch"
   },
@@ -17,6 +18,8 @@
   "license": "ISC",
   "homepage": "https://bitbucket.org/pioncz2/gamebase#readme",
   "dependencies": {
+    "@material-ui/core": "^3.9.0",
+    "@material-ui/icons": "^3.0.2",
     "axios": "^0.17.0",
     "babel": "^6.23.0",
     "babel-core": "^6.26.0",
@@ -24,6 +27,7 @@
     "babel-preset-env": "^1.6.1",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-1": "^6.24.1",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.2",
     "classnames": "^2.2.6",
     "clean-webpack-plugin": "^0.1.17",
@@ -33,20 +37,26 @@
     "css-loader": "^0.28.7",
     "event-emitter-es6": "^1.1.5",
     "express": "^4.15.2",
+    "express-jwt": "^5.3.1",
     "extract-text-webpack-plugin": "^3.0.2",
+    "final-form": "^4.10.0",
     "helmet": "^3.9.0",
     "html-loader": "^0.5.1",
     "html-webpack-plugin": "^2.30.1",
     "imports-loader": "^0.7.1",
     "jsdoc": "^3.5.5",
-    "material-ui": "^0.20.0",
+    "jsonwebtoken": "^8.3.0",
     "micro": "^9.1.0",
+    "mongodb": "^3.1.6",
+    "mongoose": "^5.2.17",
     "node-sass": "^4.9.3",
-    "react": "^16.0.0",
-    "react-dom": "^16.0.0",
+    "react": "^16.7.0",
+    "react-dom": "^16.7.0",
+    "react-final-form": "^3.6.5",
     "react-json-view": "^1.17.1",
     "react-redux": "^5.0.6",
     "react-router-dom": "^4.2.2",
+    "react-svg-loader": "^2.1.0",
     "react-transition-group": "^1.2.1",
     "redux": "^3.7.2",
     "redux-logic": "^0.12.3",
@@ -57,6 +67,7 @@
     "webpack": "^3.8.1"
   },
   "devDependencies": {
+    "jest": "^23.6.0",
     "typescript": "^2.7.1",
     "webpack-dev-server": "^2.9.4"
   }

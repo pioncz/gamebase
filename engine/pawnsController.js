@@ -42,7 +42,7 @@ export default class PawnsController {
         delay: delay,
         easing: EASING.InOutQuad,
         update: (progress) => {
-          let newY = (20*(1-progress)) + 2.8,
+          let newY = (20*(1-progress)) + 2,
             newOpacity = (progress * 5);
   
           pawn.pawnMesh.material.opacity = newOpacity;
@@ -57,7 +57,6 @@ export default class PawnsController {
       this.animations.removeAnimation('enterPawn' + pawnId);
       pawn.unselect();
       this.$.remove(pawn.$);
-      console.log(pawnId);
       delete this.pawns[pawnId];
     }
   }
@@ -87,7 +86,7 @@ export default class PawnsController {
               dX = oldX - newX,
               dZ = oldZ - newZ,
               newParsedX = oldX - (dX * progress),
-              newParsedY = 2.8 * (1 + EASING.Sin(progress / 2)),
+              newParsedY = 2 * (1 + EASING.Sin(progress / 2)),
               newParsedZ = oldZ - (dZ * progress);
   
             pawn.moveTo(newParsedX, newParsedY, newParsedZ);
