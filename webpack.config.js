@@ -70,7 +70,7 @@ module.exports = function() {
       ]
     },
     resolve: {
-      modules: ['games', 'engine', 'webapp', 'node_modules', 'static'],
+      modules: [path.resolve(__dirname, 'games'), path.resolve(__dirname, 'engine'), path.resolve(__dirname, 'webapp'), path.resolve(__dirname, 'node_modules'), path.resolve(__dirname, 'static')],
       extensions: [ '.tsx', '.ts', '.js', '.jsx' ]
     },
     plugins: [
