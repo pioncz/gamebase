@@ -71,5 +71,8 @@
     "jest": "^23.6.0",
     "typescript": "^2.7.1",
     "webpack-dev-server": "^2.9.4"
+  },
+  "engines": {
+    "node": "10.8.0"
   }
 }
