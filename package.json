@@ -73,6 +73,7 @@
     "webpack-dev-server": "^2.9.4"
   },
   "engines": {
-    "node": "10.8.0"
+    "node": "10.8.0",
+    "npm": "6.9.0"
   }
 }
