@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ClassNames from 'classnames';
 import './index.sass';
-import Progress from 'components/Progress'
+import Progress from 'components/progress'
 
 export default class PlayerProfiles extends Component {
   constructor(props) {

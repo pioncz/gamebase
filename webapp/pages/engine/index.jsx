@@ -6,7 +6,7 @@ import Timer from 'components/timer';
 import { actions } from 'shared/redux/api';
 import {connect} from "react-redux";
 import {bindActionCreators} from "redux";
-import PlayerProfiles from './components/playerProfiles';
+import PlayerProfiles from 'components/playerProfiles';
 import { Config } from 'ludo';
 
 const nextId = (()=>{
