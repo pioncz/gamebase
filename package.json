@@ -8,7 +8,8 @@
     "start": "node index.js",
     "test": "jest --notify --watch --config=tests.config.json",
     "docs": "jsdoc -c jsdoc.conf.json --readme README.md",
-    "build": "webpack --watch"
+    "build": "webpack",
+    "build-dev": "webpack --watch"
   },
   "repository": {
     "type": "git",
@@ -74,5 +75,9 @@
     "typescript": "^2.7.1",
     "webpack-cli": "^3.3.0",
     "webpack-dev-server": "^3.2.1"
+  },
+  "engines": {
+    "node": "10.8.0",
+    "npm": "6.9.0"
   }
 }
