@@ -16,5 +16,11 @@
       "movePawn": 500,
       "rollDice": 800
     }
+  },
+  "kira": {
+    "animations": {
+      "movePawn": 1000,
+      "rollDice": 1000
+    }
   }
 }

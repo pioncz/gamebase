@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import React, {Component,} from 'react';
 import './index.sass';
 import Engine from 'engine.js'
 
@@ -8,25 +8,32 @@ export default class GameComponent extends Component {
     this.handleClick = this.handleClick.bind(this);
   }
   componentDidMount() {
-    this.engine = new Engine({container: this.rendererContainer});
+    const { gameName, } = this.props;
+    this.engine = new Engine({
+      container: this.rendererContainer,
+      gameName,
+    });
     this.engine.on('click', this.handleClick);
   }
   componentWillUnmount() {
-   this.engine.off('click', this.handleClick); 
+    this.engine.off('click', this.handleClick);
   }
   shouldComponentUpdate(nextProps) {
     if (nextProps.moves && nextProps.moves.length) {
       let move = nextProps.moves[nextProps.moves.length - 1];
       this.engine.board.movePawn(move);
     }
-    let gameShouldUpdate = this.props.gameId !== nextProps.gameId;
-    
-    if (gameShouldUpdate) {
+
+    if (this.props.gameName !== nextProps.gameName) {
+      this.engine.changeGame(nextProps.gameName);
+    }
+    if (this.props.gameId !== nextProps.gameId) {
       this.engine.initGame({
-          gameId: nextProps.gameId, 
-          pawns: nextProps.pawns, 
-          players: nextProps.players}, 
-        nextProps.firstPlayerId);
+        gameId: nextProps.gameId,
+        gameName: nextProps.gameName,
+        pawns: nextProps.pawns,
+        players: nextProps.players,},
+      nextProps.firstPlayerId);
     }
     return false;
   }

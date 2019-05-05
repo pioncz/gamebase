@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, } from 'react'
 import './index.sass'
 import ioClient from 'socket.io-client'
 
@@ -10,11 +10,11 @@ export default class Connector extends Component {
       consoleVisible: false,
       connected: true,
     };
-    
+
     this.addMessage = this.addMessage.bind(this);
-  
+
     this.socket = ioClient();
-    
+
     this.socket.on('console', this.addMessage);
     this.socket.on('connect', () => {
       this.setState({
@@ -36,16 +36,19 @@ export default class Connector extends Component {
         connected: false,
       });
     });
+    this.socket.on('socketError', (e) => {
+      console.error('socketError', e);
+    });
   }
   leaveGame() {
     this.socket.emit('leaveGame');
   }
-  joinQueue({game}) {
-    this.socket.emit('joinQueue', {game});
+  joinQueue({game,}) {
+    this.socket.emit('joinQueue', {game,});
   }
   addMessage(msg) {
     this.setState({
-      messages: this.state.messages.concat(msg)
+      messages: this.state.messages.concat(msg),
     });
   }
   hideConsole() {
@@ -59,12 +62,12 @@ export default class Connector extends Component {
     });
   }
   render() {
-    const {consoleVisible, connected} = this.state;
-        
+    const {consoleVisible, connected,} = this.state;
+
     let messages = this.state.messages.map((message, i) => {
       return <div key={i}>{message}</div>;
     });
-    
+
     return (<div className={"connector"}>
       {consoleVisible && <div className={"console"}>
         <div className="console-title">Console</div>

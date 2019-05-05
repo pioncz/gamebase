@@ -5,15 +5,12 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
+const extractSass = new ExtractTextPlugin('[name].min.css');
+
 module.exports = function() {
   let isProduction = false;
   let cfgName = './config/develop.json';
   const cfg = require(cfgName);
-
-  const extractSass = new ExtractTextPlugin({
-    filename: "[name].min.css",
-    disable: false
-  });
 
   return {
     entry: {
@@ -26,6 +23,7 @@ module.exports = function() {
       publicPath: '/',
     },
     devtool: 'source-map',
+    mode: 'development',
     module: {
       rules: [
         {

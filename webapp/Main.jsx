@@ -1,27 +1,28 @@
-import React, { Component } from 'react'
+import React, { Component, } from 'react'
 import Pages from "./pages";
 import {
   BrowserRouter as Router,
   Route,
+  Switch,
 } from 'react-router-dom'
 import Header from 'components/header/index.jsx'
 import Connector from 'components/connector/index.jsx'
 import PropTypes from 'prop-types'
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
-import { selectors, actions } from 'shared/redux/api'
-import { LoginModal, RegistrationModal } from 'modals/';
+import { bindActionCreators, } from 'redux'
+import { connect, } from 'react-redux'
+import { selectors, actions, } from 'shared/redux/api'
+import { LoginModal, RegistrationModal, } from 'modals/';
 
 class Main extends Component {
   constructor(props) {
     super(props);
-  
+
     this.state = {
       connectorInstance: null,
       loginModalVisible: false,
       registrationModalVisible: false,
     };
-    
+
     this.setConnector = this.setConnector.bind(this);
     this.toggleLoginModal = this.toggleLoginModal.bind(this);
     this.sendLoginModal = this.sendLoginModal.bind(this);
@@ -30,8 +31,8 @@ class Main extends Component {
     this.logout = this.logout.bind(this);
   }
   componentWillReceiveProps(nextProps) {
-    const { player } = this.props;
-    
+    const { player, } = this.props;
+
     if (nextProps.player.state === 'loggedIn' && player.state !== 'loggedIn') {
       this.setState({
         loginModalVisible: false,
@@ -40,7 +41,7 @@ class Main extends Component {
     }
   }
   getChildContext() {
-    return {connectorInstance: this.state.connectorInstance};
+    return {connectorInstance: this.state.connectorInstance,};
   }
   setConnector(connectorInstance) {
     this.setState({
@@ -71,34 +72,37 @@ class Main extends Component {
     this.props.logout();
   }
   render() {
-    let { loginModalVisible, registrationModalVisible } = this.state,
-      { player } = this.props;
+    let { loginModalVisible, registrationModalVisible, } = this.state,
+      { player, } = this.props;
 
     return (<Router>
       <div className={this.props.inGame?'inGame':''}>
-        <Connector ref={this.setConnector}/>
-        <Header 
+        <Header
           player={player}
           toggleLoginModal={this.toggleLoginModal}
           toggleRegistrationModal={this.toggleRegistrationModal}
           logout={this.logout}
         />
         <div className="main">
-          <Route exact path="/" component={Pages.Home}/>
-          <Route path="/ludo" component={Pages.Ludo}/>
-          <Route path="/engine" component={Pages.Engine}/>
-          <Route path="/admin" component={Pages.Admin}/>
+          <Switch>
+            <Route exact path="/" component={Pages.Home}/>
+            <Route path="/room/:roomId" component={Pages.Room}/>
+            <Route path="/engine" component={Pages.Engine}/>
+            <Route path="/admin" component={Pages.Admin}/>
+            <Route path="/" component={Pages.Home}/>
+          </Switch>
         </div>
-        {loginModalVisible && 
+        {loginModalVisible &&
           <LoginModal
             onClose={this.toggleLoginModal}
             onSubmit={this.sendLoginModal}
           />}
-        {registrationModalVisible && 
+        {registrationModalVisible &&
           <RegistrationModal
             onClose={this.toggleRegistrationModal}
             onSubmit={this.sendRegistrationModal}
           />}
+        <Connector ref={this.setConnector}/>
       </div>
     </Router>);
   }

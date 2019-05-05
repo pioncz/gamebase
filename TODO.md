@@ -1,12 +1,36 @@
-- guzik kostki nie powinien byc zaznaczony gdy gracz nie moze rzucic kostka (roomState.rolled = true)
+Wejscie do gry:
+ Z home:
+  + User wybiera gre, wysyla findRoom(gameName)
+  + Serwer wysyla updateRoom z informacja o jego nowym pokoju
+  + User jest przekierowany na room/:id
+ Z room/:id
+  + jesli nie ma roomId to przekierowanie na home
+  + wysyla joinRoom(gameId)
+  - jesli nie ma takiej gry, to user widzi modal: 'Taka gra nie istnieje, worc na glowna'
+  - jesli jest taka gra, ale nie ma miejsc do grania, user dolacza jako spectator (bedzie otrzymywal roomUpdate)
+  - jestli jest taka gra i jest miejsce dla gracza, to user dolacza do pokoju jako gracz
+
+- przy rozlaczeniu trzeba sprawdzic czy skasowac spectatora
+- rozwiazac npm vulnerabilities
+
 - test nowej gry
-- config powinien byc uzywany tylko na serwerze i zawierac klucze prywatne (albo podzielic config na private / public)
+- w kirze ruch jest wykonywany: 
+1) select pawns and paths (semi transparent) 
+2) pawn selection 
+3) paths are highlighted on hover
+*) Serwer wysyla SelectPaths (pawns i paths w srodku)
+- font awesome moze byc niedoladowany gdy engine zrobi swoje pierwszy render ( /engine )
+- guzik kostki nie powinien byc zaznaczony gdy gracz nie moze rzucic kostka (roomState.rolled = true)
+- konfigurowac za pomoca zmiennych srodowiskowych, dopisac w readme obsluge, w webpapp wstawic frontowe configi do config.js
+- skasowac ui connectora?
 - test na randomowe akcje od gracza w roznych momentach najpelniejszego testu rzutu kostka
 - w pages/ludo przy starcie gry ustawiac czas z configa
 - wywalic configa ze stanu pokoju - musi byc brany na bierzaco z aktualnej gry
 - skasowac properte player.color - korzystajmy z playerColors
 - koniec gry gdy gameState === RoomStates.Finished, a nie samo winnerId (w przyszlosci obsluga remisu)
 - zalogowany gracz traci polaczenie / odswieza strone - do 10s moze wrocic do pokoju bez przegranej
+- TEST end to end pelnej rozgrywki graczy testowych z serwerem - 1-3 testy, z porownaniem screenow
+- obsluga wielu kart: na drugiej karcie mozesz tylko dolaczyc jako widz do pokoju
 
 RELEASE
 - menu: nowa gra, fullscreen, pomoc (skroty)
@@ -27,6 +51,7 @@ Dalszy rozwój:
 - ustalic maxAge w configu i wykorzystac w player.service.js:authenticate i players.controller.js:authenticate 
 - registration: password confirmation
 - player tymczasowy jest kasowany po: 10 minutach od ostatniego wylogowania playera lub zalogowania playera
+- TEST end to end pelnej rozgrywki graczy testowych z serwerem - dodac wiecej testow(?) z porownaniem screenow z roznych rozdzielczosci
 
 TO DO
 - formularze login i register: wyswietlanie errow z serwera

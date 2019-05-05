@@ -400,8 +400,8 @@ const RoundEndHandler = (roomState) => {
   return returnActions;
 };
 
-const Ludo = {
-  Name: 'Ludo',
+const Kira = {
+  Name: 'Kira',
   Config,
   Actions: {
     SelectColor,
@@ -420,11 +420,11 @@ const Ludo = {
     Timeout: TimeoutHandler,
     RoundEnd: RoundEndHandler,
   },
-  Board,
-  Fields,
   AnimationLengths,
   ActionTypes,
+  Board,
+  Fields,
   InitialState,
 };
 
-module.exports = Ludo;
+module.exports = Kira;

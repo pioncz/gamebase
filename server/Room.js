@@ -21,11 +21,11 @@ class Room {
     this.id = options.id;
     this.config = options.config;
     this.name = '/room' + options.id;
-    this.gameName = options.gameName;
     this.rolled = options.rolled;
     this.gameState = {
       id: options.id,
       winnerId: null,
+      gameName: options.gameName,
       roomState: RoomStates.queue,
       finishTimestamp: null,
       roundTimestamp: null,
@@ -34,6 +34,7 @@ class Room {
       queueColors: [],
       playerIds: [],
       players: [],
+      spectatorIds: [],
       selectedPawns: [],
       currentPlayerId: null,
       actionExpirationTimestamp: null,
@@ -57,7 +58,7 @@ class Room {
     });
   }
   handleAction(action, player) {
-    let actionHandler = Games.Ludo.ActionHandlers[action.type],
+    let actionHandler = Games[this.gameState.gameName].ActionHandlers[action.type],
       returnActions = [];
 
     try {
@@ -73,7 +74,7 @@ class Room {
       let returnActions = [];
 
       try {
-        returnActions = Games.Ludo.ActionHandlers.RoundEnd(this.gameState);
+        returnActions = Games[this.gameState.gameName].ActionHandlers.RoundEnd(this.gameState);
       } catch(e) {
         console.error(e.message ? e.message : e);
       }
@@ -85,7 +86,7 @@ class Room {
       let returnActions = [];
 
       try {
-        returnActions = Games.Ludo.ActionHandlers.Timeout(this.gameState);
+        returnActions = Games[this.gameState.gameName].ActionHandlers.Timeout(this.gameState);
       } catch(e) {
         console.error(e.message ? e.message : e);
       }
@@ -95,4 +96,4 @@ class Room {
   }
 }
 
-module.exports = { Room, RoomStates };
+module.exports = { Room, RoomStates, };
