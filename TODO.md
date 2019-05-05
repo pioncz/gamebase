@@ -11,6 +11,7 @@ Wejscie do gry:
   - jestli jest taka gra i jest miejsce dla gracza, to user dolacza do pokoju jako gracz
 
 - przy rozlaczeniu trzeba sprawdzic czy skasowac spectatora
+- rozwiazac npm vulnerabilities
 
 - test nowej gry
 - w kirze ruch jest wykonywany: 
