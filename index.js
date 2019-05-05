@@ -17,6 +17,7 @@ const errorHandler = require('./server/error-handler');
 const playersController = require('./server/players/players.controller');
 const playerService = require('./server/players/player.service');
 const jwt = require('jsonwebtoken');
+const mongoose = require('mongoose');
 
 function handleError(req, res, error) {
   console.error(error.statusCode, error.error, error.options.uri);
@@ -38,6 +39,10 @@ const websocketServer = new WebsocketServer(io, playerService, config);
 //
 //   client.close();
 // });
+
+mongoose.set('useCreateIndex', true);
+mongoose.connect(process.env.MONGODB_URI || config.server.mongooseConnectionString, { useNewUrlParser: true });
+mongoose.Promise = global.Promise;
 
 /**
 * Module variables
