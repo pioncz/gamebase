@@ -15,7 +15,7 @@ module.exports = function() {
   return {
     entry: {
       engine: './engine/engine.js',
-      webapp: './webapp/index.jsx'
+      webapp: './webapp/index.jsx',
     },
     output: {
       filename: '[name].min.js',
@@ -31,27 +31,30 @@ module.exports = function() {
           loader: 'babel-loader',
           exclude: /node_modules/,
           query: {
-            presets: ['env', 'react', 'stage-1']
-          }
+            presets: ['env', 'react', 'stage-1',],
+          },
         },
         {
           test: /\.svg$/,
           use: [
             {
-              loader: "babel-loader"
+              loader: "babel-loader",
+              query: {
+                presets: ['env', 'react', 'stage-1',],
+              },
             },
             {
               loader: "react-svg-loader",
               options: {
-                jsx: false // true outputs JSX tags
-              }
-            }
-          ]
+                jsx: false, // true outputs JSX tags
+              },
+            },
+          ],
         },
-        {test: /\.html$/, loader: 'html-loader'},
+        {test: /\.html$/, loader: 'html-loader',},
         { test: /\.sass$/, use: extractSass.extract({
           use: [{
-            loader: "css-loader"
+            loader: "css-loader",
           }, {
             loader: "sass-loader",
             options: {
@@ -59,26 +62,26 @@ module.exports = function() {
                 path.resolve(__dirname, 'node_modules'),
                 path.resolve(__dirname, 'webapp/styles'),
               ],
-              sourceMap: true
-            }
-          }],
+              sourceMap: true,
+            },
+          },],
           // use style-loader in development
-          fallback: "style-loader"
-        }) }
-      ]
+          fallback: "style-loader",
+        }), },
+      ],
     },
     resolve: {
-      modules: ['games', 'engine', 'webapp', 'node_modules', 'static'],
-      extensions: [ '.tsx', '.ts', '.js', '.jsx' ]
+      modules: ['games', 'engine', 'webapp', 'node_modules', 'static',],
+      extensions: [ '.tsx', '.ts', '.js', '.jsx', ],
     },
     plugins: [
       // new CleanWebpackPlugin(['dist']),
       new webpack.DefinePlugin({
-        __CONFIG__: JSON.stringify(cfg)
+        __CONFIG__: JSON.stringify(cfg),
       }),
       new HtmlWebpackPlugin({
         inject: true,
-        chunks: ['engine', 'webapp'],
+        chunks: ['engine', 'webapp',],
         filename: 'index.html',
         minify: {
           collapseWhitespace: isProduction,
@@ -94,6 +97,6 @@ module.exports = function() {
       port: 5000,
       host: '0.0.0.0',
       historyApiFallback: true,
-    }
+    },
   };
 }

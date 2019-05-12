@@ -41,7 +41,7 @@ const websocketServer = new WebsocketServer(io, playerService, config);
 // });
 
 mongoose.set('useCreateIndex', true);
-mongoose.connect(process.env.MONGODB_URI || config.server.mongooseConnectionString, { useNewUrlParser: true });
+mongoose.connect(process.env.MONGODB_URI || config.server.mongooseConnectionString, { useNewUrlParser: true, });
 mongoose.Promise = global.Promise;
 
 /**
@@ -52,8 +52,8 @@ app.use(helmet.hsts());
 app.use(helmet.noSniff());
 app.use(helmet.xssFilter());
 
-app.use(bodyParser.urlencoded({ extended: true }));
-app.use(bodyParser.json({ inflate: false }));
+app.use(bodyParser.urlencoded({ extended: true, }));
+app.use(bodyParser.json({ inflate: false, }));
 app.use(cookieParser());
 app.use(cors());
 app.use(serverJwt());
@@ -73,17 +73,17 @@ app.use('/api/currentPlayer', (req, res) => {
     socketId = req.cookies.io,
     // player from websocketServer may be temporary
     tempPlayer = socketId && websocketServer.connections[socketId] && websocketServer.players[websocketServer.connections[socketId].playerId];
-    
+
   if (!token) {
     if (tempPlayer) {
       res.status(200).send(tempPlayer);
     } else {
-      res.status(400).send({error: 'Unauthorized'});
+      res.status(400).send({error: 'Unauthorized',});
     }
     return;
   }
 
-  playerService.verify({token})
+  playerService.verify({token,})
     .then(playerId => {
       playerService.getById(playerId)
         .then(player => {
@@ -92,7 +92,7 @@ app.use('/api/currentPlayer', (req, res) => {
           if (tempPlayer) {
             res.status(200).send(tempPlayer);
           } else {
-            res.status(400).send({error: 'Unauthorized'});
+            res.status(400).send({error: 'Unauthorized',});
           }
         });
     })
@@ -100,7 +100,7 @@ app.use('/api/currentPlayer', (req, res) => {
       if (tempPlayer) {
         res.status(200).send(tempPlayer);
       } else {
-        res.status(400).send({error: 'Unauthorized'});
+        res.status(400).send({error: 'Unauthorized',});
       }
     });
 });
@@ -120,10 +120,10 @@ app.use((err, req, res, next) => {
 
 app.use(function (req, res) {
   var fileName = __dirname + '/dist/index.html';
-    fs.readFile(fileName, 'utf8', function (err,data) {
+  fs.readFile(fileName, 'utf8', function (err,data) {
     if (err) {
       console.log(err);
-      res.status(404).send({error: 'index not found', url: req.url});
+      res.status(404).send({error: 'index not found', url: req.url,});
     } else {
       res.send(data);
     }
