@@ -7,7 +7,7 @@ import Timer from 'components/timer';
 import Games from 'Games.js';
 import ClassNames from 'classnames';
 import DicesImage from 'dices.svg';
-import PlayerProfiles from 'components/PlayerProfiles';
+import PlayerProfiles from 'components/playerProfiles';
 import { bindActionCreators, } from 'redux';
 import { connect, } from 'react-redux';
 import { selectors, } from 'shared/redux/api';
