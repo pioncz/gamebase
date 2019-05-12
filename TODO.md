@@ -176,3 +176,4 @@ DONE:
 + zmien gracza jesli skonczyla sie jego kolejka:
 + czas gry wysylany ze startGame jako timeLength [ms]
 + zastapic emitNewActions na this.emitRoomActions, dodac concat room actions
++ naprawienie webpack-dev-server
