@@ -10,6 +10,8 @@ Wejscie do gry:
   - jesli jest taka gra, ale nie ma miejsc do grania, user dolacza jako spectator (bedzie otrzymywal roomUpdate)
   - jestli jest taka gra i jest miejsce dla gracza, to user dolacza do pokoju jako gracz
 
+- serwer do botow!
+- kostka znika dopiero jak gracz sie ruszy
 - przy rozlaczeniu trzeba sprawdzic czy skasowac spectatora
 - rozwiazac npm vulnerabilities
 
