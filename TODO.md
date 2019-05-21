@@ -13,7 +13,6 @@ Wejscie do gry:
 - serwer do botow!
 - kostka znika dopiero jak gracz sie ruszy
 - przy rozlaczeniu trzeba sprawdzic czy skasowac spectatora
-- rozwiazac npm vulnerabilities
 
 - test nowej gry
 - w kirze ruch jest wykonywany: 
@@ -45,7 +44,7 @@ RELEASE
 3. pionki ruszaja sie na zmiane
 - ekran zachety przejscia do fullscreena
 
-- rozwazyc przypadek gdy ktos sie loguje w trakcie gry (playersUpdate do graczy z pokoju)
+- zablokowac przypadek gdy ktos sie loguje w trakcie gry (playersUpdate do graczy z pokoju)
 - po wylogowaniu updatePlayera do temporary
 - tlo animowane
 
@@ -58,10 +57,6 @@ Dalszy rozwój:
 TO DO
 - formularze login i register: wyswietlanie errow z serwera
 - panel admina - stan polaczen, kolejki, obciazenie serwera
-
-1) Gra
-- przy profilu aktualnego gracza, progress jego kolejki
-- koniec rozgrywki gdy sie skonczy czas
 
 2) Strona Ludo
 -wybór (graj sam lub ze znajomymi)
@@ -177,3 +172,6 @@ DONE:
 + czas gry wysylany ze startGame jako timeLength [ms]
 + zastapic emitNewActions na this.emitRoomActions, dodac concat room actions
 + naprawienie webpack-dev-server
++ rozwiazac npm vulnerabilities
++ Gra: przy profilu aktualnego gracza, progress jego kolejki
++ Gra: koniec rozgrywki gdy sie skonczy czas

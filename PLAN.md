@@ -22,7 +22,7 @@ W:wparcie nexusa 5x
 W:internacjonalizacja
 D:wystawienie online
 S:blokada 1 gry na koncie/przegladarce
-S:boty do gry: (ukryte, losowej trudnosci), zawyzajace statystyki w explore
+S:boty do gry: (ukryte?, losowej trudnosci), zawyzajace statystyki w explore
 
 0.8 Beta: (do wystartowania) otwieramy zamknieta bete
 S,W:rejestracja @
