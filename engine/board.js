@@ -2,7 +2,6 @@ import Utils from 'utils/utils.js'
 import Pawn from './pawn'
 import {EASING, TIMES,} from "./utils/animations";
 import PawnsController from 'pawnsController';
-import Config from 'config.js';
 import Dice from './dice';
 import BoardUtils from './../games/ludo/BoardUtils.js';
 import Games from 'Games.js';

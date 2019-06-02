@@ -10,7 +10,6 @@ const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 const cors = require('cors');
 const io = require('socket.io')(http);
-// const MongoClient = require('mongodb').MongoClient;
 const assert = require('assert');
 const serverJwt = require('./server/jwt');
 const errorHandler = require('./server/error-handler');
@@ -27,18 +26,6 @@ function handleError(req, res, error) {
 var config = require('./server/config');
 const WebsocketServer = require('./server/websocketServer.js');
 const websocketServer = new WebsocketServer(io, playerService, config);
-
-// const dbUrl = 'mongodb://localhost:27017';
-// const dbName = 'gamebase';
-//
-// MongoClient.connect(dbUrl, { useNewUrlParser: true } , function(err, client) {
-//   assert.equal(null, err);
-//   console.log("Connected successfully to database server");
-//
-//   const db = client.db(dbName);
-//
-//   client.close();
-// });
 
 mongoose.set('useCreateIndex', true);
 mongoose.connect(process.env.MONGODB_URI || config.server.mongooseConnectionString, { useNewUrlParser: true, });

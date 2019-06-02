@@ -1,5 +1,4 @@
-import { createLogic } from 'redux-logic';
-import Config from 'config.js';
+import { createLogic, } from 'redux-logic';
 
 export const name = 'ludo';
 
@@ -34,14 +33,14 @@ const initialState = {
   approxTime: '60',
   state: 'start', //start, queue, game, win, lost
   players: [
-    {id: 1, name:'Player1', color:'red'}
+    {id: 1, name:'Player1', color:'red',},
   ],
   pawns: [
-    {x:0, y:0, player: 1},
-    {x:1, y:0, player: 1},
-    {x:0, y:1, player: 1},
-    {x:1, y:1, player: 1}
-  ]
+    {x:0, y:0, player: 1,},
+    {x:1, y:0, player: 1,},
+    {x:0, y:1, player: 1,},
+    {x:1, y:1, player: 1,},
+  ],
 }
 
 const reducer = (state = initialState, action) => {

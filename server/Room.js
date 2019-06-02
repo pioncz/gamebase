@@ -50,7 +50,7 @@ class Room {
     this.gameState.roomState = RoomStates.pickColors;
     this.gameState.playerColors = [];
     this.gameState.colorsQueue = [];
-    this.config.ludo.colors.forEach(color => {
+    this.config.frontend.ludo.colors.forEach(color => {
       this.gameState.colorsQueue.push({
         color: color,
         selected: false,

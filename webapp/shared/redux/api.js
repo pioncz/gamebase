@@ -1,5 +1,4 @@
-import { createLogic } from 'redux-logic';
-import Config from 'config.js';
+import { createLogic, } from 'redux-logic';
 
 export const name = 'api';
 
@@ -42,7 +41,7 @@ const registerPlayer = (payload) => ({
   payload: {
     url: '/api/players/register',
     method: 'post',
-    data: { ...payload },
+    data: { ...payload, },
   },
 });
 
@@ -61,7 +60,7 @@ const loginPlayer = (payload) => ({
   payload: {
     url: '/api/players/login',
     method: 'post',
-    data: { ...payload },
+    data: { ...payload, },
   },
 });
 
@@ -165,7 +164,7 @@ const reducer = (state = initialState, action) => {
       ...state,
       login: {
         loading: true,
-      }
+      },
     }),
     [LOGIN_PLAYER_SUCCESS]: () => ({
       ...state,
@@ -179,38 +178,38 @@ const reducer = (state = initialState, action) => {
       login: {
         loading: false,
         error: 'Invalid email or password',
-      }
+      },
     }),
     [FETCH_CURRENT_PLAYER]: () => ({
       ...state,
       player: {
         state: 'loading',
         ...action.payload,
-      }
+      },
     }),
     [FETCH_CURRENT_PLAYER_SUCCESS]: () => ({
       ...state,
       player: {
         state: 'loggedIn',
         ...action.payload,
-      }
+      },
     }),
     [FETCH_CURRENT_PLAYER_FAIL]: () => ({
       ...state,
       player: {
         state: 'loggedOut',
-      }
+      },
     }),
     [LOGOUT]: () => ({
       ...state,
       player: {
         state: 'loggedOut',
-      }
+      },
     }),
     [SET_PLAYER]: () => ({
       ...state,
       player: action.payload.player,
-    })
+    }),
   };
 
   return (actions[action.type] && actions[action.type]()) || state;
@@ -224,7 +223,7 @@ const registerPlayerLogic = createLogic({
   type: [
     REGISTER_PLAYER,
   ],
-  process({ action: { payload }, httpClient, cancelled$ }) {
+  process({ action: { payload, }, httpClient, cancelled$, }) {
     return httpClient.cancellable(payload, cancelled$)
       .then(
         registerPlayerSuccess,
@@ -236,7 +235,7 @@ const loginPlayerLogic = createLogic({
   type: [
     LOGIN_PLAYER,
   ],
-  process({ action: { payload }, httpClient, cancelled$ }) {
+  process({ action: { payload, }, httpClient, cancelled$, }) {
     return httpClient.cancellable(payload, cancelled$)
       .then(
         loginPlayerSuccess,
@@ -250,8 +249,8 @@ const fetchCurrentPlayerLogic = createLogic({
     LOGIN_PLAYER_SUCCESS,
     FETCH_CURRENT_PLAYER,
   ],
-  process({ action: payload, httpClient, cancelled$ }) {
-    return httpClient.cancellable({ url: '/api/currentPlayer',  method: 'get' }, cancelled$)
+  process({ action: payload, httpClient, cancelled$, }) {
+    return httpClient.cancellable({ url: '/api/currentPlayer',  method: 'get', }, cancelled$)
       .then(
         fetchCurrentPlayerSuccess,
         fetchCurrentPlayerFail);
@@ -262,7 +261,7 @@ const logoutLogic = createLogic({
   type: [
     LOGOUT,
   ],
-  process({ action: { payload }, httpClient, cancelled$ }) {
+  process({ action: { payload, }, httpClient, cancelled$, }) {
     return httpClient.cancellable(payload, cancelled$)
       .then(
         logoutSuccess,

@@ -13,6 +13,7 @@ import { connect, } from 'react-redux';
 import { selectors, } from 'shared/redux/api';
 import SearchingRoom from 'modals/SearchingRoom';
 import { withRouter, } from 'react-router-dom';
+import RoomNonExistentModal from 'modals/roomNonExistent';
 
 const Pages = {
   Initial: 'Initial',
@@ -23,6 +24,7 @@ const Pages = {
   Loose: 'Loose',
   Disconnected: 'Disconnected',
   Winner: 'Winner',
+  RoomNonExistent: 'RoomNonExistent',
 };
 
 class Room extends Component {
@@ -59,8 +61,7 @@ class Room extends Component {
   }
   componentDidMount() {
     if (this.connectorInstance) {
-      this.connectorInstance = this.props.connectorInstance;
-      this.initSocketEvents(this.connectorInstance);
+      this.initSocketEvents();
     }
     document.addEventListener('keypress', this.onKeyUp);
   }
@@ -71,7 +72,7 @@ class Room extends Component {
     this.props.unsetInGame();
     document.removeEventListener('keypress', this.onKeyUp);
   }
-  initSocketEvents = (connectorInstance) => {
+  initSocketEvents = () => {
     const handleAction = (newAction) => {
       if (newAction.type === Games.Ludo.ActionTypes.SelectedColor) {
         let queueColors = this.state.queueColors,
@@ -153,7 +154,7 @@ class Room extends Component {
       }
     };
 
-    connectorInstance.socket.on('roomUpdate', (roomState) => {
+    this.connectorInstance.socket.on('roomUpdate', (roomState) => {
       console.log('roomUpdate', roomState);
 
       let page = (roomState.roomState === 'pickColors') ? Pages.PickColor : Pages.Initial,
@@ -176,16 +177,18 @@ class Room extends Component {
         gameName: roomState.gameName,
       });
     });
-    connectorInstance.socket.on('newAction', (newAction) => {
+    this.connectorInstance.socket.on('newAction', (newAction) => {
       console.log('newAction', newAction);
       handleAction(newAction);
     });
-    connectorInstance.socket.on('playerDisconnected', (e) => {
+    this.connectorInstance.socket.on('playerDisconnected', (e) => {
       console.log('playerDisconnected', e.playerId);
     });
-    connectorInstance.socket.on('socketError', (e) => {
+    this.connectorInstance.socket.on('socketError', (e) => {
       if (e.code === 1) {
-
+        this.setState({
+          page: Pages.RoomNonExistent,
+        })
       }
     });
   }
@@ -294,6 +297,10 @@ class Room extends Component {
         </div>
         <Button onClick={this.joinQueue}>NOWA GRA</Button>
       </Modal>
+    }
+
+    if (page === Pages.RoomNonExistent) {
+      currentModal = <RoomNonExistentModal />
     }
 
     return (<div className="room">

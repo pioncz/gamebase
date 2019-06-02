@@ -20,6 +20,9 @@ const _nextId = (() => {
  *   `console` - server sends log messages
  *   `roomUpdate` - sends current room state
  *   `gameUpdate` - sends current game state
+ *   `socketError` - sends various errors when action could not be completed
+ *    { code: Number, message: String }
+ *     code 1 - room doesnt exist
  *  Receives:
  *   `console` - server receives log messages
  *   `findRoom` - with options {gameName: {String}}
@@ -46,8 +49,19 @@ class WebsocketServer {
         let clients = io.sockets.clients().connected;
         return Object.keys(clients).length
       },
-      _emitRoomState = (room) => {
-        io.to(room.name).emit('roomUpdate', room.gameState);
+      _emitRoomState = (room, socket) => {
+        if (socket) {
+          socket.emit('roomUpdate', room.gameState);
+        } else {
+          io.to(room.name).emit('roomUpdate', room.gameState);
+        }
+      },
+      _emitError = (room, socket, error) => {
+        if (socket) {
+          socket.emit('socketError', error);
+        } else {
+          io.to(room.name).emit('socketError', error);
+        }
       },
       _emitNewActions = (room, newActions) => {
         newActions.forEach(action => {
@@ -216,6 +230,9 @@ class WebsocketServer {
         players: this.players,
       });
     };
+    // jezeli gracz jest w tym pokoju, wyslij mu stan pokoju
+    // jezeli gracz jest w innym pokoju, dodaj go jako spectatora
+    // jezeli pokoj nie istnieje to wyslij error
     const _handleJoinRoom = socket => (options) => {
       let connection = this.connections[socket.id],
         player = connection.playerId && this.players[connection.playerId],
@@ -232,20 +249,15 @@ class WebsocketServer {
       }
 
       if (room) {
-        // jezeli gracz jest w tym pokoju, wyslij mu stan pokoju
         if (room.id === roomId) {
           _log('Player tried to join same room second time, roomState emitted');
           _emitRoomState(room);
-        // jezeli gracz jest w innym pokoju, dodaj go jako spectatora
         } else {
           room.gameState.spectatorIds.push(player.id);
           _emitRoomState(room);
         }
-        // wyslij stan pokoju
       } else {
-      // dodaj gracza do pokoju
-      // wyslij mu stan pokoju
-      // jezeli to ostatni brakujacy gracz to wystartuj gre
+        _emitError(null, socket, {code: 1, message: 'room doesn\'t exist',});
       }
 
     };

@@ -1,6 +1,7 @@
 import React, { Component, } from 'react'
 import './index.sass'
 import ioClient from 'socket.io-client'
+import Config from 'config';
 
 export default class Connector extends Component {
   constructor(props) {
@@ -13,7 +14,7 @@ export default class Connector extends Component {
 
     this.addMessage = this.addMessage.bind(this);
 
-    this.socket = ioClient();
+    this.socket = ioClient(Config.ws.host);
 
     this.socket.on('console', this.addMessage);
     this.socket.on('connect', () => {

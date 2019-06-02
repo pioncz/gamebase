@@ -4,12 +4,18 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-
 const extractSass = new ExtractTextPlugin('[name].min.css');
 
 module.exports = function() {
-  let isProduction = false;
-  let cfgName = './config/develop.json';
+  let isProduction = process.env.NODE_ENV === 'production';
+  let cfgName;
+
+  if (isProduction) {
+    cfgName = './config/production.json';
+  } else {
+    cfgName = './config/develop.json';
+  }
+
   const cfg = require(cfgName);
 
   return {
@@ -23,7 +29,7 @@ module.exports = function() {
       publicPath: '/',
     },
     devtool: 'source-map',
-    mode: 'development',
+    mode: isProduction ? 'production' : 'development',
     module: {
       rules: [
         {
@@ -77,7 +83,7 @@ module.exports = function() {
     plugins: [
       // new CleanWebpackPlugin(['dist']),
       new webpack.DefinePlugin({
-        __CONFIG__: JSON.stringify(cfg),
+        __CONFIG__: JSON.stringify(cfg.frontend),
       }),
       new HtmlWebpackPlugin({
         inject: true,
@@ -94,7 +100,7 @@ module.exports = function() {
       extractSass,
     ],
     devServer: {
-      port: 5000,
+      port: 5001,
       host: '0.0.0.0',
       historyApiFallback: true,
     },

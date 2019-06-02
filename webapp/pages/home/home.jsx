@@ -3,10 +3,6 @@ import './index.sass'
 import Games from 'Games.js';
 import { withRouter, } from 'react-router-dom';
 
-const Modals = {
-  searchingRoom: 'searchingRoom',
-};
-
 class Home extends Component {
   constructor(props) {
     super(props);

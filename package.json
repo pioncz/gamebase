@@ -9,7 +9,7 @@
     "test": "jest --notify --watch --config=tests.config.json",
     "docs": "jsdoc -c jsdoc.conf.json --readme README.md",
     "build": "webpack",
-    "build-dev": "webpack --watch"
+    "dev": "npm-run-all --parallel start serve"
   },
   "repository": {
     "type": "git",
@@ -73,6 +73,7 @@
     "eslint": "^5.16.0",
     "eslint-plugin-react": "^7.12.4",
     "jest": "^24.5.0",
+    "npm-run-all": "^4.1.5",
     "typescript": "^2.7.1",
     "webpack-cli": "^3.3.0",
     "webpack-dev-server": "^3.3.1"
