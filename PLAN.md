@@ -1,13 +1,12 @@
 Wymagania: (W)WWW, (D)Devops, (S)Server, (E)Engine, (G)Grafika, (#) inne, (A) analityka, (AP) admin panel
 
 0.7 Alpha: (do wystartowania)
-S:refaktor
++S:refaktor
 #:nazwa strony, nazwy gier
 E:gry w pelni testowalne automatycznie
 +E:gry: mozliwosc grania na tel'
 +E:ludo: dzialajaca rozgrywka, nowa gra
 E:labirynt: dzialajaca rozgrywka, nowa gra
-D:rozbicie na repozytoria (testowalne osobno)
 S:zapisywanie profili po stronie serwera
 W:logowanie fb/gp/tw
 S:profil gracza: name, poziom, liczba gier, rankingi, achievmenty
@@ -20,7 +19,7 @@ S,W:system reklam: dla profili free, podczas czekania na gre, w trakcie gry
 W:wparcie wielu przegladarek
 W:wparcie nexusa 5x
 W:internacjonalizacja
-D:wystawienie online
++D:wystawienie online
 S:blokada 1 gry na koncie/przegladarce
 S:boty do gry: (ukryte?, losowej trudnosci), zawyzajace statystyki w explore
 
@@ -73,6 +72,7 @@ fx
 1.1
 bugfixing
 Chat:  szybki dostep do czatu i listy znajomych z funkcja zaproszenia do gry
+?D:rozbicie na repozytoria (testowalne osobno) - lerna js?
 
 2.0: 
 analiza analitk

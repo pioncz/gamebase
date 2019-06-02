@@ -1,5 +1,3 @@
-- osobne configi dla frontu i backendu
-
 Wejscie do gry:
  Z home:
   + User wybiera gre, wysyla findRoom(gameName)
@@ -12,62 +10,42 @@ Wejscie do gry:
   - jesli jest taka gra, ale nie ma miejsc do grania, user dolacza jako spectator (bedzie otrzymywal roomUpdate)
   - jestli jest taka gra i jest miejsce dla gracza, to user dolacza do pokoju jako gracz
 
+Frontowe taski:
+- ekran zachety przejscia do fullscreena (gdy user nie jest w fullscreenie - zacheta powtarza sie max 3 razy - localStorage)
+- strona admina: zakladki do przegladania roznych podstron admina
+- dodac podstrony zawierajaca logi z serwera
+- zglaszanie bledu - modal z duzym textarea. blokada 1 zgloszenia na 5 minut po stronie serwera (blad: id, date, user, content)
+- internacjonalizacja i18next (pl)
+- czat (dostepny z menu)
+
 - serwer do botow!
+- zalogowany gracz traci polaczenie / odswieza strone - do 10s moze wrocic do pokoju bez przegranej
+- TEST end to end pelnej rozgrywki graczy testowych z serwerem - 1-3 testy, z porownaniem screenow
+- obsluga wielu kart: na drugiej karcie mozesz tylko dolaczyc jako widz do pokoju
+
+Bugi / mniejsze taski:
 - kostka znika dopiero jak gracz sie ruszy
 - przy rozlaczeniu trzeba sprawdzic czy skasowac spectatora
-
-- test nowej gry
-- w kirze ruch jest wykonywany: 
-1) select pawns and paths (semi transparent) 
-2) pawn selection 
-3) paths are highlighted on hover
-*) Serwer wysyla SelectPaths (pawns i paths w srodku)
 - font awesome moze byc niedoladowany gdy engine zrobi swoje pierwszy render ( /engine )
 - guzik kostki nie powinien byc zaznaczony gdy gracz nie moze rzucic kostka (roomState.rolled = true)
-- konfigurowac za pomoca zmiennych srodowiskowych, dopisac w readme obsluge, w webpapp wstawic frontowe configi do config.js
-- skasowac ui connectora?
+- skasowac ui connectora
 - test na randomowe akcje od gracza w roznych momentach najpelniejszego testu rzutu kostka
 - w pages/ludo przy starcie gry ustawiac czas z configa
 - wywalic configa ze stanu pokoju - musi byc brany na bierzaco z aktualnej gry
 - skasowac properte player.color - korzystajmy z playerColors
 - koniec gry gdy gameState === RoomStates.Finished, a nie samo winnerId (w przyszlosci obsluga remisu)
-- zalogowany gracz traci polaczenie / odswieza strone - do 10s moze wrocic do pokoju bez przegranej
-- TEST end to end pelnej rozgrywki graczy testowych z serwerem - 1-3 testy, z porownaniem screenow
-- obsluga wielu kart: na drugiej karcie mozesz tylko dolaczyc jako widz do pokoju
-
-RELEASE
-- menu: nowa gra, fullscreen, pomoc (skroty)
-- modal wyboru koloru -> wybor pionka, planszy i tla
-- test innej gry? zmiana ukladu pol na planszy, zasady ruchu
-- ekran wyboru gry
-- pierwsza animacja: 
-1. plansza 'opakowuje' sie w teksture (skaluj prostokaty)
-2. pionki wjezdzaja od gory
-3. pionki ruszaja sie na zmiane
-- ekran zachety przejscia do fullscreena
-
 - zablokowac przypadek gdy ktos sie loguje w trakcie gry (playersUpdate do graczy z pokoju)
 - po wylogowaniu updatePlayera do temporary
-- tlo animowane
-
-Dalszy rozwój:
 - ustalic maxAge w configu i wykorzystac w player.service.js:authenticate i players.controller.js:authenticate 
+
+RELEASE
+- animacja w wyborze gry: 
+1. plansza 'opakowuje' sie w teksture (skaluj prostokaty)
 - registration: password confirmation
-- player tymczasowy jest kasowany po: 10 minutach od ostatniego wylogowania playera lub zalogowania playera
-- TEST end to end pelnej rozgrywki graczy testowych z serwerem - dodac wiecej testow(?) z porownaniem screenow z roznych rozdzielczosci
 
 TO DO
 - formularze login i register: wyswietlanie errow z serwera
 - panel admina - stan polaczen, kolejki, obciazenie serwera
-
-2) Strona Ludo
--wybór (graj sam lub ze znajomymi)
-
-3) Strona główna
--lista gier
-
-5) Panel admina
--wyswietlac server log obok stanu
 
 DONE:
 + podczas robienia akcji powinien byc sprawdzany timestamp pokoju
@@ -177,3 +155,5 @@ DONE:
 + rozwiazac npm vulnerabilities
 + Gra: przy profilu aktualnego gracza, progress jego kolejki
 + Gra: koniec rozgrywki gdy sie skonczy czas
++ osobne configi dla frontu i backendu
++ test nowej gry
