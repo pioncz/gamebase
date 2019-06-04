@@ -22,6 +22,7 @@ class Room {
     this.config = options.config;
     this.name = '/room' + options.id;
     this.rolled = options.rolled;
+    this.queueTimestamp = options.queueTimestamp;
     this.gameState = {
       id: options.id,
       winnerId: null,
@@ -42,11 +43,19 @@ class Room {
     this.eta = options.eta || 5*60*60; //18000s
     this.actions = [];
   }
+  addPlayer(player) {
+    const { players, playerIds, gameName, } = this.gameState;
+
+    players.push(player);
+    playerIds.push(player.id);
+    player.roomId = this.id;
+  }
   getActivePlayers() {
     const players = this.gameState.players;
     return players.filter(player => !player.disconnected);
   }
   startGame() {
+    console.log('game started in room: ' + this.name);
     this.gameState.roomState = RoomStates.pickColors;
     this.gameState.playerColors = [];
     this.gameState.colorsQueue = [];
@@ -70,11 +79,22 @@ class Room {
     return returnActions;
   }
   handleUpdate(now) {
-    if (this.gameState.roundTimestamp && now > this.gameState.roundTimestamp) {
-      let returnActions = [];
+    const { gameName, roundTimestamp, finishTimestamp,roomState, playerIds,} = this.gameState;
+    const game = Games[gameName];
+    const minPlayers = game.Config.MinPlayer;
+    let returnActions = [];
+
+    // jest w queue i jest wystarczajaco graczy
+    if (roomState === RoomStates.queue &&
+      playerIds.length >= minPlayers) {
+      // returnActions.push(game.ActionHandlers.StartGame(this.gameState))
+      this.startGame();
+    }
+
+    if (roundTimestamp && now > roundTimestamp) {
 
       try {
-        returnActions = Games[this.gameState.gameName].ActionHandlers.RoundEnd(this.gameState);
+        returnActions = game.ActionHandlers.RoundEnd(this.gameState);
       } catch(e) {
         console.error(e.message ? e.message : e);
       }
@@ -82,11 +102,11 @@ class Room {
       return returnActions;
     }
 
-    if (this.gameState.finishTimestamp && now > this.gameState.finishTimestamp) {
+    if (finishTimestamp && now > finishTimestamp) {
       let returnActions = [];
 
       try {
-        returnActions = Games[this.gameState.gameName].ActionHandlers.Timeout(this.gameState);
+        returnActions = game.ActionHandlers.Timeout(this.gameState);
       } catch(e) {
         console.error(e.message ? e.message : e);
       }

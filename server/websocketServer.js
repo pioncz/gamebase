@@ -3,6 +3,7 @@ const Connection = require('./Connection.js');
 const { Room, RoomStates, } = require('./Room.js');
 const Games = require('../games/Games.js');
 const ActionsStream = require('./actions-stream');
+const BotsManager = require('./bots-manager');
 
 const _nextId = (() => {
   let lastId = 0;
@@ -11,6 +12,8 @@ const _nextId = (() => {
     return ''+(lastId++);
   };
 })();
+
+const RoomTimeout = 3000;
 
 /**
  * Represents a conntector between io and WebsocketServer.
@@ -40,6 +43,10 @@ class WebsocketServer {
     this.players = {};
     this.actionsStream = new ActionsStream();
     this.io = io;
+    this.botsManager = new BotsManager({
+      totalBots: 1,
+      roomTimeout: RoomTimeout,
+    });
 
     let _log = (msg) => {
         const prefix = ['[ws]: ',];
@@ -121,6 +128,7 @@ class WebsocketServer {
             id: id,
             config: config,
             gameName: gameName,
+            queueTimestamp: Date.now(),
           });
 
         return room;
@@ -178,14 +186,7 @@ class WebsocketServer {
       socket.join(room.name);
       player.roomId = room.id;
 
-      const minPlayers = Games[gameName].Config.MinPlayer;
       console.log(`player ${player.login} joins queue(${room.gameState.playerIds.length}/${minPlayers}) in ${room.name}`);
-
-      if (room.gameState.playerIds.length >= minPlayers) {
-        room.startGame();
-        console.log('game started in room: ' + room.name);
-      }
-
       _emitRoomState(room);
     };
     const _handleCallAction = socket => action => {
@@ -228,6 +229,7 @@ class WebsocketServer {
         connections: this.connections,
         rooms: roomsFiltered,
         players: this.players,
+        bots: this.botsManager.bots,
       });
     };
     // jezeli gracz jest w tym pokoju, wyslij mu stan pokoju
@@ -337,13 +339,19 @@ class WebsocketServer {
     this.update = this.update.bind(this);
     setInterval(this.update.bind(this), 60);
   }
-  // Runs to: finish game if time is up, remove empty rooms, reset room search if it takes too long, update action stream
+  // Runs to:
+  // update action stream
+  // finish game if time is up,
+  // remove empty rooms,
+  // reset room search if it takes too long,
   update() {
     this.actionsStream.update();
 
     const now = Date.now();
     for (let roomIndex in this.rooms) {
       const room = this.rooms[roomIndex];
+      this.botsManager.updateQueue(now, room);
+      this.botsManager.updateRoom(now, room);
       const streamActions = room.handleUpdate(now);
 
       this.emitRoomActions(room.name, streamActions);

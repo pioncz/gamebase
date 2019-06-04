@@ -1,3 +1,10 @@
+room.handleUpdate: startGame powinno byc zwracana akcja dodana do returnActions
+room.handleUpdate powinien startowac gre
+wywalic start gry z findRoom
+bot powinien byc tworzony z playera
+przeniesc bot do nowego pliku
+nie da sie wystartowac rozgrywki dla 2 graczy
+
 Wejscie do gry:
  Z home:
   + User wybiera gre, wysyla findRoom(gameName)

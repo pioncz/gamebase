@@ -30,7 +30,7 @@ const InitialState = () => {
 };
 
 const Config = {
-  MinPlayer: 1,
+  MinPlayer: 2,
   // GameLength: (15 * 60 * 1000), //15 minutes
   GameLength: 2 * (15 * 60 * 1000), //30 minutes
   RoundLength: (10 * 1000), // Time for player to move
