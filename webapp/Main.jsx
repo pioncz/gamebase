@@ -11,7 +11,7 @@ import PropTypes from 'prop-types'
 import { bindActionCreators, } from 'redux'
 import { connect, } from 'react-redux'
 import { selectors, actions, } from 'shared/redux/api'
-import { LoginModal, RegistrationModal, } from 'modals/';
+import { LoginModal, RegistrationModal, FullscreenModal } from 'modals/';
 
 class Main extends Component {
   constructor(props) {
@@ -102,6 +102,7 @@ class Main extends Component {
             onClose={this.toggleRegistrationModal}
             onSubmit={this.sendRegistrationModal}
           />}
+          <FullscreenModal/>
         <Connector ref={this.setConnector}/>
       </div>
     </Router>);
