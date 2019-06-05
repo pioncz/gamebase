@@ -21,6 +21,7 @@ class Main extends Component {
       connectorInstance: null,
       loginModalVisible: false,
       registrationModalVisible: false,
+      fullscreenModalVisible: true,
     };
 
     this.setConnector = this.setConnector.bind(this);
@@ -62,6 +63,11 @@ class Main extends Component {
       registrationModalVisible: !this.state.registrationModalVisible,
     });
   }
+  toggleFullscreenModal = () => {
+    this.setState({
+      fullscreenModalVisible: !this.state.fullscreenModalVisible,
+    });
+  };
   sendRegistrationModal(values) {
     this.props.registerPlayer(values);
   }
@@ -74,8 +80,10 @@ class Main extends Component {
 
 
   render() {
-    let { loginModalVisible, registrationModalVisible, } = this.state,
+    let { loginModalVisible, registrationModalVisible, fullscreenModalVisible} = this.state,
       { player, } = this.props;
+
+    console.log(fullscreenModalVisible);
 
     return (<Router>
       <div className={this.props.inGame?'inGame':''}>
@@ -104,8 +112,11 @@ class Main extends Component {
             onClose={this.toggleRegistrationModal}
             onSubmit={this.sendRegistrationModal}
           />}
-         <FullscreenModal onToggle={ function(){console.log("piesek");} }/>
-        
+
+        {fullscreenModalVisible &&
+         <FullscreenModal onToggle={ this.toggleFullscreenModal }
+         />}
+
         <Connector ref={this.setConnector}/>
       </div>
     </Router>);

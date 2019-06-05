@@ -10,7 +10,7 @@ export default class FullscreenModal extends Component {
         super(props);
     }
 
-    toggleHandler(){
+    toggleHandler = () => {
         const { onToggle } = this.props;
 
         if(onToggle){
