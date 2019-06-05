@@ -9,6 +9,16 @@ export default class FullscreenModal extends Component {
     constructor(props) {
         super(props);
     }
+
+    toggleHandler(){
+        const { onToggle } = this.props;
+
+        if(onToggle){
+            onToggle();
+        }
+    }
+
+
     render() {
         const { onClose, onSubmit } = this.props,
             validate = values => {
@@ -23,7 +33,7 @@ export default class FullscreenModal extends Component {
             };
 
         return <Modal className="modal--login" open={true} onClose={onClose}>
-            <FullscreenButton onToggle={ function(){console.log("piesek");} } />
+            <FullscreenButton onToggle={ this.toggleHandler } />
         </Modal>;
     }
 }
