@@ -13,7 +13,7 @@ const _nextId = (() => {
   };
 })();
 
-const RoomTimeout = 3000;
+const RoomTimeout = 1000;
 
 /**
  * Represents a conntector between io and WebsocketServer.
@@ -44,13 +44,13 @@ class WebsocketServer {
     this.actionsStream = new ActionsStream();
     this.io = io;
     this.botsManager = new BotsManager({
-      totalBots: 1,
+      totalBots: 20,
       roomTimeout: RoomTimeout,
     });
 
     let _log = (msg) => {
         const prefix = ['[ws]: ',];
-        console.log(Array.isArray(msg) ? [prefix,].concat(msg) : prefix + msg);
+        console.warn(Array.isArray(msg) ? [prefix,].concat(msg) : prefix + msg);
       },
       _getTotalNumPlayers = () => {
         let clients = io.sockets.clients().connected;
@@ -185,8 +185,9 @@ class WebsocketServer {
       room.gameState.players.push(player);
       socket.join(room.name);
       player.roomId = room.id;
-
+      const minPlayers = Games[gameName].Config.MinPlayer;
       console.log(`player ${player.login} joins queue(${room.gameState.playerIds.length}/${minPlayers}) in ${room.name}`);
+
       _emitRoomState(room);
     };
     const _handleCallAction = socket => action => {
@@ -353,7 +354,6 @@ class WebsocketServer {
       this.botsManager.updateQueue(now, room);
       this.botsManager.updateRoom(now, room);
       const streamActions = room.handleUpdate(now);
-
       this.emitRoomActions(room.name, streamActions);
 
       if (!room.gameState.playerIds.length || room.gameState.roomState === RoomStates.finished) {
@@ -370,7 +370,10 @@ class WebsocketServer {
     for (let i = 0; i < socketIds.length; i++) {
       const socketId = socketIds[i];
 
-      this.connections[socketId].roomId = null;
+      // bot doesn't have socketId's
+      if (socketId) {
+        this.connections[socketId].roomId = null;
+      }
     }
 
     delete this.rooms[roomId];

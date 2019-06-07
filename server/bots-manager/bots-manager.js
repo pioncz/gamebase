@@ -11,6 +11,7 @@ class Bot extends Player {
       login: id,
       avatar: '/static/avatar1.jpg',
     });
+    this.bot = true;
   }
   setGame(gameName) {
 

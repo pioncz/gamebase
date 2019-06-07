@@ -152,6 +152,13 @@ class Room extends Component {
           });
         }
       }
+      if (newAction.type === Games.Ludo.ActionTypes.PickColors) {
+        this.setState({
+          players: newAction.roomState.players,
+          page: Pages.PickColor,
+          queueColors: newAction.roomState.colorsQueue,
+        });
+      }
     };
 
     this.connectorInstance.socket.on('roomUpdate', (roomState) => {

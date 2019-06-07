@@ -28,7 +28,16 @@ const WebsocketServer = require('./server/websocketServer.js');
 const websocketServer = new WebsocketServer(io, playerService, config);
 
 mongoose.set('useCreateIndex', true);
-mongoose.connect(process.env.MONGODB_URI || config.server.mongooseConnectionString, { useNewUrlParser: true, });
+mongoose.connect(
+  process.env.MONGODB_URI || config.server.mongooseConnectionString,
+  { useNewUrlParser: true, },
+  error => {
+    error && console.error(error);
+  },
+).then(() => {
+  console.log('Mongoose connected!');
+}, () => {
+});
 mongoose.Promise = global.Promise;
 
 /**

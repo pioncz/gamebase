@@ -32,7 +32,7 @@ class Room {
       roundTimestamp: null,
       rolled: false,
       diceNumber: 0,
-      queueColors: [],
+      queueColors: options.queueColors,
       playerIds: [],
       players: [],
       spectatorIds: [],
@@ -54,7 +54,7 @@ class Room {
     const players = this.gameState.players;
     return players.filter(player => !player.disconnected);
   }
-  startGame() {
+  pickColors() {
     console.log('game started in room: ' + this.name);
     this.gameState.roomState = RoomStates.pickColors;
     this.gameState.playerColors = [];
@@ -84,24 +84,6 @@ class Room {
     const minPlayers = game.Config.MinPlayer;
     let returnActions = [];
 
-    // jest w queue i jest wystarczajaco graczy
-    if (roomState === RoomStates.queue &&
-      playerIds.length >= minPlayers) {
-      // returnActions.push(game.ActionHandlers.StartGame(this.gameState))
-      this.startGame();
-    }
-
-    if (roundTimestamp && now > roundTimestamp) {
-
-      try {
-        returnActions = game.ActionHandlers.RoundEnd(this.gameState);
-      } catch(e) {
-        console.error(e.message ? e.message : e);
-      }
-
-      return returnActions;
-    }
-
     if (finishTimestamp && now > finishTimestamp) {
       let returnActions = [];
 
@@ -113,6 +95,23 @@ class Room {
 
       return returnActions;
     }
+
+    // room is queued and there are enough players
+    if (roomState === RoomStates.queue &&
+      playerIds.length >= minPlayers) {
+      this.pickColors();
+      returnActions = returnActions.concat(game.ActionHandlers.PickColors(this.gameState));
+    }
+
+    if (roundTimestamp && now > roundTimestamp) {
+      try {
+        returnActions = returnActions.concat(game.ActionHandlers.RoundEnd(this.gameState));
+      } catch(e) {
+        console.error(e.message ? e.message : e);
+      }
+    }
+
+    return returnActions;
   }
 }
 
