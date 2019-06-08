@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
 import Modal from 'components/modal/index'
-import Button from 'components/button/index'
-import { Form, Field } from 'react-final-form'
-
+import './index.sass'
 import FullscreenButton from 'components/fullscreenButton'
+
 
 export default class FullscreenModal extends Component {
     constructor(props) {
@@ -20,20 +19,14 @@ export default class FullscreenModal extends Component {
 
 
     render() {
-        const { onClose, onSubmit } = this.props,
-            validate = values => {
-                const errors = {};
-                if (!values.email) {
-                    errors.email = "Required";
-                }
-                if (!values.password) {
-                    errors.password = "Required";
-                }
-                return errors;
-            };
+        const { onClose, onSubmit } = this.props;
+            
 
-        return <Modal className="modal--login" open={true} onClose={onClose}>
-            <FullscreenButton onToggle={ this.toggleHandler } />
+        return <Modal className="modal--fullscreen" open={true} onClose={onClose}>
+            <h3>Consider playing in fullscreen by clicking fullscreen button below or in the right botom corner of your screen.</h3>
+            <FullscreenButton onToggle={ this.toggleHandler } /> 
+            
         </Modal>;
+        
     }
 }

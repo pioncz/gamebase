@@ -80,10 +80,6 @@ export default class Header extends Component {
         <div className="nav-icon" onClick={this.toggleMenu}>
           <MenuIcon />
         </div>
-        <div className="gej">
-
-
-        </div>
 
         <div className="nav-icon nav-icon--bottom" onClick={this.toggleFullscreen}>
           {fullscreen && <FullscreenExitIcon/>}
