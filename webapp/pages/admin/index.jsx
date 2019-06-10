@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import ReactJson from 'react-json-view'
-import './index.sass'
+import './index.sass';
 
 
 export default class Admin extends Component {
