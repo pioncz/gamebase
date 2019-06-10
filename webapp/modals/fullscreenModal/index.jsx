@@ -2,31 +2,18 @@ import React, { Component } from 'react'
 import Modal from 'components/modal/index'
 import './index.sass'
 import FullscreenButton from 'components/fullscreenButton'
+import { pure } from 'recompose';
 
 
-export default class FullscreenModal extends Component {
-    constructor(props) {
-        super(props);
-    }
+function FullscreenModal ({ props, onClose, onSubmit }) {
 
-    toggleHandler = () => {
-        const { onToggle } = this.props;
-
-        if(onToggle){
-            onToggle();
-        }
-    }
-
-
-    render() {
-        const { onClose, onSubmit } = this.props;
-            
-
-        return <Modal className="modal--fullscreen" open={true} onClose={onClose}>
+        return (<Modal className="modal--fullscreen" open={true} onClose={onClose}>
+           
             <h3>Consider playing in fullscreen by clicking fullscreen button below or in the right botom corner of your screen.</h3>
-            <FullscreenButton onToggle={ this.toggleHandler } /> 
+            <FullscreenButton onToggle={ () => onToggle && onToggle() } /> 
             
-        </Modal>;
-        
+        </Modal>
+        );
     }
-}
+
+    export default pure(FullscreenModal);

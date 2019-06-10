@@ -83,8 +83,6 @@ class Main extends Component {
     let { loginModalVisible, registrationModalVisible, fullscreenModalVisible} = this.state,
       { player, } = this.props;
 
-    console.log(fullscreenModalVisible);
-
     return (<Router>
       <div className={this.props.inGame?'inGame':''}>
         <Header
