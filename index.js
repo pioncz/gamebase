@@ -32,6 +32,7 @@ mongoose.connect(
   process.env.MONGODB_URI || config.server.mongooseConnectionString,
   { useNewUrlParser: true, },
   error => {
+    console.error('Mongoose connection fail!');
     error && console.error(error);
   },
 ).then(() => {
