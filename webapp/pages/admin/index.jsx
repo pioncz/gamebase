@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import ReactJson from 'react-json-view'
 import './index.sass'
-import AdminTabs from 'components/adminTabs';
+
 
 export default class Admin extends Component {
   constructor(props) {

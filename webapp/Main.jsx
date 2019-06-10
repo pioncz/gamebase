@@ -114,7 +114,9 @@ class Main extends Component {
           />}
 
         {fullscreenModalVisible &&
-         <FullscreenModal onToggle={ this.toggleFullscreenModal }
+         <FullscreenModal 
+            onToggle={ this.toggleFullscreenModal}
+            onClose={this.toggleFullscreenModal}
          />}
 
         <Connector ref={this.setConnector}/>

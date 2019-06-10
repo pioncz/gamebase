@@ -10,6 +10,8 @@ import Classnames from 'classnames'
 import MenuIcon from '@material-ui/icons/Menu'
 import FullscreenIcon from '@material-ui/icons/Fullscreen'
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit'
+import FullscreenButton from 'components/fullscreenButton'
+
 
 export default class Header extends Component {
   constructor(props) {
@@ -81,10 +83,11 @@ export default class Header extends Component {
           <MenuIcon />
         </div>
 
-        <div className="nav-icon nav-icon--bottom" onClick={this.toggleFullscreen}>
+        {/* <div className="nav-icon nav-icon--bottom" onClick={this.toggleFullscreen}>
           {fullscreen && <FullscreenExitIcon/>}
           {!fullscreen && <FullscreenIcon />}
-        </div>
+        </div> */}
+        <FullscreenButton />
       </div>
       <div className="menu-container">
         <div className="menu" onClick={this.toggleMenu}>

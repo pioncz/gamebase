@@ -1,13 +1,4 @@
 import React, { Component } from 'react'
-import {
-    BrowserRouter as Router,
-    Route,
-    Link
-} from 'react-router-dom'
-//import './index.sass'
-import Profile from 'components/profile/index'
-import Classnames from 'classnames'
-import MenuIcon from '@material-ui/icons/Menu'
 import FullscreenIcon from '@material-ui/icons/Fullscreen'
 import FullscreenExitIcon from '@material-ui/icons/FullscreenExit'
 
