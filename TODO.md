@@ -1,9 +1,12 @@
-room.handleUpdate: startGame powinno byc zwracana akcja dodana do returnActions
-room.handleUpdate powinien startowac gre
-wywalic start gry z findRoom
-bot powinien byc tworzony z playera
-przeniesc bot do nowego pliku
++ room.handleUpdate: startGame powinno byc zwracana akcja dodana do returnActions
++ room.handleUpdate powinien startowac gre
++ wywalic start gry z findRoom
++ bot powinien byc tworzony z playera
++ przeniesc bot do nowego pliku
 nie da sie wystartowac rozgrywki dla 2 graczy
+bot rzuca kostka
+bot wybiera pionka do ruchu
+bot wychodzi z pokoju
 
 Wejscie do gry:
  Z home:
@@ -31,6 +34,7 @@ Frontowe taski:
 - obsluga wielu kart: na drugiej karcie mozesz tylko dolaczyc jako widz do pokoju
 
 Bugi / mniejsze taski:
+- zrobic jakis debug do akcji: odtworzyc rozgrywke za pomoca akcji
 - kostka znika dopiero jak gracz sie ruszy
 - przy rozlaczeniu trzeba sprawdzic czy skasowac spectatora
 - font awesome moze byc niedoladowany gdy engine zrobi swoje pierwszy render ( /engine )

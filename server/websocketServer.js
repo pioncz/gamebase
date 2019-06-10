@@ -14,6 +14,7 @@ const _nextId = (() => {
 })();
 
 const RoomTimeout = 1000;
+const TotalBots = 0;
 
 /**
  * Represents a conntector between io and WebsocketServer.
@@ -45,7 +46,7 @@ class WebsocketServer {
     this.actionsStream = new ActionsStream();
     this.io = io;
     this.botsManager = new BotsManager({
-      totalBots: 20,
+      totalBots: TotalBots,
       roomTimeout: RoomTimeout,
     });
 
@@ -183,10 +184,8 @@ class WebsocketServer {
         this.rooms[room.id] = room;
       }
       connection.roomId = room.id;
-      room.gameState.playerIds.push(player.id);
-      room.gameState.players.push(player);
+      room.addPlayer(player);
       socket.join(room.name);
-      player.roomId = room.id;
       const minPlayers = Games[gameName].Config.MinPlayer;
       console.log(`player ${player.login} joins queue(${room.gameState.playerIds.length}/${minPlayers}) in ${room.name}`);
 

@@ -1,22 +1,5 @@
 const Games = require('./../../games/Games.js');
-const Player = require('./../Player.js');
-
-let nextId = 1;
-
-class Bot extends Player {
-  constructor() {
-    const id = 'bot ' + (nextId++);
-    super({
-      id,
-      login: id,
-      avatar: '/static/avatar1.jpg',
-    });
-    this.bot = true;
-  }
-  setGame(gameName) {
-
-  }
-}
+const Bot = require('./bot.js');
 
 class BotsManager {
   // Create bots
