@@ -41,6 +41,7 @@ class WebsocketServer {
     this.connections = {}, // [socket.id]: {roomId, playerId}
     this.rooms = {};
     this.players = {};
+    this.logs = [];
     this.actionsStream = new ActionsStream();
     this.io = io;
     this.botsManager = new BotsManager({
@@ -50,7 +51,8 @@ class WebsocketServer {
 
     let _log = (msg) => {
         const prefix = ['[ws]: ',];
-        console.warn(Array.isArray(msg) ? [prefix,].concat(msg) : prefix + msg);
+        console.log(Array.isArray(msg) ? [prefix,].concat(msg) : prefix + msg);
+        this.logs.push({msg, timestamp: Date.now(),});
       },
       _getTotalNumPlayers = () => {
         let clients = io.sockets.clients().connected;
@@ -230,6 +232,7 @@ class WebsocketServer {
         connections: this.connections,
         rooms: roomsFiltered,
         players: this.players,
+        logs: this.logs,
         bots: this.botsManager.bots,
       });
     };
