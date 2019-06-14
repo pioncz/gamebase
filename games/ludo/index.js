@@ -42,7 +42,7 @@ const InitialState = () => {
 };
 
 const Config = {
-  MinPlayer: 2,
+  MinPlayer: 4,
   // GameLength: (15 * 60 * 1000), //15 minutes
   GameLength: 2 * (15 * 60 * 1000), //30 minutes
   RoundLength: (10 * 1000), // Time for player to move
@@ -141,7 +141,8 @@ const RollHandler = (action, player, roomState, diceNumber = 0) => {
     throw new Error('This player already rolled in this room. Pick pawn!');
   }
   //diceNumber=6;
-  let generatedDiceNumber = (diceNumber > 0 && diceNumber < 7 && diceNumber)
+  let generatedDiceNumber = action.diceNumber ||
+    (diceNumber > 0 && diceNumber < 7 && diceNumber)
     || parseInt(Math.random()*6)+1, // 1-6
     moves = BoardUtils.checkMoves(roomState, generatedDiceNumber, player.id);
 
@@ -209,6 +210,7 @@ const SelectColorHandler = (action, player, roomState) => {
 
   roomState.playerColors.push({playerId: player.id, color: action.value,});
   player.color = action.value;
+  roomState.colorsQueue = roomState.colorsQueue.map(color => color.color === action.value ? {...color, selected: false,} : color);
 
   returnActions.push({action: {type: ActionTypes.SelectedColor, playerId: player.id, value: action.value,},});
 
@@ -216,7 +218,10 @@ const SelectColorHandler = (action, player, roomState) => {
 
   if ((roomState.playerColors.length + bots.length) >= Config.MinPlayer && roomState.roomId !== GameStates.game) {
     bots.forEach((bot) => {
-      const freeColor = roomState.colorsQueue.find(color => !color.selected);
+      const freeColors = roomState.colorsQueue.filter(color =>
+        !roomState.playerColors.find(playerColor => playerColor.color === color.color)
+      );
+      const freeColor = freeColors[parseInt(Math.random() * freeColors.length)];
       bot.color = freeColor.color;
       roomState.playerColors.push({playerId: bot.id, color: freeColor.color,});
     });
@@ -469,6 +474,7 @@ const Ludo = {
     PickColors: PickColorsHandler,
   },
   Board,
+  BoardUtils,
   Fields,
   AnimationLengths,
   ActionTypes,

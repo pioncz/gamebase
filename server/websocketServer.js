@@ -13,8 +13,8 @@ const _nextId = (() => {
   };
 })();
 
-const RoomTimeout = 1000;
-const TotalBots = 0;
+const RoomTimeout = 10 * 1000;
+const TotalBots = 100;
 
 /**
  * Represents a conntector between io and WebsocketServer.
@@ -352,10 +352,11 @@ class WebsocketServer {
 
     const now = Date.now();
     for (let roomIndex in this.rooms) {
+      let streamActions = [];
       const room = this.rooms[roomIndex];
       this.botsManager.updateQueue(now, room);
-      this.botsManager.updateRoom(now, room);
-      const streamActions = room.handleUpdate(now);
+      streamActions = streamActions.concat(this.botsManager.updateRoom(now, room));
+      streamActions = streamActions.concat(room.handleUpdate(now));
       this.emitRoomActions(room.name, streamActions);
 
       if (!room.gameState.playerIds.length || room.gameState.roomState === RoomStates.finished) {
@@ -398,7 +399,6 @@ class WebsocketServer {
 
         room.actions = room.actions.concat(callbackActions);
         this.emitRoomActions(roomName, callbackActions);
-
         this.io.to(roomName).emit('newAction', action);
       }, timestamp);
     }

@@ -133,7 +133,7 @@ class Room extends Component {
         if (this.props.player && newAction.playerId !== this.props.player.id) return;
 
         this.gameComponentRef.current.engine.selectPawns(newAction.pawnIds);
-        this.profilesComponent.restartProgress();
+        this.profilesComponentRef.current.restartProgress();
       }
       if (newAction.type === Games.Ludo.ActionTypes.FinishGame) {
         let winnerId = newAction.winnerId;
