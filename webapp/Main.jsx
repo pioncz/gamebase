@@ -11,16 +11,33 @@ import PropTypes from 'prop-types'
 import { bindActionCreators, } from 'redux'
 import { connect, } from 'react-redux'
 import { selectors, actions, } from 'shared/redux/api'
-import { LoginModal, RegistrationModal, } from 'modals/';
+import { LoginModal, RegistrationModal, FullscreenModal, } from 'modals/';
 
 class Main extends Component {
   constructor(props) {
     super(props);
 
+
+    let fullscreenmModalCounter = parseInt(localStorage.getItem('fullscreenModalCounter'), 10);
+
+    if( isNaN(fullscreenmModalCounter) ){
+      fullscreenmModalCounter = 0;
+    }
+
+    let fullscreenModalVisible = true;
+    if ( fullscreenmModalCounter >= 2 ) {
+      fullscreenModalVisible = false;
+    } else {
+      fullscreenmModalCounter++;
+      localStorage.setItem('fullscreenModalCounter', fullscreenmModalCounter);
+    }
+
+
     this.state = {
       connectorInstance: null,
       loginModalVisible: false,
       registrationModalVisible: false,
+      fullscreenModalVisible: fullscreenModalVisible,
     };
 
     this.setConnector = this.setConnector.bind(this);
@@ -62,6 +79,11 @@ class Main extends Component {
       registrationModalVisible: !this.state.registrationModalVisible,
     });
   }
+  toggleFullscreenModal = () => {
+    this.setState({
+      fullscreenModalVisible: !this.state.fullscreenModalVisible,
+    });
+  };
   sendRegistrationModal(values) {
     this.props.registerPlayer(values);
   }
@@ -71,8 +93,10 @@ class Main extends Component {
   logout() {
     this.props.logout();
   }
+
+
   render() {
-    let { loginModalVisible, registrationModalVisible, } = this.state,
+    let { loginModalVisible, registrationModalVisible, fullscreenModalVisible,} = this.state,
       { player, } = this.props;
 
     return (<Router>
@@ -102,6 +126,13 @@ class Main extends Component {
             onClose={this.toggleRegistrationModal}
             onSubmit={this.sendRegistrationModal}
           />}
+
+        {fullscreenModalVisible &&
+         <FullscreenModal
+           onToggle={ this.toggleFullscreenModal}
+           onClose={this.toggleFullscreenModal}
+         />}
+
         <Connector ref={this.setConnector}/>
       </div>
     </Router>);
