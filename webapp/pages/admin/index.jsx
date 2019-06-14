@@ -1,8 +1,8 @@
-import React, { Component } from 'react'
+import React, { Component, } from 'react'
 import ReactJson from 'react-json-view'
 import './index.sass'
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles, } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
@@ -10,7 +10,7 @@ import Typography from '@material-ui/core/Typography';
 
 function TabContainer(props) {
   return (
-    <Typography component="div" style={{ padding: 8 * 3 }}>
+    <Typography component="div" style={{ padding: 8 * 3, }}>
       {props.children}
     </Typography>
   );
@@ -27,18 +27,18 @@ const styles = theme => ({
   },
 });
 
-class SimpleTabs  extends Component {
+class Admin  extends Component {
   state = {
-    value: 0,
+    activeTab: 0,
     serverStats: {},
   };
-  handleChange = (event, value) => {
-    this.setState({ value });
+  handleChange = (event, activeTab) => {
+    this.setState({ activeTab, });
   };
 
   constructor(props) {
     super(props);
-  
+
     this.getStatsInterval = null;
     this.connectorInstance = this.props.connectorInstance;
     this.getStats = this.getStats.bind(this);
@@ -62,35 +62,35 @@ class SimpleTabs  extends Component {
     });
   }
   render() {
-    const { classes } = this.props;
-    const { value } = this.state;
+    const { classes, } = this.props;
+    const { activeTab, } = this.state;
 
     return (
       <div className={classes.root}>
-      <AppBar position="static">
-        <Tabs value={value} onChange={this.handleChange}>
-          <Tab label="Server data" />
-          <Tab label="Item Two" />
-          <Tab label="Item Three" />
-        </Tabs>
-      </AppBar>
-      {value === 0 && <TabContainer>
-        
-      <div className="admin-page">
-        <div>Server data</div>
-        <ReactJson src={this.state.serverStats} theme="monokai" />
-      </div>
+        <AppBar position="static">
+          <Tabs activeTab={activeTab} onChange={this.handleChange}>
+            <Tab label="Server data" />
+            <Tab label="Item Two" />
+            <Tab label="Item Three" />
+          </Tabs>
+        </AppBar>
+        {activeTab === 0 && <TabContainer>
 
-      </TabContainer>}
-      {value === 1 && <TabContainer>Item Two</TabContainer>}
-      {value === 2 && <TabContainer>Item Three</TabContainer>}
-    </div>
+          <div className="admin-page">
+            <div>Server data</div>
+            <ReactJson src={this.state.serverStats} theme="monokai" />
+          </div>
+
+        </TabContainer>}
+        {activeTab === 1 && <TabContainer>Item Two</TabContainer>}
+        {activeTab === 2 && <TabContainer>Item Three</TabContainer>}
+      </div>
     );
   }
 }
 
-SimpleTabs.propTypes = {
+Admin.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(SimpleTabs);
+export default withStyles(styles)(Admin);
