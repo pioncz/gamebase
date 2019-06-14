@@ -7,12 +7,13 @@ import { pure, } from 'recompose';
 
 function FullscreenModal ({ onClose, onToggle, }) {
 
-  return (<Modal className="modal--fullscreen" open={true} onClose={onClose}>
+  return (
+    <Modal className="modal--fullscreen" open={true} onClose={onClose}>
 
-    <h3>Consider playing in fullscreen by clicking fullscreen button below or in the right botom corner of your screen.</h3>
-    <FullscreenButton onToggle={ () => onToggle && onToggle() } />
+      <h3>Consider playing in fullscreen by clicking fullscreen button below or in the right botom corner of your screen.</h3>
+      <FullscreenButton onToggle={ () => onToggle && onToggle() } />
 
-  </Modal>
+    </Modal>
   );
 }
 
