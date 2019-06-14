@@ -11,17 +11,33 @@ import PropTypes from 'prop-types'
 import { bindActionCreators, } from 'redux'
 import { connect, } from 'react-redux'
 import { selectors, actions, } from 'shared/redux/api'
-import { LoginModal, RegistrationModal, FullscreenModal } from 'modals/';
+import { LoginModal, RegistrationModal, FullscreenModal, } from 'modals/';
 
 class Main extends Component {
   constructor(props) {
     super(props);
 
+
+    let fullscreenmModalCounter = parseInt(localStorage.getItem('fullscreenModalCounter'), 10);
+
+    if( isNaN(fullscreenmModalCounter) ){
+      fullscreenmModalCounter = 0;
+    }
+
+    let fullscreenModalVisible = true;
+    if ( fullscreenmModalCounter >= 2 ) {
+      fullscreenModalVisible = false;
+    } else {
+      fullscreenmModalCounter++;
+      localStorage.setItem('fullscreenModalCounter', fullscreenmModalCounter);
+    }
+
+
     this.state = {
       connectorInstance: null,
       loginModalVisible: false,
       registrationModalVisible: false,
-      fullscreenModalVisible: true,
+      fullscreenModalVisible: fullscreenModalVisible,
     };
 
     this.setConnector = this.setConnector.bind(this);
@@ -80,7 +96,7 @@ class Main extends Component {
 
 
   render() {
-    let { loginModalVisible, registrationModalVisible, fullscreenModalVisible} = this.state,
+    let { loginModalVisible, registrationModalVisible, fullscreenModalVisible,} = this.state,
       { player, } = this.props;
 
     return (<Router>
@@ -112,9 +128,9 @@ class Main extends Component {
           />}
 
         {fullscreenModalVisible &&
-         <FullscreenModal 
-            onToggle={ this.toggleFullscreenModal}
-            onClose={this.toggleFullscreenModal}
+         <FullscreenModal
+           onToggle={ this.toggleFullscreenModal}
+           onClose={this.toggleFullscreenModal}
          />}
 
         <Connector ref={this.setConnector}/>
