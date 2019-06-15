@@ -2,6 +2,18 @@ const BoardUtils = require('./BoardUtils.js');
 const Board = require('./Board.js');
 const Fields = require('./Fields.js');
 
+/**
+ * Enum representing room states.
+ *
+ * @enum
+ */
+const RoomStates = {
+  queue: 'queue',
+  pickColors: 'pickColors',
+  game: 'game',
+  finished: 'finished',
+};
+
 const getNextPlayerId = (playerIds, playerId) => {
   return playerIds[(playerIds.indexOf(playerId) + 1) % playerIds.length];
 };
@@ -30,7 +42,13 @@ const InitialState = () => {
 };
 
 const Config = {
-  MinPlayer: 1,
+  Colors: [
+    "#D50000",
+    "#64DD17",
+    "#1DE9B6",
+    "#FFEA00",
+  ],
+  MinPlayer: 4,
   // GameLength: (15 * 60 * 1000), //15 minutes
   GameLength: 2 * (15 * 60 * 1000), //30 minutes
   RoundLength: (10 * 1000), // Time for player to move
@@ -49,12 +67,14 @@ const ActionTypes = {
   Disconnected: 'Disconnected',
   StopProgress: 'StopProgress',
   RestartProgress: 'RestartProgress',
+  PickColors: 'PickColors',
 };
 
 const AnimationLengths = {
   movePawn: 500,
-  rollDice: 800,
+  rollDice: 2000,
 };
+
 
 /**
  * Enum representing game states.
@@ -81,7 +101,7 @@ const SelectColor = (playerId, color) => {
 };
 
 const StartGame = (roomState) => {
-  return {type: ActionTypes.StartGame, roomState: roomState,};
+  return {type: ActionTypes.StartGame, roomState,};
 };
 
 const FinishGame = (winnerId) => {
@@ -112,6 +132,10 @@ const Disconnected = (playerId) => {
   return {type: ActionTypes.Disconnected, playerId,};
 };
 
+const PickColors = (roomState) => {
+  return { type: ActionTypes.PickColors, roomState, }
+}
+
 // For diceNumber 0 number will be generated randomly from 1 to 6
 const RollHandler = (action, player, roomState, diceNumber = 0) => {
   let returnActions = [];
@@ -124,7 +148,8 @@ const RollHandler = (action, player, roomState, diceNumber = 0) => {
     throw new Error('This player already rolled in this room. Pick pawn!');
   }
   //diceNumber=6;
-  let generatedDiceNumber = (diceNumber > 0 && diceNumber < 7 && diceNumber)
+  let generatedDiceNumber = action.diceNumber ||
+    (diceNumber > 0 && diceNumber < 7 && diceNumber)
     || parseInt(Math.random()*6)+1, // 1-6
     moves = BoardUtils.checkMoves(roomState, generatedDiceNumber, player.id);
 
@@ -138,6 +163,7 @@ const RollHandler = (action, player, roomState, diceNumber = 0) => {
     // if player didnt just roll 6, switch player
     if (player.previousRoll !== 6 || player.lastRoll === 6) {
       player.lastRoll = 0;
+      player.previousRoll = 0;
       roomState.currentPlayerId = getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
       waitForAction = ActionTypes.Roll;
     }
@@ -192,10 +218,22 @@ const SelectColorHandler = (action, player, roomState) => {
 
   roomState.playerColors.push({playerId: player.id, color: action.value,});
   player.color = action.value;
+  roomState.colorsQueue = roomState.colorsQueue.map(color => color.color === action.value ? {...color, selected: false,} : color);
 
   returnActions.push({action: {type: ActionTypes.SelectedColor, playerId: player.id, value: action.value,},});
 
-  if (roomState.playerColors.length >= Config.MinPlayer && roomState.roomId !== GameStates.game) {
+  const bots = roomState.players.filter(player => player.bot );
+
+  if ((roomState.playerColors.length + bots.length) >= Config.MinPlayer && roomState.roomId !== GameStates.game) {
+    bots.forEach((bot) => {
+      const freeColors = roomState.colorsQueue.filter(color =>
+        !roomState.playerColors.find(playerColor => playerColor.color === color.color)
+      );
+      const freeColor = freeColors[parseInt(Math.random() * freeColors.length)];
+      bot.color = freeColor.color;
+      roomState.playerColors.push({playerId: bot.id, color: freeColor.color,});
+    });
+
     let initialState = InitialState(); // [Pawns]
 
     roomState.roomState = GameStates.game;
@@ -400,6 +438,26 @@ const RoundEndHandler = (roomState) => {
   return returnActions;
 };
 
+const StartGameHandler = (roomState) => {
+  const returnActions = [];
+
+  // roomState.roomState =
+
+  returnActions.push({action: StartGame(roomState),});
+
+  return returnActions;
+};
+
+const PickColorsHandler = (roomState) => {
+  const returnActions = [];
+
+  roomState.roomState = RoomStates.pickColors;
+
+  returnActions.push({action: PickColors(roomState),});
+
+  return returnActions;
+};
+
 const Ludo = {
   Name: 'Ludo',
   Config,
@@ -411,6 +469,7 @@ const Ludo = {
     PickPawn,
     FinishGame,
     Disconnected,
+    PickColors,
   },
   ActionHandlers: {
     SelectColor: SelectColorHandler,
@@ -419,8 +478,11 @@ const Ludo = {
     Disconnected: DisconnectedHandler,
     Timeout: TimeoutHandler,
     RoundEnd: RoundEndHandler,
+    StartGame: StartGameHandler,
+    PickColors: PickColorsHandler,
   },
   Board,
+  BoardUtils,
   Fields,
   AnimationLengths,
   ActionTypes,

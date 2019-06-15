@@ -268,6 +268,8 @@ export default class Board {
   changeGame(gameName) {
     this.gameName = gameName;
     this.fields = Games[this.gameName].Fields;
+    this.dice.setAnimationLength(Games[gameName].AnimationLengths.rollDice);
+    this.pawnsController.setAnimationLength(Games[gameName].AnimationLengths.movePawn);
     this.clearGame();
   }
 }

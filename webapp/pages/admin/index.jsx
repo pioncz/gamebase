@@ -57,8 +57,10 @@ class Admin  extends Component {
     this.connectorInstance.socket.emit('getStats');
   }
   handleGetStats(stats) {
+    const newStats = { ...stats,};
+    delete newStats.logs;
     this.setState({
-      serverStats: stats,
+      serverStats: newStats,
     });
   }
   render() {
@@ -68,7 +70,7 @@ class Admin  extends Component {
     return (
       <div className={classes.root}>
         <AppBar position="static">
-          <Tabs activeTab={activeTab} onChange={this.handleChange}>
+          <Tabs value={activeTab} onChange={this.handleChange}>
             <Tab label="Server data" />
             <Tab label="Item Two" />
             <Tab label="Item Three" />

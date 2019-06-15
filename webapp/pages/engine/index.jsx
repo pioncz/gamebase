@@ -156,8 +156,8 @@ class Engine extends Component {
       firstPlayerId: null,
     };
 
-    this.gameComponent = null;
-    this.timerComponent = null;
+    this.gameComponentRef = React.createRef();
+    this.timerComponentRef = React.createRef();
     this.connectorInstance = this.props.connectorInstance;
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -203,7 +203,7 @@ class Engine extends Component {
     }
 
     try {
-      let moves = this.gameComponent.checkMoves(roomState, +pawnInput, this.state.currentPlayerId);
+      let moves = this.gameComponentRef.current.checkMoves(roomState, +pawnInput, this.state.currentPlayerId);
 
       if (moves.length) {
         let move = moves.find(move => move.pawnId === selectedPawnId);
@@ -217,7 +217,7 @@ class Engine extends Component {
               pawn.z === lastField.z
             ) || [];
 
-          this.gameComponent.movePawn({pawnId: pawn.id, fieldSequence,})
+          this.gameComponentRef.current.movePawn({pawnId: pawn.id, fieldSequence,})
             .then(() =>{
               let newX = lastField.x,
                 newZ = lastField.z;
@@ -234,7 +234,7 @@ class Engine extends Component {
               anotherPawnMove = { pawnId: anotherPawn.id, fieldSequence: [spawnField,], };
 
             if (anotherPawnMove) {
-              this.gameComponent.movePawn(anotherPawnMove)
+              this.gameComponentRef.current.movePawn(anotherPawnMove)
                 .then(() =>{
                   let newX = spawnField.x,
                     newZ = spawnField.z;
@@ -259,8 +259,9 @@ class Engine extends Component {
     e.preventDefault();
     return false;
   }
-  rollDice(number) {
-    this.gameComponent.engine.board.dice.roll(number || 6);
+  rollDice = (number) => {
+    let diceNumber = isNaN(number) ? 6 : number;
+    this.gameComponentRef.current.engine.board.dice.roll(diceNumber);
   }
   handleInputChange(e) {
     if (!e.target.name) return;
@@ -306,13 +307,13 @@ class Engine extends Component {
       firstPlayerId,
     });
     setTimeout(() => {
-      this.gameComponent.engine.selectPawns([newPawns[0].id,]);
+      this.gameComponentRef.current.engine.selectPawns([newPawns[0].id,]);
     }, 50);
 
-    this.timerComponent.start(5*60*1000);
+    this.timerComponentRef.current.start(5*60*1000);
   }
   onPawnClick(pawnId) {
-    this.gameComponent.engine.selectPawns([pawnId,]);
+    this.gameComponentRef.current.engine.selectPawns([pawnId,]);
     this.setState({
       selectedPawnId: pawnId,
     });
@@ -321,7 +322,7 @@ class Engine extends Component {
     const pawnSet = Object.keys(PawnSets[e.target.value])[0];
     localStorage.setItem(e.target.name, e.target.value);
     localStorage.setItem('pawnSet', pawnSet);
-    this.gameComponent.engine.changeGame(e.target.value);
+    this.gameComponentRef.current.engine.changeGame(e.target.value);
     this.setState({
       gameName: e.target.value,
       pawnSet,
@@ -394,10 +395,11 @@ class Engine extends Component {
             <div><input tabIndex={1} type="number" min={1} max={6} value={pawnInput} name="pawnInput" onChange={this.handleInputChange}/></div>
           </div>
           <button onClick={this.movePawn}>RUSZ PIONKA</button>
+          <button onClick={this.rollDice}>RZUĆ KOŚCIĄ</button>
         </div>
       </div>
       <GameComponent
-        ref={(element) => { this.gameComponent = element; }}
+        ref={ this.gameComponentRef }
         onClick={this.handleClick}
         pawns={this.state.pawns}
         players={this.state.players}
@@ -415,7 +417,7 @@ class Engine extends Component {
         roundLength={Config.RoundLength}
         ref={(element) => {this.profilesComponent = element; }}
       />
-      <Timer ref={(element) => { this.timerComponent = element; }}/>
+      <Timer ref={this.timerComponentRef}/>
     </div>;
   }
 }

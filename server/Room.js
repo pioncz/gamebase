@@ -19,9 +19,9 @@ const RoomStates = {
 class Room {
   constructor(options) {
     this.id = options.id;
-    this.config = options.config;
     this.name = '/room' + options.id;
     this.rolled = options.rolled;
+    this.queueTimestamp = options.queueTimestamp;
     this.gameState = {
       id: options.id,
       winnerId: null,
@@ -31,26 +31,35 @@ class Room {
       roundTimestamp: null,
       rolled: false,
       diceNumber: 0,
-      queueColors: [],
+      queueColors: options.queueColors,
       playerIds: [],
       players: [],
       spectatorIds: [],
       selectedPawns: [],
       currentPlayerId: null,
-      actionExpirationTimestamp: null,
     };
     this.eta = options.eta || 5*60*60; //18000s
     this.actions = [];
+  }
+  addPlayer(player) {
+    const { players, playerIds, gameName, } = this.gameState;
+
+    players.push(player);
+    playerIds.push(player.id);
+    player.roomId = this.id;
   }
   getActivePlayers() {
     const players = this.gameState.players;
     return players.filter(player => !player.disconnected);
   }
-  startGame() {
+  pickColors() {
+    console.log('game started in room: ' + this.name);
+    const game = Games[this.gameState.gameName];
     this.gameState.roomState = RoomStates.pickColors;
     this.gameState.playerColors = [];
     this.gameState.colorsQueue = [];
-    this.config.frontend.ludo.colors.forEach(color => {
+
+    game.Config.Colors.forEach(color => {
       this.gameState.colorsQueue.push({
         color: color,
         selected: false,
@@ -70,11 +79,16 @@ class Room {
     return returnActions;
   }
   handleUpdate(now) {
-    if (this.gameState.roundTimestamp && now > this.gameState.roundTimestamp) {
+    const { gameName, roundTimestamp, finishTimestamp,roomState, playerIds,} = this.gameState;
+    const game = Games[gameName];
+    const minPlayers = game.Config.MinPlayer;
+    let returnActions = [];
+
+    if (finishTimestamp && now > finishTimestamp) {
       let returnActions = [];
 
       try {
-        returnActions = Games[this.gameState.gameName].ActionHandlers.RoundEnd(this.gameState);
+        returnActions = game.ActionHandlers.Timeout(this.gameState);
       } catch(e) {
         console.error(e.message ? e.message : e);
       }
@@ -82,17 +96,22 @@ class Room {
       return returnActions;
     }
 
-    if (this.gameState.finishTimestamp && now > this.gameState.finishTimestamp) {
-      let returnActions = [];
+    // room is queued and there are enough players
+    if (roomState === RoomStates.queue &&
+      playerIds.length >= minPlayers) {
+      this.pickColors();
+      returnActions = returnActions.concat(game.ActionHandlers.PickColors(this.gameState));
+    }
 
+    if (roundTimestamp && now > roundTimestamp) {
       try {
-        returnActions = Games[this.gameState.gameName].ActionHandlers.Timeout(this.gameState);
+        returnActions = returnActions.concat(game.ActionHandlers.RoundEnd(this.gameState));
       } catch(e) {
         console.error(e.message ? e.message : e);
       }
-
-      return returnActions;
     }
+
+    return returnActions;
   }
 }
 

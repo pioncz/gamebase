@@ -24,6 +24,7 @@ Frontowe taski:
 - obsluga wielu kart: na drugiej karcie mozesz tylko dolaczyc jako widz do pokoju
 
 Bugi / mniejsze taski:
+- zrobic jakis debug do akcji: odtworzyc rozgrywke za pomoca akcji
 - kostka znika dopiero jak gracz sie ruszy
 - przy rozlaczeniu trzeba sprawdzic czy skasowac spectatora
 - font awesome moze byc niedoladowany gdy engine zrobi swoje pierwszy render ( /engine )
@@ -31,7 +32,6 @@ Bugi / mniejsze taski:
 - skasowac ui connectora
 - test na randomowe akcje od gracza w roznych momentach najpelniejszego testu rzutu kostka
 - w pages/ludo przy starcie gry ustawiac czas z configa
-- wywalic configa ze stanu pokoju - musi byc brany na bierzaco z aktualnej gry
 - skasowac properte player.color - korzystajmy z playerColors
 - koniec gry gdy gameState === RoomStates.Finished, a nie samo winnerId (w przyszlosci obsluga remisu)
 - zablokowac przypadek gdy ktos sie loguje w trakcie gry (playersUpdate do graczy z pokoju)
@@ -157,3 +157,17 @@ DONE:
 + Gra: koniec rozgrywki gdy sie skonczy czas
 + osobne configi dla frontu i backendu
 + test nowej gry
++ room.handleUpdate: startGame powinno byc zwracana akcja dodana do returnActions
++ room.handleUpdate powinien startowac gre
++ wywalic start gry z findRoom
++ bot powinien byc tworzony z playera
++ przeniesc bot do nowego pliku
++ nie da sie wystartowac rozgrywki dla 2 graczy
++ bot rzuca kostka
++ bot wybiera randomowy ruch i kolor
++ bot rzuca za szybko
++ wywalic room.gameState.actionExpirationTimestamp
++ wywalic configa ze stanu pokoju - musi byc brany na bierzaco z aktualnej gry
++ przetestowac i sprawdzic dodawanie wielu botow: room.updateQueue -> room.addPlayer(freeBots[0]);
++ bot wybiera pionka do ruchu
++ bot wychodzi z pokoju

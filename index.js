@@ -25,10 +25,20 @@ function handleError(req, res, error) {
 
 var config = require('./server/config');
 const WebsocketServer = require('./server/websocketServer.js');
-const websocketServer = new WebsocketServer(io, playerService, config);
+const websocketServer = new WebsocketServer(io, playerService);
 
 mongoose.set('useCreateIndex', true);
-mongoose.connect(process.env.MONGODB_URI || config.server.mongooseConnectionString, { useNewUrlParser: true, });
+mongoose.connect(
+  process.env.MONGODB_URI || config.server.mongooseConnectionString,
+  { useNewUrlParser: true, },
+  error => {
+    console.error('Mongoose connection fail!');
+    error && console.error(error);
+  },
+).then(() => {
+  console.log('Mongoose connected!');
+}, () => {
+});
 mongoose.Promise = global.Promise;
 
 /**
