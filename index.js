@@ -25,7 +25,7 @@ function handleError(req, res, error) {
 
 var config = require('./server/config');
 const WebsocketServer = require('./server/websocketServer.js');
-const websocketServer = new WebsocketServer(io, playerService, config);
+const websocketServer = new WebsocketServer(io, playerService);
 
 mongoose.set('useCreateIndex', true);
 mongoose.connect(

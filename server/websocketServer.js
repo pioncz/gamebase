@@ -35,10 +35,9 @@ const TotalBots = 100;
  *
  * @constructor
  * @param {object} io - io instance
- * @param {object} config - Config json
  */
 class WebsocketServer {
-  constructor (io, playerService, config) {
+  constructor (io, playerService) {
     this.connections = {}, // [socket.id]: {roomId, playerId}
     this.rooms = {};
     this.players = {};
@@ -129,7 +128,6 @@ class WebsocketServer {
         let id = _nextId(),
           room = new Room({
             id: id,
-            config: config,
             gameName: gameName,
             queueTimestamp: Date.now(),
           });
@@ -203,11 +201,6 @@ class WebsocketServer {
 
       if (!connection || !player || !room) {
         _log('player is not in a room.');
-        return;
-      }
-
-      if (room.gameState.actionExpirationTimestamp && (Date.now() > room.gameState.actionExpirationTimestamp)) {
-        _log(`time has expired for this action`);
         return;
       }
 
@@ -373,11 +366,13 @@ class WebsocketServer {
     for (let i = 0; i < socketIds.length; i++) {
       const socketId = socketIds[i];
 
-      // bot doesn't have socketId's
+      // bots doesn't have socketId's
       if (socketId) {
         this.connections[socketId].roomId = null;
       }
     }
+    const bots = room.gameState.players.filter(player => player.bot);
+    bots.forEach(bot => bot.roomId = null);
 
     delete this.rooms[roomId];
   }

@@ -42,6 +42,12 @@ const InitialState = () => {
 };
 
 const Config = {
+  Colors: [
+    "#D50000",
+    "#64DD17",
+    "#1DE9B6",
+    "#FFEA00",
+  ],
   MinPlayer: 4,
   // GameLength: (15 * 60 * 1000), //15 minutes
   GameLength: 2 * (15 * 60 * 1000), //30 minutes
@@ -68,6 +74,7 @@ const AnimationLengths = {
   movePawn: 500,
   rollDice: 2000,
 };
+
 
 /**
  * Enum representing game states.

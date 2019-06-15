@@ -8,14 +8,6 @@
     "ws": {
       "host": "http://127.0.0.1:5000"
     },
-    "ludo": {
-      "colors": [
-        "#D50000",
-        "#64DD17",
-        "#1DE9B6",
-        "#FFEA00"
-      ]
-    },
     "kira": {
       "animations": {
         "movePawn": 1000,

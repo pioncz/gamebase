@@ -1,18 +1,3 @@
-+ room.handleUpdate: startGame powinno byc zwracana akcja dodana do returnActions
-+ room.handleUpdate powinien startowac gre
-+ wywalic start gry z findRoom
-+ bot powinien byc tworzony z playera
-+ przeniesc bot do nowego pliku
-+ nie da sie wystartowac rozgrywki dla 2 graczy
-+ bot rzuca kostka
-+ bot wybiera randomowy ruch i kolor
-+ bot rzuca za szybko
-wywalic room.gameState.actionExpirationTimestamp
-wywalic configa ze stanu pokoju - musi byc brany na bierzaco z aktualnej gry
-przetestowac i sprawdzic dodawanie wielu botow: room.updateQueue -> room.addPlayer(freeBots[0]);
-bot wybiera pionka do ruchu
-bot wychodzi z pokoju
-
 Wejscie do gry:
  Z home:
   + User wybiera gre, wysyla findRoom(gameName)
@@ -172,3 +157,17 @@ DONE:
 + Gra: koniec rozgrywki gdy sie skonczy czas
 + osobne configi dla frontu i backendu
 + test nowej gry
++ room.handleUpdate: startGame powinno byc zwracana akcja dodana do returnActions
++ room.handleUpdate powinien startowac gre
++ wywalic start gry z findRoom
++ bot powinien byc tworzony z playera
++ przeniesc bot do nowego pliku
++ nie da sie wystartowac rozgrywki dla 2 graczy
++ bot rzuca kostka
++ bot wybiera randomowy ruch i kolor
++ bot rzuca za szybko
++ wywalic room.gameState.actionExpirationTimestamp
++ wywalic configa ze stanu pokoju - musi byc brany na bierzaco z aktualnej gry
++ przetestowac i sprawdzic dodawanie wielu botow: room.updateQueue -> room.addPlayer(freeBots[0]);
++ bot wybiera pionka do ruchu
++ bot wychodzi z pokoju

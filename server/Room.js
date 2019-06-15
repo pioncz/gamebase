@@ -19,7 +19,6 @@ const RoomStates = {
 class Room {
   constructor(options) {
     this.id = options.id;
-    this.config = options.config;
     this.name = '/room' + options.id;
     this.rolled = options.rolled;
     this.queueTimestamp = options.queueTimestamp;
@@ -38,7 +37,6 @@ class Room {
       spectatorIds: [],
       selectedPawns: [],
       currentPlayerId: null,
-      actionExpirationTimestamp: null,
     };
     this.eta = options.eta || 5*60*60; //18000s
     this.actions = [];
@@ -56,10 +54,12 @@ class Room {
   }
   pickColors() {
     console.log('game started in room: ' + this.name);
+    const game = Games[this.gameState.gameName];
     this.gameState.roomState = RoomStates.pickColors;
     this.gameState.playerColors = [];
     this.gameState.colorsQueue = [];
-    this.config.frontend.ludo.colors.forEach(color => {
+
+    game.Config.Colors.forEach(color => {
       this.gameState.colorsQueue.push({
         color: color,
         selected: false,
