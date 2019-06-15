@@ -15,7 +15,6 @@ Frontowe taski:
 - zglaszanie bledu - modal z duzym textarea. blokada 1 zgloszenia na 5 minut po stronie serwera (blad: id, date, user, content)
 - internacjonalizacja i18next (pl)
 - czat (dostepny z menu)
-
 - zalogowany gracz traci polaczenie / odswieza strone - do 10s moze wrocic do pokoju bez przegranej
 - TEST end to end pelnej rozgrywki graczy testowych z serwerem - 1-3 testy, z porownaniem screenow
 - obsluga wielu kart: na drugiej karcie mozesz tylko dolaczyc jako widz do pokoju

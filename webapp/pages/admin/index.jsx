@@ -79,8 +79,7 @@ class Admin  extends Component {
         {activeTab === 0 && <TabContainer>
 
           <div className="admin-page">
-            <div>Server data</div>
-            <ReactJson src={this.state.serverStats} theme="monokai" />
+            <ReactJson src={this.state.serverStats} theme="monokai" collapsed={2} />
           </div>
 
         </TabContainer>}
