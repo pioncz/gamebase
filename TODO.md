@@ -11,14 +11,11 @@ Wejscie do gry:
   - jestli jest taka gra i jest miejsce dla gracza, to user dolacza do pokoju jako gracz
 
 Frontowe taski:
-- ekran zachety przejscia do fullscreena (gdy user nie jest w fullscreenie - zacheta powtarza sie max 3 razy - localStorage)
-- strona admina: zakladki do przegladania roznych podstron admina
 - dodac podstrony zawierajaca logi z serwera
 - zglaszanie bledu - modal z duzym textarea. blokada 1 zgloszenia na 5 minut po stronie serwera (blad: id, date, user, content)
 - internacjonalizacja i18next (pl)
 - czat (dostepny z menu)
 
-- serwer do botow!
 - zalogowany gracz traci polaczenie / odswieza strone - do 10s moze wrocic do pokoju bez przegranej
 - TEST end to end pelnej rozgrywki graczy testowych z serwerem - 1-3 testy, z porownaniem screenow
 - obsluga wielu kart: na drugiej karcie mozesz tylko dolaczyc jako widz do pokoju
@@ -29,7 +26,6 @@ Bugi / mniejsze taski:
 - przy rozlaczeniu trzeba sprawdzic czy skasowac spectatora
 - font awesome moze byc niedoladowany gdy engine zrobi swoje pierwszy render ( /engine )
 - guzik kostki nie powinien byc zaznaczony gdy gracz nie moze rzucic kostka (roomState.rolled = true)
-- skasowac ui connectora
 - test na randomowe akcje od gracza w roznych momentach najpelniejszego testu rzutu kostka
 - w pages/ludo przy starcie gry ustawiac czas z configa
 - skasowac properte player.color - korzystajmy z playerColors
@@ -171,3 +167,7 @@ DONE:
 + przetestowac i sprawdzic dodawanie wielu botow: room.updateQueue -> room.addPlayer(freeBots[0]);
 + bot wybiera pionka do ruchu
 + bot wychodzi z pokoju
++ ekran zachety przejscia do fullscreena (gdy user nie jest w fullscreenie - zacheta powtarza sie max 3 razy - localStorage)
++ strona admina: zakladki do przegladania roznych podstron admina
++ serwer do botow!
++ skasowac ui connectora
