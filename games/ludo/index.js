@@ -66,7 +66,7 @@ const ActionTypes = {
 
 const AnimationLengths = {
   movePawn: 500,
-  rollDice: 800,
+  rollDice: 2000,
 };
 
 /**
@@ -156,6 +156,7 @@ const RollHandler = (action, player, roomState, diceNumber = 0) => {
     // if player didnt just roll 6, switch player
     if (player.previousRoll !== 6 || player.lastRoll === 6) {
       player.lastRoll = 0;
+      player.previousRoll = 0;
       roomState.currentPlayerId = getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
       waitForAction = ActionTypes.Roll;
     }

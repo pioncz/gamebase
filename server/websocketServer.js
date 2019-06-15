@@ -13,7 +13,7 @@ const _nextId = (() => {
   };
 })();
 
-const RoomTimeout = 10 * 1000;
+const RoomTimeout = 1 * 1000;
 const TotalBots = 100;
 
 /**

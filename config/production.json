@@ -14,11 +14,7 @@
         "#64DD17",
         "#1DE9B6",
         "#FFEA00"
-      ],
-      "animations": {
-        "movePawn": 500,
-        "rollDice": 800
-      }
+      ]
     },
     "kira": {
       "animations": {

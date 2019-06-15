@@ -5,8 +5,8 @@
 + przeniesc bot do nowego pliku
 + nie da sie wystartowac rozgrywki dla 2 graczy
 + bot rzuca kostka
-bot wybiera randomowy ruch i kolor
-bot rzuca za szybko
++ bot wybiera randomowy ruch i kolor
++ bot rzuca za szybko
 wywalic room.gameState.actionExpirationTimestamp
 wywalic configa ze stanu pokoju - musi byc brany na bierzaco z aktualnej gry
 przetestowac i sprawdzic dodawanie wielu botow: room.updateQueue -> room.addPlayer(freeBots[0]);
