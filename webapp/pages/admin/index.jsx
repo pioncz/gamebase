@@ -29,11 +29,11 @@ const styles = theme => ({
 
 class Admin  extends Component {
   state = {
-    activeTab: 0,
+    activetab: 0,
     serverStats: {},
   };
-  handleChange = (event, activeTab) => {
-    this.setState({ activeTab, });
+  handleChange = (event, activetab) => {
+    this.setState({ activetab, });
   };
 
   constructor(props) {
@@ -63,18 +63,18 @@ class Admin  extends Component {
   }
   render() {
     const { classes, } = this.props;
-    const { activeTab, } = this.state;
+    const { activetab, } = this.state;
 
     return (
       <div className={classes.root}>
         <AppBar position="static">
-          <Tabs activeTab={activeTab} onChange={this.handleChange}>
+          <Tabs value={activetab} onChange={this.handleChange}>
             <Tab label="Server data" />
             <Tab label="Item Two" />
             <Tab label="Item Three" />
           </Tabs>
         </AppBar>
-        {activeTab === 0 && <TabContainer>
+        {activetab === 0 && <TabContainer>
 
           <div className="admin-page">
             <div>Server data</div>
@@ -82,8 +82,8 @@ class Admin  extends Component {
           </div>
 
         </TabContainer>}
-        {activeTab === 1 && <TabContainer>Item Two</TabContainer>}
-        {activeTab === 2 && <TabContainer>Item Three</TabContainer>}
+        {activetab === 1 && <TabContainer>Item Two</TabContainer>}
+        {activetab === 2 && <TabContainer>Item Three</TabContainer>}
       </div>
     );
   }
