@@ -232,10 +232,10 @@ class WebsocketServer {
     // jezeli gracz jest w innym pokoju, dodaj go jako spectatora
     // jezeli pokoj nie istnieje to wyslij error
     const _handleJoinRoom = socket => (options) => {
+      const { roomId, } = options;
       let connection = this.connections[socket.id],
         player = connection.playerId && this.players[connection.playerId],
-        room = connection.roomId && this.rooms[connection.roomId];
-      const { roomId, } = options;
+        room = roomId && this.rooms[roomId];
 
       if (!connection || !player) {
         _log('Failed to join room. No connection or player.');
@@ -252,7 +252,7 @@ class WebsocketServer {
           _emitRoomState(room);
         } else {
           room.gameState.spectatorIds.push(player.id);
-          _emitRoomState(room);
+          _emitRoomState(room, socket);
         }
       } else {
         _emitError(null, socket, {code: 1, message: 'room doesn\'t exist',});

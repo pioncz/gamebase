@@ -9,6 +9,8 @@ import {bindActionCreators,} from "redux";
 import PlayerProfiles from 'components/playerProfiles';
 import { Config, } from 'ludo';
 import Games from 'Games.js';
+import Snackbar from 'components/Snackbar';
+
 const nextId = (()=>{
     let id = 0;
     return () => {
@@ -154,10 +156,12 @@ class Engine extends Component {
       pawnSet: localStorage.pawnSet || 'initial',
       firstPlayerIndex: localStorage.firstPlayerIndex || 1,
       firstPlayerId: null,
+      messages: [],
     };
 
     this.gameComponentRef = React.createRef();
     this.timerComponentRef = React.createRef();
+    this.snackbarComponentRef = React.createRef();
     this.connectorInstance = this.props.connectorInstance;
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -179,10 +183,17 @@ class Engine extends Component {
         currentPlayerId: nextPlayer.id,
       })
     }, 5000);
+    let lastId=0;
+    const addMessage = () => {
+      this.snackbarComponentRef.addMessage('Start gry!'+lastId++, lastId % 2 ? 'red' : '');
+    }
+    this.messagesIntervalId = setInterval(addMessage, 3000);
+    addMessage();
   }
   componentWillUnmount() {
     this.props.unsetInGame();
     clearInterval(this.changePlayerIntervalId);
+    clearInterval(this.messagesIntervalId);
   }
   movePawn(e) {
     const { pawns, selectedPawnId, pawnInput, players, } = this.state,
@@ -332,7 +343,7 @@ class Engine extends Component {
     console.log('handleSetGame');
   }
   render() {
-    const { players, pawns, selectedPawnId, pawnInput, numberOfPlayers, pawnSet, firstPlayerIndex, firstPlayerId, currentPlayerId, gameName, } = this.state,
+    const { players, pawns, selectedPawnId, pawnInput, numberOfPlayers, pawnSet, firstPlayerIndex, firstPlayerId, currentPlayerId, gameName, messages, } = this.state,
       pawnsElements = pawns.map(pawn => {
         return <div key={pawn.id}
           className={'pawn' + (pawn.id===selectedPawnId?' pawn--selected':'')}
@@ -418,6 +429,7 @@ class Engine extends Component {
         ref={(element) => {this.profilesComponent = element; }}
       />
       <Timer ref={this.timerComponentRef}/>
+      <Snackbar ref={(element) => {this.snackbarComponentRef = element;}} />
     </div>;
   }
 }

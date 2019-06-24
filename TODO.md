@@ -1,3 +1,8 @@
+- ciut wieksza plansza horyzontalnie (moze obrot?)
+- system 'laguje' - sprobuj pograc w coopie na serwerze
+- update reacta ( uzywanie hookow )
+- zrobic pelny test rozgrywki z botami i rozlaczajacym sie userem
+
 Wejscie do gry:
  Z home:
   + User wybiera gre, wysyla findRoom(gameName)
@@ -10,16 +15,20 @@ Wejscie do gry:
   - jesli jest taka gra, ale nie ma miejsc do grania, user dolacza jako spectator (bedzie otrzymywal roomUpdate)
   - jestli jest taka gra i jest miejsce dla gracza, to user dolacza do pokoju jako gracz
 
+
 Frontowe taski:
 - dodac podstrony zawierajaca logi z serwera
 - zglaszanie bledu - modal z duzym textarea. blokada 1 zgloszenia na 5 minut po stronie serwera (blad: id, date, user, content)
 - internacjonalizacja i18next (pl)
+
 - czat (dostepny z menu)
-- zalogowany gracz traci polaczenie / odswieza strone - do 10s moze wrocic do pokoju bez przegranej
 - TEST end to end pelnej rozgrywki graczy testowych z serwerem - 1-3 testy, z porownaniem screenow
 - obsluga wielu kart: na drugiej karcie mozesz tylko dolaczyc jako widz do pokoju
+- zalogowany gracz traci polaczenie / odswieza strone - do 10s moze wrocic do pokoju bez przegranej
 
 Bugi / mniejsze taski:
+- sprawdzic oswietlenie
+- logike ruchu bota przeniesc do klasy z gra. dodac testy jednostkowe
 - zrobic jakis debug do akcji: odtworzyc rozgrywke za pomoca akcji
 - kostka znika dopiero jak gracz sie ruszy
 - przy rozlaczeniu trzeba sprawdzic czy skasowac spectatora
@@ -170,3 +179,5 @@ DONE:
 + strona admina: zakladki do przegladania roznych podstron admina
 + serwer do botow!
 + skasowac ui connectora
++ system komunikatow
++ fix pierwszego ekranu na mobilki

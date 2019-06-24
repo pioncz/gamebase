@@ -14,6 +14,7 @@ import { selectors, } from 'shared/redux/api';
 import SearchingRoom from 'modals/SearchingRoom';
 import { withRouter, } from 'react-router-dom';
 import RoomNonExistentModal from 'modals/roomNonExistent';
+import Snackbar from 'components/Snackbar';
 
 const Pages = {
   Initial: 'Initial',
@@ -54,6 +55,7 @@ class Room extends Component {
     this.timerComponentRef = React.createRef();
     this.profilesComponentRef = React.createRef();
     this.gameComponentRef = React.createRef();
+    this.snackbarComponentRef = React.createRef();
     this.connectorInstance = this.props.connectorInstance;
 
     this.props.setInGame();
@@ -109,6 +111,7 @@ class Room extends Component {
           waitingForAction: Games.Ludo.ActionTypes.Roll,
         });
         this.timerComponentRef.current.start(roomState.finishTimestamp - Date.now());
+        this.addMessage('Game started!');
       }
       if (newAction.type === Games.Ludo.ActionTypes.RestartProgress) {
         this.profilesComponentRef.current.restartProgress();
@@ -117,6 +120,22 @@ class Room extends Component {
         this.profilesComponentRef.current.stopProgress();
       }
       if (newAction.type === Games.Ludo.ActionTypes.WaitForPlayer) {
+        const { players, currentPlayerId, } = this.state;
+        const { player: currentPlayer, } = this.props;
+        const player = players.find(player => player.id === newAction.playerId);
+        let message = `Waiting for ${player.login}`;
+        if (currentPlayer.id === player.id) {
+          if (newAction.expectedAction === Games.Ludo.ActionTypes.Roll) {
+            message = 'Your turn. Roll dice!';
+          } else {
+            message = 'Pick pawn!';
+          }
+        }
+        // Add message if player changed and expected action is roll
+        if ((currentPlayerId !== newAction.playerId && newAction.expectedAction === Games.Ludo.ActionTypes.Roll) ||
+          (newAction.playerId === currentPlayer.id)) {
+          this.addMessage(message, player.color);
+        }
         this.setState({
           currentPlayerId: newAction.playerId,
           waitingForAction: newAction.expectedAction,
@@ -175,6 +194,8 @@ class Room extends Component {
         page = Pages.Queue;
       } else if (roomState.winnerId) {
         page = Pages.Winner;
+      } else if (state === 'game') {
+        page = Pages.Game;
       } else {
         page = Pages.Initial;
       }
@@ -200,6 +221,11 @@ class Room extends Component {
         })
       }
     });
+  }
+  addMessage = (message, color) => {
+    if (this.snackbarComponentRef) {
+      this.snackbarComponentRef.current.addMessage(message, color);
+    }
   }
   selectColor = (color) => {
     this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.SelectColor(this.props.player.id, color));
@@ -339,6 +365,7 @@ class Room extends Component {
         <DicesImage />
       </div>
       <Timer ref={this.timerComponentRef} />
+      <Snackbar ref={this.snackbarComponentRef} />
     </div>);
   }
 }
