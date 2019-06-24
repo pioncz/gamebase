@@ -24,7 +24,7 @@ export default class Engine extends EventEmitter {
       aspect = width / height;
 
     this._lastRender = 0;
-    this.frustumSize = 22;
+    this.frustumSize = 21;
     this.camera = new THREE.OrthographicCamera(
       -this.frustumSize * aspect,
       this.frustumSize * aspect,
@@ -106,8 +106,7 @@ export default class Engine extends EventEmitter {
   onResize() {
     let width = this.container.offsetWidth,
       height = this.container.offsetHeight,
-      aspect = width / height,
-      gameScale = width < 1000 ? width / 1000 : 1;
+      aspect = width / height;
 
     this.windowWidth = width;
     this.windowHeight = height;

@@ -1,4 +1,4 @@
-- ciut wieksza plansza horyzontalnie (moze obrot?)
+- kostka z nr zostaje dluzej na planszy
 - system 'laguje' - sprobuj pograc w coopie na serwerze
 - update reacta ( uzywanie hookow )
 - zrobic pelny test rozgrywki z botami i rozlaczajacym sie userem
@@ -181,3 +181,4 @@ DONE:
 + skasowac ui connectora
 + system komunikatow
 + fix pierwszego ekranu na mobilki
++ ciut wieksza plansza horyzontalnie
