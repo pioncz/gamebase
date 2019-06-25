@@ -31,8 +31,8 @@ process.argv.forEach(function (val, index) {
   if (index > 1 && val.indexOf('=') > -1) {
     console.log(index + ': ' + val);
     const [key, value,] = val.split('=');
-    if (key === 'port') {
-      port = value;
+    if (key.toLowerCase() === 'port') {
+      port = +value;
     }
   }
 });
