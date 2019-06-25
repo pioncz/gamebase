@@ -1,4 +1,3 @@
-- update reacta ( uzywanie hookow )
 - inne modale w pokoju (styl jak komunikaty)
 - timeout na ekranach przed startem gry
 - zrobic pelny test rozgrywki z botami i rozlaczajacym sie userem
@@ -193,3 +192,4 @@ DONE:
 + ciut wieksza plansza horyzontalnie
 + liczenie laga w pokoju gry
 + kostka z nr zostaje dluzej na planszy
++ update reacta ( uzywanie hookow )
