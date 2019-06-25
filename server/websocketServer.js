@@ -15,6 +15,7 @@ const _nextId = (() => {
 
 const RoomTimeout = 1 * 1000;
 const TotalBots = 100;
+const RandomDelays = [100, 200,];
 
 /**
  * Represents a conntector between io and WebsocketServer.
@@ -47,6 +48,7 @@ class WebsocketServer {
     this.botsManager = new BotsManager({
       totalBots: TotalBots,
       roomTimeout: RoomTimeout,
+      randomDelays: RandomDelays,
     });
 
     let _log = (msg) => {
@@ -378,24 +380,24 @@ class WebsocketServer {
   }
   emitRoomActions(roomName, streamActions) {
     if (!roomName || !streamActions) return;
-    let room;
 
-    for (const roomId in this.rooms) {
-      if (this.rooms.hasOwnProperty(roomId) && this.rooms[roomId].name === roomName) {
-        room = this.rooms[roomId];
-      }
-    }
+    const roomId = Object.keys(this.rooms)
+      .find(roomId => this.rooms[roomId].name === roomName);
+    const room = roomId && this.rooms[roomId];
+
     if (!room) return;
 
     for(let i = 0; i < streamActions.length; i++) {
-      const { timestamp, callback, action, } = streamActions[i];
-      this.actionsStream.addAction(() => {
-        let callbackActions = (callback && callback()) || [];
+      if (streamActions[i]) {
+        const { timestamp, callback, action, } = streamActions[i];
+        this.actionsStream.addAction(() => {
+          let callbackActions = (callback && callback()) || [];
 
-        room.actions = room.actions.concat(callbackActions);
-        this.emitRoomActions(roomName, callbackActions);
-        this.io.to(roomName).emit('newAction', action);
-      }, timestamp);
+          room.actions = room.actions.concat(callbackActions);
+          this.emitRoomActions(roomName, callbackActions);
+          this.io.to(roomName).emit('newAction', { timestamp: Date.now(), ...action,});
+        }, timestamp);
+      }
     }
   }
 }

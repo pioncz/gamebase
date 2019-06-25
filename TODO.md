@@ -1,7 +1,15 @@
-- kostka z nr zostaje dluzej na planszy
+- kosci przy kursorze, rzut kostka w dowolnym miejscu na planszy (lub srodek)
+- kosci przy rzucie dodaja sie nowe do planszy i znikaja przy nastepnym rzucie lubi wywolaniu metody hide
+- timeout na ekranach przed startem gry
 - system 'laguje' - sprobuj pograc w coopie na serwerze
 - update reacta ( uzywanie hookow )
 - zrobic pelny test rozgrywki z botami i rozlaczajacym sie userem
+- lepsze zaznaczenie pionka
+- staty do panelu admina: lagi - ping /pong na stronie admina, mierzenie np przy starcie gry u graczy
+- 2 tryby rozgrywki: towarzyska, rankingowa
+- kolory do wyboru (w tym kilka zablokowanych)
+- customowe kostki / pionki
+- podstrona admina z ustawieniem max graczy i max bot timeout
 
 Wejscie do gry:
  Z home:
@@ -182,3 +190,5 @@ DONE:
 + system komunikatow
 + fix pierwszego ekranu na mobilki
 + ciut wieksza plansza horyzontalnie
++ liczenie laga w pokoju gry
++ kostka z nr zostaje dluzej na planszy

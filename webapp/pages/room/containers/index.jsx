@@ -208,7 +208,9 @@ class Room extends Component {
       });
     });
     this.connectorInstance.socket.on('newAction', (newAction) => {
-      console.log('newAction', newAction);
+      // Devide lag by 15 minutes, to handle different timezones
+      console.log('newAction: ', newAction, ' lag: ', (Math.abs(Date.now() - newAction.timestamp) % (15 * 60 * 1000)));
+
       handleAction(newAction);
     });
     this.connectorInstance.socket.on('playerDisconnected', (e) => {

@@ -8,9 +8,10 @@ let _log = (msg) => {
 
 class BotsManager {
   // Create bots
-  constructor({totalBots, roomTimeout,}) {
+  constructor({totalBots, roomTimeout, randomDelays, }) {
     this.bots = [];
     this.roomTimeout = roomTimeout;
+    this.randomDelays = randomDelays;
 
     for(let i = 0; i < totalBots; i++) {
       this.bots.push(new Bot());
@@ -33,6 +34,7 @@ class BotsManager {
   // and handle bots actions
   updateRoom(now, room) {
     let returnActions = [];
+
     if (room.gameState.roomState === 'game') {
       const currentPlayer = room.gameState.players.find(player => player.id === room.gameState.currentPlayerId);
       const game = Games[room.gameState.gameName];
@@ -41,13 +43,22 @@ class BotsManager {
           const moves = game.BoardUtils.checkMoves(room.gameState, room.gameState.diceNumber, currentPlayer.id);
           if (moves.length) {
             returnActions = returnActions.concat(room.handleAction(game.Actions.PickPawn(moves[parseInt(Math.random() * moves.length)].pawnId), currentPlayer));
+            currentPlayer.randomDelayTimestamp = null;
           }
         } else if (!room.gameState.rolled) {
           returnActions = returnActions.concat(room.handleAction(game.Actions.Roll(), currentPlayer));
+          currentPlayer.randomDelayTimestamp = null;
         }
       }
     }
+
+
     returnActions.forEach(action => {
+      // Add random delays to returned actions
+      if (action.timestamp) {
+        const randomDelay = parseInt(Math.random() * (this.randomDelays[1] - this.randomDelays[0]) + this.randomDelays[0]);
+        action.timestamp += randomDelay;
+      }
       _log(`Bot:  calls action: ${JSON.stringify(action)}`);
     });
     return returnActions;
