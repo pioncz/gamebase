@@ -100,9 +100,12 @@ module.exports = function() {
       extractSass,
     ],
     devServer: {
-      port: 5001,
+      port: 5000,
       host: '0.0.0.0',
       historyApiFallback: true,
+      proxy: {
+        '/socket.io': 'ws://localhost:5001',
+      },
     },
   };
 }

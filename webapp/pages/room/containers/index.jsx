@@ -271,7 +271,20 @@ class Room extends Component {
   }
   render() {
     let currentModal,
-      {roomId, gameName, page, players, playerColors, winnerId, pawns, finishTimestamp, nextRollTimestamp, currentPlayerId, nextRollLength, waitingForAction, } = this.state,
+      {
+        roomId,
+        gameName,
+        page,
+        players,
+        playerColors,
+        winnerId,
+        pawns,
+        finishTimestamp,
+        nextRollTimestamp,
+        currentPlayerId,
+        nextRollLength,
+        waitingForAction,
+      } = this.state,
       {player,} = this.props,
       diceContainerClass = ClassNames({
         'dices-container': true,

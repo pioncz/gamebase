@@ -17,7 +17,6 @@ class Main extends Component {
   constructor(props) {
     super(props);
 
-
     let fullscreenmModalCounter = parseInt(localStorage.getItem('fullscreenModalCounter'), 10);
 
     if( isNaN(fullscreenmModalCounter) ){
@@ -32,12 +31,11 @@ class Main extends Component {
       localStorage.setItem('fullscreenModalCounter', fullscreenmModalCounter);
     }
 
-
     this.state = {
       connectorInstance: null,
       loginModalVisible: false,
       registrationModalVisible: false,
-      fullscreenModalVisible: fullscreenModalVisible,
+      fullscreenModalVisible,
     };
 
     this.setConnector = this.setConnector.bind(this);

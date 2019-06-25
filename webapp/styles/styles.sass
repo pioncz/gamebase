@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto|Roboto+Mono|Roboto+Slab')
+@import 'vars'
 
 *
   box-sizing: border-box
@@ -15,8 +16,13 @@ body, html
   color: #fff
 
   h1, h2, h3, h4, h5, h6
-    font-family: 'Roboto Slab', serif
-    
+    font-family: 'Roboto', serif
+    letter-spacing: 2px
+    margin: $margin2 0
+
+  p
+    margin: $margin1 0
+
 .arrow
   border: solid #fff
   border-width: 0 3px 3px 0

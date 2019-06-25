@@ -1,8 +1,8 @@
-- inne modale w pokoju (styl jak komunikaty)
 - timeout na ekranach przed startem gry
 - zrobic pelny test rozgrywki z botami i rozlaczajacym sie userem
 - lepsze zaznaczenie pionka
 - staty do panelu admina: lagi - ping /pong na stronie admina, mierzenie np przy starcie gry u graczy
+- na telefonie gracze u gory, nizej plansza, na samym dole guzik do rzutu kostka
 - 2 tryby rozgrywki: towarzyska, rankingowa
 - kolory do wyboru (w tym kilka zablokowanych)
 - customowe kostki / pionki
@@ -193,3 +193,5 @@ DONE:
 + liczenie laga w pokoju gry
 + kostka z nr zostaje dluzej na planszy
 + update reacta ( uzywanie hookow )
++ inne modale w pokoju (styl jak komunikaty)
++ fix skryptu npm run dev

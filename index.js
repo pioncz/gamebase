@@ -24,6 +24,19 @@ function handleError(req, res, error) {
 }
 
 var config = require('./server/config');
+let port = process.env.PORT || config.server.port;
+
+// Process script arguments and extend config
+process.argv.forEach(function (val, index) {
+  if (index > 1 && val.indexOf('=') > -1) {
+    console.log(index + ': ' + val);
+    const [key, value,] = val.split('=');
+    if (key === 'port') {
+      port = value;
+    }
+  }
+});
+
 const WebsocketServer = require('./server/websocketServer.js');
 const websocketServer = new WebsocketServer(io, playerService);
 
@@ -127,7 +140,6 @@ app.use(function (req, res) {
   });
 });
 
-let port = process.env.PORT || config.server.port;
 http.listen(port, '0.0.0.0', function(){
   console.log('Listening on *:' + port);
 });

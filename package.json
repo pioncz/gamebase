@@ -4,12 +4,15 @@
   "description": "This README would normally document whatever steps are necessary to get your application up and running.",
   "main": "webpack.config.js",
   "scripts": {
-    "serve": "webpack-dev-server",
     "start": "node index.js",
-    "test": "jest --notify --watch --config=tests.config.json",
-    "docs": "jsdoc -c jsdoc.conf.json --readme README.md",
     "build": "webpack",
-    "dev": "npm-run-all --parallel start serve"
+
+    "start-dev": "node index.js port=5001",
+    "build-dev": "webpack-dev-server",
+    "dev": "npm-run-all --parallel start-dev build-dev",
+
+    "test": "jest --notify --watch --config=tests.config.json",
+    "docs": "jsdoc -c jsdoc.conf.json --readme README.md"
   },
   "repository": {
     "type": "git",
