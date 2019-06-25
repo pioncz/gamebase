@@ -1,8 +1,6 @@
-- kosci przy kursorze, rzut kostka w dowolnym miejscu na planszy (lub srodek)
-- kosci przy rzucie dodaja sie nowe do planszy i znikaja przy nastepnym rzucie lubi wywolaniu metody hide
-- timeout na ekranach przed startem gry
-- system 'laguje' - sprobuj pograc w coopie na serwerze
 - update reacta ( uzywanie hookow )
+- inne modale w pokoju (styl jak komunikaty)
+- timeout na ekranach przed startem gry
 - zrobic pelny test rozgrywki z botami i rozlaczajacym sie userem
 - lepsze zaznaczenie pionka
 - staty do panelu admina: lagi - ping /pong na stronie admina, mierzenie np przy starcie gry u graczy
@@ -10,6 +8,9 @@
 - kolory do wyboru (w tym kilka zablokowanych)
 - customowe kostki / pionki
 - podstrona admina z ustawieniem max graczy i max bot timeout
+- kosci przy kursorze, rzut kostka w dowolnym miejscu na planszy (lub srodek)
+- kosci przy rzucie dodaja sie nowe do planszy i znikaja przy nastepnym rzucie lubi wywolaniu metody hide
+- zamykanie pokoju po jakims czasie - mozliwosc dolaczenia do pokoju po dc
 
 Wejscie do gry:
  Z home:

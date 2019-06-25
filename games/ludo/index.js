@@ -72,7 +72,7 @@ const ActionTypes = {
 
 const AnimationLengths = {
   movePawn: 500,
-  rollDice: 2000,
+  rollDice: 600,
 };
 
 
@@ -171,7 +171,7 @@ const RollHandler = (action, player, roomState, diceNumber = 0) => {
 
   returnActions.push({
     action: WaitForPlayer(roomState, waitForAction),
-    timestamp: Date.now() + AnimationLengths.rollDice,
+    timestamp: Date.now() + AnimationLengths.rollDice + 20,
     callback: () => {
       let returnActions = [];
       player.previousRoll = player.lastRoll;

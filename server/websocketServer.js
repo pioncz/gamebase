@@ -369,7 +369,7 @@ class WebsocketServer {
       const socketId = socketIds[i];
 
       // bots doesn't have socketId's
-      if (socketId) {
+      if (socketId && this.connections[socketId]) {
         this.connections[socketId].roomId = null;
       }
     }
