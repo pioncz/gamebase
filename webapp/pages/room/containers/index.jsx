@@ -123,18 +123,19 @@ class Room extends Component {
         const { players, currentPlayerId, } = this.state;
         const { player: currentPlayer, } = this.props;
         const player = players.find(player => player.id === newAction.playerId);
-        let message = `Waiting for ${player.login}`;
+
         if (currentPlayer.id === player.id) {
+          let message;
           if (newAction.expectedAction === Games.Ludo.ActionTypes.Roll) {
             message = 'Your turn. Roll dice!';
           } else {
             message = 'Pick pawn!';
           }
-        }
-        // Add message if player changed and expected action is roll
-        if ((currentPlayerId !== newAction.playerId && newAction.expectedAction === Games.Ludo.ActionTypes.Roll) ||
-          (newAction.playerId === currentPlayer.id)) {
-          this.addMessage(message, player.color);
+          // Add message if player changed and expected action is roll
+          if ((currentPlayerId !== newAction.playerId && newAction.expectedAction === Games.Ludo.ActionTypes.Roll) ||
+        (newAction.playerId === currentPlayer.id)) {
+            this.addMessage(message, player.color);
+          }
         }
         this.setState({
           currentPlayerId: newAction.playerId,
@@ -142,6 +143,21 @@ class Room extends Component {
         });
       }
       if (newAction.type === Games.Ludo.ActionTypes.Roll) {
+        const { players, currentPlayerId, } = this.state;
+        const { player: currentPlayer, } = this.props;
+        let message;
+        let color;
+        let player = players.find(player => player.id === currentPlayerId);
+
+        if (player) {
+          color = player.color;
+          if (currentPlayer.id === currentPlayerId) {
+            message = `Rolled ${newAction.diceNumber}!`;
+          } else {
+            message = `Player ${player.login} rolled ${newAction.diceNumber}`;
+          }
+          this.addMessage(message, color);
+        }
         this.gameComponentRef.current.engine.board.dice.roll(newAction.diceNumber);
       }
       if (newAction.type === Games.Ludo.ActionTypes.MovePawn) {

@@ -1,4 +1,4 @@
-- zmiana komunikatow: Twoja kolej + Gracz x rzucil Y. Wywalic: Waiting for player X
+- zmiana minPlayers na podstronie admina
 
 - lepsze zaznaczenie pionka
 - ludo dziedziczy po klasie gra. obsluguje akcje connected, disconnected, startGame
@@ -203,3 +203,4 @@ DONE:
 + naprawa buga pustej akcji
 + zrobic test na buga pustej akcji
 + konczenie gry gdy nie ma aktywnych graczy
++ zmiana komunikatow: Twoja kolej + Gracz x rzucil Y. Wywalic: Waiting for player X
