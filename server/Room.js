@@ -18,6 +18,7 @@ const RoomStates = {
  */
 class Room {
   constructor(options) {
+    if (options.id !== 0 && !options.id) throw new Error('Room constructor requires id');
     this.id = options.id;
     this.name = '/room' + options.id;
     this.rolled = options.rolled;

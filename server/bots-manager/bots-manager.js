@@ -43,15 +43,12 @@ class BotsManager {
           const moves = game.BoardUtils.checkMoves(room.gameState, room.gameState.diceNumber, currentPlayer.id);
           if (moves.length) {
             returnActions = returnActions.concat(room.handleAction(game.Actions.PickPawn(moves[parseInt(Math.random() * moves.length)].pawnId), currentPlayer));
-            currentPlayer.randomDelayTimestamp = null;
           }
         } else if (!room.gameState.rolled) {
           returnActions = returnActions.concat(room.handleAction(game.Actions.Roll(), currentPlayer));
-          currentPlayer.randomDelayTimestamp = null;
         }
       }
     }
-
 
     returnActions.forEach(action => {
       // Add random delays to returned actions

@@ -171,7 +171,7 @@ const RollHandler = (action, player, roomState, diceNumber = 0) => {
 
   returnActions.push({
     action: WaitForPlayer(roomState, waitForAction),
-    timestamp: Date.now() + AnimationLengths.rollDice + 20,
+    timestamp: Date.now() + AnimationLengths.rollDice,
     callback: () => {
       let returnActions = [];
       player.previousRoll = player.lastRoll;
@@ -406,6 +406,8 @@ const DisconnectedHandler = (action, player, room) => {
     // switch player if disconnected current
     if(gameState.currentPlayerId === player.id) {
       gameState.currentPlayerId = getNextPlayerId(gameState.playerIds, gameState.currentPlayerId);
+      gameState.selectedPawns = [];
+      gameState.rolled = false;
       returnActions.push({
         action: WaitForPlayer(gameState, ActionTypes.Roll),
       });
@@ -440,8 +442,6 @@ const RoundEndHandler = (roomState) => {
 
 const StartGameHandler = (roomState) => {
   const returnActions = [];
-
-  // roomState.roomState =
 
   returnActions.push({action: StartGame(roomState),});
 

@@ -15,7 +15,7 @@ const _nextId = (() => {
 
 const RoomTimeout = 1 * 1000;
 const TotalBots = 100;
-const RandomDelays = [100, 200,];
+const RandomDelays = [200, 300,];
 
 /**
  * Represents a conntector between io and WebsocketServer.

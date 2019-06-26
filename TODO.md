@@ -1,4 +1,7 @@
-- zrobic pelny test rozgrywki z botami i rozlaczajacym sie userem
+- konczenie gry gdy zostal < 2 graczy lub same boty
+
+- zmiana komunikatow: Twoja kolej + Gracz x rzucil Y. Wywalic: Waiting for player X
+
 - lepsze zaznaczenie pionka
 - ludo dziedziczy po klasie gra. obsluguje akcje connected, disconnected, startGame
 - staty do panelu admina: lagi - ping /pong na stronie admina, mierzenie np przy starcie gry u graczy
@@ -199,3 +202,5 @@ DONE:
 + update reacta ( uzywanie hookow )
 + inne modale w pokoju (styl jak komunikaty)
 + fix skryptu npm run dev
++ naprawa buga pustej akcji
++ zrobic test na buga pustej akcji
