@@ -1,31 +1,9 @@
 import React, { Component, } from 'react'
 import ReactJson from 'react-json-view'
 import './index.sass'
-import PropTypes from 'prop-types';
-import { withStyles, } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
-
-function TabContainer(props) {
-  return (
-    <Typography component="div" style={{ padding: 8 * 3, }}>
-      {props.children}
-    </Typography>
-  );
-}
-
-TabContainer.propTypes = {
-  children: PropTypes.node.isRequired,
-};
-
-const styles = theme => ({
-  root: {
-    flexGrow: 1,
-    backgroundColor: theme.palette.background.paper,
-  },
-});
 
 class Admin  extends Component {
   state = {
@@ -64,11 +42,10 @@ class Admin  extends Component {
     });
   }
   render() {
-    const { classes, } = this.props;
     const { activetab, } = this.state;
 
     return (
-      <div className={classes.root}>
+      <div className = "admin-tabs">
         <AppBar position="static">
           <Tabs value={activetab} onChange={this.handleChange}>
             <Tab label="Server data" />
@@ -76,22 +53,21 @@ class Admin  extends Component {
             <Tab label="Item Three" />
           </Tabs>
         </AppBar>
-        {activetab === 0 && <TabContainer>
+        {activetab === 0 && <div className = "tab-container">
 
           <div className="admin-page">
             <ReactJson src={this.state.serverStats} theme="monokai" collapsed={2} />
           </div>
 
-        </TabContainer>}
-        {activetab === 1 && <TabContainer>Item Two</TabContainer>}
-        {activetab === 2 && <TabContainer>Item Three</TabContainer>}
+        </div>}
+        {activetab === 1 && <div className = "tab-container">Item Two</div>}
+        {activetab === 2 && <div className = "tab-container">Item Three</div>}
       </div>
     );
   }
 }
 
 Admin.propTypes = {
-  classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(Admin);
+export default Admin;
