@@ -8,15 +8,22 @@ let _log = (msg) => {
 
 class BotsManager {
   // Create bots
-  constructor({totalBots, roomTimeout, randomDelays, }) {
+  constructor({totalBots, roomQueueTimeout, randomDelays, }) {
     this.bots = [];
-    this.roomTimeout = roomTimeout;
+    this.roomQueueTimeout = roomQueueTimeout;
     this.randomDelays = randomDelays;
 
     for(let i = 0; i < totalBots; i++) {
       this.bots.push(new Bot());
     }
   }
+  setRoomQueueTimeout(newTimeout) {
+    let parsedTimeout = parseInt(newTimeout);
+    if (!isNaN(parsedTimeout)) {
+      this.roomQueueTimeout = parsedTimeout;
+    }
+  }
+  // Bots joins queued room if this.roomQueueTimeout passed
   updateQueue(now, room) {
     const minPlayers = Games[room.gameState.gameName].Config.MinPlayer;
     const freeBots = this.bots.filter(bot => !bot.roomId);
@@ -24,7 +31,7 @@ class BotsManager {
     if (!freeBots.length) return;
 
     if (room.gameState.roomState === 'queue' &&
-        room.queueTimestamp + this.roomTimeout < now &&
+        room.queueTimestamp + this.roomQueueTimeout < now &&
         room.gameState.playerIds.length < minPlayers) {
       _log(`Bot: ${freeBots[0].login} joins room ${room.name}`);
       room.addPlayer(freeBots[0]);

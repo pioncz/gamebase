@@ -1,9 +1,38 @@
-import React, { Component, } from 'react'
+import React, { Component, Fragment, useEffect, useState, } from 'react'
 import ReactJson from 'react-json-view'
 import './index.sass'
 import AppBar from '@material-ui/core/AppBar';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
+
+const ConfigTab = ({connectorInstance,}) => {
+  const [timeoutInput, setTimeoutInput,] = useState('_');
+
+  connectorInstance.socket.on('config', (config) =>{
+    setTimeoutInput(config.RoomQueueTimeout);
+  });
+
+  useEffect(() => {
+    connectorInstance.socket.emit('getConfig');
+  }, [connectorInstance,]);
+
+  useEffect(() => {
+    if (!isNaN(timeoutInput)) {
+      connectorInstance.socket.emit('setConfig', {
+        RoomQueueTimeout: timeoutInput,
+      });
+    }
+  }, [timeoutInput,]);
+
+  return (
+    <Fragment>
+      <div>Room queue timeout:</div>
+      {timeoutInput !== '_' && (<Fragment>
+        <input type="number" value={timeoutInput} onChange={e => setTimeoutInput(e.target.value)} />s
+      </Fragment>)}
+    </Fragment>
+  );
+};
 
 class Admin  extends Component {
   state = {
@@ -45,12 +74,12 @@ class Admin  extends Component {
     const { activetab, } = this.state;
 
     return (
-      <div className = "admin-tabs">
+      <div className = "admin-page">
         <AppBar position="static">
           <Tabs value={activetab} onChange={this.handleChange}>
             <Tab label="Server data" />
             <Tab label="Item Two" />
-            <Tab label="Item Three" />
+            <Tab label="Config" />
           </Tabs>
         </AppBar>
         {activetab === 0 && <div className = "tab-container">
@@ -61,7 +90,11 @@ class Admin  extends Component {
 
         </div>}
         {activetab === 1 && <div className = "tab-container">Item Two</div>}
-        {activetab === 2 && <div className = "tab-container">Item Three</div>}
+        {activetab === 2 && (
+          <div className = "tab-container">
+            <ConfigTab connectorInstance={this.props.connectorInstance}/>
+          </div>
+        )}
       </div>
     );
   }

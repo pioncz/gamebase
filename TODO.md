@@ -1,8 +1,5 @@
-- zmiana minPlayers na podstronie admina
-
 - lepsze zaznaczenie pionka
 - ludo dziedziczy po klasie gra. obsluguje akcje connected, disconnected, startGame
-- staty do panelu admina: lagi - ping /pong na stronie admina, mierzenie np przy starcie gry u graczy
 - gra leci dalej jak gracz wyszedl
 - na telefonie gracze u gory, nizej plansza, na samym dole guzik do rzutu kostka
 - 2 tryby rozgrywki: towarzyska, rankingowa
@@ -13,8 +10,11 @@
 - kosci przy rzucie dodaja sie nowe do planszy i znikaja przy nastepnym rzucie lubi wywolaniu metody hide
 - timeout na ekranach przed startem gry
 - zamykanie pokoju po jakims czasie - mozliwosc dolaczenia do pokoju po dc
+
+- spectators
 - blokada prawoklika
 - walka graczy o miejsce 2 i 3 
+- staty do panelu admina: lagi - ping /pong na stronie admina, mierzenie np przy starcie gry u graczy
 
 Wejscie do gry:
  Z home:
@@ -204,3 +204,4 @@ DONE:
 + zrobic test na buga pustej akcji
 + konczenie gry gdy nie ma aktywnych graczy
 + zmiana komunikatow: Twoja kolej + Gracz x rzucil Y. Wywalic: Waiting for player X
++ zmiana queue timeout na podstronie admina

@@ -14,7 +14,7 @@ const _nextId = (() => {
   };
 })();
 
-const RoomTimeout = 1 * 1000;
+let RoomQueueTimeout = 1 * 1000;
 const TotalBots = 100;
 const RandomDelays = [200, 300,];
 
@@ -48,7 +48,7 @@ class WebsocketServer {
     this.io = io;
     this.botsManager = new BotsManager({
       totalBots: TotalBots,
-      roomTimeout: RoomTimeout,
+      roomQueueTimeout: RoomQueueTimeout,
       randomDelays: RandomDelays,
     });
 
@@ -59,7 +59,6 @@ class WebsocketServer {
       },
     });
     let _log = logger.log;
-    _log('test');
 
     let _getTotalNumPlayers = () => {
         let clients = io.sockets.clients().connected;
@@ -267,6 +266,17 @@ class WebsocketServer {
 
     };
 
+    const _handleGetConfig = socket => () => {
+      socket.emit('config', {
+        RoomQueueTimeout,
+      });
+    }
+
+    const _handleSetConfig = socket => (options) => {
+      RoomQueueTimeout = options.RoomQueueTimeout;
+      this.botsManager.setRoomQueueTimeout(RoomQueueTimeout);
+    };
+
     // Authorization
     io.use((socket, next) => {
       let regex = /token=([^;]*)/g,
@@ -337,6 +347,10 @@ class WebsocketServer {
       socket.on('getStats', _handleGetStats(socket));
 
       socket.on('joinRoom', _handleJoinRoom(socket));
+
+      socket.on('getConfig', _handleGetConfig(socket));
+
+      socket.on('setConfig', _handleSetConfig(socket));
     });
 
     this.update = this.update.bind(this);
