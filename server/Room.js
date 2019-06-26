@@ -51,7 +51,10 @@ class Room {
   }
   getActivePlayers() {
     const players = this.gameState.players;
-    return players.filter(player => !player.disconnected);
+    return players.filter(player => !player.disconnected && !player.bot);
+  }
+  getBots() {
+    return this.gameState.players.filter(player => player.bot);
   }
   pickColors() {
     console.log('game started in room: ' + this.name);
@@ -85,6 +88,7 @@ class Room {
     const minPlayers = game.Config.MinPlayer;
     let returnActions = [];
 
+    // room is out of time
     if (finishTimestamp && now > finishTimestamp) {
       let returnActions = [];
 

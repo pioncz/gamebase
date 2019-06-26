@@ -1,5 +1,3 @@
-- konczenie gry gdy zostal < 2 graczy lub same boty
-
 - zmiana komunikatow: Twoja kolej + Gracz x rzucil Y. Wywalic: Waiting for player X
 
 - lepsze zaznaczenie pionka
@@ -16,7 +14,7 @@
 - timeout na ekranach przed startem gry
 - zamykanie pokoju po jakims czasie - mozliwosc dolaczenia do pokoju po dc
 - blokada prawoklika
-- miejsce 2 i 3
+- walka graczy o miejsce 2 i 3 
 
 Wejscie do gry:
  Z home:
@@ -204,3 +202,4 @@ DONE:
 + fix skryptu npm run dev
 + naprawa buga pustej akcji
 + zrobic test na buga pustej akcji
++ konczenie gry gdy nie ma aktywnych graczy

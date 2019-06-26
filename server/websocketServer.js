@@ -4,6 +4,7 @@ const { Room, RoomStates, } = require('./Room.js');
 const Games = require('../games/Games.js');
 const ActionsStream = require('./actions-stream');
 const BotsManager = require('./bots-manager');
+const Logger = require('./Logger');
 
 const _nextId = (() => {
   let lastId = 0;
@@ -51,12 +52,16 @@ class WebsocketServer {
       randomDelays: RandomDelays,
     });
 
-    let _log = (msg) => {
-        const prefix = ['[ws]: ',];
-        console.log(Array.isArray(msg) ? [prefix,].concat(msg) : prefix + msg);
-        this.logs.push({msg, timestamp: Date.now(),});
+    let logger = new Logger({
+      className: 'ws',
+      onLog: (msg) => {
+        this.logs.push(msg);
       },
-      _getTotalNumPlayers = () => {
+    });
+    let _log = logger.log;
+    _log('test');
+
+    let _getTotalNumPlayers = () => {
         let clients = io.sockets.clients().connected;
         return Object.keys(clients).length
       },
@@ -354,7 +359,9 @@ class WebsocketServer {
       streamActions = streamActions.concat(room.handleUpdate(now));
       this.emitRoomActions(room.name, streamActions);
 
-      if (!room.gameState.playerIds.length || room.gameState.roomState === RoomStates.finished) {
+      const activePlayers = room.getActivePlayers();
+
+      if (!activePlayers.length || room.gameState.roomState === RoomStates.finished) {
         this.closeRoom(room.id);
       }
     }
