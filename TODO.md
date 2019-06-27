@@ -1,5 +1,4 @@
 - lepsze zaznaczenie pionka
-- home: gdy nie ma playera przyciski zablokowane
 - fix klikania na mobilce (wiekszy obszar sprawdzania klika)
 - ludo dziedziczy po klasie gra. obsluguje akcje connected, disconnected, startGame
 - 2 tryby rozgrywki: towarzyska, rankingowa
@@ -209,3 +208,4 @@ DONE:
 + zmiana komunikatow: Twoja kolej + Gracz x rzucil Y. Wywalic: Waiting for player X
 + zmiana queue timeout na podstronie admina
 + room: mobile styles
++ home: gdy nie ma playera przyciski zablokowane
