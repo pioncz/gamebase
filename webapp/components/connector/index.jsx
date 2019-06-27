@@ -10,7 +10,7 @@ export default class Connector extends Component {
       connected: true,
     };
 
-    this.socket = ioClient(Config.ws.host);
+    this.socket = ioClient(Config.ws && Config.ws.host);
 
     this.socket.on('connect', () => {
       this.setState({

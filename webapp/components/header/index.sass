@@ -1,3 +1,5 @@
+@import 'vars'
+
 .header
   position: fixed
   z-index: 100
@@ -38,10 +40,10 @@
       font-size: 24px
       color: #fff
 
-      &--bottom
-        top: auto
-        bottom: 0
-        
+      &--fullscreen
+        bottom: auto
+        right: 72px
+
       svg
         display: block
 
@@ -102,3 +104,9 @@
 .inGame .header
   .profile
     display: none
+
+@media #{$portrait}
+  .header
+    .links-container
+      .nav-icon--fullscreen
+          right: 66px

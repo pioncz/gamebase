@@ -1,7 +1,7 @@
 - lepsze zaznaczenie pionka
+- home: gdy nie ma playera przyciski zablokowane
+- fix klikania na mobilce (wiekszy obszar sprawdzania klika)
 - ludo dziedziczy po klasie gra. obsluguje akcje connected, disconnected, startGame
-- gra leci dalej jak gracz wyszedl
-- na telefonie gracze u gory, nizej plansza, na samym dole guzik do rzutu kostka
 - 2 tryby rozgrywki: towarzyska, rankingowa
 - kolory do wyboru (w tym kilka zablokowanych)
 - customowe kostki / pionki
@@ -10,6 +10,9 @@
 - kosci przy rzucie dodaja sie nowe do planszy i znikaja przy nastepnym rzucie lubi wywolaniu metody hide
 - timeout na ekranach przed startem gry
 - zamykanie pokoju po jakims czasie - mozliwosc dolaczenia do pokoju po dc
+- zmienic akcje fullscreena na https://usefulangle.com/post/105/javascript-change-screen-orientation
+- dodac max bots do admin/config
+- jak sie rozlaczy podczas wybierania koloru to wraca do kolejki
 
 - spectators
 - blokada prawoklika
@@ -205,3 +208,4 @@ DONE:
 + konczenie gry gdy nie ma aktywnych graczy
 + zmiana komunikatow: Twoja kolej + Gracz x rzucil Y. Wywalic: Waiting for player X
 + zmiana queue timeout na podstronie admina
++ room: mobile styles

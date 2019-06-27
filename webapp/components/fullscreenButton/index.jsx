@@ -59,7 +59,7 @@ export default class FullscreenButton extends Component {
   render() {
     const { fullscreen, } = this.state;
 
-    return <div className="nav-icon nav-icon--bottom" onClick={this.toggleFullscreen}>
+    return <div className="nav-icon nav-icon--fullscreen" onClick={this.toggleFullscreen}>
       {fullscreen && <FullscreenExitIcon/>}
       {!fullscreen && <FullscreenIcon />}
     </div>

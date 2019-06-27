@@ -11,6 +11,8 @@
     z-index: 100
 
     .player
+      width: 100%
+      max-width: 200px
       position: absolute
       transition: all ease-in-out .2s
       display: flex
@@ -21,7 +23,6 @@
         background: rgba(0,0,0,0.2)
         padding: 6px 32px 6px 18px
         width: 100%
-        min-width: 150px
         max-width: 200px
         color: #fff
         font-size: 22px
@@ -74,4 +75,20 @@
         left: 12px
     .player--disconnected
       opacity: 0.5
-      
+
+@media #{$portrait}
+  .player-profiles
+    .player
+      white-space: nowrap
+      overflow: hidden
+      text-overflow: ellipsis
+      max-width: calc(50% - 12px)
+      .player-name
+        max-width: none
+    .player-2, .player-3
+      top: 104px
+      bottom: auto
+    .player-2
+      transition-delay: .2s
+    .player-3
+      transition-delay: .3s

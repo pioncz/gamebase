@@ -27,6 +27,7 @@
         opacity: .2
         transition: .2s all
         border-radius: $border-radius
+
     .snackbar-body--visible
         transform: scale(1)
         opacity: 1
@@ -34,6 +35,17 @@
         margin-top: -40px
         opacity: 0
 
-    @media screen and (max-width: $break-small)
+    @media #{$small-screen}
         .snackbar-wrapper
-            top: 104px
+            left: 6px
+            top: 154px
+            max-width: calc(100% - 12px)
+            margin: 0
+            width: 200px
+            .snackbar-body
+                width: 100%
+                padding: 6px 12px
+                white-space: nowrap
+                overflow: hidden
+                text-overflow: ellipsis
+                font-size: 16px

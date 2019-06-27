@@ -29,7 +29,7 @@
   .dices-container
     position: absolute
     z-index: 50
-    width: 190px
+    width: 200px
     height: 50px
     background: rgba(0, 0, 0, 0.2)
     padding: 10px
@@ -52,3 +52,10 @@
       border: 2px solid rgba(255,255,255,0.7)
       svg path
         fill: #fff
+
+  @media #{$portrait}
+    .dices-container
+      width: auto
+      top: auto
+      bottom: 6px
+      right: 6px
