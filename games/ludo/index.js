@@ -1,22 +1,7 @@
 const BoardUtils = require('./BoardUtils.js');
 const Board = require('./Board.js');
 const Fields = require('./Fields.js');
-
-/**
- * Enum representing room states.
- *
- * @enum
- */
-const RoomStates = {
-  queue: 'queue',
-  pickColors: 'pickColors',
-  game: 'game',
-  finished: 'finished',
-};
-
-const getNextPlayerId = (playerIds, playerId) => {
-  return playerIds[(playerIds.indexOf(playerId) + 1) % playerIds.length];
-};
+const Game = require('./../game');
 
 const InitialState = () => {
   return {
@@ -64,7 +49,6 @@ const ActionTypes = {
   PickPawn: 'PickPawn',
   SelectPawns: 'SelectPawns',
   FinishGame: 'FinishGame',
-  Disconnected: 'Disconnected',
   StopProgress: 'StopProgress',
   RestartProgress: 'RestartProgress',
   PickColors: 'PickColors',
@@ -73,19 +57,6 @@ const ActionTypes = {
 const AnimationLengths = {
   movePawn: 500,
   rollDice: 600,
-};
-
-
-/**
- * Enum representing game states.
- *
- * @enum
- */
-const GameStates = {
-  queue: 'queue',
-  pickColors: 'pickColors',
-  game: 'game',
-  finished: 'finished',
 };
 
 const Roll = (diceNumber) => {
@@ -128,10 +99,6 @@ const RestartProgress = () => ({
   type: ActionTypes.RestartProgress,
 });
 
-const Disconnected = (playerId) => {
-  return {type: ActionTypes.Disconnected, playerId,};
-};
-
 const PickColors = (roomState) => {
   return { type: ActionTypes.PickColors, roomState, }
 }
@@ -164,7 +131,7 @@ const RollHandler = (action, player, roomState, diceNumber = 0) => {
     if (player.previousRoll !== 6 || player.lastRoll === 6) {
       player.lastRoll = 0;
       player.previousRoll = 0;
-      roomState.currentPlayerId = getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
+      roomState.currentPlayerId = Game.Utils.getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
       waitForAction = ActionTypes.Roll;
     }
   }
@@ -224,7 +191,7 @@ const SelectColorHandler = (action, player, roomState) => {
 
   const bots = roomState.players.filter(player => player.bot );
 
-  if ((roomState.playerColors.length + bots.length) >= Config.MinPlayer && roomState.roomId !== GameStates.game) {
+  if ((roomState.playerColors.length + bots.length) >= Config.MinPlayer && roomState.roomId !== Game.GameStates.game) {
     bots.forEach((bot) => {
       const freeColors = roomState.colorsQueue.filter(color =>
         !roomState.playerColors.find(playerColor => playerColor.color === color.color)
@@ -236,7 +203,7 @@ const SelectColorHandler = (action, player, roomState) => {
 
     let initialState = InitialState(); // [Pawns]
 
-    roomState.roomState = GameStates.game;
+    roomState.roomState = Game.GameStates.game;
     delete roomState.colorsQueue;
 
     roomState.pawns = initialState.pawns;
@@ -316,7 +283,7 @@ const PickPawnHandler = (action, player, roomState) => {
   roomState.selectedPawns = [];
   returnActions.push({action: SelectPawns([], roomState.currentPlayerId),});
   if (player.lastRoll !== 6 || player.previousRoll === 6) {
-    roomState.currentPlayerId = getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
+    roomState.currentPlayerId = Game.Utils.getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
   }
   returnActions.push({action: MovePawn(action.pawnId, move.fieldSequence),});
 
@@ -343,7 +310,7 @@ const PickPawnHandler = (action, player, roomState) => {
     if (BoardUtils.checkWin(playerPawns)) {
       console.log(`player ${player.login} wins!`);
       roomState.winnerId = player.id;
-      roomState.roomState = GameStates.finished;
+      roomState.roomState = Game.GameStates.finished;
       returnActions.push({action:FinishGame(player.id),});
     }
   }
@@ -379,17 +346,12 @@ const DisconnectedHandler = (action, player, room) => {
       BoardUtils.getFieldByPosition(pawn.x, pawn.z).type !== BoardUtils.FieldTypes.spawn
     );
 
-  // mark player as disconnected
-  player.disconnected = true;
-  if (playerIndex > -1) {
-    gameState.playerIds.splice(playerIndex, 1);
-  }
   activePlayers = room.getActivePlayers();
 
   // set winner if there's only 1 player left
   if (activePlayers.length === 1) {
     room.gameState.winnerId = activePlayers[0].id;
-    room.gameState.roomState = GameStates.finished;
+    room.gameState.roomState = Game.GameStates.finished;
     returnActions.push({action:FinishGame(room.gameState.winnerId),})
   // if there is no winner, move player pawns to spawn
   } else if (playerPawns) {
@@ -405,7 +367,7 @@ const DisconnectedHandler = (action, player, room) => {
     }
     // switch player if disconnected current
     if(gameState.currentPlayerId === player.id) {
-      gameState.currentPlayerId = getNextPlayerId(gameState.playerIds, gameState.currentPlayerId);
+      gameState.currentPlayerId = Game.Utils.getNextPlayerId(gameState.playerIds, gameState.currentPlayerId);
       gameState.selectedPawns = [];
       gameState.rolled = false;
       returnActions.push({
@@ -423,14 +385,14 @@ const DisconnectedHandler = (action, player, room) => {
 const TimeoutHandler = (roomState) => {
   const winnerId = BoardUtils.getWinningPlayer(roomState);
   roomState.winnerId = winnerId;
-  roomState.roomState = GameStates.finished;
+  roomState.roomState = Game.GameStates.finished;
   return [{action:FinishGame(roomState.winnerId),},];
 };
 
 const RoundEndHandler = (roomState) => {
   const returnActions = [];
   returnActions.push({action: SelectPawns([], roomState.currentPlayerId),});
-  roomState.currentPlayerId = getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
+  roomState.currentPlayerId = Game.Utils.getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
   roomState.roundTimestamp = Date.now() + Config.RoundLength;
   roomState.rolled = false;
   roomState.selectedPawns = [];
@@ -451,7 +413,7 @@ const StartGameHandler = (roomState) => {
 const PickColorsHandler = (roomState) => {
   const returnActions = [];
 
-  roomState.roomState = RoomStates.pickColors;
+  roomState.roomState = Game.GameStates.pickColors;
 
   returnActions.push({action: PickColors(roomState),});
 
@@ -468,7 +430,6 @@ const Ludo = {
     WaitForPlayer,
     PickPawn,
     FinishGame,
-    Disconnected,
     PickColors,
   },
   ActionHandlers: {

@@ -1,4 +1,5 @@
 const Games = require('./../games/Games.js');
+const Game = require('./../games/game');
 
 /**
  * Enum representing room states.
@@ -69,6 +70,20 @@ class Room {
         selected: false,
       });
     });
+  }
+  playerDisconnected(playerId) {
+    const gameState = this.gameState;
+    const player = gameState.players.find(player => player.id === playerId);
+
+    if (player) {
+      const playerIndex = this.gameState.playerIds.indexOf(player.id);
+      if (playerIndex > -1) {
+        this.gameState.playerIds.splice(playerIndex, 1);
+      }
+
+      // mark player as disconnected
+      player.disconnected = true;
+    }
   }
   handleAction(action, player) {
     let actionHandler = Games[this.gameState.gameName].ActionHandlers[action.type],

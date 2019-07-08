@@ -2,6 +2,7 @@ const Player = require('./Player.js');
 const Connection = require('./Connection.js');
 const { Room, RoomStates, } = require('./Room.js');
 const Games = require('../games/Games.js');
+const Game = require('../games/game');
 const ActionsStream = require('./actions-stream');
 const BotsManager = require('./bots-manager');
 const Logger = require('./Logger');
@@ -100,8 +101,9 @@ class WebsocketServer {
         }
 
         connection.roomId = null;
+        room.playerDisconnected(playerId);
 
-        let disconnectedAction = Games[room.gameState.gameName].Actions.Disconnected(player.id),
+        let disconnectedAction = Game.Actions.Disconnected(player.id),
           streamActions = Games[room.gameState.gameName].ActionHandlers.Disconnected(disconnectedAction, player, room),
           returnActions = streamActions.map(streamAction => streamAction.action);
 

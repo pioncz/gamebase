@@ -1,6 +1,4 @@
 import Utils from 'utils/utils.js'
-import Pawn from './pawn'
-import {EASING, TIMES,} from "./utils/animations";
 import PawnsController from 'pawnsController';
 import Dice from './dice';
 import BoardUtils from './../games/ludo/BoardUtils.js';
@@ -67,7 +65,6 @@ export default class Board {
     this.rotateBoard(newRotation);
   }
   clearGame() {
-    console.log('clearGame');
     // clear board
     for(let fieldIndex in this.fields) {
       let field = this.fields[fieldIndex];
