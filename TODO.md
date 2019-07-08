@@ -1,5 +1,3 @@
-- 2 tryby rozgrywki: towarzyska, rankingowa
-- fix klikania na mobilce (wiekszy obszar sprawdzania klika)
 - kolory do wyboru (w tym kilka zablokowanych)
 - customowe kostki / pionki
 - podstrona admina z ustawieniem max graczy i max bot timeout
@@ -9,6 +7,7 @@
 - zamykanie pokoju po jakims czasie - mozliwosc dolaczenia do pokoju po dc
 - dodac max bots do admin/config
 - jak sie rozlaczy podczas wybierania koloru to wraca do kolejki
+- 2 tryby rozgrywki: towarzyska, rankingowa
 
 - mniejsza kostka
 - wolniejsza animacja pionka wzgledem kostki
@@ -217,3 +216,4 @@ DONE:
 + wylaczenie fullscreena na ios / modala do fullscreena
 + fix klikania na ios: obsluga touch eventow
 + zmienic akcje fullscreena na https://usefulangle.com/post/105/javascript-change-screen-orientation
++ fix klikania na mobilce (wiekszy obszar sprawdzania klika)

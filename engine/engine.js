@@ -173,18 +173,29 @@ export default class Engine extends EventEmitter {
   onClick(e) {
     if (!this.gameName) return;
 
+    let pawnIds = [];
+
+    // Create 5 points to check intersections with in distance of pointsDistance
+    const pointsDistance = 8;
     const boundingRect = this.renderer.domElement.getBoundingClientRect();
-    let mouse = {
-      x: ( (e.clientX - boundingRect.left) / this.renderer.domElement.clientWidth ) * 2 - 1,
-      y: - ( (e.clientY - boundingRect.top) / this.renderer.domElement.clientHeight ) * 2 + 1,
-    };
+    for(let i = 0; i < 5; i++) {
+      const helperX = i < 3 ? (i - 1) % 2 * pointsDistance : 0;
+      const helperY = i > 2 ?
+        i > 3 ? pointsDistance : -pointsDistance
+        : 0;
 
-    this.raycaster.setFromCamera( mouse, this.camera );
+      const point = {
+        x: ( (e.clientX - boundingRect.left + helperX) / this.renderer.domElement.clientWidth ) * 2 - 1,
+        y: - ( (e.clientY - boundingRect.top + helperY) / this.renderer.domElement.clientHeight ) * 2 + 1,
+      };
 
-    let pawns = this.board.handleClick(this.raycaster),
-      pawnIds = pawns.map(pawn => pawn.id );
+      this.raycaster.setFromCamera( point, this.camera );
+      const pawns = this.board.handleClick(this.raycaster);
+      const ids = pawns.map(pawn => pawn.id );
+      pawnIds = pawnIds.concat(ids);
+    }
 
-    this.emit('click', { pawnIds, });
+    this.emit('click', { pawnIds: [...new Set(pawnIds),], });
   }
   onTouch(e) {
     if (e.touches && e.touches.length) {

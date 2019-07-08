@@ -252,11 +252,19 @@ class Room extends Component {
     this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.Roll());
   }
   handleBoardClick = (e) => {
+    const { pawns, } = this.state;
+    const { player, } = this.props;
+
     if (this.state.waitingForAction === Games.Ludo.ActionTypes.PickPawn) {
       if (e && e.pawnIds && e.pawnIds.length) {
-        let pawnId = e.pawnIds[0];
+        const filteredPawnIds = e.pawnIds.filter(pawnId => {
+          const pawn = pawns.find(pawn => pawn.id === pawnId);
+          return pawn && pawn.playerId === player.id;
+        });
 
-        this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.PickPawn(pawnId, this.props.player.id));
+        if (filteredPawnIds.length) {
+          this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.PickPawn(filteredPawnIds[0], player.id));
+        }
       }
     }
   }
