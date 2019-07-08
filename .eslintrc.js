@@ -10,6 +10,7 @@ module.exports = {
         "SharedArrayBuffer": "readonly",
         "describe": true,
         "expect": true,
+        "THREE": true,
         "test": true
     },
     "parser": "babel-eslint",

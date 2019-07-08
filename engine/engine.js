@@ -3,13 +3,13 @@ import { EASING, TIMES, Animations, } from './utils/animations'
 import Board from './board'
 import EventEmitter from 'event-emitter-es6'
 import Games from 'Games.js'
+import DimmingPass from './shaders/dimmingPass';
 
 export default class Engine extends EventEmitter {
   constructor( { container, gameName, }) {
     super();
     this.container = container;
     this.raycaster = new THREE.Raycaster();
-    this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true,});
     this.initializing = false;
     this.gameName = gameName;
     this.gameId = null;
@@ -32,11 +32,11 @@ export default class Engine extends EventEmitter {
       -this.frustumSize,
       1,
       1000);
-    // this.camera = new THREE.PerspectiveCamera( 30, aspect, 1, 1000 );
     this.camera.position.set( 40, 50, 40 );
-    // this.camera.position.set( 60, 60, 60 );
     this.camera.lookAt( new THREE.Vector3(0,0,0) );
+    this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true,});
     this.renderer.setPixelRatio( window.devicePixelRatio );
+    this.renderer.setClearColor( '#243B55', 1 );
     this.renderer.setSize( width, height );
     this.container.appendChild(this.renderer.domElement);
 
@@ -60,6 +60,43 @@ export default class Engine extends EventEmitter {
     this.scene.add( lights[ 1 ] );
     this.scene.add( lights[ 2 ] );
     this.scene.add( lights[ 3 ] );
+
+    // Shaders setup
+    this.clock = new THREE.Clock();
+    this.composer = new THREE.EffectComposer(this.renderer);
+    this.composer.setSize( window.innerWidth * 2, window.innerHeight * 2 );
+    let renderPass = new THREE.RenderPass(this.scene, this.camera);
+
+    this.dimmingPass = new DimmingPass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight),
+      this.scene,
+      this.camera,
+      [],
+      {
+        visibleEdgeColor: new THREE.Color(1, 1, 1, 1),
+        hiddenEdgeColor: new THREE.Color(0.4, 0.4, 0.4, 1),
+      },
+    );
+    this.dimmingPass.renderToScreen = true;
+    this.composer.addPass(renderPass);
+    this.composer.addPass(this.dimmingPass);
+
+    this.animations.create({
+      id: 'dimmingThickness',
+      update: (progress) => {
+        let parsedProgress = progress;
+        if (progress > .5) {
+          parsedProgress = 1 - progress;
+        }
+        if (this.dimmingPass.selectedObjects.length) {
+          this.dimmingPass.edgeThickness = parsedProgress * 1 + 1;
+          this.dimmingPass.edgeStrength = parsedProgress * 5 + 2;
+        }
+      },
+      loop: true,
+      length: 1000,
+      easing: EASING.InOutCubic,
+    })
 
     // Handle canvas events
     window.addEventListener('resize', this.onResize.bind(this), true);
@@ -110,7 +147,8 @@ export default class Engine extends EventEmitter {
 
     this.windowWidth = width;
     this.windowHeight = height;
-    this.renderer.setSize(width, height);
+    this.renderer.setSize( width, height );
+    this.composer.setSize( width * 2, height * 2 );
 
     if (aspect < 1.3) {
       this.camera.left   = - this.frustumSize;
@@ -174,12 +212,17 @@ export default class Engine extends EventEmitter {
     this.initializing = false;
   }
   selectPawns(pawnIds) {
+    this.dimmingPass.selectedObjects = [];
+    for(let i = 0; i < pawnIds.length; i++) {
+      let pawn = this.board.pawnsController.getPawn(pawnIds[i]);
+      this.dimmingPass.selectedObjects.push(pawn.pawnMesh);
+    }
     this.board.pawnsController.selectPawns(pawnIds);
   }
   animate(timestamp) {
     let delta = Math.min(Date.now() - this._lastRender, 500);
 
-    this.renderer.render(this.scene, this.camera);
+    this.composer.render(this.clock.getDelta());
     this.animations.tick(delta);
     this._lastRender = Date.now();
     window.requestAnimationFrame(this.animate.bind(this));

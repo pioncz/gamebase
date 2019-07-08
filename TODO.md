@@ -1,7 +1,7 @@
-- lepsze zaznaczenie pionka
-- fix klikania na mobilce (wiekszy obszar sprawdzania klika)
 - ludo dziedziczy po klasie gra. obsluguje akcje connected, disconnected, startGame
+- zmienic akcje fullscreena na https://usefulangle.com/post/105/javascript-change-screen-orientation
 - 2 tryby rozgrywki: towarzyska, rankingowa
+- fix klikania na mobilce (wiekszy obszar sprawdzania klika)
 - kolory do wyboru (w tym kilka zablokowanych)
 - customowe kostki / pionki
 - podstrona admina z ustawieniem max graczy i max bot timeout
@@ -9,9 +9,11 @@
 - kosci przy rzucie dodaja sie nowe do planszy i znikaja przy nastepnym rzucie lubi wywolaniu metody hide
 - timeout na ekranach przed startem gry
 - zamykanie pokoju po jakims czasie - mozliwosc dolaczenia do pokoju po dc
-- zmienic akcje fullscreena na https://usefulangle.com/post/105/javascript-change-screen-orientation
 - dodac max bots do admin/config
 - jak sie rozlaczy podczas wybierania koloru to wraca do kolejki
+
+- mniejsza kostka
+- wolniejsza animacja pionka wzgledem kostki
 
 - spectators
 - blokada prawoklika
@@ -30,6 +32,8 @@ Wejscie do gry:
   - jesli jest taka gra, ale nie ma miejsc do grania, user dolacza jako spectator (bedzie otrzymywal roomUpdate)
   - jestli jest taka gra i jest miejsce dla gracza, to user dolacza do pokoju jako gracz
 
+https://threejsfundamentals.org
+http://www.andrewberg.com/prototypes/threejs/bokeh/
 
 Frontowe taski:
 - dodac podstrony zawierajaca logi z serwera
@@ -209,3 +213,5 @@ DONE:
 + zmiana queue timeout na podstronie admina
 + room: mobile styles
 + home: gdy nie ma playera przyciski zablokowane
++ lepsze zaznaczenie pionka
++ bugfix resize'a
