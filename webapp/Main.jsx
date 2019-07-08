@@ -12,6 +12,7 @@ import { bindActionCreators, } from 'redux'
 import { connect, } from 'react-redux'
 import { selectors, actions, } from 'shared/redux/api'
 import { LoginModal, RegistrationModal, FullscreenModal, } from 'modals/';
+import Utils from 'services/utils';
 
 class Main extends Component {
   constructor(props) {
@@ -91,11 +92,10 @@ class Main extends Component {
   logout() {
     this.props.logout();
   }
-
-
   render() {
-    let { loginModalVisible, registrationModalVisible, fullscreenModalVisible,} = this.state,
+    const { loginModalVisible, registrationModalVisible, fullscreenModalVisible,} = this.state,
       { player, } = this.props;
+    const isIos = Utils.isIos;
 
     return (<Router>
       <div className={this.props.inGame?'inGame':''}>
@@ -125,7 +125,7 @@ class Main extends Component {
             onSubmit={this.sendRegistrationModal}
           />}
 
-        {fullscreenModalVisible &&
+        {!isIos && fullscreenModalVisible &&
          <FullscreenModal
            onToggle={ this.toggleFullscreenModal}
            onClose={this.toggleFullscreenModal}

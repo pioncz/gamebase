@@ -1,4 +1,3 @@
-- wylaczenie fullscreena na ios / modala do fullscreena
 - zmienic akcje fullscreena na https://usefulangle.com/post/105/javascript-change-screen-orientation
 - 2 tryby rozgrywki: towarzyska, rankingowa
 - fix klikania na mobilce (wiekszy obszar sprawdzania klika)
@@ -216,3 +215,4 @@ DONE:
 + lepsze zaznaczenie pionka
 + bugfix resize'a
 + wspolne Akcje, stale, Utilsy wyniesione do klasy Games
++ wylaczenie fullscreena na ios / modala do fullscreena
