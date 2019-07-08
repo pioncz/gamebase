@@ -27,6 +27,7 @@ export default class FullscreenButton extends Component {
   toggleFullscreen() {
     const { fullscreen, } = this.state;
     const { onToggle, } = this.props;
+    const {orientation,} = window.screen;
 
     if (fullscreen) {
       if(document.exitFullscreen) {
@@ -36,6 +37,7 @@ export default class FullscreenButton extends Component {
       } else if(document.webkitExitFullscreen) {
         document.webkitExitFullscreen();
       }
+      orientation.unlock();
     } else {
       if(document.documentElement.requestFullscreen) {
         document.documentElement.requestFullscreen();
@@ -46,6 +48,7 @@ export default class FullscreenButton extends Component {
       } else if(document.documentElement.msRequestFullscreen) {
         document.documentElement.msRequestFullscreen();
       }
+      orientation.lock("landscape-primary");
     }
 
     this.setState({
