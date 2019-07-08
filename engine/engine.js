@@ -101,6 +101,7 @@ export default class Engine extends EventEmitter {
     // Handle canvas events
     window.addEventListener('resize', this.onResize.bind(this), true);
     window.addEventListener('click', this.onClick.bind(this), true);
+    window.addEventListener('touchstart', this.onTouch.bind(this), true);
 
     this.context = {
       animations: this.animations,
@@ -184,6 +185,16 @@ export default class Engine extends EventEmitter {
       pawnIds = pawns.map(pawn => pawn.id );
 
     this.emit('click', { pawnIds, });
+  }
+  onTouch(e) {
+    if (e.touches && e.touches.length) {
+
+      this.onClick({
+        clientX: e.touches[0].clientX,
+        clientY: e.touches[0].clientY,
+      });
+      e.stopPropagation();
+    }
   }
   initGame({gameId, gameName, pawns, players,}, firstPlayerId) {
     if (!this.board) {

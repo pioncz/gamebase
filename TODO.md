@@ -216,3 +216,4 @@ DONE:
 + bugfix resize'a
 + wspolne Akcje, stale, Utilsy wyniesione do klasy Games
 + wylaczenie fullscreena na ios / modala do fullscreena
++ fix klikania na ios: obsluga touch eventow

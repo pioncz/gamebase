@@ -342,6 +342,15 @@ class Engine extends Component {
   handleSetGame() {
     console.log('handleSetGame');
   }
+  handleClick = (e) => {
+    if (e.pawnIds.length) {
+      let firstPawnId = e.pawnIds[0];
+      this.gameComponentRef.current.engine.selectPawns([firstPawnId,]);
+      this.setState({
+        selectedPawnId: firstPawnId,
+      })
+    }
+  }
   render() {
     const { players, pawns, selectedPawnId, pawnInput, numberOfPlayers, pawnSet, firstPlayerIndex, firstPlayerId, currentPlayerId, gameName, messages, } = this.state,
       pawnsElements = pawns.map(pawn => {
