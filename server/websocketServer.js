@@ -353,7 +353,7 @@ class WebsocketServer {
 
       socket.emit('initialData', {
         player,
-        Dices,
+        dices: Dices,
       });
 
       socket.on('disconnect', _handleDisconnect(socket));

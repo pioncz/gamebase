@@ -64,9 +64,9 @@ class Main extends Component {
       connectorInstance,
     });
     connectorInstance.socket.on('initialData', initialState => {
-      const { player, Dices, } = initialState;
+      const { player, dices, } = initialState;
       this.props.setCurrentPlayer(player);
-      this.props.setCurrentDices(Dices);
+      this.props.setCurrentDices(dices);
     });
     const diceId = window.localStorage.diceId;
     if (diceId) {
@@ -106,13 +106,13 @@ class Main extends Component {
   }
   render() {
     const { loginModalVisible, registrationModalVisible, fullscreenModalVisible,} = this.state,
-      { player, Dices,} = this.props;
+      { player, dices,} = this.props;
     const isIos = Utils.isIos;
 
     return (<Router>
       <div className={this.props.inGame?'inGame':''}>
         <Header
-          Dices={Dices}
+          dices={dices}
           player={player}
           selectDice={this.selectDice}
           toggleLoginModal={this.toggleLoginModal}
@@ -172,7 +172,7 @@ const {
 const mapStateToProps = state => ({
   player: getCurrentPlayer(state),
   inGame: isInGame(state),
-  Dices: getCurrentDices(state),
+  dices: getCurrentDices(state),
 });
 
 const mapDispatchToProps = dispatch => ({
