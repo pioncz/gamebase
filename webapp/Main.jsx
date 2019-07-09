@@ -63,10 +63,15 @@ class Main extends Component {
     this.setState({
       connectorInstance,
     });
-    connectorInstance.socket.on('playerUpdate', (player) => {
-      console.log('playerUpdate', player);
+    connectorInstance.socket.on('initialData', initialState => {
+      const { player, Dices, } = initialState;
       this.props.setCurrentPlayer(player);
+      this.props.setCurrentDices(Dices);
     });
+    const diceId = window.localStorage.diceId;
+    if (diceId) {
+      connectorInstance.socket.emit('selectDice', { diceId, });
+    }
   }
   toggleLoginModal() {
     this.setState({
@@ -92,15 +97,24 @@ class Main extends Component {
   logout() {
     this.props.logout();
   }
+  selectDice = (diceId) => {
+    const { connectorInstance, } = this.state;
+    window.localStorage.diceId=diceId;
+    if (connectorInstance) {
+      connectorInstance.socket.emit('selectDice', { diceId, });
+    }
+  }
   render() {
     const { loginModalVisible, registrationModalVisible, fullscreenModalVisible,} = this.state,
-      { player, } = this.props;
+      { player, Dices,} = this.props;
     const isIos = Utils.isIos;
 
     return (<Router>
       <div className={this.props.inGame?'inGame':''}>
         <Header
+          Dices={Dices}
           player={player}
+          selectDice={this.selectDice}
           toggleLoginModal={this.toggleLoginModal}
           toggleRegistrationModal={this.toggleRegistrationModal}
           logout={this.logout}
@@ -144,18 +158,21 @@ Main.childContextTypes = {
 const {
   getCurrentPlayer,
   isInGame,
+  getCurrentDices,
 } = selectors;
 
 const {
   registerPlayer,
   loginPlayer,
   setCurrentPlayer,
+  setCurrentDices,
   logout,
 } = actions;
 
 const mapStateToProps = state => ({
   player: getCurrentPlayer(state),
   inGame: isInGame(state),
+  Dices: getCurrentDices(state),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -163,6 +180,7 @@ const mapDispatchToProps = dispatch => ({
     registerPlayer,
     loginPlayer,
     setCurrentPlayer,
+    setCurrentDices,
     logout,
   }, dispatch),
 });

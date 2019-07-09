@@ -272,7 +272,7 @@ class Engine extends Component {
   }
   rollDice = (number) => {
     let diceNumber = isNaN(number) ? 6 : number;
-    this.gameComponentRef.current.engine.board.dice.roll(diceNumber);
+    this.gameComponentRef.current.engine.rollDice(diceNumber, [randomColor('rgb'),randomColor('rgb'),] );
   }
   handleInputChange(e) {
     if (!e.target.name) return;

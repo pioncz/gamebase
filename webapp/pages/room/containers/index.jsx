@@ -77,6 +77,8 @@ class Room extends Component {
     document.removeEventListener('keypress', this.onKeyUp);
   }
   initSocketEvents = () => {
+    const { dices,} = this.props;
+
     const handleAction = (newAction) => {
       if (newAction.type === Games.Ludo.ActionTypes.SelectedColor) {
         let queueColors = this.state.queueColors,
@@ -158,7 +160,9 @@ class Room extends Component {
           }
           this.addMessage(message, color);
         }
-        this.gameComponentRef.current.engine.board.dice.roll(newAction.diceNumber);
+        let diceColors = (dices.find(dice => dice.id === player.diceId) || dices[0]).colors;
+
+        this.gameComponentRef.current.engine.rollDice(newAction.diceNumber, diceColors);
       }
       if (newAction.type === Games.Ludo.ActionTypes.MovePawn) {
         this.gameComponentRef.current.movePawn({pawnId: newAction.pawnId, fieldSequence: newAction.fieldSequence,});
@@ -411,10 +415,12 @@ class Room extends Component {
 
 const {
   getCurrentPlayer,
+  getCurrentDices,
 } = selectors;
 
 const mapStateToProps = state => ({
   player: getCurrentPlayer(state),
+  dices: getCurrentDices(state),
 });
 
 const mapDispatchToProps = dispatch => ({

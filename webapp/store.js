@@ -1,5 +1,5 @@
-import { createStore, applyMiddleware, compose } from 'redux'
-import { createLogicMiddleware } from 'redux-logic'
+import { createStore, applyMiddleware, compose, } from 'redux'
+import { createLogicMiddleware, } from 'redux-logic'
 import createApiClient from './services/api'
 import rootReducer from './reducer'
 import logic from './logic'
@@ -18,7 +18,7 @@ export default function initStore() {
     ),
   ));
 
-  logicMiddleware.addDeps({ httpClient: createApiClient(store) });
+  logicMiddleware.addDeps({ httpClient: createApiClient(store), });
 
   return store;
 }

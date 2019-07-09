@@ -1,8 +1,7 @@
-import { bindActionCreators } from 'redux'
-import { connect } from 'react-redux'
+import { bindActionCreators, } from 'redux'
+import { connect, } from 'react-redux'
 import Room from './containers/index.jsx'
-import { selectors as ludoSelectors, actions as ludoActions } from 'shared/redux/ludo'
-import { selectors, actions } from 'shared/redux/api'
+import { selectors, actions, } from 'shared/redux/api'
 
 const {
   setInGame,
@@ -10,10 +9,7 @@ const {
 } = actions;
 
 const {
-} = ludoActions;
-
-const {
-    getCurrentPlayer,
+  getCurrentPlayer,
 } = selectors;
 
 const mapStateToProps = state => ({
@@ -22,7 +18,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   ...bindActionCreators({
-//    fetchPresentation,
+    //    fetchPresentation,
     setInGame,
     unsetInGame,
   }, dispatch),

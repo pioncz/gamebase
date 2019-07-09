@@ -18,6 +18,11 @@ const _nextId = (() => {
 let RoomQueueTimeout = 1 * 1000;
 const TotalBots = 100;
 const RandomDelays = [200, 300,];
+const Dices = [
+  {id:'dice1', colors: ['#fff', '#000',],},// TODO:dopisac kolory z engine
+  {id:'dice2', colors: ['#ffb9fa', '#fff',],},
+  {id:'dice3', colors: ['#243b55', '#03a9f4',],},
+];
 
 /**
  * Represents a conntector between io and WebsocketServer.
@@ -279,6 +284,15 @@ class WebsocketServer {
       this.botsManager.setRoomQueueTimeout(RoomQueueTimeout);
     };
 
+    const _handleSelectDice = socket => (options) => {
+      let connection = this.connections[socket.id],
+        player = connection.playerId && this.players[connection.playerId];
+
+      if(player && options.diceId) {
+        player.diceId = options.diceId;
+      }
+    }
+
     // Authorization
     io.use((socket, next) => {
       let regex = /token=([^;]*)/g,
@@ -310,6 +324,7 @@ class WebsocketServer {
           temporary: true,
           login: `Name ${nextId}`,
           socketId: socket.id,
+          diceId: Dices[0].id,
           avatar: `/static/avatar${Math.floor(Math.random()*6)+1}.jpg`,
         });
         updatePlayer(tempPlayer);
@@ -336,7 +351,10 @@ class WebsocketServer {
       const player = this.players[this.connections[socket.id].playerId];
       _log(`New connection {sockeId: ${socket.id}, legin: ${player.login}, temp: ${player.temporary}}. currently ${_getTotalNumPlayers()} online.`);
 
-      socket.emit('playerUpdate', player);
+      socket.emit('initialData', {
+        player,
+        Dices,
+      });
 
       socket.on('disconnect', _handleDisconnect(socket));
 
@@ -353,6 +371,8 @@ class WebsocketServer {
       socket.on('getConfig', _handleGetConfig(socket));
 
       socket.on('setConfig', _handleSetConfig(socket));
+
+      socket.on('selectDice', _handleSelectDice(socket));
     });
 
     this.update = this.update.bind(this);
@@ -412,7 +432,7 @@ class WebsocketServer {
 
     for(let i = 0; i < streamActions.length; i++) {
       if (streamActions[i]) {
-        const { timestamp, callback, action, } = streamActions[i];
+        const { timestamp = 0, callback, action, } = streamActions[i];
         this.actionsStream.addAction(() => {
           let callbackActions = (callback && callback()) || [];
 

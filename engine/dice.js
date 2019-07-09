@@ -3,10 +3,12 @@ import { EASING, } from "./utils/animations";
 import Config from 'config.js';
 
 export default class Dice {
-  constructor({scene, context,}) {
+  constructor({id, scene, context, colors = [], }) {
+    this.id = id;
     this.scene = scene;
     this.animations = context.animations;
     this.animationLength = null;
+    this.colors = colors;
 
     var geometry = new THREE.BoxGeometry( 2, 2, 2 );
 
@@ -20,6 +22,7 @@ export default class Dice {
     ];
 
     this.cube = new THREE.Mesh( geometry, materials );
+    this.cube.name = 'Dice';
     this.cube.position.x = 0;
     this.cube.position.y = 2;
     this.cube.position.z = 0;
@@ -55,10 +58,10 @@ export default class Dice {
     canvas.width = width;
     canvas.height = height;
 
-    ctx.fillStyle = '#f6f6f5'; // '#ffbbe4';
+    ctx.fillStyle = this.colors[0] || '#f6f6f5'; // '#ffbbe4';
     ctx.fillRect(0, 0, width, height);
 
-    ctx.fillStyle = "#1e1e1e"; // '#fff'
+    ctx.fillStyle = this.colors[1] || "#1e1e1e"; // '#fff'
     let dots = dotPositions[number];
     for(let dotI in dots) {
       let dot = dots[dotI];
@@ -80,9 +83,8 @@ export default class Dice {
   setAnimationLength(animationLength) {
     this.animationLength = animationLength;
   }
-  roll(number) {
-    if (!this.animationLength) return;
-
+  roll(number, animationLength) {
+    if (!animationLength) return;
     let cube = this.cube,
       numberRotations = {
         1: {x: 0, z: .25,},
@@ -92,7 +94,7 @@ export default class Dice {
         5: {x: .75, z: 1,},
         6: {x: .25, z: 1,},
       },
-      totalLength = this.animationLength;
+      totalLength = animationLength;
 
     let baseX = (2*Math.PI) * numberRotations[number].x,
       baseZ = (2*Math.PI) * numberRotations[number].z;
@@ -129,11 +131,16 @@ export default class Dice {
     ],});
   }
   hide() {
-    this.animations.create({
+    return this.animations.create({
       update: (progress) => {
         this._setOpacity(1-progress);
       },
       length: 200,
     })
+  }
+  remove() {
+    this.hide().then(() => {
+      this.scene.remove(this.cube);
+    });
   }
 }

@@ -64,7 +64,7 @@ export default class Header extends Component {
     });
   }
   render() {
-    const { player, }  = this.props,
+    const { player, Dices, selectDice, }  = this.props,
       { menuOpen, fullscreen, } = this.state,
       headerClass = Classnames({
         'header': true,
@@ -88,6 +88,19 @@ export default class Header extends Component {
           <Link to='/'>Home</Link>
           <Link to='/engine'>Engine</Link>
           <Link to='/admin'>Admin</Link>
+          <div className="dices-container">
+            {Dices.map(dice => (
+              <div key={dice.id} style={{background: dice.colors[0],}} className="dice" onClick={() => selectDice(dice.id)}>
+                <div className="dice__spot" style={{background: dice.colors[1],}} />
+                <div className="dice__spot" style={{background: dice.colors[1],}} />
+                <div className="dice__spot" style={{background: dice.colors[1],}} />
+                <div className="dice__spot" style={{background: dice.colors[1],}} />
+                <div className="dice__spot" style={{background: dice.colors[1],}} />
+                <div className="dice__spot" style={{background: dice.colors[1],}} />
+              </div>
+            ))}
+
+          </div>
         </div>
       </div>
     </header>

@@ -20,6 +20,8 @@ export default class Board {
     this.texture = null;
     this.rotation = 0;
     this.gameName = props.gameName;
+    this.dices = [];
+    this.diceAnimationLength;
 
     this.createBoard();
 
@@ -30,10 +32,6 @@ export default class Board {
       pawns: [],
       animations: props.animations,
       columnsLength: this.columnsLength,
-    });
-    this.dice = new Dice({
-      scene: this.scene,
-      context: props.context,
     });
     this.changeGame(props.gameName);
   }
@@ -265,8 +263,23 @@ export default class Board {
   changeGame(gameName) {
     this.gameName = gameName;
     this.fields = Games[this.gameName].Fields;
-    this.dice.setAnimationLength(Games[gameName].AnimationLengths.rollDice);
+    this.diceAnimationLength = Games[gameName].AnimationLengths.rollDice;
     this.pawnsController.setAnimationLength(Games[gameName].AnimationLengths.movePawn);
     this.clearGame();
+  }
+  rollDice(number, diceColors) {
+    if (this.dices.length) {
+      for(let i = this.dices.length - 1; i >= 0; i--) {
+        this.dices[i].remove();
+        this.dices.splice(i, 1);
+      }
+    }
+    const dice = new Dice({
+      scene: this.scene,
+      context: this.context,
+      colors: diceColors,
+    });
+    dice.roll(number, this.diceAnimationLength);
+    this.dices.push(dice);
   }
 }

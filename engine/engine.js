@@ -258,4 +258,7 @@ export default class Engine extends EventEmitter {
       this.board.changeGame(gameName);
     }
   }
+  rollDice(number, diceColors) {
+    this.board.rollDice(number, diceColors);
+  }
 }

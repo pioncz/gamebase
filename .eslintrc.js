@@ -11,7 +11,7 @@ module.exports = {
         "describe": true,
         "expect": true,
         "THREE": true,
-        "test": true
+        "__CONFIG__": true
     },
     "parser": "babel-eslint",
     "parserOptions": {

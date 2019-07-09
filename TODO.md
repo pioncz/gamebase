@@ -1,5 +1,5 @@
+- customowe pionki
 - kolory do wyboru (w tym kilka zablokowanych)
-- customowe kostki / pionki
 - podstrona admina z ustawieniem max graczy i max bot timeout
 - kosci przy kursorze, rzut kostka w dowolnym miejscu na planszy (lub srodek)
 - kosci przy rzucie dodaja sie nowe do planszy i znikaja przy nastepnym rzucie lubi wywolaniu metody hide
@@ -217,3 +217,4 @@ DONE:
 + fix klikania na ios: obsluga touch eventow
 + zmienic akcje fullscreena na https://usefulangle.com/post/105/javascript-change-screen-orientation
 + fix klikania na mobilce (wiekszy obszar sprawdzania klika)
++ customowe kostki
