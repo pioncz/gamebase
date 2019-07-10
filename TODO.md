@@ -1,11 +1,10 @@
+- podstrona admina z ustawieniem max graczy i max bot timeout
 - customowe pionki
 - kolory do wyboru (w tym kilka zablokowanych)
-- podstrona admina z ustawieniem max graczy i max bot timeout
 - kosci przy kursorze, rzut kostka w dowolnym miejscu na planszy (lub srodek)
 - kosci przy rzucie dodaja sie nowe do planszy i znikaja przy nastepnym rzucie lubi wywolaniu metody hide
 - timeout na ekranach przed startem gry
 - zamykanie pokoju po jakims czasie - mozliwosc dolaczenia do pokoju po dc
-- dodac max bots do admin/config
 - jak sie rozlaczy podczas wybierania koloru to wraca do kolejki
 - 2 tryby rozgrywki: towarzyska, rankingowa
 

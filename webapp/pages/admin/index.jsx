@@ -7,9 +7,11 @@ import Tab from '@material-ui/core/Tab';
 
 const ConfigTab = ({connectorInstance,}) => {
   const [timeoutInput, setTimeoutInput,] = useState('_');
+  const [minPlayersInput, setMinPlayersInput,] = useState('_');
 
   connectorInstance.socket.on('config', (config) =>{
     setTimeoutInput(config.RoomQueueTimeout);
+    setMinPlayersInput(config.MinPlayers);
   });
 
   useEffect(() => {
@@ -17,18 +19,21 @@ const ConfigTab = ({connectorInstance,}) => {
   }, [connectorInstance,]);
 
   useEffect(() => {
-    if (!isNaN(timeoutInput)) {
-      connectorInstance.socket.emit('setConfig', {
-        RoomQueueTimeout: timeoutInput,
-      });
-    }
-  }, [timeoutInput,]);
+    connectorInstance.socket.emit('setConfig', {
+      RoomQueueTimeout: timeoutInput,
+      MinPlayers: minPlayersInput,
+    });
+  }, [timeoutInput,minPlayersInput,]);
 
   return (
     <Fragment>
       <div>Room queue timeout:</div>
       {timeoutInput !== '_' && (<Fragment>
         <input type="number" value={timeoutInput} onChange={e => setTimeoutInput(e.target.value)} />s
+      </Fragment>)}
+      <div>Max players</div>
+      {minPlayersInput !== '_' && (<Fragment>
+        <input type="number" value={minPlayersInput} onChange={e => setMinPlayersInput(e.target.value)} />
       </Fragment>)}
     </Fragment>
   );
@@ -83,11 +88,9 @@ class Admin  extends Component {
           </Tabs>
         </AppBar>
         {activetab === 0 && <div className = "tab-container">
-
           <div className="admin-page">
             <ReactJson src={this.state.serverStats} theme="monokai" collapsed={2} />
           </div>
-
         </div>}
         {activetab === 1 && <div className = "tab-container">Item Two</div>}
         {activetab === 2 && (

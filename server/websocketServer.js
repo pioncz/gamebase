@@ -15,7 +15,10 @@ const _nextId = (() => {
   };
 })();
 
+// Changeable in admin panel
 let RoomQueueTimeout = 1 * 1000;
+let MinPlayers = 4;
+
 const TotalBots = 100;
 const RandomDelays = [200, 300,];
 const Dices = [
@@ -276,11 +279,13 @@ class WebsocketServer {
     const _handleGetConfig = socket => () => {
       socket.emit('config', {
         RoomQueueTimeout,
+        MinPlayers,
       });
     }
 
     const _handleSetConfig = socket => (options) => {
       RoomQueueTimeout = options.RoomQueueTimeout;
+      MinPlayers = options.MinPlayers;
       this.botsManager.setRoomQueueTimeout(RoomQueueTimeout);
     };
 

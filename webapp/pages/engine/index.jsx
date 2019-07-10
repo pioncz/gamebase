@@ -9,7 +9,7 @@ import {bindActionCreators,} from "redux";
 import PlayerProfiles from 'components/playerProfiles';
 import { Config, } from 'ludo';
 import Games from 'Games.js';
-import Snackbar from 'components/Snackbar';
+import Snackbar from 'components/snackbar';
 
 const nextId = (()=>{
     let id = 0;

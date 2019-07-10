@@ -14,7 +14,7 @@ import { selectors, } from 'shared/redux/api';
 import SearchingRoom from 'modals/SearchingRoom';
 import { withRouter, } from 'react-router-dom';
 import RoomNonExistentModal from 'modals/roomNonExistent';
-import Snackbar from 'components/Snackbar';
+import Snackbar from 'components/snackbar';
 
 const Pages = {
   Initial: 'Initial',
