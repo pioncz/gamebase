@@ -9,6 +9,8 @@ import {bindActionCreators,} from "redux";
 import PlayerProfiles from 'components/playerProfiles';
 import { Config, } from 'ludo';
 import Games from 'Games.js';
+import Snackbar from 'components/snackbar';
+
 const nextId = (()=>{
     let id = 0;
     return () => {
@@ -154,10 +156,12 @@ class Engine extends Component {
       pawnSet: localStorage.pawnSet || 'initial',
       firstPlayerIndex: localStorage.firstPlayerIndex || 1,
       firstPlayerId: null,
+      messages: [],
     };
 
-    this.gameComponent = null;
-    this.timerComponent = null;
+    this.gameComponentRef = React.createRef();
+    this.timerComponentRef = React.createRef();
+    this.snackbarComponentRef = React.createRef();
     this.connectorInstance = this.props.connectorInstance;
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -179,10 +183,17 @@ class Engine extends Component {
         currentPlayerId: nextPlayer.id,
       })
     }, 5000);
+    let lastId=0;
+    const addMessage = () => {
+      this.snackbarComponentRef.addMessage('Start gry!'+lastId++, lastId % 2 ? 'red' : '');
+    }
+    this.messagesIntervalId = setInterval(addMessage, 3000);
+    addMessage();
   }
   componentWillUnmount() {
     this.props.unsetInGame();
     clearInterval(this.changePlayerIntervalId);
+    clearInterval(this.messagesIntervalId);
   }
   movePawn(e) {
     const { pawns, selectedPawnId, pawnInput, players, } = this.state,
@@ -203,7 +214,7 @@ class Engine extends Component {
     }
 
     try {
-      let moves = this.gameComponent.checkMoves(roomState, +pawnInput, this.state.currentPlayerId);
+      let moves = this.gameComponentRef.current.checkMoves(roomState, +pawnInput, this.state.currentPlayerId);
 
       if (moves.length) {
         let move = moves.find(move => move.pawnId === selectedPawnId);
@@ -217,7 +228,7 @@ class Engine extends Component {
               pawn.z === lastField.z
             ) || [];
 
-          this.gameComponent.movePawn({pawnId: pawn.id, fieldSequence,})
+          this.gameComponentRef.current.movePawn({pawnId: pawn.id, fieldSequence,})
             .then(() =>{
               let newX = lastField.x,
                 newZ = lastField.z;
@@ -234,7 +245,7 @@ class Engine extends Component {
               anotherPawnMove = { pawnId: anotherPawn.id, fieldSequence: [spawnField,], };
 
             if (anotherPawnMove) {
-              this.gameComponent.movePawn(anotherPawnMove)
+              this.gameComponentRef.current.movePawn(anotherPawnMove)
                 .then(() =>{
                   let newX = spawnField.x,
                     newZ = spawnField.z;
@@ -259,8 +270,9 @@ class Engine extends Component {
     e.preventDefault();
     return false;
   }
-  rollDice(number) {
-    this.gameComponent.engine.board.dice.roll(number || 6);
+  rollDice = (number) => {
+    let diceNumber = isNaN(number) ? 6 : number;
+    this.gameComponentRef.current.engine.rollDice(diceNumber, [randomColor('rgb'),randomColor('rgb'),] );
   }
   handleInputChange(e) {
     if (!e.target.name) return;
@@ -306,13 +318,13 @@ class Engine extends Component {
       firstPlayerId,
     });
     setTimeout(() => {
-      this.gameComponent.engine.selectPawns([newPawns[0].id,]);
+      this.gameComponentRef.current.engine.selectPawns([newPawns[0].id,]);
     }, 50);
 
-    this.timerComponent.start(5*60*1000);
+    this.timerComponentRef.current.start(5*60*1000);
   }
   onPawnClick(pawnId) {
-    this.gameComponent.engine.selectPawns([pawnId,]);
+    this.gameComponentRef.current.engine.selectPawns([pawnId,]);
     this.setState({
       selectedPawnId: pawnId,
     });
@@ -321,7 +333,7 @@ class Engine extends Component {
     const pawnSet = Object.keys(PawnSets[e.target.value])[0];
     localStorage.setItem(e.target.name, e.target.value);
     localStorage.setItem('pawnSet', pawnSet);
-    this.gameComponent.engine.changeGame(e.target.value);
+    this.gameComponentRef.current.engine.changeGame(e.target.value);
     this.setState({
       gameName: e.target.value,
       pawnSet,
@@ -330,8 +342,17 @@ class Engine extends Component {
   handleSetGame() {
     console.log('handleSetGame');
   }
+  handleClick = (e) => {
+    if (e.pawnIds.length) {
+      let firstPawnId = e.pawnIds[0];
+      this.gameComponentRef.current.engine.selectPawns([firstPawnId,]);
+      this.setState({
+        selectedPawnId: firstPawnId,
+      })
+    }
+  }
   render() {
-    const { players, pawns, selectedPawnId, pawnInput, numberOfPlayers, pawnSet, firstPlayerIndex, firstPlayerId, currentPlayerId, gameName, } = this.state,
+    const { players, pawns, selectedPawnId, pawnInput, numberOfPlayers, pawnSet, firstPlayerIndex, firstPlayerId, currentPlayerId, gameName, messages, } = this.state,
       pawnsElements = pawns.map(pawn => {
         return <div key={pawn.id}
           className={'pawn' + (pawn.id===selectedPawnId?' pawn--selected':'')}
@@ -394,10 +415,11 @@ class Engine extends Component {
             <div><input tabIndex={1} type="number" min={1} max={6} value={pawnInput} name="pawnInput" onChange={this.handleInputChange}/></div>
           </div>
           <button onClick={this.movePawn}>RUSZ PIONKA</button>
+          <button onClick={this.rollDice}>RZUĆ KOŚCIĄ</button>
         </div>
       </div>
       <GameComponent
-        ref={(element) => { this.gameComponent = element; }}
+        ref={ this.gameComponentRef }
         onClick={this.handleClick}
         pawns={this.state.pawns}
         players={this.state.players}
@@ -415,7 +437,8 @@ class Engine extends Component {
         roundLength={Config.RoundLength}
         ref={(element) => {this.profilesComponent = element; }}
       />
-      <Timer ref={(element) => { this.timerComponent = element; }}/>
+      <Timer ref={this.timerComponentRef}/>
+      <Snackbar ref={(element) => {this.snackbarComponentRef = element;}} />
     </div>;
   }
 }

@@ -1,11 +1,15 @@
 const Ludo = require('./index.js');
+const { Room, } = require('./../../server/Room');
 
 let currentTime = 1;
 Date.now = () => { return currentTime; };
 
+const colors = ['blue', 'red','yellow', 'green',];
+
 const createInitialRoomState = () => {
-  const playerIds = ['1', '2'],
-    playerColors = [{playerId: '1', color: 'red'}, {playerId: '2', color: 'blue'}];
+  const playerIds = ['1', '2',],
+    players = [{id: '1', name: 'Player 1',}, {id: '2', name: 'Player 2',},],
+    playerColors = [{playerId: '1', color: 'red',}, {playerId: '2', color: 'blue',},];
   let pawns = Ludo.InitialState().pawns;
 
   playerIds.forEach((playerId, i) => {
@@ -21,25 +25,46 @@ const createInitialRoomState = () => {
     roomId: '0',
     currentPlayerId: '1',
     rolled: false,
+    players,
     playerIds,
     playerColors,
     pawns,
     roundTimestamp: null,
   };
 };
+const createRoom = (numberOfPlayers = 2) => {
+  let room = new Room({
+    id: 0,
+    gameName: 'Ludo',
+  });
+  const players = [];
+
+  for(let i = 0; i < numberOfPlayers; i++) {
+    players.push({id: i, name: 'Player ' + i,});
+  }
+
+  room.gameState.pawns = Ludo.InitialState().pawns;
+  room.gameState.playerColors = [];
+
+  players.forEach((player, index) => {
+    const color = colors[index];
+    room.addPlayer(player);
+    room.gameState.playerColors.push({playerId: player.id, color,});
+
+    for(let j = 0; j < 4; j++) {
+      room.gameState.pawns[(index * 4 + j)].playerId = player.id;
+      room.gameState.pawns[(index * 4 + j)].color = color;
+    }
+  });
+
+  return room;
+};
 
 const isFunction = (functionToCheck) => !!(functionToCheck && {}.toString.call(functionToCheck) === '[object Function]');
 
 let action = Ludo.Actions.Roll(),
-  player = {id: '1', name: '1'},
-  anotherPlayer = {id: '2', name: '2'};
-
-describe('SelectColorHandler', () => {
-  test('', () => {
-  });
-
-
-});
+  player = {id: '1', name: '1',},
+  anotherPlayer = {id: '2', name: '2',};
 
 describe('User make full move', () => {
   test('Current player picks pawn', () => {
@@ -136,7 +161,7 @@ describe('User make full move', () => {
     const selectPawnsAction = callbackActions[0].action;
     const resetProgressAction = callbackActions[1].action;
     expect(selectPawnsAction.type).toBe(Ludo.ActionTypes.SelectPawns);
-    expect(selectPawnsAction.pawnIds).toEqual(["12","13","14","15"]);
+    expect(selectPawnsAction.pawnIds).toEqual(["12","13","14","15",]);
     expect(selectPawnsAction.playerId).toBe('1');
     expect(resetProgressAction.type).toBe(Ludo.ActionTypes.RestartProgress);
     expect(roomState.roundTimestamp).toBe(currentTime + Ludo.Config.RoundLength);
@@ -172,7 +197,7 @@ describe('User make full move', () => {
     const resetProgressAction = callbackActions[1].action;
 
     expect(selectPawnsAction.type).toBe(Ludo.ActionTypes.SelectPawns);
-    expect(selectPawnsAction.pawnIds).toEqual(["12"]);
+    expect(selectPawnsAction.pawnIds).toEqual(["12",]);
     expect(selectPawnsAction.playerId).toBe('1');
     expect(resetProgressAction.type).toBe(Ludo.ActionTypes.RestartProgress);
     expect(roomState.roundTimestamp).toBe(currentTime + Ludo.Config.RoundLength);
@@ -198,7 +223,7 @@ describe('User make full move', () => {
       action: {
         type: Ludo.ActionTypes.Roll,
         diceNumber: 3,
-      }
+      },
     });
     expect(waitAction).toMatchObject({
       action: {
@@ -226,7 +251,7 @@ describe('User make full move', () => {
     expect(selectPawnsAction).toMatchObject({
       action: {
         type: Ludo.ActionTypes.SelectPawns,
-        pawnIds: ["12"],
+        pawnIds: ["12",],
         playerId: roomState.playerIds[0],
       },
     });
@@ -272,7 +297,7 @@ describe('TimeoutHandler', () => {
     const roomState = createInitialRoomState();
     roomState.pawns[0].x = 1;
     roomState.pawns[0].z = 5;
-  
+
     roomState.pawns[4].x = 5;
     roomState.pawns[4].z = 0;
     roomState.pawns[5].x = 4;
@@ -302,4 +327,50 @@ describe('Round finish', () => {
     expect(roomState.roundTimestamp).not.toBe(null);
     expect(actions[2].action.type).toBe(Ludo.ActionTypes.RestartProgress);
   });
+});
+
+describe('Disconnect handler', () => {
+  test('Player disconnects when it was his turn. Game goes on', () => {
+    const room = createRoom(3);
+    const gameState = room.gameState;
+    const player = gameState.players[0];
+    gameState.selectedPawns = gameState.pawns.filter(pawn => pawn.playerId === player.id);
+    gameState.currentPlayerId = player.id;
+
+    const actions = Ludo.ActionHandlers.Disconnected(
+      Ludo.Actions.Disconnected(player.id),
+      player,
+      room,
+    );
+
+    expect(gameState.currentPlayerId).toBe(gameState.players[1].id);
+    expect(gameState.selectedPawns.length).toBe(0);
+
+    expect(actions.length).toBe(2);
+    expect(actions[0].action.type).toBe(Ludo.ActionTypes.WaitForPlayer);
+    expect(actions[0].action.playerId).toBe(gameState.players[1].id);
+    expect(actions[0].action.expectedAction).toBe(Ludo.ActionTypes.Roll);
+    expect(actions[1].action.type).toBe(Ludo.ActionTypes.Disconnected);
+    expect(actions[1].action.playerId).toBe(gameState.players[0].id);
+  });
+
+  test('Player disconnects when it was his turn. Game finishes', () => {
+    const room = createRoom(2);
+    const gameState = room.gameState;
+    const player = gameState.players[0];
+    gameState.selectedPawns = gameState.pawns.filter(pawn => pawn.playerId === player.id);
+    gameState.currentPlayerId = player.id;
+
+    const actions = Ludo.ActionHandlers.Disconnected(
+      Ludo.Actions.Disconnected(player.id),
+      player,
+      room,
+    );
+
+    expect(actions.length).toBe(2);
+    expect(actions[0].action.type).toBe(Ludo.ActionTypes.FinishGame);
+    expect(actions[0].action.winnerId).toBe(gameState.players[1].id);
+    expect(actions[1].action.type).toBe(Ludo.ActionTypes.Disconnected);
+    expect(actions[1].action.playerId).toBe(gameState.players[0].id);
+  })
 });

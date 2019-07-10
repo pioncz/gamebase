@@ -24,11 +24,34 @@ function handleError(req, res, error) {
 }
 
 var config = require('./server/config');
+let port = process.env.PORT || config.server.port;
+
+// Process script arguments and extend config
+process.argv.forEach(function (val, index) {
+  if (index > 1 && val.indexOf('=') > -1) {
+    console.log(index + ': ' + val);
+    const [key, value,] = val.split('=');
+    if (key.toLowerCase() === 'port') {
+      port = +value;
+    }
+  }
+});
+
 const WebsocketServer = require('./server/websocketServer.js');
-const websocketServer = new WebsocketServer(io, playerService, config);
+const websocketServer = new WebsocketServer(io, playerService);
 
 mongoose.set('useCreateIndex', true);
-mongoose.connect(process.env.MONGODB_URI || config.server.mongooseConnectionString, { useNewUrlParser: true, });
+mongoose.connect(
+  process.env.MONGODB_URI || config.server.mongooseConnectionString,
+  { useNewUrlParser: true, },
+  error => {
+    console.error('Mongoose connection fail!');
+    error && console.error(error);
+  },
+).then(() => {
+  console.log('Mongoose connected!');
+}, () => {
+});
 mongoose.Promise = global.Promise;
 
 /**
@@ -117,7 +140,6 @@ app.use(function (req, res) {
   });
 });
 
-let port = process.env.PORT || config.server.port;
 http.listen(port, '0.0.0.0', function(){
   console.log('Listening on *:' + port);
 });

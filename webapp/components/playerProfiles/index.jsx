@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, } from 'react';
 import ClassNames from 'classnames';
 import './index.sass';
 import Progress from 'components/progress'
@@ -40,8 +40,8 @@ export default class PlayerProfiles extends Component {
     });
   }
   updateProgressValue() {
-    const { currentPlayerProgress } = this.state;
-    const { roundLength } = this.props;
+    const { currentPlayerProgress, } = this.state;
+    const { roundLength, } = this.props;
     const currentTime = Date.now();
     let playerProgress;
     if (this.lastTick) {
@@ -49,7 +49,7 @@ export default class PlayerProfiles extends Component {
     } else {
       playerProgress = currentPlayerProgress;
     }
-    
+
     this.setState({
       currentPlayerProgress: playerProgress,
     }, () => {
@@ -60,8 +60,8 @@ export default class PlayerProfiles extends Component {
     });
   }
   render() {
-    const { players, firstPlayerId, hidden, currentPlayerId } = this.props;
-    const { currentPlayerProgress } = this.state;
+    const { players, firstPlayerId, hidden, currentPlayerId, } = this.props;
+    const { currentPlayerProgress, } = this.state;
     let playerIndex = players.findIndex(player => player.id === firstPlayerId),
       filteredPlayers = players.slice(0, players.length);
 
@@ -75,20 +75,20 @@ export default class PlayerProfiles extends Component {
     return <div className='player-profiles'>
       {filteredPlayers.map((player, index) => {
         let className = ClassNames({
-            'player': true,
-            ['player-'+ index]: true,
-            'player--hidden': !!hidden || !player.login,
-            'player--disconnected': !!player.disconnected,
-          });
-      
+          'player': true,
+          ['player-'+ index]: true,
+          'player--hidden': !!hidden || !player.login,
+          'player--disconnected': !!player.disconnected,
+        });
+
         return <div key={index} className={className}>
           <div className="player-name" style={{
-            [(index%3?'borderLeft':'borderRight')]: "6px solid " + player.color
+            [(index%3?'borderLeft':'borderRight')]: "4px solid " + player.color,
           }}>
             {player.login}
             {player.id === currentPlayerId && <p className={'arrow ' + (index%3?'right':'left')}></p>}
-            <Progress 
-              value={player.id === currentPlayerId ? currentPlayerProgress : 0} 
+            <Progress
+              value={player.id === currentPlayerId ? currentPlayerProgress : 0}
             />
           </div>
           <img src={player.avatar} />

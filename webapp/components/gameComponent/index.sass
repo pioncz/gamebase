@@ -1,11 +1,17 @@
+@import 'vars'
+
 .game
   position: fixed
   width: 100%
-  height: calc(100vh - 92px)
-  top: 50%
-  transform: translateY(-50%)
+  height: calc(100vh - 42px)
+  bottom: 0
   left: 0
   .renderer
     overflow: hidden
     width: 100%
     height: 100%
+
+@media #{$portrait}
+  .game
+    bottom: 53px
+    height: calc(100vh - 206px)

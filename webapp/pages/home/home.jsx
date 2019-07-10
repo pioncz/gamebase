@@ -1,7 +1,11 @@
 import React, { Component, } from 'react';
+import { compose, bindActionCreators, } from 'redux'
+import { connect, } from 'react-redux'
 import './index.sass'
 import Games from 'Games.js';
 import { withRouter, } from 'react-router-dom';
+import { selectors, actions, } from 'shared/redux/api'
+
 
 class Home extends Component {
   constructor(props) {
@@ -18,17 +22,21 @@ class Home extends Component {
     });
   }
   render() {
+    const { player, } = this.props;
+    const loggedOut = player.state && player.state === 'loggedOut'
+
     return (
       <div className="home-page">
         <h1>Wybierz grę.</h1>
         <div className="games-container">
           <div className="game-info">
             <h2>Ludo</h2>
-            <button onClick={() => {this.joinQueue(Games.Ludo.Name)}}>Find game</button>
-          </div>
-          <div className="game-info">
-            <h2>Kira</h2>
-            <button onClick={() => {this.joinQueue(Games.Kira.Name)}}>Find game</button>
+            <button
+              onClick={() => {this.joinQueue(Games.Ludo.Name)}}
+              disabled={loggedOut}
+            >
+              Find game
+            </button>
           </div>
         </div>
       </div>
@@ -36,4 +44,11 @@ class Home extends Component {
   }
 }
 
-export default withRouter(Home);
+const mapStateToProps = state => ({
+  player: selectors.getCurrentPlayer(state),
+});
+
+export default compose(
+  withRouter,
+  connect(mapStateToProps, null),
+)(Home);

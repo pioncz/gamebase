@@ -1,5 +1,5 @@
 import Pawn from "./pawn";
-import {EASING, TIMES} from "./utils/animations";
+import {EASING, TIMES,} from "./utils/animations";
 import Config from 'config.js';
 
 export default class PawnsController {
@@ -10,17 +10,18 @@ export default class PawnsController {
     this.animations = props.context.animations;
     this.context = props.context;
     this.columnsLength = props.columnsLength;
-    
+    this.animationLength = null;
+
     this.$ = new THREE.Object3D();
     this.$.name = 'PawnsController';
     this.scene.add(this.$);
   }
-  createPawns({pawns}) {
+  createPawns({pawns,}) {
     for (let pawnIndex in pawns) {
       let pawnId = pawns[pawnIndex].id,
         parsedX = (pawns[pawnIndex].x - Math.floor(this.columnsLength/2)) * this.fieldLength,
         parsedZ = (pawns[pawnIndex].z - Math.floor(this.columnsLength/2)) * this.fieldLength;
-      
+
       let pawn = new Pawn({
         ...pawns[pawnIndex],
         id: pawnId,
@@ -31,9 +32,9 @@ export default class PawnsController {
         context: this.context,
       });
       this.pawns[pawnId] = pawn;
-      
+
       let delay = Math.floor((+pawnIndex / 4))*200+(+pawnIndex % 4)*100;
-      
+
       pawn.pawnMesh.material.opacity = 0;
       this.$.add(pawn.$);
       this.animations.create({
@@ -44,7 +45,7 @@ export default class PawnsController {
         update: (progress) => {
           let newY = (20*(1-progress)) + 2,
             newOpacity = (progress * 5);
-  
+
           pawn.pawnMesh.material.opacity = newOpacity;
           pawn.moveTo(pawn.parsedX, newY ,pawn.parsedZ);
         },
@@ -60,24 +61,31 @@ export default class PawnsController {
       delete this.pawns[pawnId];
     }
   }
+  setAnimationLength(animationLength) {
+    this.animationLength = animationLength;
+  }
   movePawn(pawnId, fieldSequence) {
+    if (!this.animationLength) {
+      return;
+    }
+
     let pawn = this.pawns[pawnId],
       animationsSteps = [];
-    
+
     if (!pawn) {
       console.error('No pawn with id: ' + pawnId);
       return;
     }
-    
+
     for(let i = 0; i < fieldSequence.length; i++) {
       let field = fieldSequence[i],
         x = field.x,
         z = field.z,
         newX = (x - Math.floor(this.columnsLength/2)) * this.fieldLength,
         newZ = (z - Math.floor(this.columnsLength/2)) * this.fieldLength;
-      
+
       animationsSteps.push({
-        length: Config.ludo.animations.movePawn,
+        length: this.animationLength,
         easing: EASING.InOutQuad,
         update: ((newX, newZ) =>
           (progress) => {
@@ -88,17 +96,17 @@ export default class PawnsController {
               newParsedX = oldX - (dX * progress),
               newParsedY = 2 * (1 + EASING.Sin(progress / 2)),
               newParsedZ = oldZ - (dZ * progress);
-  
+
             pawn.moveTo(newParsedX, newParsedY, newParsedZ);
-        })(newX, newZ),
+          })(newX, newZ),
         finish: () => {
           pawn.parsedX = newX;
           pawn.parsedZ = newZ;
         },
       });
     }
-    
-    return this.animations.createSequence({name: 'movePawn'+pawnId, steps: animationsSteps});
+
+    return this.animations.createSequence({name: 'movePawn'+pawnId, steps: animationsSteps,});
   }
   getPawn(pawnId) {
     return this.pawns[pawnId];
@@ -106,12 +114,12 @@ export default class PawnsController {
   selectPawns(pawnIds) {
     for(let pawnId in this.pawns) {
       let pawn = this.pawns[pawnId];
-  
+
       if (!pawn) {
         console.log(`Invalid pawnId: ${pawnId}`);
         return;
       }
-  
+
       if (pawnIds.indexOf(pawnId) > -1) {
         pawn.select();
       } else {

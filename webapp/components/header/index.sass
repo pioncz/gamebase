@@ -1,3 +1,5 @@
+@import 'vars'
+
 .header
   position: fixed
   z-index: 100
@@ -38,12 +40,56 @@
       font-size: 24px
       color: #fff
 
-      &--bottom
-        top: auto
-        bottom: 0
-        
+      &--fullscreen
+        bottom: auto
+        right: 72px
+
       svg
         display: block
+
+  .dices-container
+    display: flex
+    justify-content: space-around
+    margin: 8px
+    margin-top: 40px
+
+    .dice
+      position: relative
+      width: 64px
+      height: 64px
+      border-radius: 3px
+      cursor: pointer
+      &__spot
+        position: absolute
+        width: 10px
+        height: 10px
+        border-radius: 50%
+        background: #000
+        transform: translate(-50%,-50%)
+
+      &__spot:nth-child(1)
+        top: 25%
+        left: 25%
+
+      &__spot:nth-child(2)
+        top: 50%
+        left: 25%
+
+      &__spot:nth-child(3)
+        top: 25%
+        left: 75%
+
+      &__spot:nth-child(4)
+        top: 75%
+        left: 25%
+
+      &__spot:nth-child(5)
+        top: 50%
+        left: 75%
+
+      &__spot:nth-child(6)
+        top: 75%
+        left: 75%
 
   .menu-container
     position: absolute
@@ -102,3 +148,9 @@
 .inGame .header
   .profile
     display: none
+
+@media #{$portrait}
+  .header
+    .links-container
+      .nav-icon--fullscreen
+          right: 66px

@@ -1,3 +1,21 @@
+- podstrona admina z ustawieniem max graczy i max bot timeout
+- customowe pionki
+- kolory do wyboru (w tym kilka zablokowanych)
+- kosci przy kursorze, rzut kostka w dowolnym miejscu na planszy (lub srodek)
+- kosci przy rzucie dodaja sie nowe do planszy i znikaja przy nastepnym rzucie lubi wywolaniu metody hide
+- timeout na ekranach przed startem gry
+- zamykanie pokoju po jakims czasie - mozliwosc dolaczenia do pokoju po dc
+- jak sie rozlaczy podczas wybierania koloru to wraca do kolejki
+- 2 tryby rozgrywki: towarzyska, rankingowa
+
+- mniejsza kostka
+- wolniejsza animacja pionka wzgledem kostki
+
+- spectators
+- blokada prawoklika
+- walka graczy o miejsce 2 i 3 
+- staty do panelu admina: lagi - ping /pong na stronie admina, mierzenie np przy starcie gry u graczy
+
 Wejscie do gry:
  Z home:
   + User wybiera gre, wysyla findRoom(gameName)
@@ -10,28 +28,29 @@ Wejscie do gry:
   - jesli jest taka gra, ale nie ma miejsc do grania, user dolacza jako spectator (bedzie otrzymywal roomUpdate)
   - jestli jest taka gra i jest miejsce dla gracza, to user dolacza do pokoju jako gracz
 
+https://threejsfundamentals.org
+http://www.andrewberg.com/prototypes/threejs/bokeh/
+
 Frontowe taski:
-- ekran zachety przejscia do fullscreena (gdy user nie jest w fullscreenie - zacheta powtarza sie max 3 razy - localStorage)
-- strona admina: zakladki do przegladania roznych podstron admina
 - dodac podstrony zawierajaca logi z serwera
 - zglaszanie bledu - modal z duzym textarea. blokada 1 zgloszenia na 5 minut po stronie serwera (blad: id, date, user, content)
 - internacjonalizacja i18next (pl)
-- czat (dostepny z menu)
 
-- serwer do botow!
-- zalogowany gracz traci polaczenie / odswieza strone - do 10s moze wrocic do pokoju bez przegranej
+- czat (dostepny z menu)
 - TEST end to end pelnej rozgrywki graczy testowych z serwerem - 1-3 testy, z porownaniem screenow
 - obsluga wielu kart: na drugiej karcie mozesz tylko dolaczyc jako widz do pokoju
+- zalogowany gracz traci polaczenie / odswieza strone - do 10s moze wrocic do pokoju bez przegranej
 
 Bugi / mniejsze taski:
+- sprawdzic oswietlenie
+- logike ruchu bota przeniesc do klasy z gra. dodac testy jednostkowe
+- zrobic jakis debug do akcji: odtworzyc rozgrywke za pomoca akcji
 - kostka znika dopiero jak gracz sie ruszy
 - przy rozlaczeniu trzeba sprawdzic czy skasowac spectatora
 - font awesome moze byc niedoladowany gdy engine zrobi swoje pierwszy render ( /engine )
 - guzik kostki nie powinien byc zaznaczony gdy gracz nie moze rzucic kostka (roomState.rolled = true)
-- skasowac ui connectora
 - test na randomowe akcje od gracza w roznych momentach najpelniejszego testu rzutu kostka
 - w pages/ludo przy starcie gry ustawiac czas z configa
-- wywalic configa ze stanu pokoju - musi byc brany na bierzaco z aktualnej gry
 - skasowac properte player.color - korzystajmy z playerColors
 - koniec gry gdy gameState === RoomStates.Finished, a nie samo winnerId (w przyszlosci obsluga remisu)
 - zablokowac przypadek gdy ktos sie loguje w trakcie gry (playersUpdate do graczy z pokoju)
@@ -157,3 +176,44 @@ DONE:
 + Gra: koniec rozgrywki gdy sie skonczy czas
 + osobne configi dla frontu i backendu
 + test nowej gry
++ room.handleUpdate: startGame powinno byc zwracana akcja dodana do returnActions
++ room.handleUpdate powinien startowac gre
++ wywalic start gry z findRoom
++ bot powinien byc tworzony z playera
++ przeniesc bot do nowego pliku
++ nie da sie wystartowac rozgrywki dla 2 graczy
++ bot rzuca kostka
++ bot wybiera randomowy ruch i kolor
++ bot rzuca za szybko
++ wywalic room.gameState.actionExpirationTimestamp
++ wywalic configa ze stanu pokoju - musi byc brany na bierzaco z aktualnej gry
++ przetestowac i sprawdzic dodawanie wielu botow: room.updateQueue -> room.addPlayer(freeBots[0]);
++ bot wybiera pionka do ruchu
++ bot wychodzi z pokoju
++ ekran zachety przejscia do fullscreena (gdy user nie jest w fullscreenie - zacheta powtarza sie max 3 razy - localStorage)
++ strona admina: zakladki do przegladania roznych podstron admina
++ serwer do botow!
++ skasowac ui connectora
++ system komunikatow
++ fix pierwszego ekranu na mobilki
++ ciut wieksza plansza horyzontalnie
++ liczenie laga w pokoju gry
++ kostka z nr zostaje dluzej na planszy
++ update reacta ( uzywanie hookow )
++ inne modale w pokoju (styl jak komunikaty)
++ fix skryptu npm run dev
++ naprawa buga pustej akcji
++ zrobic test na buga pustej akcji
++ konczenie gry gdy nie ma aktywnych graczy
++ zmiana komunikatow: Twoja kolej + Gracz x rzucil Y. Wywalic: Waiting for player X
++ zmiana queue timeout na podstronie admina
++ room: mobile styles
++ home: gdy nie ma playera przyciski zablokowane
++ lepsze zaznaczenie pionka
++ bugfix resize'a
++ wspolne Akcje, stale, Utilsy wyniesione do klasy Games
++ wylaczenie fullscreena na ios / modala do fullscreena
++ fix klikania na ios: obsluga touch eventow
++ zmienic akcje fullscreena na https://usefulangle.com/post/105/javascript-change-screen-orientation
++ fix klikania na mobilce (wiekszy obszar sprawdzania klika)
++ customowe kostki

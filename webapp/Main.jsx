@@ -12,11 +12,11 @@ import { bindActionCreators, } from 'redux'
 import { connect, } from 'react-redux'
 import { selectors, actions, } from 'shared/redux/api'
 import { LoginModal, RegistrationModal, FullscreenModal, } from 'modals/';
+import Utils from 'services/utils';
 
 class Main extends Component {
   constructor(props) {
     super(props);
-
 
     let fullscreenmModalCounter = parseInt(localStorage.getItem('fullscreenModalCounter'), 10);
 
@@ -32,12 +32,11 @@ class Main extends Component {
       localStorage.setItem('fullscreenModalCounter', fullscreenmModalCounter);
     }
 
-
     this.state = {
       connectorInstance: null,
       loginModalVisible: false,
       registrationModalVisible: false,
-      fullscreenModalVisible: fullscreenModalVisible,
+      fullscreenModalVisible,
     };
 
     this.setConnector = this.setConnector.bind(this);
@@ -64,10 +63,15 @@ class Main extends Component {
     this.setState({
       connectorInstance,
     });
-    connectorInstance.socket.on('playerUpdate', (player) => {
-      console.log('playerUpdate', player);
+    connectorInstance.socket.on('initialData', initialState => {
+      const { player, dices, } = initialState;
       this.props.setCurrentPlayer(player);
+      this.props.setCurrentDices(dices);
     });
+    const diceId = window.localStorage.diceId;
+    if (diceId) {
+      connectorInstance.socket.emit('selectDice', { diceId, });
+    }
   }
   toggleLoginModal() {
     this.setState({
@@ -93,16 +97,24 @@ class Main extends Component {
   logout() {
     this.props.logout();
   }
-
-
+  selectDice = (diceId) => {
+    const { connectorInstance, } = this.state;
+    window.localStorage.diceId=diceId;
+    if (connectorInstance) {
+      connectorInstance.socket.emit('selectDice', { diceId, });
+    }
+  }
   render() {
-    let { loginModalVisible, registrationModalVisible, fullscreenModalVisible,} = this.state,
-      { player, } = this.props;
+    const { loginModalVisible, registrationModalVisible, fullscreenModalVisible,} = this.state,
+      { player, dices,} = this.props;
+    const isIos = Utils.isIos;
 
     return (<Router>
       <div className={this.props.inGame?'inGame':''}>
         <Header
+          dices={dices}
           player={player}
+          selectDice={this.selectDice}
           toggleLoginModal={this.toggleLoginModal}
           toggleRegistrationModal={this.toggleRegistrationModal}
           logout={this.logout}
@@ -127,7 +139,7 @@ class Main extends Component {
             onSubmit={this.sendRegistrationModal}
           />}
 
-        {fullscreenModalVisible &&
+        {!isIos && fullscreenModalVisible &&
          <FullscreenModal
            onToggle={ this.toggleFullscreenModal}
            onClose={this.toggleFullscreenModal}
@@ -146,18 +158,21 @@ Main.childContextTypes = {
 const {
   getCurrentPlayer,
   isInGame,
+  getCurrentDices,
 } = selectors;
 
 const {
   registerPlayer,
   loginPlayer,
   setCurrentPlayer,
+  setCurrentDices,
   logout,
 } = actions;
 
 const mapStateToProps = state => ({
   player: getCurrentPlayer(state),
   inGame: isInGame(state),
+  dices: getCurrentDices(state),
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -165,6 +180,7 @@ const mapDispatchToProps = dispatch => ({
     registerPlayer,
     loginPlayer,
     setCurrentPlayer,
+    setCurrentDices,
     logout,
   }, dispatch),
 });

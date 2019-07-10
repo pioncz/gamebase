@@ -1,10 +1,8 @@
-import { combineReducers } from 'redux';
-import api, { name as apiName } from './shared/redux/api'
-import ludo, { name as ludoName } from './shared/redux/ludo'
+import { combineReducers, } from 'redux';
+import api, { name as apiName, } from './shared/redux/api'
 
 const reducer = combineReducers({
   [apiName]: api,
-  [ludoName]: ludo,
 });
 
 const initialState = {

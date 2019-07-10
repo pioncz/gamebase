@@ -1,0 +1,55 @@
+@import 'vars'
+
+.snackbar
+    position: absolute
+    top: 0
+    left: 0
+    right: 0
+    bottom: 0
+    z-index: 80
+    overflow: hidden
+    pointer-events: none
+
+    .snackbar-wrapper
+        position: relative
+        top: 52px
+
+    .snackbar-body
+        width: 400px
+        margin: 0 auto 8px
+        background: rgba(0,0,0,.4)
+        padding: 6px 20px
+        font-size: 22px
+        text-align: center
+        user-select: none
+        animation-name: show
+        transform: scale(0)
+        opacity: .2
+        transition: .2s all
+        border-radius: $border-radius
+
+    .snackbar-body--visible
+        transform: scale(1)
+        opacity: 1
+    .snackbar-body--remove
+        margin-top: -40px
+        opacity: 0
+
+    @media #{$small-screen}
+        .snackbar-wrapper
+            left: 6px
+            top: 182px
+            max-width: calc(100% - 12px)
+            margin: 0
+            width: 200px
+            .snackbar-body
+                width: 100%
+                padding: 6px 12px
+                white-space: nowrap
+                overflow: hidden
+                text-overflow: ellipsis
+                font-size: 16px
+
+    @media #{$portrait}
+        .snackbar-wrapper
+            top: 154px

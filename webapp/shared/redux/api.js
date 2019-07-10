@@ -23,6 +23,7 @@ const  FETCH_CURRENT_PLAYER_SUCCESS = `${prefix}FETCH_CURRENT_PLAYER_SUCCESS`;
 const  FETCH_CURRENT_PLAYER_FAIL = `${prefix}FETCH_CURRENT_PLAYER_FAIL`;
 const  LOGOUT = `${prefix}LOGOUT`;
 const  SET_PLAYER = `${prefix}SET_PLAYER`;
+const  SET_DICES = `${prefix}SET_DICES`;
 
 /*
  * ACTIONS
@@ -95,16 +96,19 @@ const logout = () => ({
   },
 });
 
-const logoutSuccess = () => ({
-  type: LOGOUT_SUCCESS,
-});
-
 const setCurrentPlayer = player => ({
   type: SET_PLAYER,
   payload: {
     player,
   },
-})
+});
+
+const setCurrentDices = Dices => ({
+  type: SET_DICES,
+  payload: {
+    Dices,
+  },
+});
 
 /*
  * REDUCER
@@ -124,6 +128,7 @@ const initialState = {
     error: false,
   },
   inGame: false,
+  Dices: [],
 };
 
 const reducer = (state = initialState, action) => {
@@ -210,6 +215,10 @@ const reducer = (state = initialState, action) => {
       ...state,
       player: action.payload.player,
     }),
+    [SET_DICES]: () => ({
+      ...state,
+      Dices: action.payload.Dices,
+    }),
   };
 
   return (actions[action.type] && actions[action.type]()) || state;
@@ -249,7 +258,7 @@ const fetchCurrentPlayerLogic = createLogic({
     LOGIN_PLAYER_SUCCESS,
     FETCH_CURRENT_PLAYER,
   ],
-  process({ action: payload, httpClient, cancelled$, }) {
+  process({ httpClient, cancelled$, }) {
     return httpClient.cancellable({ url: '/api/currentPlayer',  method: 'get', }, cancelled$)
       .then(
         fetchCurrentPlayerSuccess,
@@ -262,10 +271,7 @@ const logoutLogic = createLogic({
     LOGOUT,
   ],
   process({ action: { payload, }, httpClient, cancelled$, }) {
-    return httpClient.cancellable(payload, cancelled$)
-      .then(
-        logoutSuccess,
-        logoutSuccess);
+    return httpClient.cancellable(payload, cancelled$);
   },
 });
 
@@ -277,6 +283,8 @@ const logoutLogic = createLogic({
 const getCurrentPlayer = state => getState(state).player;
 
 const isInGame = state => getState(state).inGame;
+
+const getCurrentDices = state => getState(state).Dices;
 
 /*
  * EXPORTS
@@ -292,6 +300,7 @@ export const actions = {
   fetchCurrentPlayer,
   logout,
   setCurrentPlayer,
+  setCurrentDices,
 };
 
 export const logic = {
@@ -304,4 +313,5 @@ export const logic = {
 export const selectors = {
   getCurrentPlayer,
   isInGame,
+  getCurrentDices,
 };

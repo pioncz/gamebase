@@ -5,26 +5,6 @@
     "mongooseConnectionString": "mongodb://localhost:27017/gamebase"
   },
   "frontend": {
-    "ws": {
-      "host": "http://127.0.0.1:5000"
-    },
-    "ludo": {
-      "colors": [
-        "#D50000",
-        "#64DD17",
-        "#1DE9B6",
-        "#FFEA00"
-      ],
-      "animations": {
-        "movePawn": 500,
-        "rollDice": 800
-      }
-    },
-    "kira": {
-      "animations": {
-        "movePawn": 1000,
-        "rollDice": 1000
-      }
-    }
+    "mobileAspectRation": 1.3
   }
 }

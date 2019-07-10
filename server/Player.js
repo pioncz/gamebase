@@ -1,4 +1,4 @@
-module.exports = function ({id, email, login, diceType, color, socketId, roomId, avatar, gameState, temporary = false }) {
+module.exports = function ({id, email, login, diceId, color, socketId, roomId, avatar, gameState, temporary = false, }) {
   return {
     id,
     login,
@@ -7,7 +7,7 @@ module.exports = function ({id, email, login, diceType, color, socketId, roomId,
     socketId,
     roomId,
     avatar,
-    diceType: null,
+    diceId,
     lastRoll: null,
     previousRoll: null,
     temporary,
