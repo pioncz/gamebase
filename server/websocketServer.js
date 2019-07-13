@@ -17,6 +17,7 @@ const _nextId = (() => {
 
 // Changeable in admin panel
 let RoomQueueTimeout = 1 * 1000;
+let BotSelectColorTimeout = 2 * 1000;
 let MinPlayers = 4;
 
 const TotalBots = 100;
@@ -108,7 +109,8 @@ class WebsocketServer {
           return;
         }
 
-        connection.roomId = null;
+        player.disconnected = true;
+
         room.playerDisconnected(playerId);
 
         let disconnectedAction = Game.Actions.Disconnected(player.id),
@@ -146,6 +148,8 @@ class WebsocketServer {
             id: id,
             gameName: gameName,
             queueTimestamp: Date.now(),
+            minPlayers: MinPlayers,
+            botSelectColorTimeout: BotSelectColorTimeout,
           });
 
         return room;
@@ -156,18 +160,21 @@ class WebsocketServer {
           const room = this.rooms[roomId];
 
           if (room.gameState.gameName === gameName &&
-            room.gameState.players.length < minPlayers) {
+              room.gameState.players.length < minPlayers) {
             return returnRooms.concat(room);
           }
 
           return returnRooms;
         }, []);
 
+
         return matchingRooms.length && matchingRooms[0];
       };
 
     // Io handlers
     const _handleDisconnect = socket => () => {
+
+
       _destroyConnection(socket.id);
     };
     const _handleLeaveGame = socket => () => {
@@ -188,6 +195,11 @@ class WebsocketServer {
 
       if (connection.roomId) {
         _log('user ' + player.login + ' already in queue or game');
+        return;
+      }
+
+      if (player.roomId && this.rooms[player.roomId]) {
+        _log('player already in a room');
         return;
       }
 
@@ -416,13 +428,17 @@ class WebsocketServer {
     for (let i = 0; i < socketIds.length; i++) {
       const socketId = socketIds[i];
 
-      // bots doesn't have socketId's
+      // dont check bots for socket ids
       if (socketId && this.connections[socketId]) {
         this.connections[socketId].roomId = null;
       }
     }
-    const bots = room.gameState.players.filter(player => player.bot);
-    bots.forEach(bot => bot.roomId = null);
+
+    room.gameState.players.forEach(player => {
+      player.roomId = null
+      player.disconnected = false;
+      player.color = null;
+    });
 
     delete this.rooms[roomId];
   }

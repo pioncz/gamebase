@@ -185,55 +185,9 @@ const SelectColorHandler = (action, player, roomState) => {
 
   roomState.playerColors.push({playerId: player.id, color: action.value,});
   player.color = action.value;
-  roomState.colorsQueue = roomState.colorsQueue.map(color => color.color === action.value ? {...color, selected: false,} : color);
+  roomState.colorsQueue = roomState.colorsQueue.map(color => color.color === action.value ? {...color, selected: true,} : color);
 
   returnActions.push({action: {type: ActionTypes.SelectedColor, playerId: player.id, value: action.value,},});
-
-  const bots = roomState.players.filter(player => player.bot );
-
-  if ((roomState.playerColors.length + bots.length) >= Config.MinPlayer && roomState.roomId !== Game.GameStates.game) {
-    bots.forEach((bot) => {
-      const freeColors = roomState.colorsQueue.filter(color =>
-        !roomState.playerColors.find(playerColor => playerColor.color === color.color)
-      );
-      const freeColor = freeColors[parseInt(Math.random() * freeColors.length)];
-      bot.color = freeColor.color;
-      roomState.playerColors.push({playerId: bot.id, color: freeColor.color,});
-    });
-
-    let initialState = InitialState(); // [Pawns]
-
-    roomState.roomState = Game.GameStates.game;
-    delete roomState.colorsQueue;
-
-    roomState.pawns = initialState.pawns;
-    // Connect pawns and players
-    roomState.playerIds.forEach((playerId, i) => {
-      let playerColor = roomState.playerColors.find(playerColor => playerColor.playerId === playerId);
-
-      for(let j = 0; j < 4; j++) {
-        initialState.pawns[(i * 4 + j)].playerId = playerColor.playerId;
-        initialState.pawns[(i * 4 + j)].color = playerColor.color;
-      }
-    });
-    // Remove pawns for extra players
-    initialState.pawns.splice(roomState.playerIds.length * 4, (4 - roomState.playerIds.length) * 4);
-
-    roomState.currentPlayerId = roomState.playerIds[0];
-    roomState.finishTimestamp = Date.now() + Config.GameLength;
-    roomState.roundTimestamp = Date.now() + Config.RoundLength;
-    let startGameAction = StartGame(roomState),
-      waitForPlayer = WaitForPlayer(roomState, ActionTypes.Roll);
-
-    returnActions.push({action: startGameAction,});
-    returnActions.push({
-      action: waitForPlayer,
-      timestamp: Date.now() + 1000,
-      callback: () => {
-        roomState.rolled = false;
-      },
-    });
-  }
 
   return returnActions;
 };
@@ -354,7 +308,7 @@ const DisconnectedHandler = (action, player, room) => {
     room.gameState.roomState = Game.GameStates.finished;
     returnActions.push({action:FinishGame(room.gameState.winnerId),})
   // if there is no winner, move player pawns to spawn
-  } else if (playerPawns) {
+  } else if (playerPawns && activePlayers.length) {
     // for every player pawn which is not in goal
     for(let i = 0; i < playerPawns.length; i++) {
       let pawn = playerPawns[i],

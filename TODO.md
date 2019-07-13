@@ -1,15 +1,20 @@
-- podstrona admina z ustawieniem max graczy i max bot timeout
-- customowe pionki
+- zamiana w room, ws: botSelectColorTimeout -> autoSelectColorTimeout
+- zamiana w room: this.gameState.playerColors na this.playerColors
+- fix na room/containers/index.jsx this.timerComponentRef.current.start(roomState.finishTimestamp - Date.now());
+- za plansza mesh z canvasem, z narysowanym gradientem
 - kolory do wyboru (w tym kilka zablokowanych)
+- test wydajnosci serwera w /admin
 - kosci przy kursorze, rzut kostka w dowolnym miejscu na planszy (lub srodek)
-- kosci przy rzucie dodaja sie nowe do planszy i znikaja przy nastepnym rzucie lubi wywolaniu metody hide
 - timeout na ekranach przed startem gry
 - zamykanie pokoju po jakims czasie - mozliwosc dolaczenia do pokoju po dc
 - jak sie rozlaczy podczas wybierania koloru to wraca do kolejki
 - 2 tryby rozgrywki: towarzyska, rankingowa
-
+- customowe pionki
 - mniejsza kostka
 - wolniejsza animacja pionka wzgledem kostki
+- rzadszy render na telefonach?
+- pionek podczas chodzenia 
+- room powinien dodawac bota do pokoju a nie botsManager
 
 - spectators
 - blokada prawoklika
@@ -55,7 +60,9 @@ Bugi / mniejsze taski:
 - koniec gry gdy gameState === RoomStates.Finished, a nie samo winnerId (w przyszlosci obsluga remisu)
 - zablokowac przypadek gdy ktos sie loguje w trakcie gry (playersUpdate do graczy z pokoju)
 - po wylogowaniu updatePlayera do temporary
-- ustalic maxAge w configu i wykorzystac w player.service.js:authenticate i players.controller.js:authenticate 
+- ustalic maxAge w configu i wykorzystac w player.service.js:authenticate i players.controller.js:authenticate
+- dodac opcje na telefonach do wylaczenia animacji 
+- animacja kostek w tle gdy gracz moze rzucic koscmi
 
 RELEASE
 - animacja w wyborze gry: 
@@ -217,3 +224,4 @@ DONE:
 + zmienic akcje fullscreena na https://usefulangle.com/post/105/javascript-change-screen-orientation
 + fix klikania na mobilce (wiekszy obszar sprawdzania klika)
 + customowe kostki
++ podstrona admina z ustawieniem max graczy i max bot timeout

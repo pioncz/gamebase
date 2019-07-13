@@ -42,6 +42,7 @@ class Room extends Component {
       playerColors: [],
       currentPlayerId: null,
       roomId: null,
+      roomName: null,
       gameName: null,
       players: [],
       pawns: [],
@@ -70,7 +71,14 @@ class Room extends Component {
     document.addEventListener('keypress', this.onKeyUp);
   }
   componentWillUnmount() {
+    const { roomName, } = this.state;
     if (this.connectorInstance) {
+      if (this.connectorInstance.socket) {
+        this.connectorInstance.socket.off('roomUpdate');
+        this.connectorInstance.socket.off('newAction');
+        this.connectorInstance.socket.off('playerDisconnected');
+        this.connectorInstance.socket.off('socketError');
+      }
       this.connectorInstance.leaveGame();
     }
     this.props.unsetInGame();
@@ -245,7 +253,7 @@ class Room extends Component {
     });
   }
   addMessage = (message, color) => {
-    if (this.snackbarComponentRef) {
+    if (this.snackbarComponentRef && this.snackbarComponentRef.current) {
       this.snackbarComponentRef.current.addMessage(message, color);
     }
   }

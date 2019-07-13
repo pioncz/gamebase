@@ -18,7 +18,6 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   ...bindActionCreators({
-    //    fetchPresentation,
     setInGame,
     unsetInGame,
   }, dispatch),
