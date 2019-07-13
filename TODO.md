@@ -1,6 +1,3 @@
-- zamiana w room, ws: botSelectColorTimeout -> autoSelectColorTimeout
-- zamiana w room: this.gameState.playerColors na this.playerColors
-- fix na room/containers/index.jsx this.timerComponentRef.current.start(roomState.finishTimestamp - Date.now());
 - za plansza mesh z canvasem, z narysowanym gradientem
 - kolory do wyboru (w tym kilka zablokowanych)
 - test wydajnosci serwera w /admin
@@ -15,6 +12,7 @@
 - rzadszy render na telefonach?
 - pionek podczas chodzenia 
 - room powinien dodawac bota do pokoju a nie botsManager
+- zamiana w room: this.gameState.players na this.players this.gameState.playerColors na this.playerColors
 
 - spectators
 - blokada prawoklika
@@ -225,3 +223,4 @@ DONE:
 + fix klikania na mobilce (wiekszy obszar sprawdzania klika)
 + customowe kostki
 + podstrona admina z ustawieniem max graczy i max bot timeout
++ zamiana w room, ws: botSelectColorTimeout -> autoSelectColorTimeout

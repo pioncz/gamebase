@@ -26,7 +26,7 @@ class Room {
     this.name = '/room' + options.id;
     this.rolled = options.rolled;
     this.queueTimestamp = options.queueTimestamp;
-    this.botSelectColorTimeout = options.botSelectColorTimeout;
+    this.selectColorTimeout = options.selectColorTimeout;
     this.gameState = {
       id: options.id,
       winnerId: null,
@@ -181,7 +181,7 @@ class Room {
     if (roomState === RoomStates.pickColors &&
       (this.gameState.playerColors.length < this.gameState.players.length &&
       (selectedColorsByPlayers.length + bots.length >= this.minPlayers ||
-      this.pickColorsTimestamp + this.botSelectColorTimeout < now))) {
+      this.pickColorsTimestamp + this.selectColorTimeout < now))) {
       const playersWithoutColor = this.gameState.players.filter(player =>
         !this.gameState.playerColors.find(playerColor =>
           player.id === playerColor.playerId
