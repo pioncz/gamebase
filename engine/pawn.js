@@ -1,5 +1,5 @@
 import React from 'react';
-import {EASING, TIMES} from "./utils/animations";
+import {EASING, TIMES,} from "./utils/animations";
 
 export default class Pawn {
   constructor(props) {
@@ -7,7 +7,7 @@ export default class Pawn {
     this.z = props.z;
     this.id = props.id;
     this.color = props.color;
-    var geometry = new THREE.ConeGeometry(1.2, 2.8, 8, 1, true, 0, 6.3);
+    this.geometry = new THREE.ConeGeometry(1.2, 2.8, 8, 1, true, 0, 6.3);
     var material = new THREE.MeshPhongMaterial({
       color: this.color,
       flatShading: true,
@@ -18,8 +18,8 @@ export default class Pawn {
     });
     this.$ = new THREE.Object3D();
     this.context = props.context;
-  
-    let pawnMesh = new THREE.Mesh(geometry, material);
+
+    let pawnMesh = new THREE.Mesh(this.geometry, material);
     this.parsedX = props.parsedX;
     this.parsedZ = props.parsedZ;
     this.moveTo(props.parsedX, 20, props.parsedZ);
@@ -27,20 +27,36 @@ export default class Pawn {
     this.$.add(pawnMesh);
     this.pawnMesh = pawnMesh;
     this._createSelectionObject();
+    this.geometry.computeBoundingSphere();
+    this.boundingSphere = new THREE.Mesh(
+      new THREE.SphereGeometry( this.geometry.boundingSphere.radius, 8, 8 ),
+      new THREE.MeshBasicMaterial({
+        opacity: 0,
+        transparent: true,
+        depthTest: false,
+      }),
+    );
+    this.boundingSphere.position.set(
+      this.geometry.boundingSphere.center.x,
+      this.geometry.boundingSphere.center.y,
+      this.geometry.boundingSphere.center.z,
+    );
+    this.boundingSphere.scale.set(1.5,1.5,1.5);
+    this.$.add(this.boundingSphere);
   }
   _createSelectionObject() {
-    let width = 4, 
+    let width = 4,
       height = 4,
       selectionGeometry = new THREE.PlaneGeometry( width, height, 32 ),
       canvas = document.createElement('canvas'),
       ctx = canvas.getContext('2d'),
       texture = new THREE.Texture(canvas),
       selectionMaterial = new THREE.MeshBasicMaterial({
-        map: texture, 
+        map: texture,
         side: THREE.DoubleSide,
         transparent: true,
       });
-    
+
     canvas.width = width * 20;
     canvas.height = height * 20;
     canvas.style.width = width + 'px';
@@ -53,13 +69,13 @@ export default class Pawn {
     ctx.strokeStyle='rgba(0,0,0,0.7)';
     ctx.strokeText(String.fromCharCode(61703), canvas.width / 2, canvas.height / 2);
     texture.needsUpdate = true;
-    
+
     this.selectionObject = new THREE.Mesh( selectionGeometry, selectionMaterial );
     this.selectionObject.rotation.y = Math.PI / 4;
 
     this.selectionObject.position.y = 3;
     this.selectionObject.material.opacity = 0;
-    
+
     this.$.add( this.selectionObject );
   }
   moveTo(x, y, z) {

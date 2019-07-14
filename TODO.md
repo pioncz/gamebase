@@ -1,4 +1,3 @@
-- do klikania wykorzystac wieksza boundingSphere zamiast 5 zrodel kliku
 - loader na stronie dopoki nie ma gracza (ewentualnie zdebugowac brak timerComponentu na stronie pokoju)
 - test gry w websocketServerze
 - kazdy handler moze zwrocic undefined gdy nie pasuja mu argumenty - trzeba to obsluzyc
@@ -236,3 +235,5 @@ DONE:
 + fix testow
 + roomState -> gameState
 + hotfix obrotu na iphonie
++ do klikania wykorzystac wieksza boundingSphere zamiast 5 zrodel kliku
++ background w osobnym pliku (z board.js)
