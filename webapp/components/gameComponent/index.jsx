@@ -6,11 +6,12 @@ export default class GameComponent extends Component {
   constructor(props) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
+    this.rendererContainerRef = React.createRef();
   }
   componentDidMount() {
     const { gameName, } = this.props;
     this.engine = new Engine({
-      container: this.rendererContainer,
+      container: this.rendererContainerRef.current,
       gameName,
     });
     this.engine.on('click', this.handleClick);
@@ -50,9 +51,7 @@ export default class GameComponent extends Component {
   }
   render() {
     return <div className="game">
-      <div ref={(renderer) => {
-        this.rendererContainer = renderer;
-      }} className="renderer"></div>
+      <div ref={this.rendererContainerRef} className="renderer"></div>
     </div>;
   }
 }

@@ -88,13 +88,6 @@ class WebsocketServer {
           io.to(room.name).emit('socketError', error);
         }
       },
-      _emitNewActions = (room, newActions) => {
-        newActions.forEach(action => {
-          _log(`newAction emitted: ${action.type}`);
-          _log(JSON.stringify(action));
-          io.to(room.name).emit('newAction', action);
-        });
-      },
       // set connected connections roomIds to null, delete room
       _leaveGame = (socketId) => {
         let connection = this.connections[socketId],
@@ -383,6 +376,8 @@ class WebsocketServer {
       socket.on('setConfig', _handleSetConfig(socket));
 
       socket.on('selectDice', _handleSelectDice(socket));
+
+      socket.on('log', (msg) => {_log('Client logs: ' + msg)});
     });
 
     this.update = this.update.bind(this);

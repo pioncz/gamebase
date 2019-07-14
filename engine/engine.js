@@ -4,6 +4,8 @@ import Board from './board'
 import EventEmitter from 'event-emitter-es6'
 import Games from 'Games.js'
 import DimmingPass from './shaders/dimmingPass';
+import Utils from './utils/utils';
+
 
 export default class Engine extends EventEmitter {
   constructor( { container, gameName, }) {
@@ -99,7 +101,14 @@ export default class Engine extends EventEmitter {
     })
 
     // Handle canvas events
-    window.addEventListener('resize', this.onResize.bind(this), true);
+    window.addEventListener('resize', () => {
+      // Ios doesnt update container size properly onresize
+      if (Utils.isIos) {
+        setTimeout(this.onResize, 100);
+      } else {
+        this.onResize();
+      }
+    }, true);
     window.addEventListener('click', this.onClick.bind(this), true);
     window.addEventListener('touchstart', this.onTouch.bind(this), true);
 
@@ -142,7 +151,7 @@ export default class Engine extends EventEmitter {
     });
     this.onResize();
   }
-  onResize() {
+  onResize = () => {
     let width = this.container.offsetWidth,
       height = this.container.offsetHeight,
       aspect = width / height;

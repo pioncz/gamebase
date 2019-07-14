@@ -1,4 +1,3 @@
-- hotfix obrotu na iphonie
 - do klikania wykorzystac wieksza boundingSphere zamiast 5 zrodel kliku
 - loader na stronie dopoki nie ma gracza (ewentualnie zdebugowac brak timerComponentu na stronie pokoju)
 - test gry w websocketServerze
@@ -236,3 +235,4 @@ DONE:
 + za plansza mesh z canvasem, z narysowanym gradientem
 + fix testow
 + roomState -> gameState
++ hotfix obrotu na iphonie
