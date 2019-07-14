@@ -1,11 +1,10 @@
-- za plansza mesh z canvasem, z narysowanym gradientem
-- fix testow
 - roomState -> gameState
 - hotfix obrotu na iphonie
 - do klikania wykorzystac wieksza boundingSphere zamiast 5 zrodel kliku
 - loader na stronie dopoki nie ma gracza (ewentualnie zdebugowac brak timerComponentu na stronie pokoju)
 - test gry w websocketServerze
 - kazdy handler moze zwrocic undefined gdy nie pasuja mu argumenty - trzeba to obsluzyc
+- pionki tworzone podczas tworzenia pokoju (new Room, a nie obok. kasowane przy starcie gry)
 
 - kolory do wyboru (w tym kilka zablokowanych)
 - test wydajnosci serwera w /admin
@@ -235,3 +234,5 @@ DONE:
 + customowe kostki
 + podstrona admina z ustawieniem max graczy i max bot timeout
 + zamiana w room, ws: botSelectColorTimeout -> autoSelectColorTimeout
++ za plansza mesh z canvasem, z narysowanym gradientem
++ fix testow

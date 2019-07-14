@@ -1,5 +1,5 @@
 const Ludo = require('./index.js');
-const { Room, } = require('./../../server/Room');
+const { Room, } = require('./../../server/room');
 
 let currentTime = 1;
 Date.now = () => { return currentTime; };
@@ -327,50 +327,4 @@ describe('Round finish', () => {
     expect(roomState.roundTimestamp).not.toBe(null);
     expect(actions[2].action.type).toBe(Ludo.ActionTypes.RestartProgress);
   });
-});
-
-describe('Disconnect handler', () => {
-  test('Player disconnects when it was his turn. Game goes on', () => {
-    const room = createRoom(3);
-    const gameState = room.gameState;
-    const player = gameState.players[0];
-    gameState.selectedPawns = gameState.pawns.filter(pawn => pawn.playerId === player.id);
-    gameState.currentPlayerId = player.id;
-
-    const actions = Ludo.ActionHandlers.Disconnected(
-      Ludo.Actions.Disconnected(player.id),
-      player,
-      room,
-    );
-
-    expect(gameState.currentPlayerId).toBe(gameState.players[1].id);
-    expect(gameState.selectedPawns.length).toBe(0);
-
-    expect(actions.length).toBe(2);
-    expect(actions[0].action.type).toBe(Ludo.ActionTypes.WaitForPlayer);
-    expect(actions[0].action.playerId).toBe(gameState.players[1].id);
-    expect(actions[0].action.expectedAction).toBe(Ludo.ActionTypes.Roll);
-    expect(actions[1].action.type).toBe(Ludo.ActionTypes.Disconnected);
-    expect(actions[1].action.playerId).toBe(gameState.players[0].id);
-  });
-
-  test('Player disconnects when it was his turn. Game finishes', () => {
-    const room = createRoom(2);
-    const gameState = room.gameState;
-    const player = gameState.players[0];
-    gameState.selectedPawns = gameState.pawns.filter(pawn => pawn.playerId === player.id);
-    gameState.currentPlayerId = player.id;
-
-    const actions = Ludo.ActionHandlers.Disconnected(
-      Ludo.Actions.Disconnected(player.id),
-      player,
-      room,
-    );
-
-    expect(actions.length).toBe(2);
-    expect(actions[0].action.type).toBe(Ludo.ActionTypes.FinishGame);
-    expect(actions[0].action.winnerId).toBe(gameState.players[1].id);
-    expect(actions[1].action.type).toBe(Ludo.ActionTypes.Disconnected);
-    expect(actions[1].action.playerId).toBe(gameState.players[0].id);
-  })
 });

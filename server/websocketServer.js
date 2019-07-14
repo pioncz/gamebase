@@ -1,6 +1,6 @@
 const Player = require('./Player.js');
 const Connection = require('./Connection.js');
-const { Room, RoomStates, } = require('./Room.js');
+const { Room, RoomStates, } = require('./room');
 const Games = require('../games/Games.js');
 const Game = require('../games/game');
 const ActionsStream = require('./actions-stream');
@@ -109,15 +109,10 @@ class WebsocketServer {
           return;
         }
 
-        player.disconnected = true;
+        const streamActions = room.playerDisconnected(playerId);
 
-        room.playerDisconnected(playerId);
-
-        let disconnectedAction = Game.Actions.Disconnected(player.id),
-          streamActions = Games[room.gameState.gameName].ActionHandlers.Disconnected(disconnectedAction, player, room),
-          returnActions = streamActions.map(streamAction => streamAction.action);
-
-        _emitNewActions(room, returnActions);
+        room.actions = room.actions.concat(streamActions);
+        this.emitRoomActions(room.name, streamActions);
 
         // if there's winnerId remove room
         if (!room.gameState.playerIds.length || room.gameState.roomState === RoomStates.finished) {
@@ -173,8 +168,6 @@ class WebsocketServer {
 
     // Io handlers
     const _handleDisconnect = socket => () => {
-
-
       _destroyConnection(socket.id);
     };
     const _handleLeaveGame = socket => () => {

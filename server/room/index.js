@@ -1,6 +1,6 @@
-const Games = require('./../games/Games.js');
-const Game = require('./../games/game');
-const _Logger = require('./Logger');
+const Games = require('./../../games/Games.js');
+const Game = require('./../../games/game');
+const _Logger = require('./../Logger');
 const Logger = new _Logger({className: 'Room',});
 const _log = Logger.log;
 /**
@@ -120,7 +120,19 @@ class Room {
   }
   playerDisconnected(playerId) {
     const gameState = this.gameState;
+    const game = Games[gameState.gameName];
     const player = gameState.players.find(player => player.id === playerId);
+    if (player) {
+      player.disconnected = true;
+    }
+    const activePlayers = this.getActivePlayers();
+    const playerIndex = gameState.players.indexOf(player.id);
+    const spawnFields = gameState.pawns && game.BoardUtils.getSpawnFields(gameState.pawns, playerIndex);
+    const playerPawns = gameState.pawns && gameState.pawns.filter(pawn =>
+      pawn.playerId === player.id &&
+      game.BoardUtils.getFieldByPosition(pawn.x, pawn.z).type !== game.BoardUtils.FieldTypes.spawn
+    );
+    let returnActions = [];
 
     if (player) {
       const playerIndex = this.gameState.playerIds.indexOf(player.id);
@@ -128,6 +140,39 @@ class Room {
         this.gameState.playerIds.splice(playerIndex, 1);
       }
     }
+
+    // set winner if there's only 1 player left
+    if (activePlayers.length === 1) {
+      gameState.winnerId = activePlayers[0].id;
+      gameState.roomState = Game.GameStates.finished;
+      returnActions.push({action: game.Actions.FinishGame(gameState.winnerId),})
+      // if there is no winner, move player pawns to spawn
+    } else if (playerPawns && activePlayers.length) {
+    // for every player pawn which is not in goal
+      for(let i = 0; i < playerPawns.length; i++) {
+        let pawn = playerPawns[i],
+          field = spawnFields[i];
+
+        pawn.x = field.x;
+        pawn.z = field.z;
+
+        returnActions.push({action: game.Actions.MovePawn(pawn.id, [{x: field.x, z: field.z,},]),});
+      }
+      // switch player if disconnected current
+      if(gameState.currentPlayerId === player.id) {
+        gameState.currentPlayerId = Game.Utils.getNextPlayerId(gameState.playerIds, gameState.currentPlayerId);
+        gameState.selectedPawns = [];
+        gameState.rolled = false;
+        returnActions.push({
+          action: game.Actions.WaitForPlayer(gameState, game.ActionTypes.Roll),
+        });
+      }
+    }
+
+    // append Disconnected action to returnActions
+    returnActions.push({action: Game.Actions.Disconnected(playerId),});
+
+    return returnActions;
   }
   handleAction(action, player) {
     let actionHandler = Games[this.gameState.gameName].ActionHandlers[action.type],
