@@ -1,4 +1,3 @@
-- loader na stronie dopoki nie ma gracza (ewentualnie zdebugowac brak timerComponentu na stronie pokoju)
 - test gry w websocketServerze
 - kazdy handler moze zwrocic undefined gdy nie pasuja mu argumenty - trzeba to obsluzyc
 - pionki tworzone podczas tworzenia pokoju (new Room, a nie obok. kasowane przy starcie gry)
@@ -237,3 +236,4 @@ DONE:
 + hotfix obrotu na iphonie
 + do klikania wykorzystac wieksza boundingSphere zamiast 5 zrodel kliku
 + background w osobnym pliku (z board.js)
++ utworzenie pawn.selectionObject czeka az zaladuja sie fonty

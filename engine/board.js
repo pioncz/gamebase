@@ -257,7 +257,7 @@ export default class Board {
     for(let pawnIndex in this.pawnsController.pawns) {
       let pawn = this.pawnsController.pawns[pawnIndex];
 
-      if (pawn) {
+      if (pawn && pawn.selectionObject) {
         if (newRotation % (Math.PI / 2)) {
           pawn.selectionObject.rotation.y = newRotation - Math.PI / 4;
         } else {
@@ -265,6 +265,10 @@ export default class Board {
         }
       }
     }
+  }
+  createSelectionObjects() {
+    this.pawnsController.createSelectionObjects();
+    this.rotateBoard(this.rotation);
   }
   changeGame(gameName) {
     this.gameName = gameName;

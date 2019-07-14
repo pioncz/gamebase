@@ -122,7 +122,6 @@ export default class Engine extends EventEmitter {
       this.createBoard();
     }
 
-
     WebFont.load({
       custom: {
         families: ['FontAwesome',],
@@ -134,10 +133,10 @@ export default class Engine extends EventEmitter {
         },
       },
       active: () => {
+        this.board.createSelectionObjects();
         this.animate();
       },
     });
-
     this.onResize();
   }
   createBoard() {

@@ -1,5 +1,4 @@
-import React from 'react';
-import {EASING, TIMES,} from "./utils/animations";
+import {EASING, } from "./utils/animations";
 
 export default class Pawn {
   constructor(props) {
@@ -26,7 +25,6 @@ export default class Pawn {
     this.$.name = 'PawnMesh';
     this.$.add(pawnMesh);
     this.pawnMesh = pawnMesh;
-    this._createSelectionObject();
     this.geometry.computeBoundingSphere();
     this.boundingSphere = new THREE.Mesh(
       new THREE.SphereGeometry( this.geometry.boundingSphere.radius, 8, 8 ),
@@ -44,7 +42,9 @@ export default class Pawn {
     this.boundingSphere.scale.set(1.5,1.5,1.5);
     this.$.add(this.boundingSphere);
   }
-  _createSelectionObject() {
+  createSelectionObject() {
+    if (this.selectionObject) return;
+
     let width = 4,
       height = 4,
       selectionGeometry = new THREE.PlaneGeometry( width, height, 32 ),
@@ -77,6 +77,10 @@ export default class Pawn {
     this.selectionObject.material.opacity = 0;
 
     this.$.add( this.selectionObject );
+
+    if (this.selected) {
+      this.select();
+    }
   }
   moveTo(x, y, z) {
     this.$.position.x = x;
@@ -84,9 +88,14 @@ export default class Pawn {
     this.$.position.z = z;
   }
   select() {
+    if (!this.selectionObject) {
+      this.selected = true;
+      return;
+    }
+
     //create enter animation
     //and after: create infinity bouncing animation
-    let enterAnimation = this.context.animations.create({
+    this.context.animations.create({
       id: 'pawnAnimation' + this.id,
       length: 500,
       easing: EASING.InCubic,
@@ -114,6 +123,8 @@ export default class Pawn {
   }
   unselect() {
     this.context.animations.removeAnimation('pawnAnimation' + this.id);
-    this.selectionObject.material.opacity = 0;
+    if (this.selectionObject) {
+      this.selectionObject.material.opacity = 0;
+    }
   }
 }
