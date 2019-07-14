@@ -1,4 +1,12 @@
 - za plansza mesh z canvasem, z narysowanym gradientem
+- fix testow
+- roomState -> gameState
+- hotfix obrotu na iphonie
+- do klikania wykorzystac wieksza boundingSphere zamiast 5 zrodel kliku
+- loader na stronie dopoki nie ma gracza (ewentualnie zdebugowac brak timerComponentu na stronie pokoju)
+- test gry w websocketServerze
+- kazdy handler moze zwrocic undefined gdy nie pasuja mu argumenty - trzeba to obsluzyc
+
 - kolory do wyboru (w tym kilka zablokowanych)
 - test wydajnosci serwera w /admin
 - kosci przy kursorze, rzut kostka w dowolnym miejscu na planszy (lub srodek)
@@ -7,6 +15,9 @@
 - jak sie rozlaczy podczas wybierania koloru to wraca do kolejki
 - 2 tryby rozgrywki: towarzyska, rankingowa
 - customowe pionki
+
+- websocket server: przeniesc metody z konstruktora
+
 - mniejsza kostka
 - wolniejsza animacja pionka wzgledem kostki
 - rzadszy render na telefonach?

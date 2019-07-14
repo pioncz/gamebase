@@ -31,7 +31,7 @@ export default class Engine extends EventEmitter {
       this.frustumSize,
       -this.frustumSize,
       1,
-      100);
+      200);
     this.camera.position.set( 40, 50, 40 );
     this.camera.lookAt( new THREE.Vector3(0,0,0) );
     this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true,});
@@ -168,9 +168,11 @@ export default class Engine extends EventEmitter {
       if (this.board) {
         this.board.setRotation(true); //rotates board
       }
-      if (this.board.background) {
-        this.board.background.resize();
-      }
+    }
+    if (this.board.background) {
+      const scaleX = Math.ceil(Math.abs(this.camera.left) + Math.abs(this.camera.right));
+      const scaleY = scaleX / aspect + 15;
+      this.board.background.resize(scaleX, scaleY);
     }
     this.camera.updateProjectionMatrix();
   }

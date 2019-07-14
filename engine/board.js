@@ -24,17 +24,20 @@ class Background {
 
     this.$ = new THREE.Mesh(this.geometry, this.material);
     this.$.name = 'Background';
-    this.$.position.x = -10;
-    this.$.position.y = -10;
-    this.$.position.z = -10;
+    this.$.position.set(-16,-20,-16);
     this.$.rotateY(this.$.rotation.y + 45 * Math.PI / 180);
+
     this.resize();
     this.scene.add(this.$);
+
+    window.bg = this.$;
   }
-  resize() {
-    const scaleX = Math.abs(this.camera.left);
-    console.log(scaleX);
-    this.geometry.scale(scaleX, 1, 1);
+  resize(scaleX, scaleY) {
+    if (scaleX !== this.scaleX || scaleY !== this.scaleY) {
+      this.scaleX = scaleX;
+      this.scaleY = scaleY;
+      this.$.scale.set(scaleX, scaleY, 1);
+    }
   }
 }
 export default class Board {
@@ -166,8 +169,8 @@ export default class Board {
       depth = 2,
       height = 40;
     this.materials = [
-      new THREE.MeshBasicMaterial({map: texture,}),
-      new THREE.MeshBasicMaterial({color: 'rgba(61, 72, 97, 0.8)',}),
+      new THREE.MeshBasicMaterial({map: texture,transparent: true, opacity:0.2,}),
+      new THREE.MeshBasicMaterial({color: 'rgba(61, 72, 97, 0.8)',transparent: true, opacity:0.2,}),
     ];
     this.geometry = new THREE.BoxGeometry(width, depth, height);
     this.texture = texture;
