@@ -31,7 +31,7 @@ export default class Engine extends EventEmitter {
       this.frustumSize,
       -this.frustumSize,
       1,
-      1000);
+      100);
     this.camera.position.set( 40, 50, 40 );
     this.camera.lookAt( new THREE.Vector3(0,0,0) );
     this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true,});
@@ -134,6 +134,7 @@ export default class Engine extends EventEmitter {
   createBoard() {
     this.board = new Board({
       scene: this.scene,
+      camera: this.camera,
       renderer: this.renderer,
       pawns: [],
       context: this.context,
@@ -166,6 +167,9 @@ export default class Engine extends EventEmitter {
       this.camera.bottom = - this.frustumSize;
       if (this.board) {
         this.board.setRotation(true); //rotates board
+      }
+      if (this.board.background) {
+        this.board.background.resize();
       }
     }
     this.camera.updateProjectionMatrix();
@@ -234,6 +238,8 @@ export default class Engine extends EventEmitter {
     this.initializing = false;
   }
   selectPawns(pawnIds) {
+    if (!this.board) return;
+
     this.dimmingPass.selectedObjects = [];
     for(let i = 0; i < pawnIds.length; i++) {
       let pawn = this.board.pawnsController.getPawn(pawnIds[i]);

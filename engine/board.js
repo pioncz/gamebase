@@ -6,9 +6,41 @@ import Games from 'Games.js';
 
 const GridAmount = 11;
 
+class Background {
+  constructor(scene, camera) {
+    this.scene = scene;
+    this.camera = camera;
+
+    let canvas = this.canvas,
+      texture = new THREE.Texture(canvas),
+      width = 1,
+      depth = 1,
+      height = 1;
+    this.material = new THREE.MeshBasicMaterial({map: texture,});
+    this.geometry = new THREE.BoxGeometry(width, depth, height);
+    this.texture = texture;
+
+    //    texture.needsUpdate = true;
+
+    this.$ = new THREE.Mesh(this.geometry, this.material);
+    this.$.name = 'Background';
+    this.$.position.x = -10;
+    this.$.position.y = -10;
+    this.$.position.z = -10;
+    this.$.rotateY(this.$.rotation.y + 45 * Math.PI / 180);
+    this.resize();
+    this.scene.add(this.$);
+  }
+  resize() {
+    const scaleX = Math.abs(this.camera.left);
+    console.log(scaleX);
+    this.geometry.scale(scaleX, 1, 1);
+  }
+}
 export default class Board {
   constructor(props) {
     this.scene = props.scene;
+    this.camera = props.camera;
     this.animations = props.context.animations;
     this.context = props.context;
     this.canvasWidth = 512;
@@ -24,6 +56,7 @@ export default class Board {
     this.diceAnimationLength;
 
     this.createBoard();
+    this.createBackground();
 
     this.pawnsController = new PawnsController({
       context: this.context,
@@ -154,6 +187,9 @@ export default class Board {
     this.$.position.y = 0;
     this.$.position.z = 0;
     this.scene.add(this.$);
+  }
+  createBackground() {
+    this.background = new Background(this.scene, this.camera);
   }
   /* setRotation
     rotate if rotate param is true
