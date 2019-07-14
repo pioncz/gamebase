@@ -14,8 +14,8 @@ class Home extends Component {
   joinQueue = (gameName) => {
     const { history, } = this.props;
 
-    this.props.connectorInstance.socket.on('roomUpdate', roomState => {
-      history.push(`/room/${roomState.id}`);
+    this.props.connectorInstance.socket.on('roomUpdate', gameState => {
+      history.push(`/room/${gameState.id}`);
     });
     this.props.connectorInstance.socket.emit('findRoom', {
       game: gameName,

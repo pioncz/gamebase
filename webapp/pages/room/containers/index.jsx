@@ -101,26 +101,26 @@ class Room extends Component {
         });
       }
       if (newAction.type === Games.Ludo.ActionTypes.StartGame) {
-        let roomState = newAction.roomState;
+        let gameState = newAction.gameState;
 
-        for(let playerIndex in roomState.players) {
-          let player = roomState.players[playerIndex],
-            playerColor = roomState.playerColors.find(playerColor => playerColor.playerId === player.id);
+        for(let playerIndex in gameState.players) {
+          let player = gameState.players[playerIndex],
+            playerColor = gameState.playerColors.find(playerColor => playerColor.playerId === player.id);
 
           player.color = playerColor.color;
         }
 
         this.setState({
-          roomId: roomState.id,
-          players: roomState.players,
-          playerColors: roomState.playerColors,
-          currentPlayerId: roomState.currentPlayerId,
+          roomId: gameState.id,
+          players: gameState.players,
+          playerColors: gameState.playerColors,
+          currentPlayerId: gameState.currentPlayerId,
           page: Pages.Game,
-          pawns: roomState.pawns,
-          finishTimestamp: roomState.finishTimestamp,
+          pawns: gameState.pawns,
+          finishTimestamp: gameState.finishTimestamp,
           waitingForAction: Games.Ludo.ActionTypes.Roll,
         });
-        this.timerComponentRef.current.start(roomState.finishTimestamp - Date.now());
+        this.timerComponentRef.current.start(gameState.finishTimestamp - Date.now());
         this.addMessage('Game started!');
       }
       if (newAction.type === Games.Ludo.ActionTypes.RestartProgress) {
@@ -203,24 +203,24 @@ class Room extends Component {
       }
       if (newAction.type === Games.Ludo.ActionTypes.PickColors) {
         this.setState({
-          players: newAction.roomState.players,
+          players: newAction.gameState.players,
           page: Pages.PickColor,
-          queueColors: newAction.roomState.colorsQueue,
+          queueColors: newAction.gameState.colorsQueue,
         });
       }
     };
 
-    this.connectorInstance.socket.on('roomUpdate', (roomState) => {
-      console.log('roomUpdate', roomState);
+    this.connectorInstance.socket.on('roomUpdate', (gameState) => {
+      console.log('roomUpdate', gameState);
 
-      let page = (roomState.roomState === 'pickColors') ? Pages.PickColor : Pages.Initial,
-        state = roomState.roomState;
+      let page = (gameState.roomState === 'pickColors') ? Pages.PickColor : Pages.Initial,
+        state = gameState.roomState;
 
       if (state === 'pickColors') {
         page = Pages.PickColor;
       } else if (state === 'queue') {
         page = Pages.Queue;
-      } else if (roomState.winnerId) {
+      } else if (gameState.winnerId) {
         page = Pages.Winner;
       } else if (state === 'game') {
         page = Pages.Game;
@@ -230,9 +230,9 @@ class Room extends Component {
 
       this.setState({
         page,
-        players: roomState.players,
-        queueColors: roomState.colorsQueue,
-        gameName: roomState.gameName,
+        players: gameState.players,
+        queueColors: gameState.colorsQueue,
+        gameName: gameState.gameName,
       });
     });
     this.connectorInstance.socket.on('newAction', (newAction) => {

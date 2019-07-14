@@ -1,4 +1,3 @@
-- roomState -> gameState
 - hotfix obrotu na iphonie
 - do klikania wykorzystac wieksza boundingSphere zamiast 5 zrodel kliku
 - loader na stronie dopoki nie ma gracza (ewentualnie zdebugowac brak timerComponentu na stronie pokoju)
@@ -236,3 +235,4 @@ DONE:
 + zamiana w room, ws: botSelectColorTimeout -> autoSelectColorTimeout
 + za plansza mesh z canvasem, z narysowanym gradientem
 + fix testow
++ roomState -> gameState

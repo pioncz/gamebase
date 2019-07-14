@@ -35,7 +35,7 @@ const Fields = require('./Fields'),
         let index = startFieldIndex;
 
         while(!fieldSequence.length) {
-         let nextField = getField(++index);
+          let nextField = getField(++index);
 
           if (nextField.type !== FieldTypes.spawn) {
             fieldSequence.push(nextField);
@@ -81,20 +81,20 @@ const Fields = require('./Fields'),
   },
   getSpawnFields = (pawns, playerIndex) => {
     let goalFields = Fields.filter(field =>
-      field.playerIndex === playerIndex &&
+        field.playerIndex === playerIndex &&
       field.type === FieldTypes.spawn
-    ),
+      ),
       emptyGoalFields = goalFields.filter(field =>
         pawns.findIndex(pawn => (pawn.x === field.x && pawn.z === field.z)) === -1
       );
 
     return emptyGoalFields;
   },
-  getWinningPlayer = (roomState) => {
+  getWinningPlayer = (gameState) => {
     let playerPoints = [];
-    for(let i = 0; i < roomState.playerIds.length; i++) {
-      const playerId = roomState.playerIds[i];
-      const playerPawns = roomState.pawns.filter(pawn => pawn.playerId === playerId);
+    for(let i = 0; i < gameState.playerIds.length; i++) {
+      const playerId = gameState.playerIds[i];
+      const playerPawns = gameState.pawns.filter(pawn => pawn.playerId === playerId);
       let points = Fields.length * playerPawns.length;
       for(let j = 0; j < playerPawns.length; j++) {
         const pawn = playerPawns[j];
@@ -108,28 +108,28 @@ const Fields = require('./Fields'),
           field = getField(++fieldIndex);
         }
       }
-      playerPoints.push({playerId, points});
+      playerPoints.push({playerId, points,});
     }
 
     playerPoints = playerPoints.sort((a, b) => b.points - a.points);
     return playerPoints[0].playerId;
   },
-  checkMoves = (roomState, diceNumber, playerId) => {
+  checkMoves = (gameState, diceNumber, playerId) => {
     let avaiableMoves = [];
 
-    if (!roomState || !roomState.playerIds || !roomState.pawns || !diceNumber || !playerId) {
+    if (!gameState || !gameState.playerIds || !gameState.pawns || !diceNumber || !playerId) {
       console.error('Wrong params');
     }
 
-    let playerIndex = roomState.playerIds.indexOf(playerId),
-      playerPawns = roomState.pawns.filter(pawn => pawn.playerId === playerId);
+    let playerIndex = gameState.playerIds.indexOf(playerId),
+      playerPawns = gameState.pawns.filter(pawn => pawn.playerId === playerId);
 
     for(let pawnId in playerPawns) {
       let pawn = playerPawns[pawnId],
         fieldSequence = getFieldSequence(playerPawns, pawn, diceNumber, playerIndex);
 
       if (fieldSequence.length) {
-        avaiableMoves.push({pawnId: pawn.id, fieldSequence});
+        avaiableMoves.push({pawnId: pawn.id, fieldSequence,});
       }
     }
 
