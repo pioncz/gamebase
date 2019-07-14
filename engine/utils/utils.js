@@ -10,7 +10,7 @@ const Utils = {
     var loop = {
       next: function() {
         if (done) return;
-        
+
         if (index < iterations) {
           func(loop, index);
           index++;
@@ -22,11 +22,12 @@ const Utils = {
       break: function() {
         done = true;
         callback();
-      }
+      },
     };
     loop.next();
     return loop;
-}
+  },
+  isIos: /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream,
 }
 
 export default Utils

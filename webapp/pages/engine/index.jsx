@@ -199,7 +199,7 @@ class Engine extends Component {
     const { pawns, selectedPawnId, pawnInput, players, } = this.state,
       pawn = pawns.find(pawn => pawn.id === selectedPawnId),
       playerIds = players.map(player => player.id),
-      roomState = {pawns, playerIds,};
+      gameState = {pawns, playerIds,};
 
     if (!selectedPawnId) {
       log('No pawn');
@@ -214,7 +214,7 @@ class Engine extends Component {
     }
 
     try {
-      let moves = this.gameComponentRef.current.checkMoves(roomState, +pawnInput, this.state.currentPlayerId);
+      let moves = this.gameComponentRef.current.checkMoves(gameState, +pawnInput, this.state.currentPlayerId);
 
       if (moves.length) {
         let move = moves.find(move => move.pawnId === selectedPawnId);

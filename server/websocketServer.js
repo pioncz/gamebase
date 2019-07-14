@@ -1,6 +1,6 @@
 const Player = require('./Player.js');
 const Connection = require('./Connection.js');
-const { Room, RoomStates, } = require('./Room.js');
+const { Room, RoomStates, } = require('./room');
 const Games = require('../games/Games.js');
 const Game = require('../games/game');
 const ActionsStream = require('./actions-stream');
@@ -17,6 +17,7 @@ const _nextId = (() => {
 
 // Changeable in admin panel
 let RoomQueueTimeout = 1 * 1000;
+let SelectColorTimeout = 2 * 1000;
 let MinPlayers = 4;
 
 const TotalBots = 100;
@@ -87,13 +88,6 @@ class WebsocketServer {
           io.to(room.name).emit('socketError', error);
         }
       },
-      _emitNewActions = (room, newActions) => {
-        newActions.forEach(action => {
-          _log(`newAction emitted: ${action.type}`);
-          _log(JSON.stringify(action));
-          io.to(room.name).emit('newAction', action);
-        });
-      },
       // set connected connections roomIds to null, delete room
       _leaveGame = (socketId) => {
         let connection = this.connections[socketId],
@@ -108,14 +102,10 @@ class WebsocketServer {
           return;
         }
 
-        connection.roomId = null;
-        room.playerDisconnected(playerId);
+        const streamActions = room.playerDisconnected(playerId);
 
-        let disconnectedAction = Game.Actions.Disconnected(player.id),
-          streamActions = Games[room.gameState.gameName].ActionHandlers.Disconnected(disconnectedAction, player, room),
-          returnActions = streamActions.map(streamAction => streamAction.action);
-
-        _emitNewActions(room, returnActions);
+        room.actions = room.actions.concat(streamActions);
+        this.emitRoomActions(room.name, streamActions);
 
         // if there's winnerId remove room
         if (!room.gameState.playerIds.length || room.gameState.roomState === RoomStates.finished) {
@@ -146,6 +136,8 @@ class WebsocketServer {
             id: id,
             gameName: gameName,
             queueTimestamp: Date.now(),
+            minPlayers: MinPlayers,
+            selectColorTimeout: SelectColorTimeout,
           });
 
         return room;
@@ -156,12 +148,13 @@ class WebsocketServer {
           const room = this.rooms[roomId];
 
           if (room.gameState.gameName === gameName &&
-            room.gameState.players.length < minPlayers) {
+              room.gameState.players.length < minPlayers) {
             return returnRooms.concat(room);
           }
 
           return returnRooms;
         }, []);
+
 
         return matchingRooms.length && matchingRooms[0];
       };
@@ -188,6 +181,11 @@ class WebsocketServer {
 
       if (connection.roomId) {
         _log('user ' + player.login + ' already in queue or game');
+        return;
+      }
+
+      if (player.roomId && this.rooms[player.roomId]) {
+        _log('player already in a room');
         return;
       }
 
@@ -378,6 +376,8 @@ class WebsocketServer {
       socket.on('setConfig', _handleSetConfig(socket));
 
       socket.on('selectDice', _handleSelectDice(socket));
+
+      socket.on('log', (msg) => {_log('Client logs: ' + msg)});
     });
 
     this.update = this.update.bind(this);
@@ -416,13 +416,17 @@ class WebsocketServer {
     for (let i = 0; i < socketIds.length; i++) {
       const socketId = socketIds[i];
 
-      // bots doesn't have socketId's
+      // dont check bots for socket ids
       if (socketId && this.connections[socketId]) {
         this.connections[socketId].roomId = null;
       }
     }
-    const bots = room.gameState.players.filter(player => player.bot);
-    bots.forEach(bot => bot.roomId = null);
+
+    room.gameState.players.forEach(player => {
+      player.roomId = null
+      player.disconnected = false;
+      player.color = null;
+    });
 
     delete this.rooms[roomId];
   }

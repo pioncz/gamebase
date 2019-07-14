@@ -23,16 +23,15 @@ class BotsManager {
       this.roomQueueTimeout = parsedTimeout;
     }
   }
-  // Bots joins queued room if this.roomQueueTimeout passed
   updateQueue(now, room) {
-    const minPlayers = Games[room.gameState.gameName].Config.MinPlayer;
     const freeBots = this.bots.filter(bot => !bot.roomId);
 
     if (!freeBots.length) return;
 
+    // Bots joins queued room if this.roomQueueTimeout passed
     if (room.gameState.roomState === 'queue' &&
         room.queueTimestamp + this.roomQueueTimeout < now &&
-        room.gameState.playerIds.length < minPlayers) {
+        room.gameState.playerIds.length < room.minPlayers) {
       _log(`Bot: ${freeBots[0].login} joins room ${room.name}`);
       room.addPlayer(freeBots[0]);
     }
@@ -59,7 +58,7 @@ class BotsManager {
 
     returnActions.forEach(action => {
       // Add random delays to returned actions
-      if (action.timestamp) {
+      if (action && action.timestamp) {
         const randomDelay = parseInt(Math.random() * (this.randomDelays[1] - this.randomDelays[0]) + this.randomDelays[0]);
         action.timestamp += randomDelay;
       }

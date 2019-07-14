@@ -12,6 +12,10 @@ const ConfigTab = ({connectorInstance,}) => {
   connectorInstance.socket.on('config', (config) =>{
     setTimeoutInput(config.RoomQueueTimeout);
     setMinPlayersInput(config.MinPlayers);
+
+    return () => {
+      connectorInstance.socket.off('config');
+    }
   });
 
   useEffect(() => {
@@ -62,7 +66,7 @@ class Admin  extends Component {
     this.getStatsInterval = setInterval(this.getStats, 500);
   }
   componentWillUnmount() {
-    // this.connectorInstance.socket.off('statsUpdate', this.handleGetStats);
+    this.connectorInstance.socket.off('statsUpdate');
     clearInterval(this.getStatsInterval);
   }
   getStats() {

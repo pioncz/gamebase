@@ -71,16 +71,16 @@ const SelectColor = (playerId, color) => {
   return {type: ActionTypes.SelectColor, playerId, value: color,};
 };
 
-const StartGame = (roomState) => {
-  return {type: ActionTypes.StartGame, roomState,};
+const StartGame = (gameState) => {
+  return {type: ActionTypes.StartGame, gameState,};
 };
 
 const FinishGame = (winnerId) => {
   return {type: ActionTypes.FinishGame, winnerId,};
 };
 
-const WaitForPlayer = (roomState, expectedAction) => {
-  return {type: ActionTypes.WaitForPlayer, playerId: roomState.currentPlayerId, expectedAction,};
+const WaitForPlayer = (gameState, expectedAction) => {
+  return {type: ActionTypes.WaitForPlayer, playerId: gameState.currentPlayerId, expectedAction,};
 };
 
 const SelectPawns = (pawnIds, playerId) => {
@@ -99,29 +99,29 @@ const RestartProgress = () => ({
   type: ActionTypes.RestartProgress,
 });
 
-const PickColors = (roomState) => {
-  return { type: ActionTypes.PickColors, roomState, }
+const PickColors = (gameState) => {
+  return { type: ActionTypes.PickColors, gameState, }
 }
 
 // For diceNumber 0 number will be generated randomly from 1 to 6
-const RollHandler = (action, player, roomState, diceNumber = 0) => {
+const RollHandler = (action, player, gameState, diceNumber = 0) => {
   let returnActions = [];
 
-  if (player.id !== roomState.currentPlayerId) {
+  if (player.id !== gameState.currentPlayerId) {
     throw new Error('its not this player turn');
   }
 
-  if (roomState.rolled) {
+  if (gameState.rolled) {
     throw new Error('This player already rolled in this room. Pick pawn!');
   }
   //diceNumber=6;
   let generatedDiceNumber = action.diceNumber ||
     (diceNumber > 0 && diceNumber < 7 && diceNumber)
     || parseInt(Math.random()*6)+1, // 1-6
-    moves = BoardUtils.checkMoves(roomState, generatedDiceNumber, player.id);
+    moves = BoardUtils.checkMoves(gameState, generatedDiceNumber, player.id);
 
-  roomState.rolled = true;
-  roomState.diceNumber = generatedDiceNumber;
+  gameState.rolled = true;
+  gameState.diceNumber = generatedDiceNumber;
 
   returnActions.push({action: Roll(generatedDiceNumber),});
 
@@ -131,13 +131,13 @@ const RollHandler = (action, player, roomState, diceNumber = 0) => {
     if (player.previousRoll !== 6 || player.lastRoll === 6) {
       player.lastRoll = 0;
       player.previousRoll = 0;
-      roomState.currentPlayerId = Game.Utils.getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
+      gameState.currentPlayerId = Game.Utils.getNextPlayerId(gameState.playerIds, gameState.currentPlayerId);
       waitForAction = ActionTypes.Roll;
     }
   }
 
   returnActions.push({
-    action: WaitForPlayer(roomState, waitForAction),
+    action: WaitForPlayer(gameState, waitForAction),
     timestamp: Date.now() + AnimationLengths.rollDice,
     callback: () => {
       let returnActions = [];
@@ -145,14 +145,14 @@ const RollHandler = (action, player, roomState, diceNumber = 0) => {
       player.lastRoll = generatedDiceNumber;
 
       if (!moves.length) {
-        roomState.rolled = false;
+        gameState.rolled = false;
       } else {
         let pawnIds = moves.map(move => move.pawnId);
-        roomState.selectedPawns = pawnIds;
+        gameState.selectedPawns = pawnIds;
         returnActions.push({action: SelectPawns(pawnIds, player.id),});
       }
 
-      roomState.roundTimestamp = Date.now() + Config.RoundLength;
+      gameState.roundTimestamp = Date.now() + Config.RoundLength;
       returnActions.push({action: RestartProgress(),});
 
       return returnActions;
@@ -164,12 +164,12 @@ const RollHandler = (action, player, roomState, diceNumber = 0) => {
   return returnActions;
 };
 
-const SelectColorHandler = (action, player, roomState) => {
+const SelectColorHandler = (action, player, gameState) => {
   const returnActions = [];
-  let playerColor = roomState.playerColors.find(playerColor => {
+  let playerColor = gameState.playerColors.find(playerColor => {
       return playerColor.playerId === player.id;
     }),
-    valueColor = roomState.playerColors.find(playerColor => {
+    valueColor = gameState.playerColors.find(playerColor => {
       return playerColor.color === action.value;
     });
 
@@ -183,83 +183,37 @@ const SelectColorHandler = (action, player, roomState) => {
     return;
   }
 
-  roomState.playerColors.push({playerId: player.id, color: action.value,});
+  gameState.playerColors.push({playerId: player.id, color: action.value,});
   player.color = action.value;
-  roomState.colorsQueue = roomState.colorsQueue.map(color => color.color === action.value ? {...color, selected: false,} : color);
+  gameState.colorsQueue = gameState.colorsQueue.map(color => color.color === action.value ? {...color, selected: true,} : color);
 
   returnActions.push({action: {type: ActionTypes.SelectedColor, playerId: player.id, value: action.value,},});
-
-  const bots = roomState.players.filter(player => player.bot );
-
-  if ((roomState.playerColors.length + bots.length) >= Config.MinPlayer && roomState.roomId !== Game.GameStates.game) {
-    bots.forEach((bot) => {
-      const freeColors = roomState.colorsQueue.filter(color =>
-        !roomState.playerColors.find(playerColor => playerColor.color === color.color)
-      );
-      const freeColor = freeColors[parseInt(Math.random() * freeColors.length)];
-      bot.color = freeColor.color;
-      roomState.playerColors.push({playerId: bot.id, color: freeColor.color,});
-    });
-
-    let initialState = InitialState(); // [Pawns]
-
-    roomState.roomState = Game.GameStates.game;
-    delete roomState.colorsQueue;
-
-    roomState.pawns = initialState.pawns;
-    // Connect pawns and players
-    roomState.playerIds.forEach((playerId, i) => {
-      let playerColor = roomState.playerColors.find(playerColor => playerColor.playerId === playerId);
-
-      for(let j = 0; j < 4; j++) {
-        initialState.pawns[(i * 4 + j)].playerId = playerColor.playerId;
-        initialState.pawns[(i * 4 + j)].color = playerColor.color;
-      }
-    });
-    // Remove pawns for extra players
-    initialState.pawns.splice(roomState.playerIds.length * 4, (4 - roomState.playerIds.length) * 4);
-
-    roomState.currentPlayerId = roomState.playerIds[0];
-    roomState.finishTimestamp = Date.now() + Config.GameLength;
-    roomState.roundTimestamp = Date.now() + Config.RoundLength;
-    let startGameAction = StartGame(roomState),
-      waitForPlayer = WaitForPlayer(roomState, ActionTypes.Roll);
-
-    returnActions.push({action: startGameAction,});
-    returnActions.push({
-      action: waitForPlayer,
-      timestamp: Date.now() + 1000,
-      callback: () => {
-        roomState.rolled = false;
-      },
-    });
-  }
 
   return returnActions;
 };
 
-const PickPawnHandler = (action, player, roomState) => {
+const PickPawnHandler = (action, player, gameState) => {
   let returnActions = [],
     animationLength;
 
-  if (player.id !== roomState.currentPlayerId) {
+  if (player.id !== gameState.currentPlayerId) {
     console.log(`its not this player turn`);
     return;
   }
 
-  if (!roomState.rolled) {
+  if (!gameState.rolled) {
     throw new Error('Dice not rolled');
   }
 
-  let diceNumber = roomState.diceNumber,
-    moves = BoardUtils.checkMoves(roomState, diceNumber, player.id);
+  let diceNumber = gameState.diceNumber,
+    moves = BoardUtils.checkMoves(gameState, diceNumber, player.id);
 
   if (!moves.length) {
     console.log('Move not possible.');
     return;
   }
 
-  if (roomState.selectedPawns.indexOf(action.pawnId) === -1) {
+  if (gameState.selectedPawns.indexOf(action.pawnId) === -1) {
     console.log('This pawn is not selected. Pick correct pawn!');
     return;
   }
@@ -267,9 +221,9 @@ const PickPawnHandler = (action, player, roomState) => {
   console.log(`player ${player.login} picks pawn ${action.pawnId}`);
 
   let move = (moves.filter(move => move.pawnId === action.pawnId))[0],
-    pawn = roomState.pawns.filter(pawn => pawn.id === move.pawnId)[0],
+    pawn = gameState.pawns.filter(pawn => pawn.id === move.pawnId)[0],
     lastField = move.fieldSequence[move.fieldSequence.length - 1],
-    lastFieldPawns = roomState.pawns.filter(pawn => (
+    lastFieldPawns = gameState.pawns.filter(pawn => (
       pawn.x === lastField.x &&
       pawn.z === lastField.z &&
       pawn.playerId !== player.id
@@ -280,17 +234,17 @@ const PickPawnHandler = (action, player, roomState) => {
   pawn.z = lastField.z;
 
   animationLength = Date.now() + (AnimationLengths.movePawn * move.fieldSequence.length) + 500;
-  roomState.selectedPawns = [];
-  returnActions.push({action: SelectPawns([], roomState.currentPlayerId),});
+  gameState.selectedPawns = [];
+  returnActions.push({action: SelectPawns([], gameState.currentPlayerId),});
   if (player.lastRoll !== 6 || player.previousRoll === 6) {
-    roomState.currentPlayerId = Game.Utils.getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
+    gameState.currentPlayerId = Game.Utils.getNextPlayerId(gameState.playerIds, gameState.currentPlayerId);
   }
   returnActions.push({action: MovePawn(action.pawnId, move.fieldSequence),});
 
   // check if pawn moves on someone others pawn and move this pawn to spawn
   if (lastFieldPawn) {
-    let playerIndex =  roomState.playerIds.findIndex(playerId => lastFieldPawn.playerId === playerId),
-      spawnPosition = BoardUtils.getSpawnFields(roomState.pawns, playerIndex)[0],
+    let playerIndex =  gameState.playerIds.findIndex(playerId => lastFieldPawn.playerId === playerId),
+      spawnPosition = BoardUtils.getSpawnFields(gameState.pawns, playerIndex)[0],
       fieldSequence = [{x: spawnPosition.x, z: spawnPosition.z,},];
 
     lastFieldPawn.x = spawnPosition.x;
@@ -304,31 +258,31 @@ const PickPawnHandler = (action, player, roomState) => {
 
   //check win
   if (lastField.type === BoardUtils.FieldTypes.goal) {
-    let playerPawns = roomState.pawns.filter(pawn => {
+    let playerPawns = gameState.pawns.filter(pawn => {
       return pawn.playerId === player.id;
     });
     if (BoardUtils.checkWin(playerPawns)) {
       console.log(`player ${player.login} wins!`);
-      roomState.winnerId = player.id;
-      roomState.roomState = Game.GameStates.finished;
+      gameState.winnerId = player.id;
+      gameState.roomState = Game.GameStates.finished;
       returnActions.push({action:FinishGame(player.id),});
     }
   }
 
   returnActions.push({
-    action: WaitForPlayer(roomState, ActionTypes.Roll),
+    action: WaitForPlayer(gameState, ActionTypes.Roll),
     timestamp: animationLength,
     callback: () => {
-      roomState.rolled = false;
+      gameState.rolled = false;
     },
   });
-  roomState.roundTimestamp = null;
+  gameState.roundTimestamp = null;
   returnActions.push({ action: StopProgress(), });
   returnActions.push({
     action: RestartProgress(),
     timestamp: animationLength,
     callback: () => {
-      roomState.roundTimestamp = Date.now() + Config.RoundLength;
+      gameState.roundTimestamp = Date.now() + Config.RoundLength;
     },
   });
 
@@ -354,7 +308,7 @@ const DisconnectedHandler = (action, player, room) => {
     room.gameState.roomState = Game.GameStates.finished;
     returnActions.push({action:FinishGame(room.gameState.winnerId),})
   // if there is no winner, move player pawns to spawn
-  } else if (playerPawns) {
+  } else if (playerPawns && activePlayers.length) {
     // for every player pawn which is not in goal
     for(let i = 0; i < playerPawns.length; i++) {
       let pawn = playerPawns[i],
@@ -382,40 +336,40 @@ const DisconnectedHandler = (action, player, room) => {
   return returnActions;
 };
 
-const TimeoutHandler = (roomState) => {
-  const winnerId = BoardUtils.getWinningPlayer(roomState);
-  roomState.winnerId = winnerId;
-  roomState.roomState = Game.GameStates.finished;
-  return [{action:FinishGame(roomState.winnerId),},];
+const TimeoutHandler = (gameState) => {
+  const winnerId = BoardUtils.getWinningPlayer(gameState);
+  gameState.winnerId = winnerId;
+  gameState.roomState = Game.GameStates.finished;
+  return [{action:FinishGame(gameState.winnerId),},];
 };
 
-const RoundEndHandler = (roomState) => {
+const RoundEndHandler = (gameState) => {
   const returnActions = [];
-  returnActions.push({action: SelectPawns([], roomState.currentPlayerId),});
-  roomState.currentPlayerId = Game.Utils.getNextPlayerId(roomState.playerIds, roomState.currentPlayerId);
-  roomState.roundTimestamp = Date.now() + Config.RoundLength;
-  roomState.rolled = false;
-  roomState.selectedPawns = [];
+  returnActions.push({action: SelectPawns([], gameState.currentPlayerId),});
+  gameState.currentPlayerId = Game.Utils.getNextPlayerId(gameState.playerIds, gameState.currentPlayerId);
+  gameState.roundTimestamp = Date.now() + Config.RoundLength;
+  gameState.rolled = false;
+  gameState.selectedPawns = [];
 
-  returnActions.push({action: WaitForPlayer(roomState, ActionTypes.Roll),});
+  returnActions.push({action: WaitForPlayer(gameState, ActionTypes.Roll),});
   returnActions.push({action: RestartProgress(),});
   return returnActions;
 };
 
-const StartGameHandler = (roomState) => {
+const StartGameHandler = (gameState) => {
   const returnActions = [];
 
-  returnActions.push({action: StartGame(roomState),});
+  returnActions.push({action: StartGame(gameState),});
 
   return returnActions;
 };
 
-const PickColorsHandler = (roomState) => {
+const PickColorsHandler = (gameState) => {
   const returnActions = [];
 
-  roomState.roomState = Game.GameStates.pickColors;
+  gameState.roomState = Game.GameStates.pickColors;
 
-  returnActions.push({action: PickColors(roomState),});
+  returnActions.push({action: PickColors(gameState),});
 
   return returnActions;
 };
