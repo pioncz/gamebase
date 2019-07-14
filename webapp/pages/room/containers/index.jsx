@@ -248,7 +248,7 @@ class Room extends Component {
       if (e.code === 1) {
         this.setState({
           page: Pages.RoomNonExistent,
-        })
+        });
       }
     });
   }

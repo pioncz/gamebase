@@ -159,6 +159,11 @@ export default class Engine extends EventEmitter {
       this.camera.bottom = - this.frustumSize / aspect;
       if (this.board) {
         this.board.setRotation(false); //rotates board
+        if (this.board.background) {
+          const scaleX = Math.ceil(Math.abs(this.camera.left) + Math.abs(this.camera.right));
+          const scaleY = 57 / aspect;
+          this.board.background.resize(scaleX, scaleY);
+        }
       }
     } else {
       this.camera.left   = - this.frustumSize * aspect;
@@ -167,12 +172,12 @@ export default class Engine extends EventEmitter {
       this.camera.bottom = - this.frustumSize;
       if (this.board) {
         this.board.setRotation(true); //rotates board
+        if (this.board.background) {
+          const scaleX = Math.ceil(Math.abs(this.camera.left) + Math.abs(this.camera.right));
+          const scaleY = 57;
+          this.board.background.resize(scaleX, scaleY);
+        }
       }
-    }
-    if (this.board.background) {
-      const scaleX = Math.ceil(Math.abs(this.camera.left) + Math.abs(this.camera.right));
-      const scaleY = scaleX / aspect + 15;
-      this.board.background.resize(scaleX, scaleY);
     }
     this.camera.updateProjectionMatrix();
   }

@@ -11,7 +11,7 @@ class Background {
     this.scene = scene;
     this.camera = camera;
 
-    let canvas = this.canvas,
+    let canvas = Utils.$({element: 'canvas',}),
       texture = new THREE.Texture(canvas),
       width = 1,
       depth = 1,
@@ -20,11 +20,22 @@ class Background {
     this.geometry = new THREE.BoxGeometry(width, depth, height);
     this.texture = texture;
 
-    //    texture.needsUpdate = true;
+    canvas.width = 200;
+    canvas.height = 200;
 
+    // Draw gradient
+    const ctx = canvas.getContext('2d');
+    var grd = ctx.createLinearGradient(0, 0, canvas.width / 2, canvas.height);
+    grd.addColorStop(0.6, "#243B55");
+    grd.addColorStop(1, "#141E30");
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    texture.needsUpdate = true;
+    texture.magFilter = THREE.NearestFilter;
     this.$ = new THREE.Mesh(this.geometry, this.material);
     this.$.name = 'Background';
-    this.$.position.set(-16,-20,-16);
+    this.$.position.set(-27.5,-34,-27.5);
     this.$.rotateY(this.$.rotation.y + 45 * Math.PI / 180);
 
     this.resize();
@@ -169,8 +180,8 @@ export default class Board {
       depth = 2,
       height = 40;
     this.materials = [
-      new THREE.MeshBasicMaterial({map: texture,transparent: true, opacity:0.2,}),
-      new THREE.MeshBasicMaterial({color: 'rgba(61, 72, 97, 0.8)',transparent: true, opacity:0.2,}),
+      new THREE.MeshBasicMaterial({map: texture,}),
+      new THREE.MeshBasicMaterial({color: 'rgba(61, 72, 97, 0.8)',}),
     ];
     this.geometry = new THREE.BoxGeometry(width, depth, height);
     this.texture = texture;
