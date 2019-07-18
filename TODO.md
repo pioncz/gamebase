@@ -1,6 +1,3 @@
-- kazdy handler moze zwrocic undefined gdy nie pasuja mu argumenty - trzeba to obsluzyc
-- pionki tworzone podczas tworzenia pokoju (new Room, a nie obok. kasowane przy starcie gry)
-
 - kolory do wyboru (w tym kilka zablokowanych)
 - naprawic buga gdy graja 3 osoby, 1 wyjdzie i poprzednia z listy moze wejsc na jej pole
 - test wydajnosci serwera w /admin
@@ -239,3 +236,4 @@ DONE:
 + utworzenie pawn.selectionObject czeka az zaladuja sie fonty
 + gracz wyrzuca 6 i nie moze rzucic jeszcze raz
 + dummy websocketServer test
++ pawnController added rotate method. objects are added to Group, not Scene

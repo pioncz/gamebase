@@ -252,19 +252,7 @@ export default class Board {
   }
   rotateBoard(newRotation) {
     this.rotation = newRotation;
-    this.pawnsController.$.rotation.y = newRotation;
     this.$.rotation.y = newRotation;
-    for(let pawnIndex in this.pawnsController.pawns) {
-      let pawn = this.pawnsController.pawns[pawnIndex];
-
-      if (pawn && pawn.selectionObject) {
-        if (newRotation % (Math.PI / 2)) {
-          pawn.selectionObject.rotation.y = newRotation - Math.PI / 4;
-        } else {
-          pawn.selectionObject.rotation.y = newRotation + Math.PI / 4;
-        }
-      }
-    }
   }
   createSelectionObjects() {
     this.pawnsController.createSelectionObjects();

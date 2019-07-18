@@ -12,7 +12,7 @@ export default class PawnsController {
     this.columnsLength = props.columnsLength;
     this.animationLength = null;
 
-    this.$ = new THREE.Object3D();
+    this.$ = new THREE.Group();
     this.$.name = 'PawnsController';
     this.scene.add(this.$);
   }
@@ -130,6 +130,21 @@ export default class PawnsController {
         pawn.select();
       } else {
         pawn.unselect();
+      }
+    }
+  }
+  rotate(newRotation) {
+    this.$.rotation.y = newRotation;
+
+    for(let pawnIndex in this.pawns) {
+      let pawn = this.pawns[pawnIndex];
+
+      if (pawn && pawn.selectionObject) {
+        if (newRotation % (Math.PI / 2)) {
+          pawn.selectionObject.rotation.y = newRotation - Math.PI / 4;
+        } else {
+          pawn.selectionObject.rotation.y = newRotation + Math.PI / 4;
+        }
       }
     }
   }
