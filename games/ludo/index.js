@@ -242,6 +242,8 @@ const PickPawnHandler = (action, player, gameState) => {
   gameState.selectedPawns = [];
   returnActions.push({action: SelectPawns([], gameState.currentPlayerId),});
   if (player.lastRoll !== 6 || player.previousRoll === 6) {
+    player.lastRoll = 0;
+    player.previousRoll = 0;
     gameState.currentPlayerId = Game.Utils.getNextPlayerId(gameState.playerIds, gameState.currentPlayerId);
   }
   returnActions.push({action: MovePawn(action.pawnId, move.fieldSequence),});

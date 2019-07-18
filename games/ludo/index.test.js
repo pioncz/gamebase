@@ -36,8 +36,8 @@ const createInitialGameState = () => {
 const isFunction = (functionToCheck) => !!(functionToCheck && {}.toString.call(functionToCheck) === '[object Function]');
 
 let action = Ludo.Actions.Roll(),
-  player = {id: '1', name: '1',},
-  anotherPlayer = {id: '2', name: '2',};
+  player = {id: '1', login: 'player 1',},
+  anotherPlayer = {id: '2', login: 'player 2',};
 
 describe('User make full move', () => {
   test('Current player picks pawn', () => {
@@ -236,7 +236,7 @@ describe('User make full move', () => {
     expect(gameState.roundTimestamp).toBe(currentTime + Ludo.Config.RoundLength);
   });
 
-  test('Player rolls 6 -> 6 -> 6', () => {
+  test('Player 1 rolls 6 6 6', () => {
     let returnActions,
       gameState = createInitialGameState(),
       player1Pawns = gameState.pawns.filter(pawn => pawn.playerId === player.id);
@@ -329,11 +329,29 @@ describe('User make full move', () => {
     expect(returnActions[2].action.expectedAction).toBe(Ludo.ActionTypes.Roll);
     returnActions[2].callback();
 
-    // Second player rolls
+    // Second player rolls 3
     returnActions = Ludo.ActionHandlers.Roll(action, anotherPlayer, gameState, 3);
     expect(returnActions.length).toBe(3);
+    returnActions[1].callback();
 
-    console.log(returnActions);
+    // First player rolls 6
+    returnActions = Ludo.ActionHandlers.Roll(action, player, gameState, 6);
+    expect(returnActions.length).toBe(3);
+    returnActions[1].callback();
+
+    // First player picks pawn
+    returnActions = Ludo.ActionHandlers.PickPawn(
+      Ludo.Actions.PickPawn(player1Pawns[0].id),
+      player,
+      gameState,
+    );
+    expect(returnActions.length).toBe(5);
+    expect(returnActions[2].action.type).toBe(Ludo.ActionTypes.WaitForPlayer);
+    expect(returnActions[2].action.expectedAction).toBe(Ludo.ActionTypes.Roll);
+    expect(returnActions[2].action.playerId).toBe(player.id);
+    expect(player.lastRoll).toBe(6);
+    expect(player.previousRoll).toBe(0);
+    returnActions = waitForPlayerAction.callback();
   });
 });
 
