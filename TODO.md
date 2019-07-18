@@ -1,3 +1,4 @@
+- gracz wyrzuca 6 i nie moze rzucic jeszcze raz
 - test gry w websocketServerze
 - kazdy handler moze zwrocic undefined gdy nie pasuja mu argumenty - trzeba to obsluzyc
 - pionki tworzone podczas tworzenia pokoju (new Room, a nie obok. kasowane przy starcie gry)

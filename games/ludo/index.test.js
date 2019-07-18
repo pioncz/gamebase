@@ -235,6 +235,106 @@ describe('User make full move', () => {
     });
     expect(gameState.roundTimestamp).toBe(currentTime + Ludo.Config.RoundLength);
   });
+
+  test('Player rolls 6 -> 6 -> 6', () => {
+    let returnActions,
+      gameState = createInitialGameState(),
+      player1Pawns = gameState.pawns.filter(pawn => pawn.playerId === player.id);
+
+    // Roll 6
+    returnActions = Ludo.ActionHandlers.Roll(action, player, gameState, 6);
+    expect(gameState.currentPlayerId).toBe(gameState.playerIds[0]);
+    expect(returnActions.length).toBe(3);
+    let waitForPlayerAction = returnActions[1];
+    expect(waitForPlayerAction).toMatchObject({
+      action: {
+        type: Ludo.ActionTypes.WaitForPlayer,
+        expectedAction: Ludo.ActionTypes.PickPawn,
+        playerId: gameState.playerIds[0],
+      },
+    });
+    let [selectPawnAction, _,] = waitForPlayerAction.callback();
+    expect(selectPawnAction).toMatchObject({
+      action: {
+        type: Ludo.ActionTypes.SelectPawns,
+        pawnIds: player1Pawns.map(pawn => pawn.id),
+        playerId: player.id,
+      },
+    });
+
+    // Pick first pawn
+    returnActions = Ludo.ActionHandlers.PickPawn(
+      Ludo.Actions.PickPawn(player1Pawns[0].id),
+      player,
+      gameState,
+    );
+    expect(returnActions.length).toBe(5);
+    selectPawnAction = returnActions[0];
+    let movePawnAction = returnActions[1];
+    waitForPlayerAction = returnActions[2];
+    expect(selectPawnAction).toMatchObject({
+      action: {
+        type: Ludo.ActionTypes.SelectPawns,
+        pawnIds: [],
+        playerId: player.id,
+      },
+    });
+    expect(movePawnAction).toMatchObject({
+      action: {
+        type: Ludo.ActionTypes.MovePawn,
+        pawnId: player1Pawns[0].id,
+        fieldSequence: [ { x: 0, z: 4, playerIndex: 0, color: '', type: 'start', }, ],
+      },
+    });
+    expect(waitForPlayerAction).toMatchObject({
+      action: {
+        type: Ludo.ActionTypes.WaitForPlayer,
+        expectedAction: Ludo.ActionTypes.Roll,
+        playerId: gameState.playerIds[0],
+      },
+    });
+    waitForPlayerAction.callback();
+
+    // Roll second time
+    returnActions = Ludo.ActionHandlers.Roll(action, player, gameState, 6);
+    expect(returnActions.length).toBe(3);
+    waitForPlayerAction = returnActions[1];
+    expect(waitForPlayerAction).toMatchObject({
+      action: {
+        type: Ludo.ActionTypes.WaitForPlayer,
+        expectedAction: Ludo.ActionTypes.PickPawn,
+        playerId: gameState.playerIds[0],
+      },
+    });
+    returnActions = waitForPlayerAction.callback();
+    expect(returnActions[0]).toMatchObject({
+      action: {
+        type: Ludo.ActionTypes.SelectPawns,
+        pawnIds: [player1Pawns[0].id,],
+        playerId: player.id,
+      },
+    });
+
+    // Pick second pawn
+    returnActions = Ludo.ActionHandlers.PickPawn(
+      Ludo.Actions.PickPawn(player1Pawns[0].id),
+      player,
+      gameState,
+    );
+    expect(returnActions.length).toBe(5);
+    expect(returnActions[1].action.type).toBe(Ludo.ActionTypes.MovePawn);
+    expect(returnActions[1].action.pawnId).toBe(player1Pawns[0].id);
+    expect(returnActions[2].action.type).toBe(Ludo.ActionTypes.WaitForPlayer);
+    expect(returnActions[2].action.playerId).toBe(anotherPlayer.id);
+    expect(returnActions[2].action.expectedAction).toBe(Ludo.ActionTypes.Roll);
+    returnActions[2].callback();
+
+    // Second player rolls
+    returnActions = Ludo.ActionHandlers.Roll(action, anotherPlayer, gameState, 3);
+    expect(returnActions.length).toBe(3);
+
+    console.log(returnActions);
+  });
 });
 
 describe('TimeoutHandler', () => {
