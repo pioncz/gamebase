@@ -1,11 +1,11 @@
-const Player = require('./Player.js');
-const Connection = require('./Connection.js');
-const { Room, RoomStates, } = require('./room');
-const Games = require('../games/Games.js');
-const Game = require('../games/game');
-const ActionsStream = require('./actions-stream');
-const BotsManager = require('./bots-manager');
-const Logger = require('./Logger');
+const Player = require('./../Player.js');
+const Connection = require('./../Connection.js');
+const { Room, RoomStates, } = require('./../room');
+const Games = require('../../games/Games.js');
+const Game = require('../../games/game');
+const ActionsStream = require('./../actions-stream');
+const BotsManager = require('./../bots-manager');
+const Logger = require('./../Logger');
 
 const _nextId = (() => {
   let lastId = 0;

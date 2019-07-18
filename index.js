@@ -17,6 +17,7 @@ const playersController = require('./server/players/players.controller');
 const playerService = require('./server/players/player.service');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
+const WebsocketServer = require('./server/websocket-server');
 
 function handleError(req, res, error) {
   console.error(error.statusCode, error.error, error.options.uri);
@@ -37,7 +38,6 @@ process.argv.forEach(function (val, index) {
   }
 });
 
-const WebsocketServer = require('./server/websocketServer.js');
 const websocketServer = new WebsocketServer(io, playerService);
 
 mongoose.set('useCreateIndex', true);

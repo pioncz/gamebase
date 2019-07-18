@@ -1,9 +1,8 @@
-- gracz wyrzuca 6 i nie moze rzucic jeszcze raz
-- test gry w websocketServerze
 - kazdy handler moze zwrocic undefined gdy nie pasuja mu argumenty - trzeba to obsluzyc
 - pionki tworzone podczas tworzenia pokoju (new Room, a nie obok. kasowane przy starcie gry)
 
 - kolory do wyboru (w tym kilka zablokowanych)
+- naprawic buga gdy graja 3 osoby, 1 wyjdzie i poprzednia z listy moze wejsc na jej pole
 - test wydajnosci serwera w /admin
 - kosci przy kursorze, rzut kostka w dowolnym miejscu na planszy (lub srodek)
 - timeout na ekranach przed startem gry
@@ -238,3 +237,5 @@ DONE:
 + do klikania wykorzystac wieksza boundingSphere zamiast 5 zrodel kliku
 + background w osobnym pliku (z board.js)
 + utworzenie pawn.selectionObject czeka az zaladuja sie fonty
++ gracz wyrzuca 6 i nie moze rzucic jeszcze raz
++ dummy websocketServer test
