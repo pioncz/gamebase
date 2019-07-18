@@ -44,6 +44,7 @@ const ActionTypes = {
   SelectedColor: 'SelectedColor',
   StartGame: 'StartGame',
   Roll: 'Roll',
+  Rolled: 'Rolled',
   MovePawn: 'MovePawn',
   WaitForPlayer: 'WaitForPlayer',
   PickPawn: 'PickPawn',
@@ -59,8 +60,12 @@ const AnimationLengths = {
   rollDice: 600,
 };
 
-const Roll = (diceNumber) => {
-  return {type: ActionTypes.Roll, diceNumber,};
+const Roll = () => {
+  return {type: ActionTypes.Roll, };
+};
+
+const Rolled = diceNumber => {
+  return {type: ActionTypes.Rolled, diceNumber,};
 };
 
 const MovePawn = (pawnId, fieldSequence) => {
@@ -115,15 +120,15 @@ const RollHandler = (action, player, gameState, diceNumber = 0) => {
     throw new Error('This player already rolled in this room. Pick pawn!');
   }
   //diceNumber=6;
-  let generatedDiceNumber = action.diceNumber ||
+  let generatedDiceNumber = diceNumber !== 0 &&
     (diceNumber > 0 && diceNumber < 7 && diceNumber)
-    || parseInt(Math.random()*6)+1, // 1-6
+    ||  Math.min(parseInt(Math.random()*12)+1,6), // 1-6
     moves = BoardUtils.checkMoves(gameState, generatedDiceNumber, player.id);
 
   gameState.rolled = true;
   gameState.diceNumber = generatedDiceNumber;
 
-  returnActions.push({action: Roll(generatedDiceNumber),});
+  returnActions.push({action: Rolled(generatedDiceNumber),});
 
   let waitForAction = ActionTypes.PickPawn;
   if (!moves.length) {

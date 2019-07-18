@@ -118,9 +118,7 @@ export default class Engine extends EventEmitter {
       camera: this.camera,
     };
 
-    if (this.gameName) {
-      this.createBoard();
-    }
+    this.createBoard();
 
     WebFont.load({
       custom: {

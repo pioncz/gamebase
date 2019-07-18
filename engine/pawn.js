@@ -98,7 +98,7 @@ export default class Pawn {
     this.context.animations.create({
       id: 'pawnAnimation' + this.id,
       length: 500,
-      easing: EASING.InCubic,
+      easing: EASING.InOutCubic,
       update: progress => {
         this.selectionObject.position.y = 3.0 - progress * .6;
         this.selectionObject.material.opacity = Math.min(progress * 3, 1.0);

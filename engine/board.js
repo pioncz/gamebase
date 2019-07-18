@@ -25,9 +25,6 @@ export default class Board {
     this.dices = [];
     this.diceAnimationLength;
 
-    this.createBoard();
-    this.createBackground();
-
     this.pawnsController = new PawnsController({
       context: this.context,
       scene: this.scene,
@@ -36,6 +33,8 @@ export default class Board {
       animations: props.animations,
       columnsLength: this.columnsLength,
     });
+    this.createBoard();
+    this.createBackground();
     this.changeGame(props.gameName);
   }
   // Color fields, create pawns
@@ -157,6 +156,7 @@ export default class Board {
     this.$.position.y = 0;
     this.$.position.z = 0;
     this.scene.add(this.$);
+    this.rotateBoard(this.rotation);
   }
   createBackground() {
     this.background = new Background(this.scene, this.camera);

@@ -152,7 +152,7 @@ class Room extends Component {
           waitingForAction: newAction.expectedAction,
         });
       }
-      if (newAction.type === Games.Ludo.ActionTypes.Roll) {
+      if (newAction.type === Games.Ludo.ActionTypes.Rolled) {
         const { players, currentPlayerId, } = this.state;
         const { player: currentPlayer, } = this.props;
         let message;
