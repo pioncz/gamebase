@@ -36,10 +36,14 @@ const createInitialGameState = () => {
 const isFunction = (functionToCheck) => !!(functionToCheck && {}.toString.call(functionToCheck) === '[object Function]');
 
 let action = Ludo.Actions.Roll(),
-  player = {id: '1', login: 'player 1',},
-  anotherPlayer = {id: '2', login: 'player 2',};
+  player,
+  anotherPlayer;
 
 describe('User make full move', () => {
+  beforeEach(() => {
+    player = {id: '1', login: 'player 1',};
+    anotherPlayer = {id: '2', login: 'player 2',};
+  });
   test('Current player picks pawn', () => {
     let errorMessage,
       initialRoomState = createInitialGameState(),
@@ -89,7 +93,7 @@ describe('User make full move', () => {
     const rollAction = returnActions[0];
     const waitAction = returnActions[1];
     const stopProgressAction = returnActions[2];
-    expect(rollAction.action.type).toBe(Ludo.ActionTypes.Roll);
+    expect(rollAction.action.type).toBe(Ludo.ActionTypes.Rolled);
     expect(rollAction.action.diceNumber).toBe(5);
     expect(waitAction.action.type).toBe(Ludo.ActionTypes.WaitForPlayer);
     expect(waitAction.action.playerId).toBe(gameState.playerIds[1]);
@@ -119,7 +123,7 @@ describe('User make full move', () => {
     const rollAction = returnActions[0];
     const waitAction = returnActions[1];
     const stopProgressAction = returnActions[2];
-    expect(rollAction.action.type).toBe(Ludo.ActionTypes.Roll);
+    expect(rollAction.action.type).toBe(Ludo.ActionTypes.Rolled);
     expect(rollAction.action.diceNumber).toBe(6);
     expect(waitAction.action.type).toBe(Ludo.ActionTypes.WaitForPlayer);
     expect(waitAction.timestamp).toBe(currentTime + Ludo.AnimationLengths.rollDice);
@@ -154,7 +158,7 @@ describe('User make full move', () => {
     const rollAction = returnActions[0];
     const waitAction = returnActions[1];
     const stopProgressAction = returnActions[2];
-    expect(rollAction.action.type).toBe(Ludo.ActionTypes.Roll);
+    expect(rollAction.action.type).toBe(Ludo.ActionTypes.Rolled);
     expect(rollAction.action.diceNumber).toBe(5);
     expect(waitAction.action.type).toBe(Ludo.ActionTypes.WaitForPlayer);
     expect(waitAction.timestamp).toBe(currentTime + Ludo.AnimationLengths.rollDice);
@@ -194,7 +198,7 @@ describe('User make full move', () => {
     const stopProgressAction = returnActions[2];
     expect(rollAction).toMatchObject({
       action: {
-        type: Ludo.ActionTypes.Roll,
+        type: Ludo.ActionTypes.Rolled,
         diceNumber: 3,
       },
     });
@@ -261,7 +265,7 @@ describe('User make full move', () => {
         playerId: player.id,
       },
     });
-
+    console.log('room.rolled ', gameState.diceNumber)
     // Pick first pawn
     returnActions = Ludo.ActionHandlers.PickPawn(
       Ludo.Actions.PickPawn(player1Pawns[0].id),
