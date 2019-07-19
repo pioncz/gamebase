@@ -14,7 +14,6 @@ export default class PawnsController {
 
     this.$ = new THREE.Group();
     this.$.name = 'PawnsController';
-    this.scene.add(this.$);
   }
   createPawns({pawns,}) {
     for (let pawnIndex in pawns) {

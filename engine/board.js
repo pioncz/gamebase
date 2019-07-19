@@ -25,16 +25,10 @@ export default class Board {
     this.dices = [];
     this.diceAnimationLength;
 
-    this.pawnsController = new PawnsController({
-      context: this.context,
-      scene: this.scene,
-      fieldLength: this.fieldLength,
-      pawns: [],
-      animations: props.animations,
-      columnsLength: this.columnsLength,
-    });
     this.createBoard();
+    this.createPawns();
     this.createBackground();
+    this.rotateBoard(this.rotation);
     this.changeGame(props.gameName);
   }
   // Color fields, create pawns
@@ -128,6 +122,20 @@ export default class Board {
 
     this.texture.needsUpdate = true;
   }
+  createPawns() {
+    this.pawnsController = new PawnsController({
+      context: this.context,
+      scene: this.scene,
+      fieldLength: this.fieldLength,
+      pawns: [],
+      animations: this.animations,
+      columnsLength: this.columnsLength,
+    });
+    this.scene.add(this.pawnsController.$);
+  }
+  createBackground() {
+    this.background = new Background(this.scene, this.camera);
+  }
   createBoard() {
     let canvas = this.canvas,
       texture = new THREE.Texture(canvas),
@@ -156,10 +164,6 @@ export default class Board {
     this.$.position.y = 0;
     this.$.position.z = 0;
     this.scene.add(this.$);
-    this.rotateBoard(this.rotation);
-  }
-  createBackground() {
-    this.background = new Background(this.scene, this.camera);
   }
   /* setRotation
     rotate if rotate param is true
@@ -253,6 +257,7 @@ export default class Board {
   rotateBoard(newRotation) {
     this.rotation = newRotation;
     this.$.rotation.y = newRotation;
+    this.pawnsController.rotate(newRotation);
   }
   createSelectionObjects() {
     this.pawnsController.createSelectionObjects();

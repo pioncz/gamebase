@@ -1,5 +1,4 @@
-- po obrocie pionki sie zle wyswietlaja
-- brakuje strzalki z zaznaczeniem
+- bug responsywnosci
 - ruch pionka szybszy
 - pionek jak przechodzi przez pole z innym pionkiem to wysoko sie odbija - pionki nie wchodza w siebie
 - naprawic buga gdy graja 3 osoby, 1 wyjdzie i poprzednia z listy moze wejsc na jej pole
@@ -241,3 +240,6 @@ DONE:
 + dummy websocketServer test
 + pawnController added rotate method. objects are added to Group, not Scene
 + kolory do wyboru (w tym kilka zablokowanych)
++ po obrocie pionki sie zle wyswietlaja
++ brakuje strzalki z zaznaczeniem
++ brakuje zaznaczenia shaderem
