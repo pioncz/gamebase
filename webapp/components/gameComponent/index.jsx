@@ -12,7 +12,9 @@ export default class GameComponent extends Component {
     this.createEngine();
   }
   componentWillUnmount() {
-    this.engine.off('click', this.handleClick);
+    if (this.engine) {
+      this.engine.off('click', this.handleClick);
+    }
   }
   shouldComponentUpdate(nextProps) {
     if (!this.engine && nextProps.gameName) {

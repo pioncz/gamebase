@@ -27,6 +27,16 @@ const Dices = [
   {id:'dice2', colors: ['#ffb9fa', '#fff',],},
   {id:'dice3', colors: ['#243b55', '#03a9f4',],},
 ];
+const Colors = [
+  "#D50000",
+  "#64DD17",
+  "#1DE9B6",
+  '#0c131a',
+  '#FFCCDD',
+  '#ea531d',
+  "#FFEA00",
+  '#0e3512',
+];
 
 /**
  * Represents a conntector between io and WebsocketServer.
@@ -138,6 +148,7 @@ class WebsocketServer {
             queueTimestamp: Date.now(),
             minPlayers: MinPlayers,
             selectColorTimeout: SelectColorTimeout,
+            colors: Colors,
           });
 
         return room;

@@ -32,6 +32,7 @@ const Config = {
     "#64DD17",
     "#1DE9B6",
     "#FFEA00",
+    '#FFCCDD',
   ],
   MinPlayer: 4,
   // GameLength: (15 * 60 * 1000), //15 minutes
@@ -176,14 +177,17 @@ const SelectColorHandler = (action, player, gameState) => {
     }),
     valueColor = gameState.playerColors.find(playerColor => {
       return playerColor.color === action.value;
-    });
+    }),
+    queueColor = gameState.colorsQueue.find(queueColor =>
+      queueColor.color === action.value
+    );
 
   if (playerColor) {
     console.log('player already has a color');
     return;
   }
 
-  if (valueColor) {
+  if (valueColor || queueColor.selected) {
     console.log('this color is already taken');
     return;
   }

@@ -44,6 +44,7 @@ class Room {
       selectedPawns: [],
       currentPlayerId: null,
     };
+    this.colors = options.colors;
     this.minPlayers = +options.minPlayers || 4;
     this.eta = options.eta || 5*60*60; //18000s
     this.actions = [];
@@ -64,15 +65,14 @@ class Room {
   }
   pickColors() {
     _log('picking colors in room ' + this.name);
-    const game = Games[this.gameState.gameName];
     this.gameState.roomState = RoomStates.pickColors;
     this.gameState.playerColors = [];
     this.gameState.colorsQueue = [];
 
-    game.Config.Colors.forEach(color => {
+    this.colors.forEach((color, i) => {
       this.gameState.colorsQueue.push({
         color: color,
-        selected: false,
+        selected: i > 5 ? true : false,
       });
     });
   }
