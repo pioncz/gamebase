@@ -10,7 +10,9 @@ class Background {
       width = 1,
       depth = 1,
       height = 1;
-    this.material = new THREE.MeshBasicMaterial({map: texture,});
+    this.material = new THREE.MeshBasicMaterial({
+      map: texture,
+    });
     this.geometry = new THREE.BoxGeometry(width, depth, height);
     this.texture = texture;
 
@@ -29,13 +31,11 @@ class Background {
     texture.magFilter = THREE.NearestFilter;
     this.$ = new THREE.Mesh(this.geometry, this.material);
     this.$.name = 'Background';
-    this.$.position.set(-27.5,-34,-27.5);
     this.$.rotateY(this.$.rotation.y + 45 * Math.PI / 180);
+    this.$.position.set(-27, -34, -27);
 
     this.resize();
     this.scene.add(this.$);
-
-    window.bg = this.$;
   }
   resize(scaleX, scaleY) {
     if (scaleX !== this.scaleX || scaleY !== this.scaleY) {

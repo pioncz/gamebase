@@ -152,13 +152,20 @@ export default class Engine extends EventEmitter {
     let width = this.container.offsetWidth,
       height = this.container.offsetHeight,
       aspect = width / height;
+    if (isNaN(aspect)) return;
 
     this.windowWidth = width;
     this.windowHeight = height;
     this.renderer.setSize( width, height );
     this.composer.setSize( width * 2, height * 2 );
 
-    if (aspect < 1.3) {
+    if (aspect <= 1.3) {
+      if (aspect <= 0.8) {
+        this.frustumSize = 22;
+      } else {
+        this.frustumSize = 26;
+      }
+
       this.camera.left   = - this.frustumSize;
       this.camera.right  =   this.frustumSize;
       this.camera.top    =   this.frustumSize / aspect;
@@ -167,11 +174,14 @@ export default class Engine extends EventEmitter {
         this.board.setRotation(false); //rotates board
         if (this.board.background) {
           const scaleX = Math.ceil(Math.abs(this.camera.left) + Math.abs(this.camera.right));
-          const scaleY = 57 / aspect;
+          let scaleY = 70 / aspect;
+
           this.board.background.resize(scaleX, scaleY);
         }
       }
     } else {
+      this.frustumSize = 22;
+
       this.camera.left   = - this.frustumSize * aspect;
       this.camera.right  =   this.frustumSize * aspect;
       this.camera.top    =   this.frustumSize;
@@ -180,9 +190,14 @@ export default class Engine extends EventEmitter {
         this.board.setRotation(true); //rotates board
         if (this.board.background) {
           const scaleX = Math.ceil(Math.abs(this.camera.left) + Math.abs(this.camera.right));
-          const scaleY = 57;
+          const scaleY = 62;
+
           this.board.background.resize(scaleX, scaleY);
         }
+
+        const marginTop = 4;
+        this.board.$.position.set(marginTop, 0, marginTop);
+        this.board.pawnsController.$.position.set(marginTop, 0, marginTop);
       }
     }
     this.camera.updateProjectionMatrix();

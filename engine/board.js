@@ -143,7 +143,7 @@ export default class Board {
       depth = 2,
       height = 40;
     this.materials = [
-      new THREE.MeshBasicMaterial({map: texture,}),
+      new THREE.MeshBasicMaterial({ map: texture,}),
       new THREE.MeshBasicMaterial({color: 'rgba(61, 72, 97, 0.8)',}),
     ];
     this.geometry = new THREE.BoxGeometry(width, depth, height);
@@ -160,9 +160,6 @@ export default class Board {
 
     this.$ = new THREE.Mesh(this.geometry, this.materials);
     this.$.name = 'BoardMesh';
-    this.$.position.x = 0;
-    this.$.position.y = 0;
-    this.$.position.z = 0;
     this.scene.add(this.$);
   }
   /* setRotation

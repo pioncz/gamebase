@@ -65,7 +65,7 @@ export default class GameComponent extends Component {
     return this.engine.board.checkMoves(pawns, diceNumber, playerIndex);
   }
   render() {
-    return <div className="game">
+    return <div className="game-component">
       <div ref={this.rendererContainerRef} className="renderer"></div>
     </div>;
   }

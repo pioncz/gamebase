@@ -10,6 +10,7 @@ import PlayerProfiles from 'components/playerProfiles';
 import { Config, } from 'ludo';
 import Games from 'Games.js';
 import Snackbar from 'components/snackbar';
+import Dices from 'components/dices';
 
 const nextId = (()=>{
     let id = 0;
@@ -439,6 +440,11 @@ class Engine extends Component {
       />
       <Timer ref={this.timerComponentRef}/>
       <Snackbar ref={(element) => {this.snackbarComponentRef = element;}} />
+      <Dices
+        visible
+        active
+        onClick={this.rollDice}
+      />
     </div>;
   }
 }
