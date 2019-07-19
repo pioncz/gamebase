@@ -160,10 +160,14 @@ export default class Engine extends EventEmitter {
     this.composer.setSize( width * 2, height * 2 );
 
     if (aspect <= 1.3) {
+      let scaleY;
+
       if (aspect <= 0.8) {
         this.frustumSize = 22;
+        scaleY = 70 / aspect
       } else {
         this.frustumSize = 26;
+        scaleY = 72 / aspect
       }
 
       this.camera.left   = - this.frustumSize;
@@ -174,7 +178,6 @@ export default class Engine extends EventEmitter {
         this.board.setRotation(false); //rotates board
         if (this.board.background) {
           const scaleX = Math.ceil(Math.abs(this.camera.left) + Math.abs(this.camera.right));
-          let scaleY = 70 / aspect;
 
           this.board.background.resize(scaleX, scaleY);
         }

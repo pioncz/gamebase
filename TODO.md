@@ -243,3 +243,4 @@ DONE:
 + brakuje strzalki z zaznaczeniem
 + brakuje zaznaczenia shaderem
 + lepsze dopasowanie kamery
++ polaczyc $portrait i $small-screen
