@@ -175,15 +175,6 @@ class Engine extends Component {
     this.props.setInGame();
     this.initGame();
     this.profilesComponent.restartProgress();
-    this.changePlayerIntervalId = setInterval(() => {
-      const { players, currentPlayerId, } = this.state;
-      let currentPlayerIndex = players.findIndex(player => player.id === currentPlayerId);
-      let nextPlayer = players[(currentPlayerIndex + 1) % players.length];
-      this.profilesComponent.restartProgress();
-      this.setState({
-        currentPlayerId: nextPlayer.id,
-      })
-    }, 5000);
     let lastId=0;
     const addMessage = () => {
       this.snackbarComponentRef.addMessage('Start gry!'+lastId++, lastId % 2 ? 'red' : '');
@@ -193,7 +184,6 @@ class Engine extends Component {
   }
   componentWillUnmount() {
     this.props.unsetInGame();
-    clearInterval(this.changePlayerIntervalId);
     clearInterval(this.messagesIntervalId);
   }
   movePawn(e) {
@@ -324,11 +314,23 @@ class Engine extends Component {
 
     this.timerComponentRef.current.start(5*60*1000);
   }
-  onPawnClick(pawnId) {
+  selectPawn = (pawnId) => {
+    const { pawns, } = this.state;
+
+    const playerId = pawns.find(pawn => pawn.id === pawnId).playerId;
+
+    this.profilesComponent.restartProgress();
+    this.setState({
+      currentPlayerId: playerId,
+    });
+
     this.gameComponentRef.current.engine.selectPawns([pawnId,]);
     this.setState({
       selectedPawnId: pawnId,
     });
+  }
+  onPawnClick(pawnId) {
+    this.selectPawn(pawnId);
   }
   handleGameChange(e) {
     const pawnSet = Object.keys(PawnSets[e.target.value])[0];
@@ -346,10 +348,11 @@ class Engine extends Component {
   handleClick = (e) => {
     if (e.pawnIds.length) {
       let firstPawnId = e.pawnIds[0];
-      this.gameComponentRef.current.engine.selectPawns([firstPawnId,]);
-      this.setState({
-        selectedPawnId: firstPawnId,
-      })
+      this.selectPawn(firstPawnId);
+      // this.gameComponentRef.current.engine.selectPawns([firstPawnId,]);
+      // this.setState({
+      //   selectedPawnId: firstPawnId,
+      // })
     }
   }
   render() {
