@@ -1,5 +1,6 @@
-- ruch pionka szybszy
-- pionek jak przechodzi przez pole z innym pionkiem to wysoko sie odbija - pionki nie wchodza w siebie
+- nie mozna ruszyc pionka po zrobieniu init game
+- bug strzalki nad pionkiem (kolejny init game psuje)
+- zsynchronizowac pulsowanie pionka i strzalki nad pionkiem
 - naprawic buga gdy graja 3 osoby, 1 wyjdzie i poprzednia z listy moze wejsc na jej pole
 - test wydajnosci serwera w /admin
 - kosci przy kursorze, rzut kostka w dowolnym miejscu na planszy (lub srodek)
@@ -244,3 +245,5 @@ DONE:
 + brakuje zaznaczenia shaderem
 + lepsze dopasowanie kamery
 + polaczyc $portrait i $small-screen
++ pionek jak przechodzi przez pole z innym pionkiem to wysoko sie odbija - pionki nie wchodza w siebie
++ ruch pionka szybszy

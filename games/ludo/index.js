@@ -57,7 +57,7 @@ const ActionTypes = {
 };
 
 const AnimationLengths = {
-  movePawn: 500,
+  movePawn: 300,
   rollDice: 600,
 };
 

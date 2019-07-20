@@ -86,9 +86,9 @@ const nextId = (()=>{
         {id: '13', x: 1, z: 0,}, // first player
         {id: '14', x: 0, z: 1,}, // first player
         {id: '15', x: 1, z: 1,}, // first player
-        {id: '4', x: 3, z: 4,}, // second player
-        {id: '5', x: 10, z: 0,}, // second player
-        {id: '6', x: 9, z: 1,}, // second player
+        {id: '4', x: 1, z: 4,}, // second player
+        {id: '5', x: 4, z: 4,}, // second player
+        {id: '6', x: 3, z: 4,}, // second player
         {id: '7', x: 10, z: 1,}, // second player
         {id: '0', x: 9, z: 10,}, // third player
         {id: '1', x: 10, z: 10,}, // third player
@@ -349,10 +349,6 @@ class Engine extends Component {
     if (e.pawnIds.length) {
       let firstPawnId = e.pawnIds[0];
       this.selectPawn(firstPawnId);
-      // this.gameComponentRef.current.engine.selectPawns([firstPawnId,]);
-      // this.setState({
-      //   selectedPawnId: firstPawnId,
-      // })
     }
   }
   render() {
