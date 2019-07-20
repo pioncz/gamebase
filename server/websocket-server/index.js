@@ -1,11 +1,10 @@
-const Player = require('./Player.js');
-const Connection = require('./Connection.js');
-const { Room, RoomStates, } = require('./room');
-const Games = require('../games/Games.js');
-const Game = require('../games/game');
-const ActionsStream = require('./actions-stream');
-const BotsManager = require('./bots-manager');
-const Logger = require('./Logger');
+const Player = require('./../Player.js');
+const Connection = require('./../Connection.js');
+const { Room, RoomStates, } = require('./../room');
+const Games = require('../../games/Games.js');
+const ActionsStream = require('./../actions-stream');
+const BotsManager = require('./../bots-manager');
+const Logger = require('./../Logger');
 
 const _nextId = (() => {
   let lastId = 0;
@@ -26,6 +25,16 @@ const Dices = [
   {id:'dice1', colors: ['#fff', '#000',],},// TODO:dopisac kolory z engine
   {id:'dice2', colors: ['#ffb9fa', '#fff',],},
   {id:'dice3', colors: ['#243b55', '#03a9f4',],},
+];
+const Colors = [
+  "#D50000",
+  "#64DD17",
+  "#1DE9B6",
+  '#0c131a',
+  '#FFCCDD',
+  '#ea531d',
+  "#FFEA00",
+  '#0e3512',
 ];
 
 /**
@@ -138,6 +147,7 @@ class WebsocketServer {
             queueTimestamp: Date.now(),
             minPlayers: MinPlayers,
             selectColorTimeout: SelectColorTimeout,
+            colors: Colors,
           });
 
         return room;

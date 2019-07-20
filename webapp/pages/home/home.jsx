@@ -23,7 +23,7 @@ class Home extends Component {
   }
   render() {
     const { player, } = this.props;
-    const loggedOut = player.state && player.state === 'loggedOut'
+    const loggedOut = !player || player.state && player.state === 'loggedOut'
 
     return (
       <div className="home-page">

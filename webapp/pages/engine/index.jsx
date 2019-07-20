@@ -10,6 +10,7 @@ import PlayerProfiles from 'components/playerProfiles';
 import { Config, } from 'ludo';
 import Games from 'Games.js';
 import Snackbar from 'components/snackbar';
+import Dices from 'components/dices';
 
 const nextId = (()=>{
     let id = 0;
@@ -85,9 +86,9 @@ const nextId = (()=>{
         {id: '13', x: 1, z: 0,}, // first player
         {id: '14', x: 0, z: 1,}, // first player
         {id: '15', x: 1, z: 1,}, // first player
-        {id: '4', x: 3, z: 4,}, // second player
-        {id: '5', x: 10, z: 0,}, // second player
-        {id: '6', x: 9, z: 1,}, // second player
+        {id: '4', x: 1, z: 4,}, // second player
+        {id: '5', x: 4, z: 4,}, // second player
+        {id: '6', x: 3, z: 4,}, // second player
         {id: '7', x: 10, z: 1,}, // second player
         {id: '0', x: 9, z: 10,}, // third player
         {id: '1', x: 10, z: 10,}, // third player
@@ -174,15 +175,6 @@ class Engine extends Component {
     this.props.setInGame();
     this.initGame();
     this.profilesComponent.restartProgress();
-    this.changePlayerIntervalId = setInterval(() => {
-      const { players, currentPlayerId, } = this.state;
-      let currentPlayerIndex = players.findIndex(player => player.id === currentPlayerId);
-      let nextPlayer = players[(currentPlayerIndex + 1) % players.length];
-      this.profilesComponent.restartProgress();
-      this.setState({
-        currentPlayerId: nextPlayer.id,
-      })
-    }, 5000);
     let lastId=0;
     const addMessage = () => {
       this.snackbarComponentRef.addMessage('Start gry!'+lastId++, lastId % 2 ? 'red' : '');
@@ -192,7 +184,6 @@ class Engine extends Component {
   }
   componentWillUnmount() {
     this.props.unsetInGame();
-    clearInterval(this.changePlayerIntervalId);
     clearInterval(this.messagesIntervalId);
   }
   movePawn(e) {
@@ -323,11 +314,23 @@ class Engine extends Component {
 
     this.timerComponentRef.current.start(5*60*1000);
   }
-  onPawnClick(pawnId) {
+  selectPawn = (pawnId) => {
+    const { pawns, } = this.state;
+
+    const playerId = pawns.find(pawn => pawn.id === pawnId).playerId;
+
+    this.profilesComponent.restartProgress();
+    this.setState({
+      currentPlayerId: playerId,
+    });
+
     this.gameComponentRef.current.engine.selectPawns([pawnId,]);
     this.setState({
       selectedPawnId: pawnId,
     });
+  }
+  onPawnClick(pawnId) {
+    this.selectPawn(pawnId);
   }
   handleGameChange(e) {
     const pawnSet = Object.keys(PawnSets[e.target.value])[0];
@@ -345,10 +348,7 @@ class Engine extends Component {
   handleClick = (e) => {
     if (e.pawnIds.length) {
       let firstPawnId = e.pawnIds[0];
-      this.gameComponentRef.current.engine.selectPawns([firstPawnId,]);
-      this.setState({
-        selectedPawnId: firstPawnId,
-      })
+      this.selectPawn(firstPawnId);
     }
   }
   render() {
@@ -439,6 +439,11 @@ class Engine extends Component {
       />
       <Timer ref={this.timerComponentRef}/>
       <Snackbar ref={(element) => {this.snackbarComponentRef = element;}} />
+      <Dices
+        visible
+        active
+        onClick={this.rollDice}
+      />
     </div>;
   }
 }

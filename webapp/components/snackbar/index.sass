@@ -35,8 +35,9 @@
         margin-top: -40px
         opacity: 0
 
-    @media #{$small-screen}
+    @media #{$portrait}
         .snackbar-wrapper
+            top: 154px
             left: 6px
             top: 182px
             max-width: calc(100% - 12px)
@@ -49,7 +50,3 @@
                 overflow: hidden
                 text-overflow: ellipsis
                 font-size: 16px
-
-    @media #{$portrait}
-        .snackbar-wrapper
-            top: 154px

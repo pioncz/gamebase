@@ -11,12 +11,14 @@
 
   .colors-container
     display: flex
-    justify-content: space-between
+    justify-content: flex-start
     margin-bottom: $margin1
+    flex-wrap: wrap
 
     .color
       width: 32px
       height: 32px
+      margin: 5px
       border: 1px solid rgba(255, 255,255, 0.3)
       border-radius: 2px
       cursor: pointer
@@ -31,40 +33,3 @@
       .player-name
         font-size: 22px
         padding: 6px 0 0
-
-  .dices-container
-    position: absolute
-    z-index: 50
-    width: 200px
-    height: 75px
-    background: rgba(0, 0, 0, 0.2)
-    padding: 10px
-    left: -200px
-    top: 98px
-    text-align: center
-    pointer-events: none
-    transition: all ease-in-out .2s
-    border-radius: $border-radius
-    svg
-      height: 100%
-      width: auto
-      path
-        fill: #848484
-    &--visible
-      left: 6px
-    &--active
-      cursor: pointer
-      pointer-events: all
-      border: 2px solid rgba(255,255,255,0.7)
-      svg path
-        fill: #fff
-
-  @media #{$portrait}
-    .dices-container
-      top: auto
-      bottom: -100px
-      left: 6px
-      right: 6px
-      width: auto
-      &--visible
-        bottom: 6px

@@ -44,6 +44,7 @@ class Room {
       selectedPawns: [],
       currentPlayerId: null,
     };
+    this.colors = options.colors;
     this.minPlayers = +options.minPlayers || 4;
     this.eta = options.eta || 5*60*60; //18000s
     this.actions = [];
@@ -64,15 +65,14 @@ class Room {
   }
   pickColors() {
     _log('picking colors in room ' + this.name);
-    const game = Games[this.gameState.gameName];
     this.gameState.roomState = RoomStates.pickColors;
     this.gameState.playerColors = [];
     this.gameState.colorsQueue = [];
 
-    game.Config.Colors.forEach(color => {
+    this.colors.forEach((color, i) => {
       this.gameState.colorsQueue.push({
         color: color,
-        selected: false,
+        selected: i > 5 ? true : false,
       });
     });
   }
@@ -122,11 +122,12 @@ class Room {
     const gameState = this.gameState;
     const game = Games[gameState.gameName];
     const player = gameState.players.find(player => player.id === playerId);
+
     if (player) {
       player.disconnected = true;
     }
-    const activePlayers = this.getActivePlayers();
-    const playerIndex = gameState.players.indexOf(player.id);
+
+    const playerIndex = gameState.players.findIndex(player => player.id === playerId);
     const spawnFields = gameState.pawns && game.BoardUtils.getSpawnFields(gameState.pawns, playerIndex);
     const playerPawns = gameState.pawns && gameState.pawns.filter(pawn =>
       pawn.playerId === player.id &&
@@ -134,33 +135,28 @@ class Room {
     );
     let returnActions = [];
 
-    if (player) {
-      const playerIndex = this.gameState.playerIds.indexOf(player.id);
-      if (playerIndex > -1) {
-        this.gameState.playerIds.splice(playerIndex, 1);
-      }
-    }
-
     // set winner if there's only 1 player left
-    if (activePlayers.length === 1) {
-      gameState.winnerId = activePlayers[0].id;
+    if (gameState.players.length === 1) {
+      gameState.winnerId = gameState.players[0].id;
       gameState.roomState = Game.GameStates.finished;
       returnActions.push({action: game.Actions.FinishGame(gameState.winnerId),})
       // if there is no winner, move player pawns to spawn
-    } else if (playerPawns && activePlayers.length) {
+    } else if (playerPawns && gameState.players.length) {
     // for every player pawn which is not in goal
       for(let i = 0; i < playerPawns.length; i++) {
         let pawn = playerPawns[i],
           field = spawnFields[i];
 
-        pawn.x = field.x;
-        pawn.z = field.z;
+        if (field) {
+          pawn.x = field.x;
+          pawn.z = field.z;
 
-        returnActions.push({action: game.Actions.MovePawn(pawn.id, [{x: field.x, z: field.z,},]),});
+          returnActions.push({action: Game.Actions.MovePawn(pawn.id, [{x: field.x, z: field.z,},]),});
+        }
       }
       // switch player if disconnected current
       if(gameState.currentPlayerId === player.id) {
-        gameState.currentPlayerId = Game.Utils.getNextPlayerId(gameState.playerIds, gameState.currentPlayerId);
+        gameState.currentPlayerId = Game.Utils.getNextPlayerId(gameState.players, gameState.currentPlayerId);
         gameState.selectedPawns = [];
         gameState.rolled = false;
         returnActions.push({

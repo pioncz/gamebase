@@ -118,10 +118,7 @@ export default class Engine extends EventEmitter {
       camera: this.camera,
     };
 
-    if (this.gameName) {
-      this.createBoard();
-    }
-
+    this.createBoard();
 
     WebFont.load({
       custom: {
@@ -134,10 +131,10 @@ export default class Engine extends EventEmitter {
         },
       },
       active: () => {
+        this.board.handleFontsLoad();
         this.animate();
       },
     });
-
     this.onResize();
   }
   createBoard() {
@@ -155,13 +152,24 @@ export default class Engine extends EventEmitter {
     let width = this.container.offsetWidth,
       height = this.container.offsetHeight,
       aspect = width / height;
+    if (isNaN(aspect)) return;
 
     this.windowWidth = width;
     this.windowHeight = height;
     this.renderer.setSize( width, height );
     this.composer.setSize( width * 2, height * 2 );
 
-    if (aspect < 1.3) {
+    if (aspect <= 1.3) {
+      let scaleY;
+
+      if (aspect <= 0.8) {
+        this.frustumSize = 22;
+        scaleY = 70 / aspect
+      } else {
+        this.frustumSize = 26;
+        scaleY = 72 / aspect
+      }
+
       this.camera.left   = - this.frustumSize;
       this.camera.right  =   this.frustumSize;
       this.camera.top    =   this.frustumSize / aspect;
@@ -170,11 +178,13 @@ export default class Engine extends EventEmitter {
         this.board.setRotation(false); //rotates board
         if (this.board.background) {
           const scaleX = Math.ceil(Math.abs(this.camera.left) + Math.abs(this.camera.right));
-          const scaleY = 57 / aspect;
+
           this.board.background.resize(scaleX, scaleY);
         }
       }
     } else {
+      this.frustumSize = 22;
+
       this.camera.left   = - this.frustumSize * aspect;
       this.camera.right  =   this.frustumSize * aspect;
       this.camera.top    =   this.frustumSize;
@@ -183,9 +193,15 @@ export default class Engine extends EventEmitter {
         this.board.setRotation(true); //rotates board
         if (this.board.background) {
           const scaleX = Math.ceil(Math.abs(this.camera.left) + Math.abs(this.camera.right));
-          const scaleY = 57;
+          const scaleY = 62;
+
           this.board.background.resize(scaleX, scaleY);
         }
+
+        const marginTop = 4;
+        this.board.$.position.set(marginTop, 0, marginTop);
+        this.board.pawnsController.$.position.set(marginTop, 0, marginTop);
+        this.board.diceContainer.position.set(marginTop, 0, marginTop);
       }
     }
     this.camera.updateProjectionMatrix();
@@ -193,27 +209,15 @@ export default class Engine extends EventEmitter {
   onClick(e) {
     if (!this.gameName) return;
 
-    let pawnIds = [];
-
-    // Create 5 points to check intersections with in distance of pointsDistance
-    const pointsDistance = 8;
     const boundingRect = this.renderer.domElement.getBoundingClientRect();
-    for(let i = 0; i < 5; i++) {
-      const helperX = i < 3 ? (i - 1) % 2 * pointsDistance : 0;
-      const helperY = i > 2 ?
-        i > 3 ? pointsDistance : -pointsDistance
-        : 0;
+    const point = {
+      x: ( (e.clientX - boundingRect.left) / this.renderer.domElement.clientWidth ) * 2 - 1,
+      y: - ( (e.clientY - boundingRect.top) / this.renderer.domElement.clientHeight ) * 2 + 1,
+    };
 
-      const point = {
-        x: ( (e.clientX - boundingRect.left + helperX) / this.renderer.domElement.clientWidth ) * 2 - 1,
-        y: - ( (e.clientY - boundingRect.top + helperY) / this.renderer.domElement.clientHeight ) * 2 + 1,
-      };
-
-      this.raycaster.setFromCamera( point, this.camera );
-      const pawns = this.board.handleClick(this.raycaster);
-      const ids = pawns.map(pawn => pawn.id );
-      pawnIds = pawnIds.concat(ids);
-    }
+    this.raycaster.setFromCamera( point, this.camera );
+    const pawns = this.board.handleClick(this.raycaster);
+    const pawnIds = pawns.map(pawn => pawn.id );
 
     this.emit('click', { pawnIds: [...new Set(pawnIds),], });
   }

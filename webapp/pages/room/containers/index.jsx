@@ -5,8 +5,7 @@ import Button from 'components/button/index';
 import './index.sass';
 import Timer from 'components/timer';
 import Games from 'Games.js';
-import ClassNames from 'classnames';
-import DicesImage from 'dices.svg';
+import Game from 'Game/';
 import PlayerProfiles from 'components/playerProfiles';
 import { bindActionCreators, } from 'redux';
 import { connect, } from 'react-redux';
@@ -15,6 +14,7 @@ import SearchingRoom from 'modals/SearchingRoom';
 import { withRouter, } from 'react-router-dom';
 import RoomNonExistentModal from 'modals/roomNonExistent';
 import Snackbar from 'components/snackbar';
+import Dices from 'components/dices';
 
 const Pages = {
   Initial: 'Initial',
@@ -152,7 +152,7 @@ class Room extends Component {
           waitingForAction: newAction.expectedAction,
         });
       }
-      if (newAction.type === Games.Ludo.ActionTypes.Roll) {
+      if (newAction.type === Games.Ludo.ActionTypes.Rolled) {
         const { players, currentPlayerId, } = this.state;
         const { player: currentPlayer, } = this.props;
         let message;
@@ -172,7 +172,7 @@ class Room extends Component {
 
         this.gameComponentRef.current.engine.rollDice(newAction.diceNumber, diceColors);
       }
-      if (newAction.type === Games.Ludo.ActionTypes.MovePawn) {
+      if (newAction.type === Game.ActionTypes.MovePawn) {
         this.gameComponentRef.current.movePawn({pawnId: newAction.pawnId, fieldSequence: newAction.fieldSequence,});
       }
       if (newAction.type === Games.Ludo.ActionTypes.SelectPawns) {
@@ -191,7 +191,7 @@ class Room extends Component {
         });
         this.timerComponentRef.current.stop();
       }
-      if (newAction.type === Games.Ludo.ActionTypes.Disconnected) {
+      if (newAction.type === Game.ActionTypes.Disconnected) {
         const players = this.state.players,
           playerIndex = players.findIndex(player => player.id === newAction.playerId);
 
@@ -322,15 +322,8 @@ class Room extends Component {
         waitingForAction,
       } = this.state,
       {player,} = this.props,
-      diceContainerClass = ClassNames({
-        'dices-container': true,
-        'dices-container--visible': page === Pages.Game,
-        'dices-container--active': player && player.id === currentPlayerId && waitingForAction === Games.Ludo.ActionTypes.Roll,
-      }),
       playerColor = player && playerColors.find(playerColor => playerColor.playerId === player.id),
-      diceContainerStyle = playerColor && {
-        boxShadow: `inset 0 0 10px ${playerColor.color}`,
-      };
+      color = playerColor && playerColor.color;
 
     if (page === Pages.Initial) {
       currentModal = <Modal open={true}>
@@ -408,13 +401,12 @@ class Room extends Component {
         ref={this.profilesComponentRef}
       />
       {currentModal}
-      <div
-        className={diceContainerClass}
-        style={diceContainerStyle}
+      <Dices
+        visible={page === Pages.Game}
+        active={player && player.id === currentPlayerId && waitingForAction === Games.Ludo.ActionTypes.Roll}
         onClick={this.handleDicesClick}
-      >
-        <DicesImage />
-      </div>
+        color={color}
+      />
       <Timer ref={this.timerComponentRef} />
       <Snackbar ref={this.snackbarComponentRef} />
     </div>);

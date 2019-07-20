@@ -3,54 +3,10 @@ import PawnsController from 'pawnsController';
 import Dice from './dice';
 import BoardUtils from './../games/ludo/BoardUtils.js';
 import Games from 'Games.js';
+import Background from './background';
 
 const GridAmount = 11;
 
-class Background {
-  constructor(scene, camera) {
-    this.scene = scene;
-    this.camera = camera;
-
-    let canvas = Utils.$({element: 'canvas',}),
-      texture = new THREE.Texture(canvas),
-      width = 1,
-      depth = 1,
-      height = 1;
-    this.material = new THREE.MeshBasicMaterial({map: texture,});
-    this.geometry = new THREE.BoxGeometry(width, depth, height);
-    this.texture = texture;
-
-    canvas.width = 200;
-    canvas.height = 200;
-
-    // Draw gradient
-    const ctx = canvas.getContext('2d');
-    var grd = ctx.createLinearGradient(0, 0, canvas.width / 2, canvas.height);
-    grd.addColorStop(0.6, "#243B55");
-    grd.addColorStop(1, "#141E30");
-    ctx.fillStyle = grd;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    texture.needsUpdate = true;
-    texture.magFilter = THREE.NearestFilter;
-    this.$ = new THREE.Mesh(this.geometry, this.material);
-    this.$.name = 'Background';
-    this.$.position.set(-27.5,-34,-27.5);
-    this.$.rotateY(this.$.rotation.y + 45 * Math.PI / 180);
-
-    this.resize();
-    this.scene.add(this.$);
-
-    window.bg = this.$;
-  }
-  resize(scaleX, scaleY) {
-    if (scaleX !== this.scaleX || scaleY !== this.scaleY) {
-      this.scaleX = scaleX;
-      this.scaleY = scaleY;
-      this.$.scale.set(scaleX, scaleY, 1);
-    }
-  }
-}
 export default class Board {
   constructor(props) {
     this.scene = props.scene;
@@ -68,18 +24,14 @@ export default class Board {
     this.gameName = props.gameName;
     this.dices = [];
     this.diceAnimationLength;
+    this.diceContainer = new THREE.Group();
+    this.scene.add(this.diceContainer);
+    this.fontsLoaded = false;
 
     this.createBoard();
+    this.createPawns();
     this.createBackground();
-
-    this.pawnsController = new PawnsController({
-      context: this.context,
-      scene: this.scene,
-      fieldLength: this.fieldLength,
-      pawns: [],
-      animations: props.animations,
-      columnsLength: this.columnsLength,
-    });
+    this.rotateBoard(this.rotation);
     this.changeGame(props.gameName);
   }
   // Color fields, create pawns
@@ -105,6 +57,9 @@ export default class Board {
     this.drawBoard();
     // create pawns
     this.pawnsController.createPawns({pawns: props.pawns,});
+    if (this.fontsLoaded) {
+      this.pawnsController.createSelectionObjects();
+    }
 
     let newRotation = (Math.PI/2) * firstPlayerIndex;
     this.rotateBoard(newRotation);
@@ -173,6 +128,20 @@ export default class Board {
 
     this.texture.needsUpdate = true;
   }
+  createPawns() {
+    this.pawnsController = new PawnsController({
+      context: this.context,
+      scene: this.scene,
+      fieldLength: this.fieldLength,
+      pawns: [],
+      animations: this.animations,
+      columnsLength: this.columnsLength,
+    });
+    this.scene.add(this.pawnsController.$);
+  }
+  createBackground() {
+    this.background = new Background(this.scene, this.camera);
+  }
   createBoard() {
     let canvas = this.canvas,
       texture = new THREE.Texture(canvas),
@@ -180,7 +149,7 @@ export default class Board {
       depth = 2,
       height = 40;
     this.materials = [
-      new THREE.MeshBasicMaterial({map: texture,}),
+      new THREE.MeshBasicMaterial({ map: texture,}),
       new THREE.MeshBasicMaterial({color: 'rgba(61, 72, 97, 0.8)',}),
     ];
     this.geometry = new THREE.BoxGeometry(width, depth, height);
@@ -195,15 +164,9 @@ export default class Board {
     this.geometry.faces[8].materialIndex = 1;
     this.geometry.faces[9].materialIndex = 1;
 
-    this.$ = new THREE.Mesh(this.geometry, new THREE.MeshFaceMaterial(this.materials));
+    this.$ = new THREE.Mesh(this.geometry, this.materials);
     this.$.name = 'BoardMesh';
-    this.$.position.x = 0;
-    this.$.position.y = 0;
-    this.$.position.z = 0;
     this.scene.add(this.$);
-  }
-  createBackground() {
-    this.background = new Background(this.scene, this.camera);
   }
   /* setRotation
     rotate if rotate param is true
@@ -285,7 +248,7 @@ export default class Board {
 
     for(let pawnId of Object.keys(this.pawnsController.pawns)) {
       let pawn = this.pawnsController.pawns[pawnId],
-        intersects = raycaster.intersectObject(pawn.pawnMesh, true);
+        intersects = raycaster.intersectObject(pawn.boundingSphere, true);
 
       if (pawn && intersects.length) {
         pawns.push(pawn);
@@ -296,19 +259,14 @@ export default class Board {
   }
   rotateBoard(newRotation) {
     this.rotation = newRotation;
-    this.pawnsController.$.rotation.y = newRotation;
     this.$.rotation.y = newRotation;
-    for(let pawnIndex in this.pawnsController.pawns) {
-      let pawn = this.pawnsController.pawns[pawnIndex];
-
-      if (pawn) {
-        if (newRotation % (Math.PI / 2)) {
-          pawn.selectionObject.rotation.y = newRotation - Math.PI / 4;
-        } else {
-          pawn.selectionObject.rotation.y = newRotation + Math.PI / 4;
-        }
-      }
+    this.pawnsController.rotate(newRotation);
+  }
+  createSelectionObjects() {
+    if (this.pawnsController) {
+      this.pawnsController.createSelectionObjects();
     }
+    this.rotateBoard(this.rotation);
   }
   changeGame(gameName) {
     this.gameName = gameName;
@@ -325,11 +283,18 @@ export default class Board {
       }
     }
     const dice = new Dice({
-      scene: this.scene,
+      container: this.diceContainer,
       context: this.context,
       colors: diceColors,
     });
+
     dice.roll(number, this.diceAnimationLength);
     this.dices.push(dice);
+  }
+  handleFontsLoad() {
+    if (this.pawnsController) {
+      this.createSelectionObjects();
+    }
+    this.fontsLoaded = true;
   }
 }

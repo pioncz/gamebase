@@ -9,17 +9,22 @@ export default class GameComponent extends Component {
     this.rendererContainerRef = React.createRef();
   }
   componentDidMount() {
-    const { gameName, } = this.props;
-    this.engine = new Engine({
-      container: this.rendererContainerRef.current,
-      gameName,
-    });
-    this.engine.on('click', this.handleClick);
+    this.createEngine();
   }
   componentWillUnmount() {
-    this.engine.off('click', this.handleClick);
+    if (this.engine) {
+      this.engine.off('click', this.handleClick);
+    }
   }
   shouldComponentUpdate(nextProps) {
+    if (!this.engine && nextProps.gameName) {
+      this.createEngine();
+    }
+
+    if (!this.engine) {
+      return false;
+    }
+
     if (nextProps.moves && nextProps.moves.length) {
       let move = nextProps.moves[nextProps.moves.length - 1];
       this.engine.board.movePawn(move);
@@ -28,7 +33,7 @@ export default class GameComponent extends Component {
     if (this.props.gameName !== nextProps.gameName) {
       this.engine.changeGame(nextProps.gameName);
     }
-    if (this.props.gameId !== nextProps.gameId) {
+    if (this.props.gameId !== nextProps.gameId && this.props.gameName) {
       this.engine.initGame({
         gameId: nextProps.gameId,
         gameName: nextProps.gameName,
@@ -37,6 +42,16 @@ export default class GameComponent extends Component {
       nextProps.firstPlayerId);
     }
     return false;
+  }
+  createEngine() {
+    const { gameName, } = this.props;
+    if (gameName) {
+      this.engine = new Engine({
+        container: this.rendererContainerRef.current,
+        gameName,
+      });
+      this.engine.on('click', this.handleClick);
+    }
   }
   handleClick(e) {
     if (this.props.onClick) {
@@ -50,7 +65,7 @@ export default class GameComponent extends Component {
     return this.engine.board.checkMoves(pawns, diceNumber, playerIndex);
   }
   render() {
-    return <div className="game">
+    return <div className="game-component">
       <div ref={this.rendererContainerRef} className="renderer"></div>
     </div>;
   }
