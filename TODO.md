@@ -1,4 +1,3 @@
-- w trybie portret gdy gra dla 3 graczy, kiepsko widac player profile gracza ktorego nie ma
 - sciac rogi kostki
 - ruch pionkiem z bazy na pole moglby byc ciut dluzszy
 - fix testow
@@ -254,3 +253,4 @@ DONE:
 + fixy zaznaczenia
 + naprawic buga gdy graja 3 osoby, 1 wyjdzie i poprzednia z listy moze wejsc na jej pole
 + jak gracz wyjdzie to nie mozna dokonczyc rozgrywki. wywalilem kod kasujacy playerId z playerIds
++ w trybie portret gdy gra dla 3 graczy, kiepsko widac player profile gracza ktorego nie ma

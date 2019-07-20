@@ -93,3 +93,11 @@
       transition-delay: .2s
     .player-3
       transition-delay: .3s
+
+    .player-0, .player-3
+      &.player--hidden
+        left: -50%
+
+    .player-1, .player-2
+      &.player--hidden
+        right: -50%
