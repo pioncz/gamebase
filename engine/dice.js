@@ -21,13 +21,12 @@ export default class Dice {
       this._createFace(6),
     ];
 
-    this.cube = new THREE.Mesh( geometry, materials );
-    this.cube.name = 'Dice';
-    this.cube.position.x = 0;
-    this.cube.position.y = 2;
-    this.cube.position.z = 0;
+    this.$ = new THREE.Mesh( geometry, materials );
+    this.$.name = 'Dice';
+    this.$.position.x = 0;
+    this.$.position.y = 2;
+    this.$.position.z = 0;
     this._setOpacity(0);
-    this.scene.add( this.cube );
   }
   _createFace(number) {
     let canvas = Utils.$({element: 'canvas',}),
@@ -74,8 +73,8 @@ export default class Dice {
     return new THREE.MeshBasicMaterial({map: texture, transparent: true,});
   }
   _setOpacity(opacity) {
-    for(let materialId in this.cube.material) {
-      let material = this.cube.material[materialId];
+    for(let materialId in this.$.material) {
+      let material = this.$.material[materialId];
 
       material.opacity = opacity;
     }
@@ -85,7 +84,7 @@ export default class Dice {
   }
   roll(number, animationLength) {
     if (!animationLength) return;
-    let cube = this.cube,
+    let cube = this.$,
       numberRotations = {
         1: {x: 0, z: .25,},
         2: {x: 0, z: .75,},
@@ -140,7 +139,7 @@ export default class Dice {
   }
   remove() {
     this.hide().then(() => {
-      this.scene.remove(this.cube);
+      this.scene.remove(this.$);
     });
   }
 }

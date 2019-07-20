@@ -245,5 +245,4 @@ DONE:
 + brakuje zaznaczenia shaderem
 + lepsze dopasowanie kamery
 + polaczyc $portrait i $small-screen
-+ pionek jak przechodzi przez pole z innym pionkiem to wysoko sie odbija - pionki nie wchodza w siebie
-+ ruch pionka szybszy
++ bugfixy kostki

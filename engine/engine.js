@@ -131,7 +131,7 @@ export default class Engine extends EventEmitter {
         },
       },
       active: () => {
-        this.board.createSelectionObjects();
+        this.board.handleFontsLoad();
         this.animate();
       },
     });

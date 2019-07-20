@@ -404,6 +404,7 @@ class Room extends Component {
         visible={page === Pages.Game}
         active={player && player.id === currentPlayerId && waitingForAction === Games.Ludo.ActionTypes.Roll}
         onClick={this.handleDicesClick}
+        color={color}
       />
       <Timer ref={this.timerComponentRef} />
       <Snackbar ref={this.snackbarComponentRef} />

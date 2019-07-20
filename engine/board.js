@@ -24,6 +24,7 @@ export default class Board {
     this.gameName = props.gameName;
     this.dices = [];
     this.diceAnimationLength;
+    this.fontsLoaded = false;
 
     this.createBoard();
     this.createPawns();
@@ -54,6 +55,9 @@ export default class Board {
     this.drawBoard();
     // create pawns
     this.pawnsController.createPawns({pawns: props.pawns,});
+    if (this.fontsLoaded) {
+      this.pawnsController.createSelectionObjects();
+    }
 
     let newRotation = (Math.PI/2) * firstPlayerIndex;
     this.rotateBoard(newRotation);
@@ -275,11 +279,17 @@ export default class Board {
       }
     }
     const dice = new Dice({
-      scene: this.scene,
       context: this.context,
       colors: diceColors,
     });
+    this.$.add(dice.$);
     dice.roll(number, this.diceAnimationLength);
     this.dices.push(dice);
+  }
+  handleFontsLoad() {
+    if (this.pawnsController) {
+      this.pawnsController.createSelectionObjects();
+    }
+    this.fontsLoaded = true;
   }
 }
