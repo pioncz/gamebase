@@ -1,6 +1,7 @@
+- naprawic zaznaczenie
+- naprawic buga gdy graja 3 osoby, 1 wyjdzie i poprzednia z listy moze wejsc na jej pole
 - ruch pionka szybszy
 - pionek jak przechodzi przez pole z innym pionkiem to wysoko sie odbija - pionki nie wchodza w siebie
-- naprawic buga gdy graja 3 osoby, 1 wyjdzie i poprzednia z listy moze wejsc na jej pole
 - test wydajnosci serwera w /admin
 - kosci przy kursorze, rzut kostka w dowolnym miejscu na planszy (lub srodek)
 - timeout na ekranach przed startem gry
@@ -244,3 +245,4 @@ DONE:
 + brakuje zaznaczenia shaderem
 + lepsze dopasowanie kamery
 + polaczyc $portrait i $small-screen
++ bugfixy kostki
