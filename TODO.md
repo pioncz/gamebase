@@ -1,5 +1,3 @@
-- nie mozna ruszyc pionka po zrobieniu init game
-- bug strzalki nad pionkiem (kolejny init game psuje)
 - zsynchronizowac pulsowanie pionka i strzalki nad pionkiem
 - naprawic buga gdy graja 3 osoby, 1 wyjdzie i poprzednia z listy moze wejsc na jej pole
 - test wydajnosci serwera w /admin
@@ -246,3 +244,4 @@ DONE:
 + lepsze dopasowanie kamery
 + polaczyc $portrait i $small-screen
 + bugfixy kostki
++ fixy zaznaczenia

@@ -261,7 +261,9 @@ export default class Board {
     this.pawnsController.rotate(newRotation);
   }
   createSelectionObjects() {
-    this.pawnsController.createSelectionObjects();
+    if (this.pawnsController) {
+      this.pawnsController.createSelectionObjects();
+    }
     this.rotateBoard(this.rotation);
   }
   changeGame(gameName) {
@@ -288,7 +290,7 @@ export default class Board {
   }
   handleFontsLoad() {
     if (this.pawnsController) {
-      this.pawnsController.createSelectionObjects();
+      this.createSelectionObjects();
     }
     this.fontsLoaded = true;
   }
