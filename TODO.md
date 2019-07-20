@@ -1,4 +1,3 @@
-- zsynchronizowac pulsowanie pionka i strzalki nad pionkiem
 - naprawic buga gdy graja 3 osoby, 1 wyjdzie i poprzednia z listy moze wejsc na jej pole
 - test wydajnosci serwera w /admin
 - kosci przy kursorze, rzut kostka w dowolnym miejscu na planszy (lub srodek)
