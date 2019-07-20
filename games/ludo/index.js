@@ -1,7 +1,7 @@
 const BoardUtils = require('./BoardUtils.js');
 const Board = require('./Board.js');
 const Fields = require('./Fields.js');
-const Game = require('./../Game/');
+const Game = require('./../game');
 
 const InitialState = () => {
   return {
