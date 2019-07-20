@@ -3,9 +3,9 @@ import { EASING, } from "./utils/animations";
 import Config from 'config.js';
 
 export default class Dice {
-  constructor({id, scene, context, colors = [], }) {
+  constructor({id, container, context, colors = [], }) {
     this.id = id;
-    this.scene = scene;
+    this.container = container;
     this.animations = context.animations;
     this.animationLength = null;
     this.colors = colors;
@@ -27,6 +27,7 @@ export default class Dice {
     this.$.position.y = 2;
     this.$.position.z = 0;
     this._setOpacity(0);
+    this.container.add(this.$);
   }
   _createFace(number) {
     let canvas = Utils.$({element: 'canvas',}),
@@ -139,7 +140,7 @@ export default class Dice {
   }
   remove() {
     this.hide().then(() => {
-      this.scene.remove(this.$);
+      this.container.remove(this.$);
     });
   }
 }

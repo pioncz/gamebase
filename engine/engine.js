@@ -201,6 +201,7 @@ export default class Engine extends EventEmitter {
         const marginTop = 4;
         this.board.$.position.set(marginTop, 0, marginTop);
         this.board.pawnsController.$.position.set(marginTop, 0, marginTop);
+        this.board.diceContainer.position.set(marginTop, 0, marginTop);
       }
     }
     this.camera.updateProjectionMatrix();

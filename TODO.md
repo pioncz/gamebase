@@ -1,11 +1,19 @@
-- naprawic buga gdy graja 3 osoby, 1 wyjdzie i poprzednia z listy moze wejsc na jej pole
+- w trybie portret gdy gra dla 3 graczy, kiepsko widac player profile gracza ktorego nie ma
+- sciac rogi kostki
+- ruch pionkiem z bazy na pole moglby byc ciut dluzszy
+- fix testow
+
+- zdarza sie bug gdy jest zaznaczony pionek, gracz moze sie ruszyc, ale serwer loguje ze ten pionek nie jest zaznaczony
+- gra z botami -> gracz dlugo sie nie rusza -> jak rzuci kostka to zaznacza mu pionka, bot sie rusza, a gracz nie moze sie ruszyc
 - test wydajnosci serwera w /admin
+- przy pierwszym rzucie nie widac timeoutu
 - kosci przy kursorze, rzut kostka w dowolnym miejscu na planszy (lub srodek)
 - timeout na ekranach przed startem gry
 - zamykanie pokoju po jakims czasie - mozliwosc dolaczenia do pokoju po dc
 - jak sie rozlaczy podczas wybierania koloru to wraca do kolejki
 - 2 tryby rozgrywki: towarzyska, rankingowa
 - customowe pionki
+- akcja pominiecia ruchu
 
 - websocket server: przeniesc metody z konstruktora
 
@@ -244,3 +252,5 @@ DONE:
 + polaczyc $portrait i $small-screen
 + bugfixy kostki
 + fixy zaznaczenia
++ naprawic buga gdy graja 3 osoby, 1 wyjdzie i poprzednia z listy moze wejsc na jej pole
++ jak gracz wyjdzie to nie mozna dokonczyc rozgrywki. wywalilem kod kasujacy playerId z playerIds

@@ -24,6 +24,8 @@ export default class Board {
     this.gameName = props.gameName;
     this.dices = [];
     this.diceAnimationLength;
+    this.diceContainer = new THREE.Group();
+    this.scene.add(this.diceContainer);
     this.fontsLoaded = false;
 
     this.createBoard();
@@ -281,10 +283,11 @@ export default class Board {
       }
     }
     const dice = new Dice({
+      container: this.diceContainer,
       context: this.context,
       colors: diceColors,
     });
-    this.$.add(dice.$);
+
     dice.roll(number, this.diceAnimationLength);
     this.dices.push(dice);
   }

@@ -5,6 +5,7 @@ import Button from 'components/button/index';
 import './index.sass';
 import Timer from 'components/timer';
 import Games from 'Games.js';
+import Game from 'Game/';
 import PlayerProfiles from 'components/playerProfiles';
 import { bindActionCreators, } from 'redux';
 import { connect, } from 'react-redux';
@@ -171,7 +172,7 @@ class Room extends Component {
 
         this.gameComponentRef.current.engine.rollDice(newAction.diceNumber, diceColors);
       }
-      if (newAction.type === Games.Ludo.ActionTypes.MovePawn) {
+      if (newAction.type === Game.ActionTypes.MovePawn) {
         this.gameComponentRef.current.movePawn({pawnId: newAction.pawnId, fieldSequence: newAction.fieldSequence,});
       }
       if (newAction.type === Games.Ludo.ActionTypes.SelectPawns) {
@@ -190,7 +191,7 @@ class Room extends Component {
         });
         this.timerComponentRef.current.stop();
       }
-      if (newAction.type === Games.Ludo.ActionTypes.Disconnected) {
+      if (newAction.type === Game.ActionTypes.Disconnected) {
         const players = this.state.players,
           playerIndex = players.findIndex(player => player.id === newAction.playerId);
 
