@@ -5,7 +5,7 @@ import Button from 'components/button/index';
 import './index.sass';
 import Timer from 'components/timer';
 import Games from 'Games.js';
-import Game from 'Game/';
+import Game from 'game/';
 import PlayerProfiles from 'components/playerProfiles';
 import { bindActionCreators, } from 'redux';
 import { connect, } from 'react-redux';
