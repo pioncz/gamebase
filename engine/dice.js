@@ -10,9 +10,129 @@ export default class Dice {
     this.animationLength = null;
     this.colors = colors;
 
-    var geometry = new THREE.BoxGeometry( 2, 2, 2 );
+    var geometry = new THREE.Geometry();
+    var size = 10;
+    var radius = 0.8;
+    // create an array of vertices by way of
+    // and array of vector3 instances
+    geometry.vertices.push(
+      new THREE.Vector3(0, radius, 0),
+      new THREE.Vector3(size, radius, 0),
+      new THREE.Vector3(size, (size + radius), 0),
+      new THREE.Vector3(0, (size + radius), 0),
+
+      new THREE.Vector3(0, radius, -(size + 2 * radius)),
+      new THREE.Vector3(size, radius, -(size + 2 * radius)),
+      new THREE.Vector3(size, (size + radius), -(size + 2 * radius)),
+      new THREE.Vector3(0, (size + radius), -(size + 2 * radius)),
+
+      new THREE.Vector3(-radius, radius, -radius),
+      new THREE.Vector3(-radius, radius, -(radius + size)),
+      new THREE.Vector3(-radius, (size + radius), -radius),
+      new THREE.Vector3(-radius, (size + radius) ,-(radius + size)),
+
+      new THREE.Vector3(size + radius, radius, -radius),
+      new THREE.Vector3(size + radius, radius, -(radius + size)),
+      new THREE.Vector3(size + radius, (size + radius), -radius),
+      new THREE.Vector3(size + radius, (size + radius) ,-(radius + size)),
+
+      new THREE.Vector3(0, 0, -radius),
+      new THREE.Vector3(size, 0, -radius),
+      new THREE.Vector3(0, 0, -(size+radius)),
+      new THREE.Vector3(size, 0, -(size+radius)),
+
+      new THREE.Vector3(0, (size + 2 * radius), -radius),
+      new THREE.Vector3(size, (size + 2 * radius), -radius),
+      new THREE.Vector3(0, (size + 2 * radius), -(size+radius)),
+      new THREE.Vector3(size, (size + 2 * radius), -(size+radius)),
+    );
+
+    // create faces by way of an array of
+    // face3 instances. (you just play connect
+    // the dots with index values from the
+    // vertices array)
+    geometry.faces.push(
+      // basic walls
+      new THREE.Face3(0, 1, 2),
+      new THREE.Face3(3, 0, 2),
+
+      new THREE.Face3(4, 6, 5),
+      new THREE.Face3(7, 6, 4),
+
+      new THREE.Face3(9, 8, 10),
+      new THREE.Face3(9, 10, 11),
+
+      new THREE.Face3(12, 13, 14),
+      new THREE.Face3(14, 13, 15),
+
+      new THREE.Face3(17, 16, 18),
+      new THREE.Face3(17, 18, 19),
+
+      new THREE.Face3(20, 21, 22),
+      new THREE.Face3(22, 21, 23),
+
+      // sides vertical
+      new THREE.Face3(0, 3, 8),
+      new THREE.Face3(8, 3, 10),
+
+      new THREE.Face3(7, 4, 9),
+      new THREE.Face3(7, 9, 11),
+
+      new THREE.Face3(12, 14, 1),
+      new THREE.Face3(1, 14, 2),
+
+      new THREE.Face3(15, 13, 5),
+      new THREE.Face3(15, 5, 6),
+
+      // top sides horizontal
+      new THREE.Face3(22, 6, 7),
+      new THREE.Face3(22, 23, 6),
+
+      new THREE.Face3(2, 21, 3),
+      new THREE.Face3(21, 20, 3),
+
+      new THREE.Face3(20, 22, 10),
+      new THREE.Face3(10, 22, 11),
+
+      new THREE.Face3(23, 21, 14),
+      new THREE.Face3(23, 14, 15),
+
+      // top corners
+      new THREE.Face3(23, 15, 6),
+      new THREE.Face3(3, 20, 10),
+      new THREE.Face3(21, 2, 14),
+      new THREE.Face3(11, 22, 7),
+
+      // bottom sides horizontal
+      new THREE.Face3(18, 4, 5),
+      new THREE.Face3(19, 18, 5),
+
+      new THREE.Face3(0, 16, 1),
+      new THREE.Face3(16, 17, 1),
+
+      new THREE.Face3(18, 8, 9),
+      new THREE.Face3(18, 16, 8),
+
+      new THREE.Face3(12, 17, 13),
+      new THREE.Face3(17, 19, 13),
+
+      // // bottom corners
+      new THREE.Face3(16, 0, 8),
+      new THREE.Face3(1, 17, 12),
+      new THREE.Face3(18, 9, 4),
+      new THREE.Face3(19, 5, 13),
+    );
+
+    geometry.computeVertexNormals(); // compute vertex normals
+    geometry.computeFaceNormals(); // compute face normals
+    geometry.normalize(); // normalize the geometry
 
     var materials = [
+      new THREE.MeshBasicMaterial({
+        color: Utils.lightenColor(this.colors[0], -0.03),
+        transparent: true,
+        opacity: 1,
+      }),
       this._createFace(1),
       this._createFace(2),
       this._createFace(3),
@@ -21,11 +141,59 @@ export default class Dice {
       this._createFace(6),
     ];
 
+    geometry.faces[0].materialIndex = 5;
+    geometry.faces[1].materialIndex = 5;
+
+    geometry.faces[2].materialIndex = 6;
+    geometry.faces[3].materialIndex = 6;
+
+    geometry.faces[4].materialIndex = 2;
+    geometry.faces[5].materialIndex = 2;
+
+    geometry.faces[6].materialIndex = 1;
+    geometry.faces[7].materialIndex = 1;
+
+    geometry.faces[8].materialIndex = 4;
+    geometry.faces[9].materialIndex = 4;
+
+    geometry.faces[10].materialIndex = 3;
+    geometry.faces[11].materialIndex = 3;
+
+    geometry.computeBoundingBox();
+
+    var max = geometry.boundingBox.max,
+      min = geometry.boundingBox.min;
+    var offset = new THREE.Vector2(0 - min.x, 0 - min.y);
+    var range = new THREE.Vector2(max.x - min.x, max.y - min.y);
+    var faces = geometry.faces;
+
+    geometry.faceVertexUvs[0] = [];
+
+    for (var i = 0; i < faces.length; i++) {
+      const face = faces[i];
+      const components = ['x', 'y', 'z',].sort((a,b) =>
+        Math.abs(face.normal[a]) - Math.abs(face.normal[b])
+      );
+
+      var v1 = geometry.vertices[faces[i].a],
+        v2 = geometry.vertices[faces[i].b],
+        v3 = geometry.vertices[faces[i].c];
+
+      geometry.faceVertexUvs[0].push([
+        new THREE.Vector2((v1[components[0]] + offset.x)/range.x ,(v1[components[1]] + offset.y)/range.y),
+        new THREE.Vector2((v2[components[0]] + offset.x)/range.x ,(v2[components[1]] + offset.y)/range.y),
+        new THREE.Vector2((v3[components[0]] + offset.x)/range.x ,(v3[components[1]] + offset.y)/range.y),
+      ]);
+    }
+
+    geometry.uvsNeedUpdate = true;
+
     this.$ = new THREE.Mesh( geometry, materials );
     this.$.name = 'Dice';
     this.$.position.x = 0;
     this.$.position.y = 2;
     this.$.position.z = 0;
+    this.$.scale.set(2,2,2);
     this._setOpacity(0);
     this.container.add(this.$);
   }
@@ -110,7 +278,7 @@ export default class Dice {
         this._setOpacity(diceAlpha);
 
         cube.position.x = 15-10*progress;
-        cube.position.y = 15-13*progress;
+        cube.position.y = 15.28 - 13*progress;
         cube.position.z = -(15-10*progress);
 
         cube.rotation.x = baseX + (2*Math.PI) * progress;
@@ -121,7 +289,7 @@ export default class Dice {
     }, {
       update: (progress) => {
         cube.position.x = 5 * (1-progress);
-        cube.position.y = 2 + 2 * EASING.Sin(progress/2);
+        cube.position.y = 2.28 + 2 * EASING.Sin(progress/2);
         cube.position.z = -5 * (1-progress);
 
         cube.rotation.x = baseX + (2*Math.PI) * progress / 4;

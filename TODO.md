@@ -1,6 +1,12 @@
-- sciac rogi kostki
+- wieksza strzalka nad pionkiem
 - ruch pionkiem z bazy na pole moglby byc ciut dluzszy
 - fix testow
+- bot jak moze to zbija
+- fixy responsywnosci
+- poszukac i wywalic playerDisconnected - connectorInstance.socket.on('playerDisconnected
+- animacja wejscia - zmiana gradientu w background, plansza opacity + rotate + scale 0 -> 1
+- dodac orbit controlsy do engine
+- wieksze zaznaczenie ogolnie, jeszcze wieksze na desktopie
 
 - zdarza sie bug gdy jest zaznaczony pionek, gracz moze sie ruszyc, ale serwer loguje ze ten pionek nie jest zaznaczony
 - gra z botami -> gracz dlugo sie nie rusza -> jak rzuci kostka to zaznacza mu pionka, bot sie rusza, a gracz nie moze sie ruszyc
@@ -254,3 +260,4 @@ DONE:
 + naprawic buga gdy graja 3 osoby, 1 wyjdzie i poprzednia z listy moze wejsc na jej pole
 + jak gracz wyjdzie to nie mozna dokonczyc rozgrywki. wywalilem kod kasujacy playerId z playerIds
 + w trybie portret gdy gra dla 3 graczy, kiepsko widac player profile gracza ktorego nie ma
++ sciac rogi kostki

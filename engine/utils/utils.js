@@ -28,6 +28,17 @@ const Utils = {
     return loop;
   },
   isIos: /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream,
+  lightenColor: (color, intensity) => {
+    let helperColor = new THREE.Color(color);
+
+    if (!Object.keys(helperColor).length) return;
+
+    return new THREE.Color(
+      helperColor.r + intensity,
+      helperColor.g + intensity,
+      helperColor.b + intensity,
+    );
+  },
 }
 
 export default Utils

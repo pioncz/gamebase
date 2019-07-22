@@ -47,7 +47,7 @@ export default class Pawn {
 
     let width = 4,
       height = 4,
-      selectionGeometry = new THREE.PlaneGeometry( width, height, 32 ),
+      selectionGeometry = new THREE.PlaneGeometry( width, height, 2 ),
       canvas = document.createElement('canvas'),
       ctx = canvas.getContext('2d'),
       texture = new THREE.Texture(canvas),
