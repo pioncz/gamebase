@@ -1,4 +1,3 @@
-- wieksza strzalka nad pionkiem
 - ruch pionkiem z bazy na pole moglby byc ciut dluzszy
 - fix testow
 - bot jak moze to zbija
@@ -7,6 +6,7 @@
 - animacja wejscia - zmiana gradientu w background, plansza opacity + rotate + scale 0 -> 1
 - dodac orbit controlsy do engine
 - wieksze zaznaczenie ogolnie, jeszcze wieksze na desktopie
+- mozna wywalic fontAwesome i czekanie az sie zaladuje
 
 - zdarza sie bug gdy jest zaznaczony pionek, gracz moze sie ruszyc, ale serwer loguje ze ten pionek nie jest zaznaczony
 - gra z botami -> gracz dlugo sie nie rusza -> jak rzuci kostka to zaznacza mu pionka, bot sie rusza, a gracz nie moze sie ruszyc
@@ -261,3 +261,4 @@ DONE:
 + jak gracz wyjdzie to nie mozna dokonczyc rozgrywki. wywalilem kod kasujacy playerId z playerIds
 + w trybie portret gdy gra dla 3 graczy, kiepsko widac player profile gracza ktorego nie ma
 + sciac rogi kostki
++ wieksza strzalka nad pionkiem

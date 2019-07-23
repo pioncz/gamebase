@@ -1,5 +1,7 @@
 import {EASING, } from "./utils/animations";
 
+const TextureLoader = new THREE.TextureLoader();
+
 export default class Pawn {
   constructor(props) {
     this.x = props.x;
@@ -45,30 +47,13 @@ export default class Pawn {
   createSelectionObject() {
     if (this.selectionObject) return;
 
-    let width = 4,
-      height = 4,
+    let width = 2.3,
+      height = 2.3,
       selectionGeometry = new THREE.PlaneGeometry( width, height, 2 ),
-      canvas = document.createElement('canvas'),
-      ctx = canvas.getContext('2d'),
-      texture = new THREE.Texture(canvas),
       selectionMaterial = new THREE.MeshBasicMaterial({
-        map: texture,
-        side: THREE.DoubleSide,
+        map: TextureLoader.load('/static/down-arrow.svg'),
         transparent: true,
       });
-
-    canvas.width = width * 20;
-    canvas.height = height * 20;
-    canvas.style.width = width + 'px';
-    canvas.style.height = height + 'px';
-    ctx.fillStyle = '#fff';
-    ctx.font = "50px FontAwesome";
-    ctx.textBaseline = "middle";
-    ctx.textAlign = "center";
-    ctx.fillText(String.fromCharCode(61703), canvas.width / 2, canvas.height / 2);
-    ctx.strokeStyle='rgba(0,0,0,0.7)';
-    ctx.strokeText(String.fromCharCode(61703), canvas.width / 2, canvas.height / 2);
-    texture.needsUpdate = true;
 
     this.selectionObject = new THREE.Mesh( selectionGeometry, selectionMaterial );
     this.selectionObject.rotation.y = Math.PI / 4;
