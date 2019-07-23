@@ -1,7 +1,6 @@
 - fixy responsywnosci
 - animacja wejscia - zmiana gradientu w background, plansza opacity + rotate + scale 0 -> 1
 - dodac orbit controlsy do engine
-- wieksze zaznaczenie ogolnie, jeszcze wieksze na desktopie
 - mozna wywalic fontAwesome i czekanie az sie zaladuje
 - https://www.google.com/search?q=node+diagnostics&oq=node+diagnos&aqs=chrome.1.69i57j0l5.2544j0j1&sourceid=chrome&ie=UTF-8
 
@@ -264,3 +263,5 @@ DONE:
 + fix testow
 + bot jak moze to zbija
 + poszukac i wywalic playerDisconnected - connectorInstance.socket.on('playerDisconnected
++ restart animacji dimmingPass przy zaznaczeniu
++ wieksze zaznaczenie ogolnie, jeszcze wieksze na desktopie

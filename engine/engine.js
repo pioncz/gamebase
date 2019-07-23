@@ -83,6 +83,8 @@ export default class Engine extends EventEmitter {
     this.composer.addPass(renderPass);
     this.composer.addPass(this.dimmingPass);
 
+    this.edgeCorrection = 0; // updated on window resize
+
     this.animations.create({
       id: 'dimmingThickness',
       update: (progress) => {
@@ -91,8 +93,8 @@ export default class Engine extends EventEmitter {
           parsedProgress = 1 - progress;
         }
         if (this.dimmingPass.selectedObjects.length) {
-          this.dimmingPass.edgeThickness = parsedProgress * 1 + 1;
-          this.dimmingPass.edgeStrength = parsedProgress * 5 + 2;
+          this.dimmingPass.edgeThickness = parsedProgress * (1 + this.edgeCorrection) + (1 + this.edgeCorrection);
+          this.dimmingPass.edgeStrength = parsedProgress * 5 + (2 + this.edgeCorrection);
         }
       },
       loop: true,
@@ -158,6 +160,8 @@ export default class Engine extends EventEmitter {
     this.windowHeight = height;
     this.renderer.setSize( width, height );
     this.composer.setSize( width * 2, height * 2 );
+
+    this.edgeCorrection = Math.max(Math.min((this.windowWidth - 600) / 1400, 1), 0); // 0 - 1
 
     if (aspect <= 1.3) {
       let scaleY;
@@ -265,6 +269,7 @@ export default class Engine extends EventEmitter {
       let pawn = this.board.pawnsController.getPawn(pawnIds[i]);
       this.dimmingPass.selectedObjects.push(pawn.pawnMesh);
     }
+    this.animations.restartAnimation('dimmingThickness');
     this.board.pawnsController.selectPawns(pawnIds);
   }
   animate(timestamp) {

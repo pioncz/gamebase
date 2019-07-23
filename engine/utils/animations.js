@@ -46,7 +46,7 @@ const nextId = (() => {
 })();
 
 class Animation {
-  constructor({id, update, length = 0, delay = 0, easing = null, loop = false}) {
+  constructor({id, update, length = 0, delay = 0, easing = null, loop = false,}) {
     this.id = id;
     this.lengthLeft = length;
     this.length = length;
@@ -69,44 +69,44 @@ export class Animations {
   }
   _getAnimationById(id) {
     let animation = this.animations.find(animation => animation.id === id);
-    
+
     return animation;
   }
   removeAnimation(id) {
     let animation = this._getAnimationById(id);
-    
+
     if (!animation) return;
-    
+
     this._finishAnimation(id);
     this.animations.splice(this.animations.indexOf(animation), 1);
   }
   _finishAnimation(id) {
-    
+
   }
   create(options) {
     options.id = options.id || nextId();
-    
+
     if (this._getAnimationById(options.id)) this.removeAnimation(options.id);
-    
+
     let animation = new Animation(options);
-  
+
     this.animations.push(animation);
-  
+
     return animation.finishPromise;
   }
   tickAnimation(delta, animation) {
     let progress;
-  
+
     if (animation.delayLeft) {
       animation.delayLeft -= delta;
     }
-  
+
     if (animation.delayLeft <= 0) {
       progress = (1 - animation.lengthLeft / animation.length);
       if (animation.easing) {
         progress = animation.easing(progress);
       }
-      
+
       animation.update(progress);
       animation.lengthLeft -= delta;
       if (animation.lengthLeft < 0) {
@@ -118,7 +118,7 @@ export class Animations {
         }
       }
     }
-    
+
     if (animation.finished) {
       animation.resolve();
     }
@@ -126,15 +126,15 @@ export class Animations {
   tick(delta) {
     for(let i = this.animations.length - 1; i >= 0; i--) {
       this.tickAnimation(delta, this.animations[i]);
-      
+
       if (this.animations[i].finished) {
         this.animations.splice(i, 1);
       }
     }
-    
+
     for(let sequenceName in this.sequences) {
       let sequence = this.sequences[sequenceName];
-      
+
       if (sequence.animations.length) {
         this.tickAnimation(delta, sequence.animations[0]);
         if (sequence.animations[0].finished) {
@@ -146,7 +146,7 @@ export class Animations {
       }
     }
   }
-  createSequence({name, steps}) {
+  createSequence({name, steps,}) {
     let animations = [],
       resolveFunction = null,
       rejectFunction = null,
@@ -154,25 +154,32 @@ export class Animations {
         resolveFunction = resolve;
         rejectFunction = reject;
       });
-    
+
     for(let stepId in steps) {
       let step = steps[stepId],
         animation = new Animation(step);
-      
+
       animations.push(animation);
 
       if (step.finish) {
         animation.finishPromise.then(step.finish, step.finish);
       }
     }
-  
+
     this.sequences[name] = {
       name,
       animations,
       resolveFunction,
       rejectFunction,
     };
-    
+
     return animationPromise;
+  }
+  restartAnimation(id) {
+    let animation = this._getAnimationById(id);
+
+    if (!animation) return;
+
+    animation.lengthLeft = animation.length;
   }
 }
