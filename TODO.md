@@ -1,4 +1,3 @@
-- ruch pionkiem z bazy na pole moglby byc ciut dluzszy
 - fix testow
 - bot jak moze to zbija
 - fixy responsywnosci
@@ -7,6 +6,7 @@
 - dodac orbit controlsy do engine
 - wieksze zaznaczenie ogolnie, jeszcze wieksze na desktopie
 - mozna wywalic fontAwesome i czekanie az sie zaladuje
+- https://www.google.com/search?q=node+diagnostics&oq=node+diagnos&aqs=chrome.1.69i57j0l5.2544j0j1&sourceid=chrome&ie=UTF-8
 
 - zdarza sie bug gdy jest zaznaczony pionek, gracz moze sie ruszyc, ale serwer loguje ze ten pionek nie jest zaznaczony
 - gra z botami -> gracz dlugo sie nie rusza -> jak rzuci kostka to zaznacza mu pionka, bot sie rusza, a gracz nie moze sie ruszyc
@@ -262,3 +262,5 @@ DONE:
 + w trybie portret gdy gra dla 3 graczy, kiepsko widac player profile gracza ktorego nie ma
 + sciac rogi kostki
 + wieksza strzalka nad pionkiem
++ ruch pionkiem z bazy na pole moglby byc ciut dluzszy
++ mniejsza strzalka nad pionkiem

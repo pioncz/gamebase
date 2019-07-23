@@ -47,8 +47,8 @@ export default class Pawn {
   createSelectionObject() {
     if (this.selectionObject) return;
 
-    let width = 2.3,
-      height = 2.3,
+    let width = 2.1,
+      height = 2.1,
       selectionGeometry = new THREE.PlaneGeometry( width, height, 2 ),
       selectionMaterial = new THREE.MeshBasicMaterial({
         map: TextureLoader.load('/static/down-arrow.svg'),
@@ -85,7 +85,7 @@ export default class Pawn {
       length: 500,
       easing: EASING.InOutCubic,
       update: progress => {
-        this.selectionObject.position.y = 3.0 - progress * .6;
+        this.selectionObject.position.y = 3.2 - progress * .6;
         this.selectionObject.material.opacity = Math.min(progress * 3, 1.0);
       },
     }).then(() => {
@@ -101,7 +101,7 @@ export default class Pawn {
             parsedProgress = .5 - (progress - .5);
           }
 
-          this.selectionObject.position.y = 2.4 + parsedProgress * .6;
+          this.selectionObject.position.y = 2.6 + parsedProgress * .6;
         },
       })
     });

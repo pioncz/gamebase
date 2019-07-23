@@ -128,7 +128,7 @@ class Room {
     }
 
     const playerIndex = gameState.players.findIndex(player => player.id === playerId);
-    const spawnFields = gameState.pawns && game.BoardUtils.getSpawnFields(gameState.pawns, playerIndex);
+    const spawnFields = gameState.pawns && game.BoardUtils.getEmptySpawnFields(gameState.pawns, playerIndex);
     const playerPawns = gameState.pawns && gameState.pawns.filter(pawn =>
       pawn.playerId === player.id &&
       game.BoardUtils.getFieldByPosition(pawn.x, pawn.z).type !== game.BoardUtils.FieldTypes.spawn

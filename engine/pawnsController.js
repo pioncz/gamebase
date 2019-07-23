@@ -10,7 +10,6 @@ export default class PawnsController {
     this.animations = props.context.animations;
     this.context = props.context;
     this.columnsLength = props.columnsLength;
-    this.animationLength = null;
 
     this.$ = new THREE.Group();
     this.$.name = 'PawnsController';
@@ -66,14 +65,7 @@ export default class PawnsController {
       delete this.pawns[pawnId];
     }
   }
-  setAnimationLength(animationLength) {
-    this.animationLength = animationLength;
-  }
   movePawn(pawnId, fieldSequence) {
-    if (!this.animationLength) {
-      return;
-    }
-
     let pawn = this.pawns[pawnId],
       animationsSteps = [];
 
@@ -84,14 +76,14 @@ export default class PawnsController {
 
     let pawnOnLastField;
     for(let i = 0; i < fieldSequence.length; i++) {
-      let {x, z,} = fieldSequence[i],
+      let {x, z, animationLength,} = fieldSequence[i],
         newX = (x - Math.floor(this.columnsLength/2)) * this.fieldLength,
         newZ = (z - Math.floor(this.columnsLength/2)) * this.fieldLength,
         pawnOnNextField = (!!this.getPawnByXZ(x, z)) &&
           i !== (fieldSequence.length -1);
 
       animationsSteps.push({
-        length: this.animationLength,
+        length: animationLength,
         easing: EASING.InOutQuad,
         update: ((newX, newZ, pawnOnLastField, pawnOnNextField) =>
           (progress) => {

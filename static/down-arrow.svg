@@ -1,1 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="306" height="306"><path fill="#fff" stroke="#333" stroke-width="2" d="M306 94.35l-35.7-35.7L153 175.95 35.7 58.65 0 94.35l153 153z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="300">
+<path fill="#fff" stroke="#333" stroke-width="2" 
+    d="M300 85 L 275 60 150 185 25 60 0 85 l 150 150 z"
+/>
+</svg>

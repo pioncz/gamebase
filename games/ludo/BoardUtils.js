@@ -1,11 +1,6 @@
-const FieldTypes = {
-  spawn: 'spawn',
-  start: 'start',
-  goal: 'goal',
-};
+const { Fields, FieldTypes, } = require('./Fields');
 
-const Fields = require('./Fields'),
-  getField = (index) => {
+const getField = (index) => {
     const fieldIndex = index % Fields.length;
 
     return Fields[fieldIndex];
@@ -79,16 +74,18 @@ const Fields = require('./Fields'),
 
     return fieldSequence;
   },
-  getSpawnFields = (pawns, playerIndex) => {
-    let goalFields = Fields.filter(field =>
-        field.playerIndex === playerIndex &&
+  getSpawnFields = (playerIndex) => {
+    return Fields.filter(field =>
+      field.playerIndex === playerIndex &&
       field.type === FieldTypes.spawn
-      ),
-      emptyGoalFields = goalFields.filter(field =>
-        pawns.findIndex(pawn => (pawn.x === field.x && pawn.z === field.z)) === -1
-      );
+    );
+  },
+  getEmptySpawnFields = (pawns, playerIndex) => {
+    let spawnFields = getSpawnFields(playerIndex);
 
-    return emptyGoalFields;
+    return spawnFields.filter(field =>
+      pawns.findIndex(pawn => (pawn.x === field.x && pawn.z === field.z)) === -1
+    );
   },
   getWinningPlayer = (gameState) => {
     let playerPoints = [];
@@ -147,6 +144,7 @@ module.exports = {
   checkMoves,
   getFieldByPosition,
   getSpawnFields,
+  getEmptySpawnFields,
   getWinningPlayer,
   checkWin,
   FieldTypes,
