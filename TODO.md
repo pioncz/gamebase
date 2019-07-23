@@ -1,5 +1,3 @@
-- fix testow
-- bot jak moze to zbija
 - fixy responsywnosci
 - poszukac i wywalic playerDisconnected - connectorInstance.socket.on('playerDisconnected
 - animacja wejscia - zmiana gradientu w background, plansza opacity + rotate + scale 0 -> 1
@@ -264,3 +262,5 @@ DONE:
 + wieksza strzalka nad pionkiem
 + ruch pionkiem z bazy na pole moglby byc ciut dluzszy
 + mniejsza strzalka nad pionkiem
++ fix testow
++ bot jak moze to zbija

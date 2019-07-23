@@ -48,7 +48,28 @@ class BotsManager {
         if (room.gameState.rolled && room.gameState.selectedPawns.length) {
           const moves = game.BoardUtils.checkMoves(room.gameState, room.gameState.diceNumber, currentPlayer.id);
           if (moves.length) {
-            returnActions = returnActions.concat(room.handleAction(game.Actions.PickPawn(moves[parseInt(Math.random() * moves.length)].pawnId), currentPlayer));
+            // check if is there any beating move
+            let resultMove;
+
+            for(let i = 0; i < moves.length; i++) {
+              const move = moves[i];
+              const lastField = move.fieldSequence[move.fieldSequence.length - 1];
+              const lastFieldPawns = room.gameState.pawns.filter(pawn => (
+                pawn.x === lastField.x &&
+                pawn.z === lastField.z &&
+                pawn.playerId !== currentPlayer.id
+              ));
+              const lastFieldPawn = lastFieldPawns.length && lastFieldPawns[0];
+
+              if (lastFieldPawn) {
+                resultMove = moves[i];
+                break;
+              }
+            }
+            if (!resultMove) {
+              resultMove = moves[parseInt(Math.random() * moves.length)];
+            }
+            returnActions = returnActions.concat(room.handleAction(game.Actions.PickPawn(resultMove.pawnId), currentPlayer));
           }
         } else if (!room.gameState.rolled) {
           returnActions = returnActions.concat(room.handleAction(game.Actions.Roll(), currentPlayer));
