@@ -1,5 +1,4 @@
 - fixy responsywnosci
-- poszukac i wywalic playerDisconnected - connectorInstance.socket.on('playerDisconnected
 - animacja wejscia - zmiana gradientu w background, plansza opacity + rotate + scale 0 -> 1
 - dodac orbit controlsy do engine
 - wieksze zaznaczenie ogolnie, jeszcze wieksze na desktopie
@@ -264,3 +263,4 @@ DONE:
 + mniejsza strzalka nad pionkiem
 + fix testow
 + bot jak moze to zbija
++ poszukac i wywalic playerDisconnected - connectorInstance.socket.on('playerDisconnected
