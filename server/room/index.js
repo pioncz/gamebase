@@ -127,6 +127,7 @@ class Room {
       player.disconnected = true;
     }
 
+    const connectedPlayers = gameState.players.filter(player => !player.disconnected);
     const playerIndex = gameState.players.findIndex(player => player.id === playerId);
     const spawnFields = gameState.pawns && game.BoardUtils.getEmptySpawnFields(gameState.pawns, playerIndex);
     const playerPawns = gameState.pawns && gameState.pawns.filter(pawn =>
@@ -136,12 +137,12 @@ class Room {
     let returnActions = [];
 
     // set winner if there's only 1 player left
-    if (gameState.players.length === 1) {
-      gameState.winnerId = gameState.players[0].id;
+    if (connectedPlayers.length === 1) {
+      gameState.winnerId = connectedPlayers[0].id;
       gameState.roomState = Game.GameStates.finished;
       returnActions.push({action: game.Actions.FinishGame(gameState.winnerId),})
       // if there is no winner, move player pawns to spawn
-    } else if (playerPawns && gameState.players.length) {
+    } else if (playerPawns && connectedPlayers.length) {
     // for every player pawn which is not in goal
       for(let i = 0; i < playerPawns.length; i++) {
         let pawn = playerPawns[i],

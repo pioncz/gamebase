@@ -1,4 +1,5 @@
 const Ludo = require('./index.js');
+const Game = require('./../game');
 const { Room, } = require('./../../server/room');
 
 let currentTime = 1;
@@ -285,7 +286,7 @@ describe('User make full move', () => {
     });
     expect(movePawnAction).toMatchObject({
       action: {
-        type: Ludo.ActionTypes.MovePawn,
+        type: Game.ActionTypes.MovePawn,
         pawnId: player1Pawns[0].id,
         fieldSequence: [ { x: 0, z: 4, playerIndex: 0, color: '', type: 'start', }, ],
       },
@@ -326,7 +327,7 @@ describe('User make full move', () => {
       gameState,
     );
     expect(returnActions.length).toBe(5);
-    expect(returnActions[1].action.type).toBe(Ludo.ActionTypes.MovePawn);
+    expect(returnActions[1].action.type).toBe(Game.ActionTypes.MovePawn);
     expect(returnActions[1].action.pawnId).toBe(player1Pawns[0].id);
     expect(returnActions[2].action.type).toBe(Ludo.ActionTypes.WaitForPlayer);
     expect(returnActions[2].action.playerId).toBe(anotherPlayer.id);
