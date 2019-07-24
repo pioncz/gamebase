@@ -153,7 +153,7 @@ export default class Engine extends EventEmitter {
   onResize = () => {
     let width = this.container.offsetWidth,
       height = this.container.offsetHeight,
-      aspect = width / height;
+      aspect = document.body.clientWidth / document.body.clientHeight;
     if (isNaN(aspect)) return;
 
     this.windowWidth = width;
@@ -163,21 +163,27 @@ export default class Engine extends EventEmitter {
 
     this.edgeCorrection = Math.max(Math.min((this.windowWidth - 600) / 1400, 1), 0); // 0 - 1
 
+    document.body.classList = '';
+
     if (aspect <= 1.3) {
+      document.body.classList.add('portrait');
+
       let scaleY;
 
       if (aspect <= 0.8) {
         this.frustumSize = 22;
-        scaleY = 70 / aspect
+        scaleY = 72 / aspect
       } else {
         this.frustumSize = 26;
-        scaleY = 72 / aspect
+        scaleY = 82 / aspect
       }
+
+      const moveY = 4;
 
       this.camera.left   = - this.frustumSize;
       this.camera.right  =   this.frustumSize;
-      this.camera.top    =   this.frustumSize / aspect;
-      this.camera.bottom = - this.frustumSize / aspect;
+      this.camera.top    =   (this.frustumSize + moveY ) / aspect;
+      this.camera.bottom = - (this.frustumSize - moveY ) / aspect;
       if (this.board) {
         this.board.setRotation(false); //rotates board
         if (this.board.background) {
@@ -186,7 +192,30 @@ export default class Engine extends EventEmitter {
           this.board.background.resize(scaleX, scaleY);
         }
       }
+    } else if (this.windowWidth < 1000) {
+      document.body.classList.add('landscape');
+
+      this.frustumSize = 18;
+      const moveY = 3;
+
+      this.camera.left   = - this.frustumSize * aspect - 16;
+      this.camera.right  =   this.frustumSize * aspect;
+      this.camera.top    =   this.frustumSize + moveY;
+      this.camera.bottom = - this.frustumSize + moveY;
+      if (this.board) {
+        this.board.setRotation(false); //rotates board
+        if (this.board.background) {
+          const scaleX = Math.ceil(Math.abs(this.camera.left) + Math.abs(this.camera.right)) + 8;
+          const scaleY = 70;
+
+          this.board.background.resize(scaleX, scaleY);
+        }
+      }
     } else {
+      if (document.body.clientWidth < 1000) {
+        document.body.classList.add('landscape');
+      }
+
       this.frustumSize = 22;
 
       this.camera.left   = - this.frustumSize * aspect;

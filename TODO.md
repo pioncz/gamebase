@@ -1,4 +1,3 @@
-- fixy responsywnosci
 - animacja wejscia - zmiana gradientu w background, plansza opacity + rotate + scale 0 -> 1
 - dodac orbit controlsy do engine
 - mozna wywalic fontAwesome i czekanie az sie zaladuje
@@ -24,6 +23,7 @@
 - pionek podczas chodzenia 
 - room powinien dodawac bota do pokoju a nie botsManager
 - zamiana w room: this.gameState.players na this.players this.gameState.playerColors na this.playerColors
+- stworzyc jakas dokumentacje: modele danych, przebieg rozgrywki
 
 - spectators
 - blokada prawoklika
@@ -265,3 +265,4 @@ DONE:
 + poszukac i wywalic playerDisconnected - connectorInstance.socket.on('playerDisconnected
 + restart animacji dimmingPass przy zaznaczeniu
 + wieksze zaznaczenie ogolnie, jeszcze wieksze na desktopie
++ fixy responsywnosci

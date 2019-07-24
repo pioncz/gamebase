@@ -7,7 +7,7 @@ import { actions, } from 'shared/redux/api';
 import {connect,} from "react-redux";
 import {bindActionCreators,} from "redux";
 import PlayerProfiles from 'components/playerProfiles';
-import { Config, } from 'ludo';
+import { Config, AnimationLengths, } from 'ludo';
 import Games from 'Games.js';
 import Snackbar from 'components/snackbar';
 import Dices from 'components/dices';
@@ -211,6 +211,11 @@ class Engine extends Component {
         let move = moves.find(move => move.pawnId === selectedPawnId);
 
         if (move && move.fieldSequence.length) {
+          move.fieldSequence = move.fieldSequence.map(singleMove => ({
+            ...singleMove,
+            animationLength: AnimationLengths.movePawn,
+          }));
+
           let fieldSequence = move.fieldSequence || [],
             lastField = fieldSequence[fieldSequence.length - 1],
             anotherPawns = pawns.filter(pawn =>

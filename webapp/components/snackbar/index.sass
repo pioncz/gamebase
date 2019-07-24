@@ -35,18 +35,28 @@
         margin-top: -40px
         opacity: 0
 
-    @media #{$portrait}
+.landscape
+    .snackbar
+        left: 212px
+        right: 148px
         .snackbar-wrapper
-            top: 154px
-            left: 6px
-            top: 182px
-            max-width: calc(100% - 12px)
-            margin: 0
-            width: 200px
+            top: 6px
             .snackbar-body
                 width: 100%
-                padding: 6px 12px
-                white-space: nowrap
-                overflow: hidden
-                text-overflow: ellipsis
-                font-size: 16px
+
+.portrait
+    .snackbar-wrapper
+        top: 154px
+        left: 50%
+        transform: translateX(-50%)
+        top: 152px
+        max-width: calc(100% - 12px)
+        margin: 0
+        width: 200px
+        .snackbar-body
+            width: 100%
+            padding: 6px 12px
+            white-space: nowrap
+            overflow: hidden
+            text-overflow: ellipsis
+            font-size: 16px
