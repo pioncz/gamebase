@@ -50,12 +50,6 @@ export default class PawnsController {
       });
     }
   }
-  createSelectionObjects() {
-    for (const pawnIndex in this.pawns) {
-      const pawn = this.pawns[pawnIndex];
-      pawn.createSelectionObject();
-    }
-  }
   removePawns() {
     for(let pawnId in this.pawns) {
       let pawn = this.pawns[pawnId];

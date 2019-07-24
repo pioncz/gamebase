@@ -43,6 +43,7 @@ export default class Pawn {
     );
     this.boundingSphere.scale.set(1.5,1.5,1.5);
     this.$.add(this.boundingSphere);
+    this.createSelectionObject();
   }
   createSelectionObject() {
     if (this.selectionObject) return;

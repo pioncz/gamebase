@@ -121,23 +121,8 @@ export default class Engine extends EventEmitter {
     };
 
     this.createBoard();
-
-    WebFont.load({
-      custom: {
-        families: ['FontAwesome',],
-        urls: [
-          'https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css',
-        ],
-        testStrings: {
-          'FontAwesome': '\uf001',
-        },
-      },
-      active: () => {
-        this.board.handleFontsLoad();
-        this.animate();
-      },
-    });
     this.onResize();
+    this.animate();
   }
   createBoard() {
     this.board = new Board({

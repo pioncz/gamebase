@@ -26,7 +26,6 @@ export default class Board {
     this.diceAnimationLength;
     this.diceContainer = new THREE.Group();
     this.scene.add(this.diceContainer);
-    this.fontsLoaded = false;
 
     this.createBoard();
     this.createPawns();
@@ -289,11 +288,5 @@ export default class Board {
 
     dice.roll(number, this.diceAnimationLength);
     this.dices.push(dice);
-  }
-  handleFontsLoad() {
-    if (this.pawnsController) {
-      this.createSelectionObjects();
-    }
-    this.fontsLoaded = true;
   }
 }
