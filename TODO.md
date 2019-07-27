@@ -1,6 +1,7 @@
 - animacja wejscia - zmiana gradientu w background, plansza opacity + rotate + scale 0 -> 1
 - https://www.google.com/search?q=node+diagnostics&oq=node+diagnos&aqs=chrome.1.69i57j0l5.2544j0j1&sourceid=chrome&ie=UTF-8
 
+- przy kliku sprawdz ktory pionek jest najblizej ray'a
 - zdarza sie bug gdy jest zaznaczony pionek, gracz moze sie ruszyc, ale serwer loguje ze ten pionek nie jest zaznaczony
 - gra z botami -> gracz dlugo sie nie rusza -> jak rzuci kostka to zaznacza mu pionka, bot sie rusza, a gracz nie moze sie ruszyc
 - test wydajnosci serwera w /admin
@@ -12,6 +13,7 @@
 - 2 tryby rozgrywki: towarzyska, rankingowa
 - customowe pionki
 - akcja pominiecia ruchu
+- strzalka troche nizsza i obrocona prosto do kamery
 
 - websocket server: przeniesc metody z konstruktora
 

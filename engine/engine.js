@@ -37,7 +37,7 @@ export default class Engine extends EventEmitter {
     this.camera.lookAt( new THREE.Vector3(0,0,0) );
     this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true,});
     this.renderer.setPixelRatio( window.devicePixelRatio );
-    this.renderer.setClearColor( '#243B55', 1 );
+    this.renderer.setClearColor( '#000', 0 );
     this.renderer.setSize( width, height );
     this.container.appendChild(this.renderer.domElement);
 
@@ -151,14 +151,10 @@ export default class Engine extends EventEmitter {
     if (aspect <= 1.3) {
       document.body.classList.add('portrait');
 
-      let scaleY;
-
       if (aspect <= 0.8) {
         this.frustumSize = 22;
-        scaleY = 72 / aspect
       } else {
         this.frustumSize = 26;
-        scaleY = 82 / aspect
       }
 
       const moveY = 4;
@@ -169,11 +165,6 @@ export default class Engine extends EventEmitter {
       this.camera.bottom = - (this.frustumSize - moveY ) / aspect;
       if (this.board) {
         this.board.setRotation(false); //rotates board
-        if (this.board.background) {
-          const scaleX = Math.ceil(Math.abs(this.camera.left) + Math.abs(this.camera.right));
-
-          this.board.background.resize(scaleX, scaleY);
-        }
       }
     } else if (this.windowWidth < 1000) {
       document.body.classList.add('landscape');
@@ -187,12 +178,6 @@ export default class Engine extends EventEmitter {
       this.camera.bottom = - this.frustumSize + moveY;
       if (this.board) {
         this.board.setRotation(false); //rotates board
-        if (this.board.background) {
-          const scaleX = Math.ceil(Math.abs(this.camera.left) + Math.abs(this.camera.right)) + 8;
-          const scaleY = 70;
-
-          this.board.background.resize(scaleX, scaleY);
-        }
       }
     } else {
       if (document.body.clientWidth < 1000) {
@@ -207,12 +192,6 @@ export default class Engine extends EventEmitter {
       this.camera.bottom = - this.frustumSize;
       if (this.board) {
         this.board.setRotation(true); //rotates board
-        if (this.board.background) {
-          const scaleX = Math.ceil(Math.abs(this.camera.left) + Math.abs(this.camera.right));
-          const scaleY = 62;
-
-          this.board.background.resize(scaleX, scaleY);
-        }
 
         const marginTop = 4;
         this.board.$.position.set(marginTop, 0, marginTop);

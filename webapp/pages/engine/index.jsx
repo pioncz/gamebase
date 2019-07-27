@@ -181,6 +181,7 @@ class Engine extends Component {
     }
     this.messagesIntervalId = setInterval(addMessage, 3000);
     addMessage();
+    window.engine = this.gameComponentRef.current.engine;
   }
   componentWillUnmount() {
     this.props.unsetInGame();

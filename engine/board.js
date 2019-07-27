@@ -3,7 +3,6 @@ import PawnsController from 'pawnsController';
 import Dice from './dice';
 import BoardUtils from './../games/ludo/BoardUtils.js';
 import Games from 'Games.js';
-import Background from './background';
 
 const GridAmount = 11;
 
@@ -29,7 +28,6 @@ export default class Board {
 
     this.createBoard();
     this.createPawns();
-    this.createBackground();
     this.rotateBoard(this.rotation);
     this.changeGame(props.gameName);
   }
@@ -137,9 +135,6 @@ export default class Board {
       columnsLength: this.columnsLength,
     });
     this.scene.add(this.pawnsController.$);
-  }
-  createBackground() {
-    this.background = new Background(this.scene, this.camera);
   }
   createBoard() {
     let canvas = this.canvas,
