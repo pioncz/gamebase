@@ -17,7 +17,6 @@ export default class Engine extends EventEmitter {
     this.gameId = null;
 
     this.scene = new THREE.Scene();
-    this.controls = new Controls({container: this.container,});
     this.animations = new Animations();
     this.raycaster = new THREE.Raycaster();
 
@@ -116,7 +115,6 @@ export default class Engine extends EventEmitter {
 
     this.context = {
       animations: this.animations,
-      controls: this.controls,
       camera: this.camera,
     };
 
@@ -305,5 +303,20 @@ export default class Engine extends EventEmitter {
   }
   rollDice(number, diceColors) {
     this.board.rollDice(number, diceColors);
+  }
+  toggleControls() {
+    if (!this.controls) {
+      this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+    } else if (this.controls.enabled) {
+      this.controls.enabled = false;
+    } else {
+      this.controls.enabled = true;
+    }
+  }
+  resetControls() {
+    if (!this.controls) {
+      return;
+    }
+    this.controls.reset();
   }
 }

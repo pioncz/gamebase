@@ -356,6 +356,12 @@ class Engine extends Component {
       this.selectPawn(firstPawnId);
     }
   }
+  toggleControls = () => {
+    this.gameComponentRef.current.engine.toggleControls();
+  }
+  resetControls = () => {
+    this.gameComponentRef.current.engine.resetControls();
+  }
   render() {
     const { players, pawns, selectedPawnId, pawnInput, numberOfPlayers, pawnSet, firstPlayerIndex, firstPlayerId, currentPlayerId, gameName, messages, } = this.state,
       pawnsElements = pawns.map(pawn => {
@@ -380,8 +386,6 @@ class Engine extends Component {
             </select>
           </div>
           <button type="button" onClick={this.handleSetGame}>Set game</button>
-        </div>
-        <div className="settings-body">
         </div>
         <div className="settings-title">Settings</div>
         <div className="settings-body">
@@ -421,6 +425,15 @@ class Engine extends Component {
           </div>
           <button onClick={this.movePawn}>RUSZ PIONKA</button>
           <button onClick={this.rollDice}>RZUĆ KOŚCIĄ</button>
+        </div>
+        <div className="settings-title">Camera</div>
+        <div className="settings-body">
+          <div className="input-row">
+            <div>
+              <button onClick={this.toggleControls}>TOGGLE CONTROLS</button>
+              <button onClick={this.resetControls}>RESET</button>
+            </div>
+          </div>
         </div>
       </div>
       <GameComponent
