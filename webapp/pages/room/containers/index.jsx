@@ -118,6 +118,8 @@ class Room extends Component {
           pawns: gameState.pawns,
           finishTimestamp: gameState.finishTimestamp,
           waitingForAction: Games.Ludo.ActionTypes.Roll,
+        }, () => {
+          this.gameComponentRef.current.initGame(gameState.currentPlayerId);
         });
         this.timerComponentRef.current.start(gameState.finishTimestamp - Date.now());
         this.addMessage('Game started!');

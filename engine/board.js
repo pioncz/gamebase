@@ -64,14 +64,16 @@ export default class Board {
     let newRotation = (Math.PI/2) * firstPlayerIndex;
     this.setRotation(newRotation);
     this.$.position.y = 0;
+    this.rotateBoard(newRotation);
+    this.pawnsController.createPawns({pawns: props.pawns,});
 
     this.animations.finishAnimation('board-clear');
     const easingIn = window.easingIn || EASING.InOutQuint;
     this.animations.create(
       {
         id: 'board-init',
-        length: 800,
         easing: easingIn,
+        length: 800,
         update: (progress) => {
           const opacity = progress;
           this.$.material[0].opacity = opacity;
@@ -81,15 +83,11 @@ export default class Board {
         },
       },
     ).then(() => {
-      // create pawns
-      if (this.pawnsController) {
-        this.pawnsController.createPawns({pawns: props.pawns,});
-        this.rotateBoard(newRotation);
-      }
+      this.pawnsController.initPawns();
     });
   }
   clearGame = () => {
-    this.animations.finishAnimation('board-init');
+    this.animations.removeAnimation('board-init');
 
     this.$.position.y = 0;
     this.pawnsController.$.position.y = 0;
