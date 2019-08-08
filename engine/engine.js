@@ -252,6 +252,13 @@ export default class Engine extends EventEmitter {
     this.onResize();
     this.initializing = false;
   }
+  clearGame = () => {
+    if (!this.board) {
+      console.log('No board');
+      return;
+    }
+    this.board.clearGame();
+  }
   selectPawns(pawnIds) {
     if (!this.board) return;
 

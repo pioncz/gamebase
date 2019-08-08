@@ -3,6 +3,7 @@
 - inny zaznaczenie https://medium.com/@joshmarinacci/cartoon-outline-effect-6c4e95545537
 - bardziej losowa kostka
 - pwa: pwa lifecycle, ios reload action, request persistent storage
+- na kompie snackbar w lewym dolnym rogu
 
 - przy kliku sprawdz ktory pionek jest najblizej ray'a
 - zdarza sie bug gdy jest zaznaczony pionek, gracz moze sie ruszyc, ale serwer loguje ze ten pionek nie jest zaznaczony

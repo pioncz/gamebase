@@ -3,8 +3,15 @@ import PawnsController from 'pawnsController';
 import Dice from './dice';
 import BoardUtils from './../games/ludo/BoardUtils.js';
 import Games from 'Games.js';
+import { EASING, } from './utils/animations'
 
 const GridAmount = 11;
+
+const RenderOrder = {
+  PawnSelection: 1000,
+  PawnsController: 800,
+  Board: 400,
+};
 
 export default class Board {
   constructor(props) {
@@ -34,6 +41,7 @@ export default class Board {
   // Color fields, create pawns
   initGame(props) {
     this.clearGame();
+
     const { players, firstPlayerIndex, } = props;
 
     // Set field colors
@@ -52,26 +60,56 @@ export default class Board {
       }
     }
     this.drawBoard();
-    // create pawns
-    this.pawnsController.createPawns({pawns: props.pawns,});
-    if (this.fontsLoaded) {
-      this.pawnsController.createSelectionObjects();
-    }
 
     let newRotation = (Math.PI/2) * firstPlayerIndex;
-    this.rotateBoard(newRotation);
-  }
-  clearGame() {
-    // clear board
-    for(let fieldIndex in this.fields) {
-      let field = this.fields[fieldIndex];
+    this.setRotation(newRotation);
+    this.$.position.y = 0;
 
-      if (field.playerIndex !== undefined) {
-        field.disabled = true;
+    this.animations.finishAnimation('board-clear');
+    const easingIn = window.easingIn || EASING.InOutQuint;
+    this.animations.create(
+      {
+        id: 'board-init',
+        length: 800,
+        easing: easingIn,
+        update: (progress) => {
+          const opacity = progress;
+          this.$.material[0].opacity = opacity;
+          this.$.material[1].opacity = opacity;
+          this.$.scale.set(progress, progress, progress);
+          this.$.rotation.set(0, this.rotation * progress, 0);
+        },
+      },
+    ).then(() => {
+      // create pawns
+      if (this.pawnsController) {
+        this.pawnsController.createPawns({pawns: props.pawns,});
+        this.rotateBoard(newRotation);
       }
-    }
-    this.drawBoard();
-    this.pawnsController.removePawns();
+    });
+  }
+  clearGame = () => {
+    this.animations.finishAnimation('board-init');
+
+    this.$.position.y = 0;
+    this.pawnsController.$.position.y = 0;
+    const easingOut = window.easingOut || EASING.InOutQuint;
+    this.animations.create(
+      {
+        id: 'board-clear',
+        length: 800,
+        easing: easingOut,
+        update: (progress) => {
+          const opacity = 1 - progress;
+          this.$.material[0].opacity = opacity;
+          this.$.material[1].opacity = opacity;
+          this.$.position.y -= progress * 5;
+          this.pawnsController.$.position.y -= progress * 5;
+        },
+      },
+    ).then(() => {
+      this.pawnsController.removePawns();
+    })
   }
   drawBoard() {
     let ctx = this.canvas.getContext('2d'),
@@ -133,6 +171,8 @@ export default class Board {
       pawns: [],
       animations: this.animations,
       columnsLength: this.columnsLength,
+      renderOrder: RenderOrder.PawnsController,
+      pawnSelectionRenderOrder: RenderOrder.PawnSelection,
     });
     this.scene.add(this.pawnsController.$);
   }
@@ -143,8 +183,20 @@ export default class Board {
       depth = 2,
       height = 40;
     this.materials = [
-      new THREE.MeshBasicMaterial({ map: texture,}),
-      new THREE.MeshBasicMaterial({color: 'rgba(61, 72, 97, 0.8)',}),
+      new THREE.MeshBasicMaterial(
+        {
+          map: texture,
+          transparent: true,
+          opacity: 0,
+        }
+      ),
+      new THREE.MeshBasicMaterial(
+        {
+          color: 'rgba(61, 72, 97, 0.8)',
+          transparent: true,
+          opacity: 0,
+        }
+      ),
     ];
     this.geometry = new THREE.BoxGeometry(width, depth, height);
     this.texture = texture;
@@ -159,6 +211,7 @@ export default class Board {
     this.geometry.faces[9].materialIndex = 1;
 
     this.$ = new THREE.Mesh(this.geometry, this.materials);
+    this.$.scale.set(0.01, 0.01, 0.01);
     this.$.name = 'BoardMesh';
     this.scene.add(this.$);
   }

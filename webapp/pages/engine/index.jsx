@@ -173,7 +173,7 @@ class Engine extends Component {
   }
   componentDidMount() {
     this.props.setInGame();
-    this.initGame();
+    // this.initGame();
     this.profilesComponent.restartProgress();
     let lastId=0;
     const addMessage = () => {
@@ -313,12 +313,26 @@ class Engine extends Component {
       currentPlayerId: newPawns[0].playerId,
       gameId: nextId(),
       firstPlayerId,
+    }, () => {
+      this.gameComponentRef.current.initGame(firstPlayerId);
     });
     setTimeout(() => {
       this.gameComponentRef.current.engine.selectPawns([newPawns[0].id,]);
-    }, 50);
+    }, 500);
 
     this.timerComponentRef.current.start(5*60*1000);
+  }
+  clearGame = () => {
+    this.setState({
+      pawns: [],
+      players: [],
+      selectedPawnId: [],
+      currentPlayerId: [],
+      gameId: null,
+      firstPlayerId: null,
+    }, () => {
+      this.gameComponentRef.current.clearGame();
+    });
   }
   selectPawn = (pawnId) => {
     const { pawns, } = this.state;
@@ -413,6 +427,7 @@ class Engine extends Component {
             </div>
           </div>
           <button type="button" onClick={this.initGame}>Init game</button>
+          <button type="button" onClick={this.clearGame}>Clear game</button>
           <hr />
           <div className="pawns">
             <div className="pawns-title">Pawns:</div>
