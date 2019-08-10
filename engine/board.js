@@ -27,6 +27,7 @@ export default class Board {
     this.canvas = Utils.$({element: 'canvas',});
     this.texture = null;
     this.rotation = 0;
+    this.portraitRotation = false;
     this.gameName = props.gameName;
     this.dices = [];
     this.diceAnimationLength;
@@ -63,11 +64,16 @@ export default class Board {
       }
       this.drawBoard();
 
-      let newRotation = (Math.PI/2) * firstPlayerIndex;
-      this.setRotation(newRotation);
-      this.$.position.y = 0;
       this.pawnsController.createPawns({pawns: props.pawns,});
+
+      let newRotation = (Math.PI/2) * firstPlayerIndex;
       this.rotateBoard(newRotation);
+      this.$.position.y = 0;
+      // this.pawnsController.rotate(this.rotation);
+      // this.rotateBoard(newRotation);
+
+      const animationRotation = Math.PI/4;
+      const startRotation = this.rotation - animationRotation;
 
       this.animations.finishAnimation('board-clear');
       const easingIn = window.easingIn || EASING.InOutQuint;
@@ -81,7 +87,7 @@ export default class Board {
             this.$.material[0].opacity = opacity;
             this.$.material[1].opacity = opacity;
             this.$.scale.set(progress, progress, progress);
-            this.$.rotation.set(0, this.rotation * progress, 0);
+            //this.$.rotation.set(0, startRotation + animationRotation * progress, 0);
           },
         },
       ).then(() => {
@@ -220,13 +226,9 @@ export default class Board {
   /* setRotation
     rotate if rotate param is true
    */
-  setRotation(rotate) {
-    if (!rotate && !(this.rotation % (Math.PI / 2))) {
-      this.rotateBoard(this.rotation + Math.PI / 4);
-    }
-    if (rotate && (this.rotation % (Math.PI / 2))) {
-      this.rotateBoard(this.rotation - Math.PI / 4);
-    }
+  setPortraitRotation(isPortrait) {
+    this.portraitRotation = isPortrait;
+    this.rotateBoard(this.rotation);
   }
   getFieldsSequence(pawnData, length) {
     let currentField,
@@ -308,8 +310,13 @@ export default class Board {
   }
   rotateBoard(newRotation) {
     this.rotation = newRotation;
-    this.$.rotation.y = newRotation;
-    this.pawnsController.rotate(newRotation);
+    let parsedRotation = newRotation;
+    if (this.portraitRotation) {
+      parsedRotation += Math.PI / 4;
+    }
+    console.log(this.portraitRotation, this.rotation);
+    this.$.rotation.y = parsedRotation;
+    this.pawnsController.rotate(parsedRotation);
   }
   createSelectionObjects() {
     if (this.pawnsController) {

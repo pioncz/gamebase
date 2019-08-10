@@ -2,6 +2,7 @@ blokada wielu init / clear na raz
 fix obrotu zaznaczenia
 animacja z obrotem
 skasowac window.
+zjebala sie responsywnosc? 
 
 ? wydzielic czas do configa
 

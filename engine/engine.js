@@ -164,7 +164,7 @@ export default class Engine extends EventEmitter {
       this.camera.top    =   (this.frustumSize + moveY ) / aspect;
       this.camera.bottom = - (this.frustumSize - moveY ) / aspect;
       if (this.board) {
-        this.board.setRotation(false); //rotates board
+        this.board.setPortraitRotation(true); //rotates board
       }
     } else if (this.windowWidth < 1000) {
       document.body.classList.add('landscape');
@@ -177,7 +177,7 @@ export default class Engine extends EventEmitter {
       this.camera.top    =   this.frustumSize + moveY;
       this.camera.bottom = - this.frustumSize + moveY;
       if (this.board) {
-        this.board.setRotation(false); //rotates board
+        this.board.setPortraitRotation(true); //rotates board
       }
     } else {
       if (document.body.clientWidth < 1000) {
@@ -191,7 +191,7 @@ export default class Engine extends EventEmitter {
       this.camera.top    =   this.frustumSize;
       this.camera.bottom = - this.frustumSize;
       if (this.board) {
-        this.board.setRotation(true); //rotates board
+        this.board.setPortraitRotation(false); //rotates board
 
         const marginTop = 4;
         this.board.$.position.set(marginTop, 0, marginTop);
@@ -246,11 +246,10 @@ export default class Engine extends EventEmitter {
     }
 
     this.initializing = true;
-    this.onResize();
     let firstPlayerIndex = players.findIndex(player => player.id === firstPlayerId);
+    this.onResize();
     this.board.initGame({pawns, players, firstPlayerIndex,})
       .then(() => {
-        this.onResize();
         this.initializing = false;
       });
   }
