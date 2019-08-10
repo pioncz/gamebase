@@ -157,7 +157,7 @@ export default class Engine extends EventEmitter {
         this.frustumSize = 26;
       }
 
-      const moveY = 4;
+      const moveY = 1;
 
       this.camera.left   = - this.frustumSize;
       this.camera.right  =   this.frustumSize;
@@ -170,7 +170,7 @@ export default class Engine extends EventEmitter {
       document.body.classList.add('landscape');
 
       this.frustumSize = 18;
-      const moveY = 3;
+      const moveY = 0;
 
       this.camera.left   = - this.frustumSize * aspect - 16;
       this.camera.right  =   this.frustumSize * aspect;

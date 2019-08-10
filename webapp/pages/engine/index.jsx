@@ -173,7 +173,7 @@ class Engine extends Component {
   }
   componentDidMount() {
     this.props.setInGame();
-    // this.initGame();
+    this.initGame();
     this.profilesComponent.restartProgress();
     let lastId=0;
     const addMessage = () => {
