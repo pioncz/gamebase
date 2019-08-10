@@ -69,8 +69,6 @@ export default class Board {
       let newRotation = (Math.PI/2) * firstPlayerIndex;
       this.rotateBoard(newRotation);
       this.$.position.y = 0;
-      // this.pawnsController.rotate(this.rotation);
-      // this.rotateBoard(newRotation);
 
       const animationRotation = Math.PI/4;
       const startRotation = this.rotation - animationRotation;
@@ -87,7 +85,7 @@ export default class Board {
             this.$.material[0].opacity = opacity;
             this.$.material[1].opacity = opacity;
             this.$.scale.set(progress, progress, progress);
-            //this.$.rotation.set(0, startRotation + animationRotation * progress, 0);
+            this.rotateBoard(startRotation + animationRotation * progress);
           },
         },
       ).then(() => {
