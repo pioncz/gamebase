@@ -40,50 +40,54 @@ export default class Board {
   }
   // Color fields, create pawns
   initGame(props) {
-    this.clearGame();
+    return new Promise((resolve, reject) => {
+      this.pawnsController.removePawns();
+      this.pawnsController.$.position.y = 0;
 
-    const { players, firstPlayerIndex, } = props;
+      const { players, firstPlayerIndex, } = props;
 
-    // Set field colors
-    for(let fieldIndex in this.fields) {
-      let field = this.fields[fieldIndex];
+      // Set field colors
+      for(let fieldIndex in this.fields) {
+        let field = this.fields[fieldIndex];
 
-      if (field.playerIndex !== undefined) {
-        let player = players[field.playerIndex];
+        if (field.playerIndex !== undefined) {
+          let player = players[field.playerIndex];
 
-        if (player) {
-          field.color = player.color;
-          field.disabled = false;
-        } else {
-          field.disabled = true;
+          if (player) {
+            field.color = player.color;
+            field.disabled = false;
+          } else {
+            field.disabled = true;
+          }
         }
       }
-    }
-    this.drawBoard();
+      this.drawBoard();
 
-    let newRotation = (Math.PI/2) * firstPlayerIndex;
-    this.setRotation(newRotation);
-    this.$.position.y = 0;
-    this.rotateBoard(newRotation);
-    this.pawnsController.createPawns({pawns: props.pawns,});
+      let newRotation = (Math.PI/2) * firstPlayerIndex;
+      this.setRotation(newRotation);
+      this.$.position.y = 0;
+      this.pawnsController.createPawns({pawns: props.pawns,});
+      this.rotateBoard(newRotation);
 
-    this.animations.finishAnimation('board-clear');
-    const easingIn = window.easingIn || EASING.InOutQuint;
-    this.animations.create(
-      {
-        id: 'board-init',
-        easing: easingIn,
-        length: 800,
-        update: (progress) => {
-          const opacity = progress;
-          this.$.material[0].opacity = opacity;
-          this.$.material[1].opacity = opacity;
-          this.$.scale.set(progress, progress, progress);
-          this.$.rotation.set(0, this.rotation * progress, 0);
+      this.animations.finishAnimation('board-clear');
+      const easingIn = window.easingIn || EASING.InOutQuint;
+      this.animations.create(
+        {
+          id: 'board-init',
+          easing: easingIn,
+          length: 800,
+          update: (progress) => {
+            const opacity = progress;
+            this.$.material[0].opacity = opacity;
+            this.$.material[1].opacity = opacity;
+            this.$.scale.set(progress, progress, progress);
+            this.$.rotation.set(0, this.rotation * progress, 0);
+          },
         },
-      },
-    ).then(() => {
-      this.pawnsController.initPawns();
+      ).then(() => {
+        this.pawnsController.initPawns();
+        resolve();
+      });
     });
   }
   clearGame = () => {
