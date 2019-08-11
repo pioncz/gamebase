@@ -39,7 +39,6 @@ export const EASING = {
     return Math.sin((2*Math.PI) * t);
   },
 };
-window.EASINGS = EASING;
 
 const nextId = (() => {
   let id = 0;
