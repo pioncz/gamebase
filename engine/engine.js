@@ -226,7 +226,7 @@ export default class Engine extends EventEmitter {
       e.stopPropagation();
     }
   }
-  initGame({gameId, gameName, pawns, players,}, firstPlayerId) {
+  initGame({gameId, gameName, pawns, players,}, firstPlayerId, animationLength) {
     if (!this.board) {
       this.gameName = gameName;
       this.createBoard();
@@ -248,7 +248,7 @@ export default class Engine extends EventEmitter {
     this.initializing = true;
     let firstPlayerIndex = players.findIndex(player => player.id === firstPlayerId);
     this.onResize();
-    this.board.initGame({pawns, players, firstPlayerIndex,})
+    this.board.initGame({pawns, players, firstPlayerIndex, animationLength,})
       .then(() => {
         this.initializing = false;
       });

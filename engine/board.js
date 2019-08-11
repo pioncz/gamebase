@@ -45,7 +45,7 @@ export default class Board {
       this.pawnsController.removePawns();
       this.pawnsController.$.position.y = 0;
 
-      const { players, firstPlayerIndex, } = props;
+      const { players, firstPlayerIndex, animationLength, } = props;
 
       // Set field colors
       for(let fieldIndex in this.fields) {
@@ -74,12 +74,11 @@ export default class Board {
       const startRotation = this.rotation - animationRotation;
 
       this.animations.finishAnimation('board-clear');
-      const easingIn = window.easingIn || EASING.InOutQuint;
       this.animations.create(
         {
           id: 'board-init',
-          easing: easingIn,
-          length: 800,
+          easing: EASING.InOutQuint,
+          length: animationLength,
           update: (progress) => {
             const opacity = progress;
             this.$.material[0].opacity = opacity;
@@ -99,12 +98,11 @@ export default class Board {
 
     this.$.position.y = 0;
     this.pawnsController.$.position.y = 0;
-    const easingOut = window.easingOut || EASING.InOutQuint;
     this.animations.create(
       {
         id: 'board-clear',
         length: 800,
-        easing: easingOut,
+        easing: EASING.InOutQuint,
         update: (progress) => {
           const opacity = 1 - progress;
           this.$.material[0].opacity = opacity;
@@ -308,11 +306,11 @@ export default class Board {
   }
   rotateBoard(newRotation) {
     this.rotation = newRotation;
+
     let parsedRotation = newRotation;
     if (this.portraitRotation) {
       parsedRotation += Math.PI / 4;
     }
-    console.log(this.portraitRotation, this.rotation);
     this.$.rotation.y = parsedRotation;
     this.pawnsController.rotate(parsedRotation);
   }

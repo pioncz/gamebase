@@ -59,6 +59,7 @@ const AnimationLengths = {
   movePawn: 300,
   movePawnFromSpawn: 600,
   rollDice: 600,
+  startGameBase: 800,// total start game time: startGameBase plus 300 * (pawn.length - 1) in the game
 };
 
 const Roll = () => {
@@ -74,7 +75,7 @@ const SelectColor = (playerId, color) => {
 };
 
 const StartGame = (gameState) => {
-  return {type: ActionTypes.StartGame, gameState,};
+  return {type: ActionTypes.StartGame, gameState, animationLength: AnimationLengths.startGameBase,};
 };
 
 const FinishGame = (winnerId) => {
@@ -409,6 +410,7 @@ const Ludo = {
     PickPawn,
     FinishGame,
     PickColors,
+    RestartProgress,
   },
   ActionHandlers: {
     SelectColor: SelectColorHandler,

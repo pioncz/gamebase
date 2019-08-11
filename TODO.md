@@ -1,12 +1,5 @@
-blokada wielu init / clear na raz
-fix obrotu zaznaczenia
-animacja z obrotem
-skasowac window.
-zjebala sie responsywnosc? 
-
-? wydzielic czas do configa
-
-- animacja wejscia - zmiana gradientu w background, plansza opacity + rotate + scale 0 -> 1
+- animacja wejscia - animacja gradientu tla
+- bot za szybko rzuca kostka
 - https://www.google.com/search?q=node+diagnostics&oq=node+diagnos&aqs=chrome.1.69i57j0l5.2544j0j1&sourceid=chrome&ie=UTF-8
 - inny zaznaczenie https://medium.com/@joshmarinacci/cartoon-outline-effect-6c4e95545537
 - bardziej losowa kostka
@@ -282,3 +275,4 @@ DONE:
 + dodac orbit controlsy do engine
 + wywalic tlo z engine
 + zmienic tlo w gameComponent
++ animacja wejscia - zmiana gradientu w background, plansza opacity + rotate + scale 0 -> 1
