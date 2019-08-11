@@ -1,5 +1,7 @@
 import {EASING, } from "./utils/animations";
 
+const TextureLoader = new THREE.TextureLoader();
+
 export default class Pawn {
   constructor(props) {
     this.x = props.x;
@@ -14,6 +16,7 @@ export default class Pawn {
       shininess: 0,
       reflectivity: 0,
       transparent: true,
+      opacity: 1.0,
     });
     this.$ = new THREE.Object3D();
     this.context = props.context;
@@ -41,34 +44,20 @@ export default class Pawn {
     );
     this.boundingSphere.scale.set(1.5,1.5,1.5);
     this.$.add(this.boundingSphere);
+    this.createSelectionObject();
   }
   createSelectionObject() {
     if (this.selectionObject) return;
 
-    let width = 4,
-      height = 4,
-      selectionGeometry = new THREE.PlaneGeometry( width, height, 32 ),
-      canvas = document.createElement('canvas'),
-      ctx = canvas.getContext('2d'),
-      texture = new THREE.Texture(canvas),
+    let width = 2.1,
+      height = 2.1,
+      selectionGeometry = new THREE.PlaneGeometry( width, height, 2 ),
       selectionMaterial = new THREE.MeshBasicMaterial({
-        map: texture,
-        side: THREE.DoubleSide,
+        map: TextureLoader.load('/static/down-arrow.svg'),
         transparent: true,
+        depthTest: true,
+        depthWrite: false,
       });
-
-    canvas.width = width * 20;
-    canvas.height = height * 20;
-    canvas.style.width = width + 'px';
-    canvas.style.height = height + 'px';
-    ctx.fillStyle = '#fff';
-    ctx.font = "50px FontAwesome";
-    ctx.textBaseline = "middle";
-    ctx.textAlign = "center";
-    ctx.fillText(String.fromCharCode(61703), canvas.width / 2, canvas.height / 2);
-    ctx.strokeStyle='rgba(0,0,0,0.7)';
-    ctx.strokeText(String.fromCharCode(61703), canvas.width / 2, canvas.height / 2);
-    texture.needsUpdate = true;
 
     this.selectionObject = new THREE.Mesh( selectionGeometry, selectionMaterial );
     this.selectionObject.rotation.y = Math.PI / 4;
@@ -100,7 +89,7 @@ export default class Pawn {
       length: 500,
       easing: EASING.InOutCubic,
       update: progress => {
-        this.selectionObject.position.y = 3.0 - progress * .6;
+        this.selectionObject.position.y = 3.2 - progress * .6;
         this.selectionObject.material.opacity = Math.min(progress * 3, 1.0);
       },
     }).then(() => {
@@ -116,7 +105,7 @@ export default class Pawn {
             parsedProgress = .5 - (progress - .5);
           }
 
-          this.selectionObject.position.y = 2.4 + parsedProgress * .6;
+          this.selectionObject.position.y = 2.6 + parsedProgress * .6;
         },
       })
     });

@@ -1,7 +1,12 @@
-- sciac rogi kostki
-- ruch pionkiem z bazy na pole moglby byc ciut dluzszy
-- fix testow
+- animacja wejscia - animacja gradientu tla
+- bot za szybko rzuca kostka
+- https://www.google.com/search?q=node+diagnostics&oq=node+diagnos&aqs=chrome.1.69i57j0l5.2544j0j1&sourceid=chrome&ie=UTF-8
+- inny zaznaczenie https://medium.com/@joshmarinacci/cartoon-outline-effect-6c4e95545537
+- bardziej losowa kostka
+- pwa: pwa lifecycle, ios reload action, request persistent storage
+- na kompie snackbar w lewym dolnym rogu
 
+- przy kliku sprawdz ktory pionek jest najblizej ray'a
 - zdarza sie bug gdy jest zaznaczony pionek, gracz moze sie ruszyc, ale serwer loguje ze ten pionek nie jest zaznaczony
 - gra z botami -> gracz dlugo sie nie rusza -> jak rzuci kostka to zaznacza mu pionka, bot sie rusza, a gracz nie moze sie ruszyc
 - test wydajnosci serwera w /admin
@@ -13,6 +18,7 @@
 - 2 tryby rozgrywki: towarzyska, rankingowa
 - customowe pionki
 - akcja pominiecia ruchu
+- strzalka troche nizsza i obrocona prosto do kamery
 
 - websocket server: przeniesc metody z konstruktora
 
@@ -22,6 +28,7 @@
 - pionek podczas chodzenia 
 - room powinien dodawac bota do pokoju a nie botsManager
 - zamiana w room: this.gameState.players na this.players this.gameState.playerColors na this.playerColors
+- stworzyc jakas dokumentacje: modele danych, przebieg rozgrywki
 
 - spectators
 - blokada prawoklika
@@ -254,3 +261,18 @@ DONE:
 + naprawic buga gdy graja 3 osoby, 1 wyjdzie i poprzednia z listy moze wejsc na jej pole
 + jak gracz wyjdzie to nie mozna dokonczyc rozgrywki. wywalilem kod kasujacy playerId z playerIds
 + w trybie portret gdy gra dla 3 graczy, kiepsko widac player profile gracza ktorego nie ma
++ sciac rogi kostki
++ wieksza strzalka nad pionkiem
++ ruch pionkiem z bazy na pole moglby byc ciut dluzszy
++ mniejsza strzalka nad pionkiem
++ fix testow
++ bot jak moze to zbija
++ poszukac i wywalic playerDisconnected - connectorInstance.socket.on('playerDisconnected
++ restart animacji dimmingPass przy zaznaczeniu
++ wieksze zaznaczenie ogolnie, jeszcze wieksze na desktopie
++ fixy responsywnosci
++ mozna wywalic fontAwesome i czekanie az sie zaladuje
++ dodac orbit controlsy do engine
++ wywalic tlo z engine
++ zmienic tlo w gameComponent
++ animacja wejscia - zmiana gradientu w background, plansza opacity + rotate + scale 0 -> 1

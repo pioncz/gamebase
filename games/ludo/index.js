@@ -1,6 +1,6 @@
 const BoardUtils = require('./BoardUtils.js');
 const Board = require('./Board.js');
-const Fields = require('./Fields.js');
+const { Fields, FieldTypes, } = require('./Fields.js');
 const Game = require('./../game');
 
 const InitialState = () => {
@@ -57,7 +57,9 @@ const ActionTypes = {
 
 const AnimationLengths = {
   movePawn: 300,
+  movePawnFromSpawn: 600,
   rollDice: 600,
+  startGameBase: 800,// total start game time: startGameBase plus 300 * (pawn.length - 1) in the game
 };
 
 const Roll = () => {
@@ -73,7 +75,7 @@ const SelectColor = (playerId, color) => {
 };
 
 const StartGame = (gameState) => {
-  return {type: ActionTypes.StartGame, gameState,};
+  return {type: ActionTypes.StartGame, gameState, animationLength: AnimationLengths.startGameBase,};
 };
 
 const FinishGame = (winnerId) => {
@@ -234,10 +236,27 @@ const PickPawnHandler = (action, player, gameState) => {
     )),
     lastFieldPawn = lastFieldPawns.length && lastFieldPawns[0];
 
+  const playerIndex = gameState.players.findIndex(p => p.id === player.id);
+  const spawnFields = BoardUtils.getSpawnFields(playerIndex);
+  const wasPawnOnSpawn = (spawnFields.findIndex(
+    spawnField => spawnField.x === pawn.x && spawnField.z === pawn.z
+  )) > -1;
+
   pawn.x = lastField.x;
   pawn.z = lastField.z;
 
-  animationLength = Date.now() + (AnimationLengths.movePawn * move.fieldSequence.length) + 500;
+  if (wasPawnOnSpawn) {
+    animationLength = Date.now() + AnimationLengths.movePawnFromSpawn + (AnimationLengths.movePawn * (move.fieldSequence.length - 1)) + 500;
+  } else {
+    animationLength = Date.now() + (AnimationLengths.movePawn * move.fieldSequence.length) + 500;
+  }
+
+  move.fieldSequence = move.fieldSequence.map(
+    (sequence, i) => ({
+      ...sequence,
+      animationLength: (i===0 && wasPawnOnSpawn) ? AnimationLengths.movePawnFromSpawn : AnimationLengths.movePawn,
+    }));
+
   gameState.selectedPawns = [];
   returnActions.push({action: SelectPawns([], gameState.currentPlayerId),});
   if (player.lastRoll !== 6 || player.previousRoll === 6) {
@@ -250,7 +269,7 @@ const PickPawnHandler = (action, player, gameState) => {
   // check if pawn moves on someone others pawn and move this pawn to spawn
   if (lastFieldPawn) {
     let playerIndex =  gameState.playerIds.findIndex(playerId => lastFieldPawn.playerId === playerId),
-      spawnPosition = BoardUtils.getSpawnFields(gameState.pawns, playerIndex)[0],
+      spawnPosition = BoardUtils.getEmptySpawnFields(gameState.pawns, playerIndex)[0],
       fieldSequence = [{x: spawnPosition.x, z: spawnPosition.z,},];
 
     lastFieldPawn.x = spawnPosition.x;
@@ -258,7 +277,7 @@ const PickPawnHandler = (action, player, gameState) => {
 
     returnActions.push({
       action: Game.Actions.MovePawn(lastFieldPawn.id, fieldSequence),
-      timestamp: Date.now() + (AnimationLengths.movePawn * (move.fieldSequence.length - 1)),
+      timestamp: animationLength - AnimationLengths.movePawn,
     });
   }
 
@@ -300,7 +319,7 @@ const DisconnectedHandler = (action, player, room) => {
     activePlayers,
     gameState = room.gameState,
     playerIndex = gameState.playerIds.indexOf(player.id),
-    spawnFields = gameState.pawns && BoardUtils.getSpawnFields(gameState.pawns, playerIndex),
+    spawnFields = gameState.pawns && BoardUtils.getEmptySpawnFields(gameState.pawns, playerIndex),
     playerPawns = gameState.pawns && gameState.pawns.filter(pawn =>
       pawn.playerId === player.id &&
       BoardUtils.getFieldByPosition(pawn.x, pawn.z).type !== BoardUtils.FieldTypes.spawn
@@ -391,6 +410,7 @@ const Ludo = {
     PickPawn,
     FinishGame,
     PickColors,
+    RestartProgress,
   },
   ActionHandlers: {
     SelectColor: SelectColorHandler,

@@ -50,7 +50,7 @@ describe('Disconnect handler', () => {
     expect(actions[0].action.type).toBe(Ludo.ActionTypes.WaitForPlayer);
     expect(actions[0].action.playerId).toBe(gameState.players[1].id);
     expect(actions[0].action.expectedAction).toBe(Ludo.ActionTypes.Roll);
-    expect(actions[1].action.type).toBe(Ludo.ActionTypes.Disconnected);
+    expect(actions[1].action.type).toBe(Game.ActionTypes.Disconnected);
     expect(actions[1].action.playerId).toBe(gameState.players[0].id);
   });
 
@@ -66,7 +66,7 @@ describe('Disconnect handler', () => {
     expect(actions.length).toBe(2);
     expect(actions[0].action.type).toBe(Ludo.ActionTypes.FinishGame);
     expect(actions[0].action.winnerId).toBe(gameState.players[1].id);
-    expect(actions[1].action.type).toBe(Ludo.ActionTypes.Disconnected);
+    expect(actions[1].action.type).toBe(Game.ActionTypes.Disconnected);
     expect(actions[1].action.playerId).toBe(gameState.players[0].id);
   })
 });

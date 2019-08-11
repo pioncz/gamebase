@@ -83,10 +83,10 @@ export default class PlayerProfiles extends Component {
 
         return <div key={index} className={className}>
           <div className="player-name" style={{
-            [(index%3?'borderLeft':'borderRight')]: "4px solid " + player.color,
+            'borderColor': player.color,
           }}>
             {player.login}
-            {player.id === currentPlayerId && <p className={'arrow ' + (index%3?'right':'left')}></p>}
+            {player.id === currentPlayerId && <p className="arrow"></p>}
             <Progress
               value={player.id === currentPlayerId ? currentPlayerProgress : 0}
             />

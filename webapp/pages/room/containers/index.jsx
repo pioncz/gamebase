@@ -76,7 +76,6 @@ class Room extends Component {
       if (this.connectorInstance.socket) {
         this.connectorInstance.socket.off('roomUpdate');
         this.connectorInstance.socket.off('newAction');
-        this.connectorInstance.socket.off('playerDisconnected');
         this.connectorInstance.socket.off('socketError');
       }
       this.connectorInstance.leaveGame();
@@ -118,7 +117,8 @@ class Room extends Component {
           page: Pages.Game,
           pawns: gameState.pawns,
           finishTimestamp: gameState.finishTimestamp,
-          waitingForAction: Games.Ludo.ActionTypes.Roll,
+        }, () => {
+          this.gameComponentRef.current.initGame(newAction.animationLength);
         });
         this.timerComponentRef.current.start(gameState.finishTimestamp - Date.now());
         this.addMessage('Game started!');
@@ -240,9 +240,6 @@ class Room extends Component {
       console.log('newAction: ', newAction, ' lag: ', (Math.abs(Date.now() - newAction.timestamp) % (15 * 60 * 1000)));
 
       handleAction(newAction);
-    });
-    this.connectorInstance.socket.on('playerDisconnected', (e) => {
-      console.log('playerDisconnected', e.playerId);
     });
     this.connectorInstance.socket.on('socketError', (e) => {
       if (e.code === 1) {

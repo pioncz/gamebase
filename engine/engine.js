@@ -17,7 +17,6 @@ export default class Engine extends EventEmitter {
     this.gameId = null;
 
     this.scene = new THREE.Scene();
-    this.controls = new Controls({container: this.container,});
     this.animations = new Animations();
     this.raycaster = new THREE.Raycaster();
 
@@ -38,7 +37,7 @@ export default class Engine extends EventEmitter {
     this.camera.lookAt( new THREE.Vector3(0,0,0) );
     this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true,});
     this.renderer.setPixelRatio( window.devicePixelRatio );
-    this.renderer.setClearColor( '#243B55', 1 );
+    this.renderer.setClearColor( '#000', 0 );
     this.renderer.setSize( width, height );
     this.container.appendChild(this.renderer.domElement);
 
@@ -68,37 +67,39 @@ export default class Engine extends EventEmitter {
     this.composer = new THREE.EffectComposer(this.renderer);
     this.composer.setSize( window.innerWidth * 2, window.innerHeight * 2 );
     let renderPass = new THREE.RenderPass(this.scene, this.camera);
-
-    this.dimmingPass = new DimmingPass(
-      new THREE.Vector2(window.innerWidth, window.innerHeight),
-      this.scene,
-      this.camera,
-      [],
-      {
-        visibleEdgeColor: new THREE.Color(1, 1, 1, 1),
-        hiddenEdgeColor: new THREE.Color(0.4, 0.4, 0.4, 1),
-      },
-    );
-    this.dimmingPass.renderToScreen = true;
+    renderPass.renderToScreen = true;
+    // this.dimmingPass = new DimmingPass(
+    //   new THREE.Vector2(window.innerWidth, window.innerHeight),
+    //   this.scene,
+    //   this.camera,
+    //   [],
+    //   {
+    //     visibleEdgeColor: new THREE.Color(1, 1, 1, 1),
+    //     hiddenEdgeColor: new THREE.Color(0.4, 0.4, 0.4, 1),
+    //   },
+    // );
+    // this.dimmingPass.renderToScreen = true;
     this.composer.addPass(renderPass);
-    this.composer.addPass(this.dimmingPass);
+    // this.composer.addPass(this.dimmingPass);
 
-    this.animations.create({
-      id: 'dimmingThickness',
-      update: (progress) => {
-        let parsedProgress = progress;
-        if (progress > .5) {
-          parsedProgress = 1 - progress;
-        }
-        if (this.dimmingPass.selectedObjects.length) {
-          this.dimmingPass.edgeThickness = parsedProgress * 1 + 1;
-          this.dimmingPass.edgeStrength = parsedProgress * 5 + 2;
-        }
-      },
-      loop: true,
-      length: 1000,
-      easing: EASING.InOutCubic,
-    })
+    this.edgeCorrection = 0; // updated on window resize
+
+    // this.animations.create({
+    //   id: 'dimmingThickness',
+    //   update: (progress) => {
+    //     let parsedProgress = progress;
+    //     if (progress > .5) {
+    //       parsedProgress = 1 - progress;
+    //     }
+    //     if (this.dimmingPass.selectedObjects.length) {
+    //       this.dimmingPass.edgeThickness = parsedProgress * (6 + this.edgeCorrection) + (4 + 4 * this.edgeCorrection);
+    //       this.dimmingPass.edgeStrength = parsedProgress * 20 + (5 + this.edgeCorrection);
+    //     }
+    //   },
+    //   loop: true,
+    //   length: 1000,
+    //   easing: EASING.InOutCubic,
+    // })
 
     // Handle canvas events
     window.addEventListener('resize', () => {
@@ -114,28 +115,12 @@ export default class Engine extends EventEmitter {
 
     this.context = {
       animations: this.animations,
-      controls: this.controls,
       camera: this.camera,
     };
 
     this.createBoard();
-
-    WebFont.load({
-      custom: {
-        families: ['FontAwesome',],
-        urls: [
-          'https://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css',
-        ],
-        testStrings: {
-          'FontAwesome': '\uf001',
-        },
-      },
-      active: () => {
-        this.board.handleFontsLoad();
-        this.animate();
-      },
-    });
     this.onResize();
+    this.animate();
   }
   createBoard() {
     this.board = new Board({
@@ -151,7 +136,7 @@ export default class Engine extends EventEmitter {
   onResize = () => {
     let width = this.container.offsetWidth,
       height = this.container.offsetHeight,
-      aspect = width / height;
+      aspect = document.body.clientWidth / document.body.clientHeight;
     if (isNaN(aspect)) return;
 
     this.windowWidth = width;
@@ -159,30 +144,46 @@ export default class Engine extends EventEmitter {
     this.renderer.setSize( width, height );
     this.composer.setSize( width * 2, height * 2 );
 
+    this.edgeCorrection = Math.max(Math.min((this.windowWidth - 600) / 1400, 1), 0); // 0 - 1
+
+    document.body.classList = '';
+
     if (aspect <= 1.3) {
-      let scaleY;
+      document.body.classList.add('portrait');
 
       if (aspect <= 0.8) {
         this.frustumSize = 22;
-        scaleY = 70 / aspect
       } else {
         this.frustumSize = 26;
-        scaleY = 72 / aspect
       }
+
+      const moveY = 1;
 
       this.camera.left   = - this.frustumSize;
       this.camera.right  =   this.frustumSize;
-      this.camera.top    =   this.frustumSize / aspect;
-      this.camera.bottom = - this.frustumSize / aspect;
+      this.camera.top    =   (this.frustumSize + moveY ) / aspect;
+      this.camera.bottom = - (this.frustumSize - moveY ) / aspect;
       if (this.board) {
-        this.board.setRotation(false); //rotates board
-        if (this.board.background) {
-          const scaleX = Math.ceil(Math.abs(this.camera.left) + Math.abs(this.camera.right));
+        this.board.setPortraitRotation(true); //rotates board
+      }
+    } else if (this.windowWidth < 1000) {
+      document.body.classList.add('landscape');
 
-          this.board.background.resize(scaleX, scaleY);
-        }
+      this.frustumSize = 18;
+      const moveY = 0;
+
+      this.camera.left   = - this.frustumSize * aspect - 16;
+      this.camera.right  =   this.frustumSize * aspect;
+      this.camera.top    =   this.frustumSize + moveY;
+      this.camera.bottom = - this.frustumSize + moveY;
+      if (this.board) {
+        this.board.setPortraitRotation(true); //rotates board
       }
     } else {
+      if (document.body.clientWidth < 1000) {
+        document.body.classList.add('landscape');
+      }
+
       this.frustumSize = 22;
 
       this.camera.left   = - this.frustumSize * aspect;
@@ -190,13 +191,7 @@ export default class Engine extends EventEmitter {
       this.camera.top    =   this.frustumSize;
       this.camera.bottom = - this.frustumSize;
       if (this.board) {
-        this.board.setRotation(true); //rotates board
-        if (this.board.background) {
-          const scaleX = Math.ceil(Math.abs(this.camera.left) + Math.abs(this.camera.right));
-          const scaleY = 62;
-
-          this.board.background.resize(scaleX, scaleY);
-        }
+        this.board.setPortraitRotation(false); //rotates board
 
         const marginTop = 4;
         this.board.$.position.set(marginTop, 0, marginTop);
@@ -231,7 +226,7 @@ export default class Engine extends EventEmitter {
       e.stopPropagation();
     }
   }
-  initGame({gameId, gameName, pawns, players,}, firstPlayerId) {
+  initGame({gameId, gameName, pawns, players,}, firstPlayerId, animationLength) {
     if (!this.board) {
       this.gameName = gameName;
       this.createBoard();
@@ -251,20 +246,29 @@ export default class Engine extends EventEmitter {
     }
 
     this.initializing = true;
-
     let firstPlayerIndex = players.findIndex(player => player.id === firstPlayerId);
-    this.board.initGame({pawns, players, firstPlayerIndex,});
     this.onResize();
-    this.initializing = false;
+    this.board.initGame({pawns, players, firstPlayerIndex, animationLength,})
+      .then(() => {
+        this.initializing = false;
+      });
+  }
+  clearGame = () => {
+    if (!this.board) {
+      console.log('No board');
+      return;
+    }
+    this.board.clearGame();
   }
   selectPawns(pawnIds) {
     if (!this.board) return;
 
-    this.dimmingPass.selectedObjects = [];
-    for(let i = 0; i < pawnIds.length; i++) {
-      let pawn = this.board.pawnsController.getPawn(pawnIds[i]);
-      this.dimmingPass.selectedObjects.push(pawn.pawnMesh);
-    }
+    // this.dimmingPass.selectedObjects = [];
+    // for(let i = 0; i < pawnIds.length; i++) {
+    //   let pawn = this.board.pawnsController.getPawn(pawnIds[i]);
+    //   this.dimmingPass.selectedObjects.push(pawn.pawnMesh);
+    // }
+    this.animations.restartAnimation('dimmingThickness');
     this.board.pawnsController.selectPawns(pawnIds);
   }
   animate(timestamp) {
@@ -286,5 +290,20 @@ export default class Engine extends EventEmitter {
   }
   rollDice(number, diceColors) {
     this.board.rollDice(number, diceColors);
+  }
+  toggleControls() {
+    if (!this.controls) {
+      this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+    } else if (this.controls.enabled) {
+      this.controls.enabled = false;
+    } else {
+      this.controls.enabled = true;
+    }
+  }
+  resetControls() {
+    if (!this.controls) {
+      return;
+    }
+    this.controls.reset();
   }
 }

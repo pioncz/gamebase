@@ -1,7 +1,7 @@
 @import 'vars'
 
 .player-profiles
-    position: fixed
+    position: absolute
     width: 100%
     height: 100%
     top: 50%
@@ -9,6 +9,7 @@
     left: 0
     pointer-events: none
     z-index: 100
+    overflow: hidden
 
     .player
       width: 100%
@@ -61,12 +62,18 @@
     .player-0, .player-3
       flex-direction: row-reverse
       left: 6px
+      .player-name
+        border-right: 4px solid
+
       &.player--hidden
         left: -200px
     .player-1, .player-2
       right: 6px
       .player-name
         padding: 6px 18px 6px 32px
+        border-left: 4px solid
+        .arrow
+          transform: translateY(-50%) rotate(-45deg)
       &.player--hidden
         right: -200px
     .player-1 .player-name, .player-2 .player-name
@@ -77,7 +84,37 @@
     .player--disconnected
       opacity: 0.5
 
-@media #{$portrait}
+.landscape
+  .player-profiles
+    .player-1, .player-2
+      left: 6px
+      bottom: auto
+      flex-direction: row-reverse
+      .player-name
+        border-left: 0
+        border-right: 4px solid
+        padding: 6px 32px 6px 18px
+        text-align: left
+        .arrow
+          transform: translateY(-50%) rotate(135deg)
+          right: 12px
+          left: auto
+      &.player--hidden
+        left: -100%
+
+    .player-0, .player-3
+      &.player--hidden
+        left: -100%
+
+    .player-1
+      top: 98px
+    .player-2
+      top: 144px
+    .player-3
+      top: 190px
+      bottom: auto
+
+.portrait
   .player-profiles
     .player
       white-space: nowrap

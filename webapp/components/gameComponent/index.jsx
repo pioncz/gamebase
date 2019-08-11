@@ -33,14 +33,6 @@ export default class GameComponent extends Component {
     if (this.props.gameName !== nextProps.gameName) {
       this.engine.changeGame(nextProps.gameName);
     }
-    if (this.props.gameId !== nextProps.gameId && this.props.gameName) {
-      this.engine.initGame({
-        gameId: nextProps.gameId,
-        gameName: nextProps.gameName,
-        pawns: nextProps.pawns,
-        players: nextProps.players,},
-      nextProps.firstPlayerId);
-    }
     return false;
   }
   createEngine() {
@@ -63,6 +55,23 @@ export default class GameComponent extends Component {
   }
   checkMoves(pawns, diceNumber, playerIndex) {
     return this.engine.board.checkMoves(pawns, diceNumber, playerIndex);
+  }
+  initGame(animationLength) {
+    const { gameId, gameName, pawns, players, firstPlayerId, } = this.props;
+
+    this.engine.initGame(
+      {
+        gameId: gameId,
+        gameName: gameName,
+        pawns: pawns,
+        players: players,
+      },
+      firstPlayerId,
+      animationLength,
+    );
+  }
+  clearGame() {
+    this.engine.clearGame();
   }
   render() {
     return <div className="game-component">

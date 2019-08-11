@@ -7,7 +7,7 @@ import { actions, } from 'shared/redux/api';
 import {connect,} from "react-redux";
 import {bindActionCreators,} from "redux";
 import PlayerProfiles from 'components/playerProfiles';
-import { Config, } from 'ludo';
+import { Config, AnimationLengths, } from 'ludo';
 import Games from 'Games.js';
 import Snackbar from 'components/snackbar';
 import Dices from 'components/dices';
@@ -181,6 +181,7 @@ class Engine extends Component {
     }
     this.messagesIntervalId = setInterval(addMessage, 3000);
     addMessage();
+    window.engine = this.gameComponentRef.current.engine;
   }
   componentWillUnmount() {
     this.props.unsetInGame();
@@ -211,6 +212,11 @@ class Engine extends Component {
         let move = moves.find(move => move.pawnId === selectedPawnId);
 
         if (move && move.fieldSequence.length) {
+          move.fieldSequence = move.fieldSequence.map(singleMove => ({
+            ...singleMove,
+            animationLength: AnimationLengths.movePawn,
+          }));
+
           let fieldSequence = move.fieldSequence || [],
             lastField = fieldSequence[fieldSequence.length - 1],
             anotherPawns = pawns.filter(pawn =>
@@ -307,12 +313,26 @@ class Engine extends Component {
       currentPlayerId: newPawns[0].playerId,
       gameId: nextId(),
       firstPlayerId,
+    }, () => {
+      this.gameComponentRef.current.initGame(firstPlayerId);
     });
     setTimeout(() => {
       this.gameComponentRef.current.engine.selectPawns([newPawns[0].id,]);
-    }, 50);
+    }, 500);
 
     this.timerComponentRef.current.start(5*60*1000);
+  }
+  clearGame = () => {
+    this.setState({
+      pawns: [],
+      players: [],
+      selectedPawnId: [],
+      currentPlayerId: [],
+      gameId: null,
+      firstPlayerId: null,
+    }, () => {
+      this.gameComponentRef.current.clearGame();
+    });
   }
   selectPawn = (pawnId) => {
     const { pawns, } = this.state;
@@ -351,6 +371,12 @@ class Engine extends Component {
       this.selectPawn(firstPawnId);
     }
   }
+  toggleControls = () => {
+    this.gameComponentRef.current.engine.toggleControls();
+  }
+  resetControls = () => {
+    this.gameComponentRef.current.engine.resetControls();
+  }
   render() {
     const { players, pawns, selectedPawnId, pawnInput, numberOfPlayers, pawnSet, firstPlayerIndex, firstPlayerId, currentPlayerId, gameName, messages, } = this.state,
       pawnsElements = pawns.map(pawn => {
@@ -375,8 +401,6 @@ class Engine extends Component {
             </select>
           </div>
           <button type="button" onClick={this.handleSetGame}>Set game</button>
-        </div>
-        <div className="settings-body">
         </div>
         <div className="settings-title">Settings</div>
         <div className="settings-body">
@@ -403,6 +427,7 @@ class Engine extends Component {
             </div>
           </div>
           <button type="button" onClick={this.initGame}>Init game</button>
+          <button type="button" onClick={this.clearGame}>Clear game</button>
           <hr />
           <div className="pawns">
             <div className="pawns-title">Pawns:</div>
@@ -416,6 +441,15 @@ class Engine extends Component {
           </div>
           <button onClick={this.movePawn}>RUSZ PIONKA</button>
           <button onClick={this.rollDice}>RZUĆ KOŚCIĄ</button>
+        </div>
+        <div className="settings-title">Camera</div>
+        <div className="settings-body">
+          <div className="input-row">
+            <div>
+              <button onClick={this.toggleControls}>TOGGLE CONTROLS</button>
+              <button onClick={this.resetControls}>RESET</button>
+            </div>
+          </div>
         </div>
       </div>
       <GameComponent

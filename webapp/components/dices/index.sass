@@ -27,7 +27,16 @@
     svg path
       fill: #fff
 
-@media #{$portrait}
+.landscape
+  .dices
+    top: auto
+    bottom: -100px
+    left: 6px
+    width: 200px
+    &--visible
+      bottom: 6px
+
+.portrait
   .dices
     top: auto
     bottom: -100px
