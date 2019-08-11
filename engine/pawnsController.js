@@ -10,6 +10,8 @@ export default class PawnsController {
     this.animations = props.context.animations;
     this.context = props.context;
     this.columnsLength = props.columnsLength;
+    this.renderOrder = props.renderOrder;
+    this.pawnSelectionRenderOrder = props.renderOrder;
 
     this.$ = new THREE.Group();
     this.$.name = 'PawnsController';
@@ -31,10 +33,19 @@ export default class PawnsController {
       });
       this.pawns[pawnId] = pawn;
 
-      let delay = Math.floor((+pawnIndex / 4))*200+(+pawnIndex % 4)*100;
-
       pawn.pawnMesh.material.opacity = 0;
+      pawn.selectionObject.renderOrder = this.pawnSelectionRenderOrder;
       this.$.add(pawn.$);
+    }
+  }
+  initPawns() {
+    for (let pawnId in this.pawns) {
+      let pawn = this.pawns[pawnId];
+
+      if (!pawn) return;
+
+      let delay = Math.floor((+pawnId / 4))*200+(+pawnId % 4)*100;
+
       this.animations.create({
         id: 'enterPawn' + pawnId,
         length: 300,

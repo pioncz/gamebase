@@ -16,6 +16,7 @@ export default class Pawn {
       shininess: 0,
       reflectivity: 0,
       transparent: true,
+      opacity: 1.0,
     });
     this.$ = new THREE.Object3D();
     this.context = props.context;
@@ -54,6 +55,8 @@ export default class Pawn {
       selectionMaterial = new THREE.MeshBasicMaterial({
         map: TextureLoader.load('/static/down-arrow.svg'),
         transparent: true,
+        depthTest: true,
+        depthWrite: false,
       });
 
     this.selectionObject = new THREE.Mesh( selectionGeometry, selectionMaterial );

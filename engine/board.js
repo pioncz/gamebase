@@ -3,8 +3,15 @@ import PawnsController from 'pawnsController';
 import Dice from './dice';
 import BoardUtils from './../games/ludo/BoardUtils.js';
 import Games from 'Games.js';
+import { EASING, } from './utils/animations'
 
 const GridAmount = 11;
+
+const RenderOrder = {
+  PawnSelection: 1000,
+  PawnsController: 800,
+  Board: 400,
+};
 
 export default class Board {
   constructor(props) {
@@ -20,6 +27,7 @@ export default class Board {
     this.canvas = Utils.$({element: 'canvas',});
     this.texture = null;
     this.rotation = 0;
+    this.portraitRotation = false;
     this.gameName = props.gameName;
     this.dices = [];
     this.diceAnimationLength;
@@ -33,45 +41,79 @@ export default class Board {
   }
   // Color fields, create pawns
   initGame(props) {
-    this.clearGame();
-    const { players, firstPlayerIndex, } = props;
+    return new Promise((resolve, reject) => {
+      this.pawnsController.removePawns();
+      this.pawnsController.$.position.y = 0;
 
-    // Set field colors
-    for(let fieldIndex in this.fields) {
-      let field = this.fields[fieldIndex];
+      const { players, firstPlayerIndex, animationLength, } = props;
 
-      if (field.playerIndex !== undefined) {
-        let player = players[field.playerIndex];
+      // Set field colors
+      for(let fieldIndex in this.fields) {
+        let field = this.fields[fieldIndex];
 
-        if (player) {
-          field.color = player.color;
-          field.disabled = false;
-        } else {
-          field.disabled = true;
+        if (field.playerIndex !== undefined) {
+          let player = players[field.playerIndex];
+
+          if (player) {
+            field.color = player.color;
+            field.disabled = false;
+          } else {
+            field.disabled = true;
+          }
         }
       }
-    }
-    this.drawBoard();
-    // create pawns
-    this.pawnsController.createPawns({pawns: props.pawns,});
-    if (this.fontsLoaded) {
-      this.pawnsController.createSelectionObjects();
-    }
+      this.drawBoard();
 
-    let newRotation = (Math.PI/2) * firstPlayerIndex;
-    this.rotateBoard(newRotation);
+      this.pawnsController.createPawns({pawns: props.pawns,});
+
+      let newRotation = (Math.PI/2) * firstPlayerIndex;
+      this.rotateBoard(newRotation);
+      this.$.position.y = 0;
+
+      const animationRotation = Math.PI/4;
+      const startRotation = this.rotation - animationRotation;
+
+      this.animations.finishAnimation('board-clear');
+      this.animations.create(
+        {
+          id: 'board-init',
+          easing: EASING.InOutQuint,
+          length: animationLength,
+          update: (progress) => {
+            const opacity = progress;
+            this.$.material[0].opacity = opacity;
+            this.$.material[1].opacity = opacity;
+            this.$.scale.set(progress, progress, progress);
+            this.rotateBoard(startRotation + animationRotation * progress);
+          },
+        },
+      ).then(() => {
+        this.pawnsController.initPawns();
+        resolve();
+      });
+    });
   }
-  clearGame() {
-    // clear board
-    for(let fieldIndex in this.fields) {
-      let field = this.fields[fieldIndex];
+  clearGame = () => {
+    this.animations.removeAnimation('board-init');
 
-      if (field.playerIndex !== undefined) {
-        field.disabled = true;
-      }
-    }
-    this.drawBoard();
-    this.pawnsController.removePawns();
+    this.$.position.y = 0;
+    this.pawnsController.$.position.y = 0;
+    this.animations.create(
+      {
+        id: 'board-clear',
+        length: 800,
+        easing: EASING.InOutQuint,
+        update: (progress) => {
+          const opacity = 1 - progress;
+          this.$.material[0].opacity = opacity;
+          this.$.material[1].opacity = opacity;
+          this.$.position.y -= progress * 5;
+          this.pawnsController.$.position.y -= progress * 5;
+        },
+      },
+    ).then(() => {
+      this.pawnsController.removePawns();
+    })
   }
   drawBoard() {
     let ctx = this.canvas.getContext('2d'),
@@ -133,6 +175,8 @@ export default class Board {
       pawns: [],
       animations: this.animations,
       columnsLength: this.columnsLength,
+      renderOrder: RenderOrder.PawnsController,
+      pawnSelectionRenderOrder: RenderOrder.PawnSelection,
     });
     this.scene.add(this.pawnsController.$);
   }
@@ -143,8 +187,20 @@ export default class Board {
       depth = 2,
       height = 40;
     this.materials = [
-      new THREE.MeshBasicMaterial({ map: texture,}),
-      new THREE.MeshBasicMaterial({color: 'rgba(61, 72, 97, 0.8)',}),
+      new THREE.MeshBasicMaterial(
+        {
+          map: texture,
+          transparent: true,
+          opacity: 0,
+        }
+      ),
+      new THREE.MeshBasicMaterial(
+        {
+          color: 'rgba(61, 72, 97, 0.8)',
+          transparent: true,
+          opacity: 0,
+        }
+      ),
     ];
     this.geometry = new THREE.BoxGeometry(width, depth, height);
     this.texture = texture;
@@ -159,19 +215,16 @@ export default class Board {
     this.geometry.faces[9].materialIndex = 1;
 
     this.$ = new THREE.Mesh(this.geometry, this.materials);
+    this.$.scale.set(0.01, 0.01, 0.01);
     this.$.name = 'BoardMesh';
     this.scene.add(this.$);
   }
   /* setRotation
     rotate if rotate param is true
    */
-  setRotation(rotate) {
-    if (!rotate && !(this.rotation % (Math.PI / 2))) {
-      this.rotateBoard(this.rotation + Math.PI / 4);
-    }
-    if (rotate && (this.rotation % (Math.PI / 2))) {
-      this.rotateBoard(this.rotation - Math.PI / 4);
-    }
+  setPortraitRotation(isPortrait) {
+    this.portraitRotation = isPortrait;
+    this.rotateBoard(this.rotation);
   }
   getFieldsSequence(pawnData, length) {
     let currentField,
@@ -253,8 +306,13 @@ export default class Board {
   }
   rotateBoard(newRotation) {
     this.rotation = newRotation;
-    this.$.rotation.y = newRotation;
-    this.pawnsController.rotate(newRotation);
+
+    let parsedRotation = newRotation;
+    if (this.portraitRotation) {
+      parsedRotation += Math.PI / 4;
+    }
+    this.$.rotation.y = parsedRotation;
+    this.pawnsController.rotate(parsedRotation);
   }
   createSelectionObjects() {
     if (this.pawnsController) {

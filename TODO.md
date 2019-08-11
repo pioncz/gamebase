@@ -1,8 +1,10 @@
-- animacja wejscia - zmiana gradientu w background, plansza opacity + rotate + scale 0 -> 1
+- animacja wejscia - animacja gradientu tla
+- bot za szybko rzuca kostka
 - https://www.google.com/search?q=node+diagnostics&oq=node+diagnos&aqs=chrome.1.69i57j0l5.2544j0j1&sourceid=chrome&ie=UTF-8
 - inny zaznaczenie https://medium.com/@joshmarinacci/cartoon-outline-effect-6c4e95545537
 - bardziej losowa kostka
 - pwa: pwa lifecycle, ios reload action, request persistent storage
+- na kompie snackbar w lewym dolnym rogu
 
 - przy kliku sprawdz ktory pionek jest najblizej ray'a
 - zdarza sie bug gdy jest zaznaczony pionek, gracz moze sie ruszyc, ale serwer loguje ze ten pionek nie jest zaznaczony
@@ -273,3 +275,4 @@ DONE:
 + dodac orbit controlsy do engine
 + wywalic tlo z engine
 + zmienic tlo w gameComponent
++ animacja wejscia - zmiana gradientu w background, plansza opacity + rotate + scale 0 -> 1

@@ -39,6 +39,7 @@ export const EASING = {
     return Math.sin((2*Math.PI) * t);
   },
 };
+window.EASINGS = EASING;
 
 const nextId = (() => {
   let id = 0;
@@ -77,11 +78,15 @@ export class Animations {
 
     if (!animation) return;
 
-    this._finishAnimation(id);
     this.animations.splice(this.animations.indexOf(animation), 1);
   }
-  _finishAnimation(id) {
+  finishAnimation(id) {
+    let animation = this._getAnimationById(id);
 
+    if (!animation || animation.finished) return;
+
+    animation.update(1);
+    this.removeAnimation(animation.id);
   }
   create(options) {
     options.id = options.id || nextId();
