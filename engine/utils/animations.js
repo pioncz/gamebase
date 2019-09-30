@@ -80,12 +80,15 @@ export class Animations {
     this.animations.splice(this.animations.indexOf(animation), 1);
   }
   finishAnimation(id) {
-    let animation = this._getAnimationById(id);
+    return new Promise((reject, resolve) => {
+      let animation = this._getAnimationById(id);
 
-    if (!animation || animation.finished) return;
+      if (!animation || animation.finished) resolve();
 
-    animation.update(1);
-    this.removeAnimation(animation.id);
+      animation.update(1);
+      this.removeAnimation(animation.id);
+      resolve();
+    });
   }
   create(options) {
     options.id = options.id || nextId();

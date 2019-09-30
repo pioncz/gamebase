@@ -276,3 +276,4 @@ DONE:
 + wywalic tlo z engine
 + zmienic tlo w gameComponent
 + animacja wejscia - zmiana gradientu w background, plansza opacity + rotate + scale 0 -> 1
++ bug pozycji planszy w engine
