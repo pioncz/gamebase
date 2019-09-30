@@ -1,5 +1,3 @@
-import Utils from './utils'
-
 export const TIMES = {
   Infinity: 'Infinity',
 };
@@ -63,7 +61,7 @@ class Animation {
 }
 
 export class Animations {
-  constructor(props) {
+  constructor() {
     this.animations = [];
     this.sequences = {}; // 'sequenceName':
   }
