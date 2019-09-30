@@ -51,6 +51,7 @@ class Room extends Component {
       nextRollTimestamp: null,
       nextRollLength: null,
       waitingForAction: null,
+      activeDice: false,
     };
 
     this.timerComponentRef = React.createRef();
@@ -131,18 +132,12 @@ class Room extends Component {
         const { players, currentPlayerId, } = this.state;
         const { player: currentPlayer, } = this.props;
         const player = players.find(player => player.id === newAction.playerId);
+        const activeDice = currentPlayer.id === player.id && newAction.expectedAction === Games.Ludo.ActionTypes.Roll;
 
-        if (currentPlayer.id === player.id) {
-          let message;
-          if (newAction.expectedAction === Games.Ludo.ActionTypes.Roll) {
-            message = 'Your turn. Roll dice!';
-          } else {
-            message = 'Pick pawn!';
-          }
-        }
         this.setState({
           currentPlayerId: newAction.playerId,
           waitingForAction: newAction.expectedAction,
+          activeDice,
         });
       }
       if (newAction.type === Games.Ludo.ActionTypes.Rolled) {
@@ -235,6 +230,9 @@ class Room extends Component {
   }
   handleDicesClick = () => {
     this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.Roll());
+    this.setState({
+      activeDice: false,
+    })
   }
   handleBoardClick = (e) => {
     const { pawns, } = this.state;
@@ -295,6 +293,7 @@ class Room extends Component {
         currentPlayerId,
         nextRollLength,
         waitingForAction,
+        activeDice,
       } = this.state,
       {player,} = this.props,
       playerColor = player && playerColors.find(playerColor => playerColor.playerId === player.id),
@@ -378,7 +377,7 @@ class Room extends Component {
       {currentModal}
       <Dices
         visible={page === Pages.Game}
-        active={player && player.id === currentPlayerId && waitingForAction === Games.Ludo.ActionTypes.Roll}
+        active={activeDice}
         onClick={this.handleDicesClick}
         color={color}
       />

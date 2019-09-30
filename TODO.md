@@ -1,6 +1,4 @@
-- lepsze rzucanie kostka
 - lepsze podswietlanie pionkow (dimming)
-- lepsze zaznaczanie aktualnego gracza
 - bot za szybko rzuca kostka
 
 - mozliwosc reconnectu
@@ -283,3 +281,5 @@ DONE:
 + bug pozycji planszy w engine
 + animacja wejscia - animacja gradientu tla
 + ukryc snackbar
++ lepsze rzucanie kostka na tel
++ lepsze zaznaczanie aktualnego gracza

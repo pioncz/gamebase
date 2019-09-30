@@ -1,5 +1,14 @@
 @import 'vars'
 
+.progress
+  display: block
+  width: 0%
+  height: 100%
+  background-image: linear-gradient(45deg, #ffffff30, #ffffffcc)
+  position: absolute
+  bottom: 0px
+  left: 0px
+
 .player-profiles
     position: absolute
     width: 100%
@@ -38,7 +47,6 @@
           top: 50%
 
       .player-progress
-        height: 2px
         position: absolute
         width: 0%
         background: #fff
@@ -74,6 +82,10 @@
         border-left: 4px solid
         .arrow
           transform: translateY(-50%) rotate(-45deg)
+        .progress
+          left: auto
+          right: 0px
+          background-image: linear-gradient(135deg, #ffffffcc, #ffffff30)
       &.player--hidden
         right: -200px
     .player-1 .player-name, .player-2 .player-name
