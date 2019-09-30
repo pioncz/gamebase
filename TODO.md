@@ -1,5 +1,9 @@
-- animacja wejscia - animacja gradientu tla
+- lepsze rzucanie kostka
+- lepsze podswietlanie pionkow (dimming)
+- lepsze zaznaczanie aktualnego gracza
 - bot za szybko rzuca kostka
+
+- mozliwosc reconnectu
 - https://www.google.com/search?q=node+diagnostics&oq=node+diagnos&aqs=chrome.1.69i57j0l5.2544j0j1&sourceid=chrome&ie=UTF-8
 - inny zaznaczenie https://medium.com/@joshmarinacci/cartoon-outline-effect-6c4e95545537
 - bardziej losowa kostka
@@ -277,3 +281,5 @@ DONE:
 + zmienic tlo w gameComponent
 + animacja wejscia - zmiana gradientu w background, plansza opacity + rotate + scale 0 -> 1
 + bug pozycji planszy w engine
++ animacja wejscia - animacja gradientu tla
++ ukryc snackbar

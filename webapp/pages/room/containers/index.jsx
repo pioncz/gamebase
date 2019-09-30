@@ -41,7 +41,7 @@ class Room extends Component {
       queueColors: [],
       playerColors: [],
       currentPlayerId: null,
-      roomId: null,
+      roomId: roomId,
       roomName: null,
       gameName: null,
       players: [],
@@ -56,7 +56,6 @@ class Room extends Component {
     this.timerComponentRef = React.createRef();
     this.profilesComponentRef = React.createRef();
     this.gameComponentRef = React.createRef();
-    this.snackbarComponentRef = React.createRef();
     this.connectorInstance = this.props.connectorInstance;
 
     this.props.setInGame();
@@ -121,7 +120,6 @@ class Room extends Component {
           this.gameComponentRef.current.initGame(newAction.animationLength);
         });
         this.timerComponentRef.current.start(gameState.finishTimestamp - Date.now());
-        this.addMessage('Game started!');
       }
       if (newAction.type === Games.Ludo.ActionTypes.RestartProgress) {
         this.profilesComponentRef.current.restartProgress();
@@ -141,11 +139,6 @@ class Room extends Component {
           } else {
             message = 'Pick pawn!';
           }
-          // Add message if player changed and expected action is roll
-          if ((currentPlayerId !== newAction.playerId && newAction.expectedAction === Games.Ludo.ActionTypes.Roll) ||
-        (newAction.playerId === currentPlayer.id)) {
-            this.addMessage(message, player.color);
-          }
         }
         this.setState({
           currentPlayerId: newAction.playerId,
@@ -154,20 +147,8 @@ class Room extends Component {
       }
       if (newAction.type === Games.Ludo.ActionTypes.Rolled) {
         const { players, currentPlayerId, } = this.state;
-        const { player: currentPlayer, } = this.props;
-        let message;
-        let color;
         let player = players.find(player => player.id === currentPlayerId);
 
-        if (player) {
-          color = player.color;
-          if (currentPlayer.id === currentPlayerId) {
-            message = `Rolled ${newAction.diceNumber}!`;
-          } else {
-            message = `Player ${player.login} rolled ${newAction.diceNumber}`;
-          }
-          this.addMessage(message, color);
-        }
         let diceColors = (dices.find(dice => dice.id === player.diceId) || dices[0]).colors;
 
         this.gameComponentRef.current.engine.rollDice(newAction.diceNumber, diceColors);
@@ -249,11 +230,6 @@ class Room extends Component {
       }
     });
   }
-  addMessage = (message, color) => {
-    if (this.snackbarComponentRef && this.snackbarComponentRef.current) {
-      this.snackbarComponentRef.current.addMessage(message, color);
-    }
-  }
   selectColor = (color) => {
     this.connectorInstance.socket.emit('callAction', Games.Ludo.Actions.SelectColor(this.props.player.id, color));
   }
@@ -292,10 +268,12 @@ class Room extends Component {
     this.connectorInstance.socket.emit('joinRoom', {
       roomId,
     });
-    this.setState({
-      page: Pages.Queue,
-      roomId: roomId,
-    })
+    if (this.state.roomId !== roomId) {
+      this.setState({
+        page: Pages.Queue,
+        roomId: roomId,
+      });
+    }
   }
   onKeyUp = (e) => {
     if (e.key && e.key === ' ') {
@@ -405,7 +383,6 @@ class Room extends Component {
         color={color}
       />
       <Timer ref={this.timerComponentRef} />
-      <Snackbar ref={this.snackbarComponentRef} />
     </div>);
   }
 }
