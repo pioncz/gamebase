@@ -157,27 +157,27 @@ export default class Engine extends EventEmitter {
         this.frustumSize = 26;
       }
 
-      const moveY = 4;
+      const moveY = 1;
 
       this.camera.left   = - this.frustumSize;
       this.camera.right  =   this.frustumSize;
       this.camera.top    =   (this.frustumSize + moveY ) / aspect;
       this.camera.bottom = - (this.frustumSize - moveY ) / aspect;
       if (this.board) {
-        this.board.setRotation(false); //rotates board
+        this.board.setPortraitRotation(true); //rotates board
       }
     } else if (this.windowWidth < 1000) {
       document.body.classList.add('landscape');
 
       this.frustumSize = 18;
-      const moveY = 3;
+      const moveY = 0;
 
       this.camera.left   = - this.frustumSize * aspect - 16;
       this.camera.right  =   this.frustumSize * aspect;
       this.camera.top    =   this.frustumSize + moveY;
       this.camera.bottom = - this.frustumSize + moveY;
       if (this.board) {
-        this.board.setRotation(false); //rotates board
+        this.board.setPortraitRotation(true); //rotates board
       }
     } else {
       if (document.body.clientWidth < 1000) {
@@ -191,7 +191,7 @@ export default class Engine extends EventEmitter {
       this.camera.top    =   this.frustumSize;
       this.camera.bottom = - this.frustumSize;
       if (this.board) {
-        this.board.setRotation(true); //rotates board
+        this.board.setPortraitRotation(false); //rotates board
 
         const marginTop = 4;
         this.board.$.position.set(marginTop, 0, marginTop);
@@ -226,7 +226,7 @@ export default class Engine extends EventEmitter {
       e.stopPropagation();
     }
   }
-  initGame({gameId, gameName, pawns, players,}, firstPlayerId) {
+  initGame({gameId, gameName, pawns, players,}, firstPlayerId, animationLength) {
     if (!this.board) {
       this.gameName = gameName;
       this.createBoard();
@@ -246,11 +246,10 @@ export default class Engine extends EventEmitter {
     }
 
     this.initializing = true;
-    this.onResize();
     let firstPlayerIndex = players.findIndex(player => player.id === firstPlayerId);
-    this.board.initGame({pawns, players, firstPlayerIndex,})
+    this.onResize();
+    this.board.initGame({pawns, players, firstPlayerIndex, animationLength,})
       .then(() => {
-        this.onResize();
         this.initializing = false;
       });
   }

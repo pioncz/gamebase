@@ -102,17 +102,23 @@ class Room {
     initialState.pawns.splice(this.gameState.playerIds.length * 4, (4 - this.gameState.playerIds.length) * 4);
 
     this.gameState.currentPlayerId = this.gameState.playerIds[0];
+    this.gameState.rolled = true;
     this.gameState.finishTimestamp = Date.now() + game.Config.GameLength;
-    this.gameState.roundTimestamp = Date.now() + game.Config.RoundLength;
     let startGameAction = game.Actions.StartGame(this.gameState),
       waitForPlayer = game.Actions.WaitForPlayer(this.gameState, game.ActionTypes.Roll);
 
     returnActions.push({action: startGameAction,});
     returnActions.push({
       action: waitForPlayer,
-      timestamp: Date.now() + 1000,
+      timestamp: Date.now() + game.AnimationLengths.startGameBase,
       callback: () => {
+        let returnActions = [];
+
         this.gameState.rolled = false;
+        this.gameState.roundTimestamp = Date.now() + game.Config.RoundLength;
+
+        returnActions.push({action: game.Actions.RestartProgress(),});
+        return returnActions;
       },
     });
 
@@ -215,11 +221,7 @@ class Room {
       returnActions = returnActions.concat(game.ActionHandlers.PickColors(this.gameState));
     }
 
-    // Add autoSelectColors if:
-    // its pickColorsState and
-    //  not all players selected color and
-    //    all players not disconnected selected colors or
-    //    timestamp passed
+    // not every player picked color and passed time for that
     if (roomState === RoomStates.pickColors &&
       (this.gameState.playerColors.length < this.gameState.players.length &&
       (selectedColorsByPlayers.length + bots.length >= this.minPlayers ||
@@ -240,6 +242,7 @@ class Room {
       }
     }
 
+    // every player picked color
     if (roomState === RoomStates.pickColors &&
       this.gameState.playerColors.length >= minPlayers) {
       returnActions = returnActions.concat(this.startGame());

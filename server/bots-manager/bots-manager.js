@@ -44,7 +44,7 @@ class BotsManager {
     if (room.gameState.roomState === 'game') {
       const currentPlayer = room.gameState.players.find(player => player.id === room.gameState.currentPlayerId);
       const game = Games[room.gameState.gameName];
-      if (currentPlayer.bot) {
+      if (currentPlayer && currentPlayer.bot) {
         if (room.gameState.rolled && room.gameState.selectedPawns.length) {
           const moves = game.BoardUtils.checkMoves(room.gameState, room.gameState.diceNumber, currentPlayer.id);
           if (moves.length) {

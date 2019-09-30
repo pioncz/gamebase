@@ -27,6 +27,7 @@ export default class Board {
     this.canvas = Utils.$({element: 'canvas',});
     this.texture = null;
     this.rotation = 0;
+    this.portraitRotation = false;
     this.gameName = props.gameName;
     this.dices = [];
     this.diceAnimationLength;
@@ -44,7 +45,7 @@ export default class Board {
       this.pawnsController.removePawns();
       this.pawnsController.$.position.y = 0;
 
-      const { players, firstPlayerIndex, } = props;
+      const { players, firstPlayerIndex, animationLength, } = props;
 
       // Set field colors
       for(let fieldIndex in this.fields) {
@@ -63,25 +64,27 @@ export default class Board {
       }
       this.drawBoard();
 
-      let newRotation = (Math.PI/2) * firstPlayerIndex;
-      this.setRotation(newRotation);
-      this.$.position.y = 0;
       this.pawnsController.createPawns({pawns: props.pawns,});
+
+      let newRotation = (Math.PI/2) * firstPlayerIndex;
       this.rotateBoard(newRotation);
+      this.$.position.y = 0;
+
+      const animationRotation = Math.PI/4;
+      const startRotation = this.rotation - animationRotation;
 
       this.animations.finishAnimation('board-clear');
-      const easingIn = window.easingIn || EASING.InOutQuint;
       this.animations.create(
         {
           id: 'board-init',
-          easing: easingIn,
-          length: 800,
+          easing: EASING.InOutQuint,
+          length: animationLength,
           update: (progress) => {
             const opacity = progress;
             this.$.material[0].opacity = opacity;
             this.$.material[1].opacity = opacity;
             this.$.scale.set(progress, progress, progress);
-            this.$.rotation.set(0, this.rotation * progress, 0);
+            this.rotateBoard(startRotation + animationRotation * progress);
           },
         },
       ).then(() => {
@@ -95,12 +98,11 @@ export default class Board {
 
     this.$.position.y = 0;
     this.pawnsController.$.position.y = 0;
-    const easingOut = window.easingOut || EASING.InOutQuint;
     this.animations.create(
       {
         id: 'board-clear',
         length: 800,
-        easing: easingOut,
+        easing: EASING.InOutQuint,
         update: (progress) => {
           const opacity = 1 - progress;
           this.$.material[0].opacity = opacity;
@@ -220,13 +222,9 @@ export default class Board {
   /* setRotation
     rotate if rotate param is true
    */
-  setRotation(rotate) {
-    if (!rotate && !(this.rotation % (Math.PI / 2))) {
-      this.rotateBoard(this.rotation + Math.PI / 4);
-    }
-    if (rotate && (this.rotation % (Math.PI / 2))) {
-      this.rotateBoard(this.rotation - Math.PI / 4);
-    }
+  setPortraitRotation(isPortrait) {
+    this.portraitRotation = isPortrait;
+    this.rotateBoard(this.rotation);
   }
   getFieldsSequence(pawnData, length) {
     let currentField,
@@ -308,8 +306,13 @@ export default class Board {
   }
   rotateBoard(newRotation) {
     this.rotation = newRotation;
-    this.$.rotation.y = newRotation;
-    this.pawnsController.rotate(newRotation);
+
+    let parsedRotation = newRotation;
+    if (this.portraitRotation) {
+      parsedRotation += Math.PI / 4;
+    }
+    this.$.rotation.y = parsedRotation;
+    this.pawnsController.rotate(parsedRotation);
   }
   createSelectionObjects() {
     if (this.pawnsController) {

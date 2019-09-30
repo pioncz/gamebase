@@ -56,7 +56,7 @@ export default class GameComponent extends Component {
   checkMoves(pawns, diceNumber, playerIndex) {
     return this.engine.board.checkMoves(pawns, diceNumber, playerIndex);
   }
-  initGame() {
+  initGame(animationLength) {
     const { gameId, gameName, pawns, players, firstPlayerId, } = this.props;
 
     this.engine.initGame(
@@ -67,6 +67,7 @@ export default class GameComponent extends Component {
         players: players,
       },
       firstPlayerId,
+      animationLength,
     );
   }
   clearGame() {
