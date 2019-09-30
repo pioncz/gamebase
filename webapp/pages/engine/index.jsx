@@ -314,7 +314,7 @@ class Engine extends Component {
       gameId: nextId(),
       firstPlayerId,
     }, () => {
-      this.gameComponentRef.current.initGame(firstPlayerId);
+      this.gameComponentRef.current.initGame(Games[gameName].AnimationLengths.startGameBase);
     });
     setTimeout(() => {
       this.gameComponentRef.current.engine.selectPawns([newPawns[0].id,]);
