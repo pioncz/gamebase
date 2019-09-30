@@ -1,5 +1,3 @@
-import Utils from './utils'
-
 export const TIMES = {
   Infinity: 'Infinity',
 };
@@ -39,7 +37,6 @@ export const EASING = {
     return Math.sin((2*Math.PI) * t);
   },
 };
-window.EASINGS = EASING;
 
 const nextId = (() => {
   let id = 0;
@@ -64,7 +61,7 @@ class Animation {
 }
 
 export class Animations {
-  constructor(props) {
+  constructor() {
     this.animations = [];
     this.sequences = {}; // 'sequenceName':
   }
