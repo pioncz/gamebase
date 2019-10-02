@@ -1,5 +1,6 @@
 - lepsze podswietlanie pionkow (dimming)
 - bot za szybko rzuca kostka
+- po rzucie kostka, zamiast mojego ruchu, rusza sie bot
 
 - mozliwosc reconnectu
 - https://www.google.com/search?q=node+diagnostics&oq=node+diagnos&aqs=chrome.1.69i57j0l5.2544j0j1&sourceid=chrome&ie=UTF-8
@@ -283,3 +284,4 @@ DONE:
 + ukryc snackbar
 + lepsze rzucanie kostka na tel
 + lepsze zaznaczanie aktualnego gracza
++ inne kolory: pomaranczowy, niebieski
