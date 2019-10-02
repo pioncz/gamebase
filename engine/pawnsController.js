@@ -5,6 +5,7 @@ import Config from 'config.js';
 export default class PawnsController {
   constructor(props) {
     this.scene = props.scene;
+    this.camera = props.camera;
     this.pawns = {};
     this.fieldLength = props.fieldLength;
     this.animations = props.context.animations;
@@ -25,6 +26,8 @@ export default class PawnsController {
       let pawn = new Pawn({
         ...pawns[pawnIndex],
         id: pawnId,
+        scene: this.scene,
+        camera: this.camera,
         parsedX: parsedX,
         parsedZ: parsedZ,
         x: pawns[pawnIndex].x,

@@ -177,6 +177,7 @@ export default class Board {
     this.pawnsController = new PawnsController({
       context: this.context,
       scene: this.scene,
+      camera: this.camera,
       fieldLength: this.fieldLength,
       pawns: [],
       animations: this.animations,

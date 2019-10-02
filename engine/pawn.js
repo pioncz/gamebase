@@ -1,9 +1,13 @@
 import {EASING, } from "./utils/animations";
+import GlowShader from './shaders/glow';
+import { timingSafeEqual, } from "crypto";
 
 const TextureLoader = new THREE.TextureLoader();
 
 export default class Pawn {
   constructor(props) {
+    this.scene = props.scene;
+    this.camera = props.camera;
     this.x = props.x;
     this.z = props.z;
     this.id = props.id;
@@ -82,6 +86,32 @@ export default class Pawn {
       return;
     }
 
+    if (this.moonGlow) {
+      this.$.remove(this.moonGlow);
+    }
+
+    const customMaterial = new THREE.ShaderMaterial(
+      {
+        uniforms:
+        {
+          c: { type: 'f', value: 1.0, },
+          p: { type: 'f', value: 1.4, },
+          glowColor: { type: 'c', value: new THREE.Color(0xffffff), },
+          viewVector: { type: 'v3', value: this.camera.position, },
+        },
+        vertexShader: GlowShader.vertexShader,
+        fragmentShader: GlowShader.fragmentShader,
+        side: THREE.FrontSide,
+        blending: THREE.AdditiveBlending,
+        transparent: true,
+      },
+    );
+
+    this.moonGlow = new THREE.Mesh(this.pawnMesh.geometry, customMaterial);
+    this.moonGlow.scale.multiplyScalar(1.4);
+    this.moonGlow.position.y = .42;
+    this.$.add(this.moonGlow);
+
     //create enter animation
     //and after: create infinity bouncing animation
     this.context.animations.create({
@@ -111,6 +141,9 @@ export default class Pawn {
     });
   }
   unselect() {
+    this.$.remove(this.moonGlow);
+    this.moonGlow = null;
+
     this.context.animations.removeAnimation('pawnAnimation' + this.id);
     if (this.selectionObject) {
       this.selectionObject.material.opacity = 0;
