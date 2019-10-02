@@ -104,12 +104,15 @@ export default class Pawn {
         side: THREE.FrontSide,
         blending: THREE.AdditiveBlending,
         transparent: true,
+        depthTest: true,
+        depthWrite: false,
       },
     );
 
     this.moonGlow = new THREE.Mesh(this.pawnMesh.geometry, customMaterial);
     this.moonGlow.scale.multiplyScalar(1.4);
     this.moonGlow.position.y = .42;
+    this.moonGlow.renderOrder = 600;
     this.$.add(this.moonGlow);
 
     //create enter animation
