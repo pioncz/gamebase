@@ -5,6 +5,7 @@ import Config from 'config.js';
 export default class PawnsController {
   constructor(props) {
     this.scene = props.scene;
+    this.camera = props.camera;
     this.pawns = {};
     this.fieldLength = props.fieldLength;
     this.animations = props.context.animations;
@@ -25,6 +26,8 @@ export default class PawnsController {
       let pawn = new Pawn({
         ...pawns[pawnIndex],
         id: pawnId,
+        scene: this.scene,
+        camera: this.camera,
         parsedX: parsedX,
         parsedZ: parsedZ,
         x: pawns[pawnIndex].x,
@@ -162,8 +165,14 @@ export default class PawnsController {
       if (pawn && pawn.selectionObject) {
         if (newRotation % (Math.PI / 2)) {
           pawn.selectionObject.rotation.y = newRotation - Math.PI / 4;
+          if (pawn.glowMesh) {
+            pawn.glowMesh.rotation.y = newRotation - Math.PI / 2;
+          }
         } else {
           pawn.selectionObject.rotation.y = newRotation + Math.PI / 4;
+          if (pawn.glowMesh) {
+            pawn.glowMesh.rotation.y = newRotation;
+          }
         }
       }
     }

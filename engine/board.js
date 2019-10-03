@@ -68,29 +68,35 @@ export default class Board {
 
       let newRotation = (Math.PI/2) * firstPlayerIndex;
       this.rotateBoard(newRotation);
-      this.$.position.y = 0;
 
-      const animationRotation = Math.PI/4;
-      const startRotation = this.rotation - animationRotation;
+      const animateBoard = () => {
+        const animationRotation = Math.PI/4;
+        const startRotation = this.rotation - animationRotation;
 
-      this.animations.finishAnimation('board-clear');
-      this.animations.create(
-        {
-          id: 'board-init',
-          easing: EASING.InOutQuint,
-          length: animationLength,
-          update: (progress) => {
-            const opacity = progress;
-            this.$.material[0].opacity = opacity;
-            this.$.material[1].opacity = opacity;
-            this.$.scale.set(progress, progress, progress);
-            this.rotateBoard(startRotation + animationRotation * progress);
+        this.$.position.y = 0;
+        this.pawnsController.$.position.y = 0;
+        this.animations.create(
+          {
+            id: 'board-init',
+            easing: EASING.InOutQuint,
+            length: animationLength,
+            update: (progress) => {
+              const opacity = progress;
+              this.$.material[0].opacity = opacity;
+              this.$.material[1].opacity = opacity;
+              this.$.scale.set(progress, progress, progress);
+              this.rotateBoard(startRotation + animationRotation * progress);
+            },
           },
-        },
-      ).then(() => {
-        this.pawnsController.initPawns();
-        resolve();
-      });
+        ).then(() => {
+          this.pawnsController.initPawns();
+          resolve();
+        });
+      };
+
+      this.animations
+        .finishAnimation('board-clear')
+        .then(animateBoard, animateBoard);
     });
   }
   clearGame = () => {
@@ -171,6 +177,7 @@ export default class Board {
     this.pawnsController = new PawnsController({
       context: this.context,
       scene: this.scene,
+      camera: this.camera,
       fieldLength: this.fieldLength,
       pawns: [],
       animations: this.animations,

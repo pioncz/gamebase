@@ -1,5 +1,8 @@
-- animacja wejscia - animacja gradientu tla
+- widok mobile / landscape dostosowac: kostki jak portrecie
 - bot za szybko rzuca kostka
+- po rzucie kostka, zamiast mojego ruchu, rusza sie bot
+
+- mozliwosc reconnectu
 - https://www.google.com/search?q=node+diagnostics&oq=node+diagnos&aqs=chrome.1.69i57j0l5.2544j0j1&sourceid=chrome&ie=UTF-8
 - inny zaznaczenie https://medium.com/@joshmarinacci/cartoon-outline-effect-6c4e95545537
 - bardziej losowa kostka
@@ -276,3 +279,12 @@ DONE:
 + wywalic tlo z engine
 + zmienic tlo w gameComponent
 + animacja wejscia - zmiana gradientu w background, plansza opacity + rotate + scale 0 -> 1
++ bug pozycji planszy w engine
++ animacja wejscia - animacja gradientu tla
++ ukryc snackbar
++ lepsze rzucanie kostka na tel
++ lepsze zaznaczanie aktualnego gracza
++ inne kolory: pomaranczowy, niebieski
++ lepsze podswietlanie pionkow (glow)
++ aktualizacja camera position w shaderze pawna
++ zmienic nazwe moonGlow na glowMesh

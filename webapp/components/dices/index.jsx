@@ -20,7 +20,10 @@ const Dices = ({visible, active, color, onClick, }) => {
       style={diceContainerStyle}
       onClick={onClick}
     >
-      <DicesImage />
+      <div className="dices-label">
+        <span>Roll dice</span>
+        <DicesImage />
+      </div>
     </div>
   );
 };

@@ -158,6 +158,7 @@ class Engine extends Component {
       firstPlayerIndex: localStorage.firstPlayerIndex || 1,
       firstPlayerId: null,
       messages: [],
+      activeDice: false,
     };
 
     this.gameComponentRef = React.createRef();
@@ -179,7 +180,12 @@ class Engine extends Component {
     const addMessage = () => {
       this.snackbarComponentRef.addMessage('Start gry!'+lastId++, lastId % 2 ? 'red' : '');
     }
-    this.messagesIntervalId = setInterval(addMessage, 3000);
+    this.messagesIntervalId = setInterval(() => {
+      addMessage();
+      // this.setState({
+      //   activeDice: !this.state.activeDice,
+      // });
+    }, 3000);
     addMessage();
     window.engine = this.gameComponentRef.current.engine;
   }
@@ -314,7 +320,7 @@ class Engine extends Component {
       gameId: nextId(),
       firstPlayerId,
     }, () => {
-      this.gameComponentRef.current.initGame(firstPlayerId);
+      this.gameComponentRef.current.initGame(Games[gameName].AnimationLengths.startGameBase);
     });
     setTimeout(() => {
       this.gameComponentRef.current.engine.selectPawns([newPawns[0].id,]);
@@ -378,7 +384,9 @@ class Engine extends Component {
     this.gameComponentRef.current.engine.resetControls();
   }
   render() {
-    const { players, pawns, selectedPawnId, pawnInput, numberOfPlayers, pawnSet, firstPlayerIndex, firstPlayerId, currentPlayerId, gameName, messages, } = this.state,
+    const { players, pawns, selectedPawnId, pawnInput, numberOfPlayers, pawnSet, firstPlayerIndex,
+        firstPlayerId, currentPlayerId, gameName, messages, activeDice: active,
+      } = this.state,
       pawnsElements = pawns.map(pawn => {
         return <div key={pawn.id}
           className={'pawn' + (pawn.id===selectedPawnId?' pawn--selected':'')}
@@ -475,7 +483,7 @@ class Engine extends Component {
       <Snackbar ref={(element) => {this.snackbarComponentRef = element;}} />
       <Dices
         visible
-        active
+        active={active}
         onClick={this.rollDice}
       />
     </div>;

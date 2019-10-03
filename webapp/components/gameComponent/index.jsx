@@ -1,12 +1,18 @@
 import React, {Component,} from 'react';
 import './index.sass';
 import Engine from 'engine.js'
+import classnames from 'classnames';
 
 export default class GameComponent extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      inGame: false,
+    };
     this.handleClick = this.handleClick.bind(this);
+    this.initGame = this.initGame.bind(this);
     this.rendererContainerRef = React.createRef();
+    this.containerRef = React.createRef();
   }
   componentDidMount() {
     this.createEngine();
@@ -59,6 +65,7 @@ export default class GameComponent extends Component {
   initGame(animationLength) {
     const { gameId, gameName, pawns, players, firstPlayerId, } = this.props;
 
+    this.containerRef.current.classList.add('in-game');
     this.engine.initGame(
       {
         gameId: gameId,
@@ -71,10 +78,12 @@ export default class GameComponent extends Component {
     );
   }
   clearGame() {
+    this.containerRef.current.classList.remove('in-game');
     this.engine.clearGame();
   }
   render() {
-    return <div className="game-component">
+    const { inGame, } = this.state;
+    return <div className="game-component" ref={this.containerRef}>
       <div ref={this.rendererContainerRef} className="renderer"></div>
     </div>;
   }
