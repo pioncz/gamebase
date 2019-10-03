@@ -182,9 +182,9 @@ class Engine extends Component {
     }
     this.messagesIntervalId = setInterval(() => {
       addMessage();
-      this.setState({
-        activeDice: !this.state.activeDice,
-      });
+      // this.setState({
+      //   activeDice: !this.state.activeDice,
+      // });
     }, 3000);
     addMessage();
     window.engine = this.gameComponentRef.current.engine;
