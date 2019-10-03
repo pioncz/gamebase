@@ -165,8 +165,14 @@ export default class PawnsController {
       if (pawn && pawn.selectionObject) {
         if (newRotation % (Math.PI / 2)) {
           pawn.selectionObject.rotation.y = newRotation - Math.PI / 4;
+          if (pawn.glowMesh) {
+            pawn.glowMesh.rotation.y = newRotation - Math.PI / 2;
+          }
         } else {
           pawn.selectionObject.rotation.y = newRotation + Math.PI / 4;
+          if (pawn.glowMesh) {
+            pawn.glowMesh.rotation.y = newRotation;
+          }
         }
       }
     }

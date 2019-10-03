@@ -1,4 +1,4 @@
-- lepsze podswietlanie pionkow (dimming)
+- widok mobile / landscape dostosowac: kostki jak portrecie
 - bot za szybko rzuca kostka
 - po rzucie kostka, zamiast mojego ruchu, rusza sie bot
 
@@ -285,3 +285,6 @@ DONE:
 + lepsze rzucanie kostka na tel
 + lepsze zaznaczanie aktualnego gracza
 + inne kolory: pomaranczowy, niebieski
++ lepsze podswietlanie pionkow (glow)
++ aktualizacja camera position w shaderze pawna
++ zmienic nazwe moonGlow na glowMesh
