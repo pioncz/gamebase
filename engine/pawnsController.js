@@ -149,10 +149,21 @@ export default class PawnsController {
         return;
       }
 
-      if (pawnIds.indexOf(pawnId) > -1) {
-        pawn.select();
-      } else {
+      if (!pawnIds.length) {
+        pawn.normalizeColor();
         pawn.unselect();
+      } else {
+        if (pawnIds.indexOf(pawnId) > -1) {
+          if (!pawn.selected) {
+            pawn.lighten();
+            pawn.select();
+          }
+        } else {
+          if (pawn.selected) {
+            pawn.unselect();
+          }
+          pawn.darken();
+        }
       }
     }
   }

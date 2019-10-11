@@ -187,6 +187,36 @@ export default class Board {
     });
     this.scene.add(this.pawnsController.$);
   }
+  selectPawns(pawnIds) {
+    if (pawnIds.length) {
+      this.animations.create(
+        {
+          id: 'board-darken',
+          length: 200,
+          easing: EASING.InOutQuint,
+          update: (progress) => {
+            const opacity = 1.0 - 0.2 * progress;
+            this.$.material[0].opacity = opacity;
+            this.$.material[1].opacity = opacity;
+          },
+        }
+      );
+    } else {
+      this.animations.create(
+        {
+          id: 'board-lighten',
+          length: 200,
+          easing: EASING.InOutQuint,
+          update: (progress) => {
+            const opacity = 0.8 + 0.2 * progress;
+            this.$.material[0].opacity = opacity;
+            this.$.material[1].opacity = opacity;
+          },
+        }
+      );
+    }
+    this.pawnsController.selectPawns(pawnIds);
+  }
   createBoard() {
     let canvas = this.canvas,
       texture = new THREE.Texture(canvas),

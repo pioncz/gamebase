@@ -1,6 +1,7 @@
-- widok mobile / landscape dostosowac: kostki jak portrecie
+- widok mobile / landscape dostosowac: kostki jak w portrecie
 - bot za szybko rzuca kostka
 - po rzucie kostka, zamiast mojego ruchu, rusza sie bot
+- fixnac klikanie w pionka: najblizsze do vectora, skasowac banki
 
 - mozliwosc reconnectu
 - https://www.google.com/search?q=node+diagnostics&oq=node+diagnos&aqs=chrome.1.69i57j0l5.2544j0j1&sourceid=chrome&ie=UTF-8
@@ -288,3 +289,4 @@ DONE:
 + lepsze podswietlanie pionkow (glow)
 + aktualizacja camera position w shaderze pawna
 + zmienic nazwe moonGlow na glowMesh
++ miekkie rozswietlanie selecta pionka

@@ -10,7 +10,7 @@ export default class Pawn {
     this.x = props.x;
     this.z = props.z;
     this.id = props.id;
-    this.color = props.color;
+    this.color = new THREE.Color(props.color);
     this.geometry = new THREE.ConeGeometry(1.2, 2.8, 8, 1, true, 0, 6.3);
     var material = new THREE.MeshPhongMaterial({
       color: this.color,
@@ -23,6 +23,7 @@ export default class Pawn {
     });
     this.$ = new THREE.Object3D();
     this.context = props.context;
+    this.selected = false;
 
     let pawnMesh = new THREE.Mesh(this.geometry, material);
     this.parsedX = props.parsedX;
@@ -80,8 +81,9 @@ export default class Pawn {
     this.$.position.z = z;
   }
   select() {
+    this.selected = true;
+
     if (!this.selectionObject) {
-      this.selected = true;
       return;
     }
 
@@ -93,6 +95,7 @@ export default class Pawn {
       {
         uniforms:
         {
+          i: { type: 'f', value: 0.0, },
           c: { type: 'f', value: 1.0, },
           p: { type: 'f', value: 1.4, },
           glowColor: { type: 'c', value: new THREE.Color(0xffffff), },
@@ -123,6 +126,7 @@ export default class Pawn {
       update: progress => {
         this.selectionObject.position.y = 3.2 - progress * .6;
         this.selectionObject.material.opacity = Math.min(progress * 3, 1.0);
+        this.glowMesh.material.uniforms.i.value = progress * 0.85;
       },
     }).then(() => {
       this.context.animations.create({
@@ -137,11 +141,13 @@ export default class Pawn {
             parsedProgress = .5 - (progress - .5);
           }
           this.selectionObject.position.y = 2.6 + parsedProgress * .6;
+          this.glowMesh.material.uniforms.i.value = 0.85 + parseInt(parsedProgress * 100) / 100;
         },
       })
     });
   }
   unselect() {
+    this.selected = false;
     this.$.remove(this.glowMesh);
     this.glowMesh = null;
 
@@ -149,5 +155,58 @@ export default class Pawn {
     if (this.selectionObject) {
       this.selectionObject.material.opacity = 0;
     }
+  }
+  darken() {
+    if (this.context.animations._getAnimationById(`pawn ${this.id} darken`)) {
+      return;
+    }
+
+    const colorHSL = this.color.getHSL(new THREE.Color());
+
+    this.context.animations.create({
+      id: `pawn ${this.id} darken`,
+      length: 200,
+      easing: EASING.InOutCubic,
+      update: progress => {
+        const light = colorHSL.l - 0.2 * progress;
+
+        this.pawnMesh.material.color.setHSL(colorHSL.h, colorHSL.s, light);
+      },
+    });
+  }
+  lighten() {
+    if (this.context.animations._getAnimationById(`pawn ${this.id} lighten`)) {
+      return;
+    }
+
+    const colorHSL = this.color.getHSL(new THREE.Color());
+
+    this.context.animations.create({
+      id: `pawn ${this.id} lighten`,
+      length: 200,
+      easing: EASING.InOutCubic,
+      update: progress => {
+        const light = colorHSL.l + 0.2 * progress;
+
+        this.pawnMesh.material.color.setHSL(colorHSL.h, colorHSL.s, light);
+      },
+    });
+  }
+  normalizeColor() {
+    if (this.context.animations._getAnimationById(`pawn ${this.id} lighten`)) {
+      return;
+    }
+
+    const colorHSL = this.color.getHSL(new THREE.Color());
+    const materialHSL = this.pawnMesh.material.color.getHSL(new THREE.Color());
+    this.context.animations.create({
+      id: `pawn ${this.id} normalize`,
+      length: 200,
+      easing: EASING.InOutCubic,
+      update: progress => {
+        const light = materialHSL.l * (1 - progress) + colorHSL.l * progress;
+        this.pawnMesh.material.color.setHSL(colorHSL.h, colorHSL.s, light);
+      },
+    });
   }
 }
