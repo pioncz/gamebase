@@ -195,7 +195,7 @@ export default class Board {
           length: 200,
           easing: EASING.InOutQuint,
           update: (progress) => {
-            const opacity = 0.8 + 0.2 - 0.2 * progress;
+            const opacity = 1.0 - 0.2 * progress;
             this.$.material[0].opacity = opacity;
             this.$.material[1].opacity = opacity;
           },
