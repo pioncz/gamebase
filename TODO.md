@@ -1,6 +1,6 @@
-- bot za szybko rzuca kostka
 - po rzucie kostka, zamiast mojego ruchu, rusza sie bot
 - fixnac klikanie w pionka: najblizsze do vectora, skasowac banki
+- refaktor botow: podpinane pod sockety, obslugujace wydarzenia jak klient webowy, a nie oparte na stanie pokoju
 
 - mozliwosc reconnectu
 - https://www.google.com/search?q=node+diagnostics&oq=node+diagnos&aqs=chrome.1.69i57j0l5.2544j0j1&sourceid=chrome&ie=UTF-8
@@ -290,3 +290,4 @@ DONE:
 + zmienic nazwe moonGlow na glowMesh
 + miekkie rozswietlanie selecta pionka
 + widok mobile / landscape dostosowac: kostki jak w portrecie
++ bot za szybko rzuca kostka

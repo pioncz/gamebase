@@ -20,7 +20,7 @@ let SelectColorTimeout = 2 * 1000;
 let MinPlayers = 4;
 
 const TotalBots = 100;
-const RandomDelays = [200, 300,];
+const RandomDelays = [800, 1600,];
 const Dices = [
   {id:'dice1', colors: ['#fff', '#000',],},// TODO:dopisac kolory z engine
   {id:'dice2', colors: ['#ffb9fa', '#fff',],},
