@@ -263,13 +263,7 @@ export default class Engine extends EventEmitter {
   selectPawns(pawnIds) {
     if (!this.board) return;
 
-    // this.dimmingPass.selectedObjects = [];
-    // for(let i = 0; i < pawnIds.length; i++) {
-    //   let pawn = this.board.pawnsController.getPawn(pawnIds[i]);
-    //   this.dimmingPass.selectedObjects.push(pawn.pawnMesh);
-    // }
-    this.animations.restartAnimation('dimmingThickness');
-    this.board.pawnsController.selectPawns(pawnIds);
+    this.board.selectPawns(pawnIds);
   }
   animate(timestamp) {
     let delta = Math.min(Date.now() - this._lastRender, 500);

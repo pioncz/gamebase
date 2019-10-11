@@ -93,6 +93,7 @@ export default class Pawn {
       {
         uniforms:
         {
+          i: { type: 'f', value: 0.0, },
           c: { type: 'f', value: 1.0, },
           p: { type: 'f', value: 1.4, },
           glowColor: { type: 'c', value: new THREE.Color(0xffffff), },
@@ -123,6 +124,7 @@ export default class Pawn {
       update: progress => {
         this.selectionObject.position.y = 3.2 - progress * .6;
         this.selectionObject.material.opacity = Math.min(progress * 3, 1.0);
+        this.glowMesh.material.uniforms.i.value = Math.min(progress * 3, 1.0);
       },
     }).then(() => {
       this.context.animations.create({
@@ -137,6 +139,7 @@ export default class Pawn {
             parsedProgress = .5 - (progress - .5);
           }
           this.selectionObject.position.y = 2.6 + parsedProgress * .6;
+          this.glowMesh.material.uniforms.i.value = 0.85 + parseInt(parsedProgress * 100) / 100;
         },
       })
     });

@@ -1,6 +1,7 @@
 const GlowShader = {
   vertexShader: `
     uniform vec3 viewVector;
+    uniform float i;
     uniform float c;
     uniform float p;
     varying float intensity;
@@ -8,8 +9,8 @@ const GlowShader = {
     {
         vec3 vNormal = normalize( normalMatrix * normal );
       vec3 vNormel = normalize( normalMatrix * viewVector );
-      intensity = pow( c - dot(vNormal, vNormel), p );
-      
+      intensity = pow( c - dot(vNormal, vNormel), p ) * i;
+
         gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
     }
   `,

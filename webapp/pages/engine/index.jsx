@@ -341,19 +341,27 @@ class Engine extends Component {
     });
   }
   selectPawn = (pawnId) => {
-    const { pawns, } = this.state;
+    const { pawns, selectedPawnId, } = this.state;
 
-    const playerId = pawns.find(pawn => pawn.id === pawnId).playerId;
+    if (selectedPawnId === pawnId) {
+      this.gameComponentRef.current.engine.selectPawns([]);
+      this.setState({
+        currentPlayerId: null,
+        selectedPawnId: null,
+      });
+    } else {
+      const playerId = pawns.find(pawn => pawn.id === pawnId).playerId;
 
-    this.profilesComponent.restartProgress();
-    this.setState({
-      currentPlayerId: playerId,
-    });
+      this.profilesComponent.restartProgress();
+      this.setState({
+        currentPlayerId: playerId,
+      });
 
-    this.gameComponentRef.current.engine.selectPawns([pawnId,]);
-    this.setState({
-      selectedPawnId: pawnId,
-    });
+      this.gameComponentRef.current.engine.selectPawns([pawnId,]);
+      this.setState({
+        selectedPawnId: pawnId,
+      });
+    }
   }
   onPawnClick(pawnId) {
     this.selectPawn(pawnId);
