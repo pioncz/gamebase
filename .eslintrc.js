@@ -30,5 +30,7 @@ module.exports = {
         "no-trailing-spaces": ["error"],
         "no-multiple-empty-lines": ["error", { "max": 2 }],
         "max-line-length": [true, 100],
+        "react-hooks/rules-of-hooks": "error",
+        "react-hooks/exhaustive-deps": "warn",
     }
 };

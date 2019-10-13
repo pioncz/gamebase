@@ -13,6 +13,7 @@ import { connect, } from 'react-redux'
 import { selectors, actions, } from 'shared/redux/api'
 import { LoginModal, RegistrationModal, FullscreenModal, } from 'modals/';
 import Utils from 'services/utils';
+import i18n from 'services/i18n';
 
 class Main extends Component {
   constructor(props) {
