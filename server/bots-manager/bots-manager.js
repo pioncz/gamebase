@@ -14,7 +14,7 @@ class BotsManager {
     this.randomDelays = randomDelays;
 
     for(let i = 0; i < totalBots; i++) {
-      this.bots.push(new Bot());
+      this.bots.push(new Bot(randomDelays));
     }
   }
   setRoomQueueTimeout(newTimeout) {
@@ -72,7 +72,7 @@ class BotsManager {
             returnActions = returnActions.concat(room.handleAction(game.Actions.PickPawn(resultMove.pawnId), currentPlayer));
           }
         } else if (!room.gameState.rolled) {
-          returnActions = returnActions.concat(room.handleAction(game.Actions.Roll(), currentPlayer));
+          // returnActions = returnActions.concat(room.handleAction(game.Actions.Roll(), currentPlayer));
         }
       }
     }
