@@ -406,7 +406,6 @@ class WebsocketServer {
       let streamActions = [];
       const room = this.rooms[roomIndex];
       this.botsManager.updateQueue(now, room);
-      streamActions = streamActions.concat(this.botsManager.updateRoom(now, room));
       streamActions = streamActions.concat(room.handleUpdate(now));
       this.emitRoomActions(room.name, streamActions);
 

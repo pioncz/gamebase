@@ -1,6 +1,3 @@
-- refaktor botow: podpinane pod sockety, obslugujace wydarzenia jak klient webowy, a nie oparte na stanie pokoju
-- przepisac zahardokowane nazwy akcji w bot.js
-
 - timer na wybor koloru - automatyczny wybor po czasie
 - po rzucie kostka, zamiast mojego ruchu, rusza sie bot
 - fixnac klikanie w pionka: najblizsze do vectora, skasowac banki
@@ -296,3 +293,4 @@ DONE:
 + widok mobile / landscape dostosowac: kostki jak w portrecie
 + bot za szybko rzuca kostka
 + i18n
++ refaktor botow: podpinane pod sockety, obslugujace wydarzenia jak klient webowy, a nie oparte na stanie pokoju
