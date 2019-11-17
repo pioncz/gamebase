@@ -1,4 +1,5 @@
 - i18n
+- timer na wybor koloru - automatyczny wybor po czasie
 - po rzucie kostka, zamiast mojego ruchu, rusza sie bot
 - fixnac klikanie w pionka: najblizsze do vectora, skasowac banki
 - refaktor botow: podpinane pod sockety, obslugujace wydarzenia jak klient webowy, a nie oparte na stanie pokoju
