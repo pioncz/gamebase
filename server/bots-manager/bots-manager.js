@@ -14,7 +14,7 @@ class BotsManager {
     this.randomDelays = randomDelays;
 
     for(let i = 0; i < totalBots; i++) {
-      this.bots.push(new Bot());
+      this.bots.push(new Bot(randomDelays));
     }
   }
   setRoomQueueTimeout(newTimeout) {
@@ -35,57 +35,6 @@ class BotsManager {
       _log(`Bot: ${freeBots[0].login} joins room ${room.name}`);
       room.addPlayer(freeBots[0]);
     }
-  }
-  // Check if room is waiting for player too long
-  // and handle bots actions
-  updateRoom(now, room) {
-    let returnActions = [];
-
-    if (room.gameState.roomState === 'game') {
-      const currentPlayer = room.gameState.players.find(player => player.id === room.gameState.currentPlayerId);
-      const game = Games[room.gameState.gameName];
-      if (currentPlayer && currentPlayer.bot) {
-        if (room.gameState.rolled && room.gameState.selectedPawns.length) {
-          const moves = game.BoardUtils.checkMoves(room.gameState, room.gameState.diceNumber, currentPlayer.id);
-          if (moves.length) {
-            // check if is there any beating move
-            let resultMove;
-
-            for(let i = 0; i < moves.length; i++) {
-              const move = moves[i];
-              const lastField = move.fieldSequence[move.fieldSequence.length - 1];
-              const lastFieldPawns = room.gameState.pawns.filter(pawn => (
-                pawn.x === lastField.x &&
-                pawn.z === lastField.z &&
-                pawn.playerId !== currentPlayer.id
-              ));
-              const lastFieldPawn = lastFieldPawns.length && lastFieldPawns[0];
-
-              if (lastFieldPawn) {
-                resultMove = moves[i];
-                break;
-              }
-            }
-            if (!resultMove) {
-              resultMove = moves[parseInt(Math.random() * moves.length)];
-            }
-            returnActions = returnActions.concat(room.handleAction(game.Actions.PickPawn(resultMove.pawnId), currentPlayer));
-          }
-        } else if (!room.gameState.rolled) {
-          returnActions = returnActions.concat(room.handleAction(game.Actions.Roll(), currentPlayer));
-        }
-      }
-    }
-
-    returnActions.forEach(action => {
-      // Add random delays to returned actions
-      if (action && action.timestamp) {
-        const randomDelay = parseInt(Math.random() * (this.randomDelays[1] - this.randomDelays[0]) + this.randomDelays[0]);
-        action.timestamp += randomDelay;
-      }
-      _log(`Bot:  calls action: ${JSON.stringify(action)}`);
-    });
-    return returnActions;
   }
 }
 

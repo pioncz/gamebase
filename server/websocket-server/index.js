@@ -16,11 +16,10 @@ const _nextId = (() => {
 
 // Changeable in admin panel
 let RoomQueueTimeout = 1 * 1000;
-let SelectColorTimeout = 2 * 1000;
 let MinPlayers = 4;
 
-const TotalBots = 100;
-const RandomDelays = [200, 300,];
+const TotalBots = 4;
+const RandomDelays = [900, 1400,];
 const Dices = [
   {id:'dice1', colors: ['#fff', '#000',],},// TODO:dopisac kolory z engine
   {id:'dice2', colors: ['#ffb9fa', '#fff',],},
@@ -146,7 +145,6 @@ class WebsocketServer {
             gameName: gameName,
             queueTimestamp: Date.now(),
             minPlayers: MinPlayers,
-            selectColorTimeout: SelectColorTimeout,
             colors: Colors,
           });
 
@@ -406,7 +404,6 @@ class WebsocketServer {
       let streamActions = [];
       const room = this.rooms[roomIndex];
       this.botsManager.updateQueue(now, room);
-      streamActions = streamActions.concat(this.botsManager.updateRoom(now, room));
       streamActions = streamActions.concat(room.handleUpdate(now));
       this.emitRoomActions(room.name, streamActions);
 
@@ -440,8 +437,19 @@ class WebsocketServer {
 
     delete this.rooms[roomId];
   }
+  emitRoomAction(room, action) {
+    const roomBots = room.gameState.players.filter(player => !!player.bot && !!player.handleAction);
+
+    for(let bot of roomBots) {
+      this.emitRoomActions(
+        room.name,
+        bot.handleAction(room, action),
+      );
+    }
+    this.io.to(room.name).emit('newAction', { timestamp: Date.now(), ...action,});
+  }
   emitRoomActions(roomName, streamActions) {
-    if (!roomName || !streamActions) return;
+    if (!roomName || !streamActions || !streamActions.length) return;
 
     const roomId = Object.keys(this.rooms)
       .find(roomId => this.rooms[roomId].name === roomName);
@@ -457,7 +465,7 @@ class WebsocketServer {
 
           room.actions = room.actions.concat(callbackActions);
           this.emitRoomActions(roomName, callbackActions);
-          this.io.to(roomName).emit('newAction', { timestamp: Date.now(), ...action,});
+          this.emitRoomAction(room, { timestamp: Date.now(), ...action,});
         }, timestamp);
       }
     }

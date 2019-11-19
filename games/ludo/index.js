@@ -1,6 +1,6 @@
 const BoardUtils = require('./BoardUtils.js');
 const Board = require('./Board.js');
-const { Fields, FieldTypes, } = require('./Fields.js');
+const { Fields, } = require('./Fields.js');
 const Game = require('./../game');
 
 const InitialState = () => {
@@ -38,6 +38,7 @@ const Config = {
   // GameLength: (15 * 60 * 1000), //15 minutes
   GameLength: 2 * (15 * 60 * 1000), //30 minutes
   RoundLength: (10 * 1000), // Time for player to move
+  SelectColorLength: 10 * 1000, // Time for player to select color
 };
 
 const ActionTypes = {

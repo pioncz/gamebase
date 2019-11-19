@@ -83,6 +83,7 @@ export default class GameComponent extends Component {
   }
   render() {
     const { inGame, } = this.state;
+
     return <div className="game-component" ref={this.containerRef}>
       <div ref={this.rendererContainerRef} className="renderer"></div>
     </div>;

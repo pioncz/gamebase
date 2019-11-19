@@ -1,14 +1,11 @@
-- widok mobile / landscape dostosowac: kostki jak w portrecie
-- bot za szybko rzuca kostka
-- po rzucie kostka, zamiast mojego ruchu, rusza sie bot
+? po rzucie kostka, zamiast mojego ruchu, rusza sie bot
 - fixnac klikanie w pionka: najblizsze do vectora, skasowac banki
 
 - mozliwosc reconnectu
-- https://www.google.com/search?q=node+diagnostics&oq=node+diagnos&aqs=chrome.1.69i57j0l5.2544j0j1&sourceid=chrome&ie=UTF-8
-- inny zaznaczenie https://medium.com/@joshmarinacci/cartoon-outline-effect-6c4e95545537
-- bardziej losowa kostka
 - pwa: pwa lifecycle, ios reload action, request persistent storage
 - na kompie snackbar w lewym dolnym rogu
+
+- jak sie cos wyjebie w trakcie gry to w najgorszym wypadku niech zamknie pokoj i zakonczy gre
 
 - przy kliku sprawdz ktory pionek jest najblizej ray'a
 - zdarza sie bug gdy jest zaznaczony pionek, gracz moze sie ruszyc, ale serwer loguje ze ten pionek nie jest zaznaczony
@@ -23,6 +20,9 @@
 - customowe pionki
 - akcja pominiecia ruchu
 - strzalka troche nizsza i obrocona prosto do kamery
+
+- https://www.google.com/search?q=node+diagnostics&oq=node+diagnos&aqs=chrome.1.69i57j0l5.2544j0j1&sourceid=chrome&ie=UTF-8
+- bardziej losowa kostka
 
 - websocket server: przeniesc metody z konstruktora
 
@@ -290,3 +290,8 @@ DONE:
 + aktualizacja camera position w shaderze pawna
 + zmienic nazwe moonGlow na glowMesh
 + miekkie rozswietlanie selecta pionka
++ widok mobile / landscape dostosowac: kostki jak w portrecie
++ bot za szybko rzuca kostka
++ i18n
++ refaktor botow: podpinane pod sockety, obslugujace wydarzenia jak klient webowy, a nie oparte na stanie pokoju
++ timer na wybor koloru - automatyczny wybor po czasie
