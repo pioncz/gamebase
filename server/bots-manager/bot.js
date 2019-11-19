@@ -27,9 +27,14 @@ class Bot extends Player {
     const addRandomDelays = (arr) => {
       const randomDelay = parseInt(Math.random() * (this.randomDelays[1] - this.randomDelays[0]) + this.randomDelays[0]);
 
+      if (!arr) {
+        return [];
+      }
+
       for(let arrAction of arr) {
         arrAction.timestamp = action.timestamp + randomDelay;
       }
+
       return arr;
     };
 

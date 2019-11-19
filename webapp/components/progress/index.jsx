@@ -1,17 +1,40 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect, useState, } from 'react';
 import './index.sass';
 
-class Progress extends Component {
-  constructor(props) {
-    super(props);
-  }
-  render() {
-    const { value, rotated } = this.props;
-    
-    return (
-      <div className={`progress ${rotated?'progress--rotated':''}`} style={{width: `${value * 100}%`}}></div>
-    );
-  }
+const Progress = ({
+  value, rotated, length,
+}) => {
+  const [intervalValue, setIntervalValue,] = useState();
+  const [lastTick, setLastTick,] = useState();
+
+  useEffect(() => {
+    if (length) {
+      let updateInterval = setInterval(() => {
+        let now = Date.now();
+        let newValue = lastTick ? (intervalValue + (now - lastTick) / length) : 0;
+        newValue = Math.min(newValue, 1);
+        setIntervalValue(newValue);
+        setLastTick(now);
+        if (newValue === 1) {
+          clear();
+        }
+      }, 60);
+      const clear = () => {
+        if (updateInterval) {
+          clearInterval(updateInterval);
+          updateInterval = null;
+        }
+      };
+
+      return clear;
+    }
+  }, [intervalValue, lastTick, length,]);
+
+  let progressValue = intervalValue ? (1 - intervalValue) : value;
+
+  return (
+    <div className={`progress ${rotated?'progress--rotated':''}`} style={{width: `${progressValue * 100}%`,}}></div>
+  );
 }
 
 export default Progress;

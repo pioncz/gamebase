@@ -16,7 +16,6 @@ const _nextId = (() => {
 
 // Changeable in admin panel
 let RoomQueueTimeout = 1 * 1000;
-let SelectColorTimeout = 2 * 1000;
 let MinPlayers = 4;
 
 const TotalBots = 4;
@@ -146,7 +145,6 @@ class WebsocketServer {
             gameName: gameName,
             queueTimestamp: Date.now(),
             minPlayers: MinPlayers,
-            selectColorTimeout: SelectColorTimeout,
             colors: Colors,
           });
 

@@ -1,10 +1,7 @@
-- timer na wybor koloru - automatyczny wybor po czasie
-- po rzucie kostka, zamiast mojego ruchu, rusza sie bot
+? po rzucie kostka, zamiast mojego ruchu, rusza sie bot
 - fixnac klikanie w pionka: najblizsze do vectora, skasowac banki
 
 - mozliwosc reconnectu
-- https://www.google.com/search?q=node+diagnostics&oq=node+diagnos&aqs=chrome.1.69i57j0l5.2544j0j1&sourceid=chrome&ie=UTF-8
-- bardziej losowa kostka
 - pwa: pwa lifecycle, ios reload action, request persistent storage
 - na kompie snackbar w lewym dolnym rogu
 
@@ -23,6 +20,9 @@
 - customowe pionki
 - akcja pominiecia ruchu
 - strzalka troche nizsza i obrocona prosto do kamery
+
+- https://www.google.com/search?q=node+diagnostics&oq=node+diagnos&aqs=chrome.1.69i57j0l5.2544j0j1&sourceid=chrome&ie=UTF-8
+- bardziej losowa kostka
 
 - websocket server: przeniesc metody z konstruktora
 
@@ -294,3 +294,4 @@ DONE:
 + bot za szybko rzuca kostka
 + i18n
 + refaktor botow: podpinane pod sockety, obslugujace wydarzenia jak klient webowy, a nie oparte na stanie pokoju
++ timer na wybor koloru - automatyczny wybor po czasie

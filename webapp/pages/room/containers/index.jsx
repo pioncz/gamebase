@@ -15,6 +15,7 @@ import { withRouter, } from 'react-router-dom';
 import RoomNonExistentModal from 'modals/roomNonExistent';
 import Snackbar from 'components/snackbar';
 import Dices from 'components/dices';
+import Progress from 'components/progress';
 
 const Pages = {
   Initial: 'Initial',
@@ -183,10 +184,10 @@ const Room = ({
         page = Pages.Initial;
       }
 
+      setGameName(gameState.gameName);
       setPage(page);
       setPlayers(gameState.players);
       setQueueColors(gameState.colorsQueue);
-      setGameName(gameState.gameName);
     });
     connectorInstance.socket.on('newAction', handleAction);
     connectorInstance.socket.on('socketError', (e) => {
@@ -255,6 +256,9 @@ const Room = ({
 
     currentModal = <Modal open={true}>
       <h3>Wybierz kolor</h3>
+      <div className="progress-container">
+        <Progress length={Games[gameName].Config.SelectColorLength} />
+      </div>
       <div className="colors-container">{colors}</div>
     </Modal>;
   }
