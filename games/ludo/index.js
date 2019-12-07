@@ -119,7 +119,7 @@ const RollHandler = (action, player, gameState, diceNumber = 0) => {
     throw new Error('This player already rolled in this room. Pick pawn!');
   }
   //diceNumber=6;
-  let generatedDiceNumber = diceNumber !== 0 &&
+  let generatedDiceNumber = 2 || diceNumber !== 0 &&
     (diceNumber > 0 && diceNumber < 7 && diceNumber)
     || Math.min(parseInt(Math.random()*6)+1,6), // 1-6
     moves = BoardUtils.checkMoves(gameState, generatedDiceNumber, player.id);
