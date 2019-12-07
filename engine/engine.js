@@ -248,13 +248,13 @@ export default class Engine extends EventEmitter {
     const now = Date.now();
     const delta = this._lastRender ? now - this._lastRender : 0;
 
-    if (delta > 15 || !this._lastRender) {
-      this._lastRender = now;
-      this.stats.begin();
-      this.composer.render(this.clock.getDelta());
-      this.animations.tick(delta);
-      this.stats.end();
-    }
+    //if (delta > 15 || !this._lastRender) {
+    this._lastRender = now;
+    this.stats.begin();
+    this.composer.render(this.clock.getDelta());
+    this.animations.tick(delta);
+    this.stats.end();
+    //}
 
     window.requestAnimationFrame(this.animate);
   }
@@ -284,5 +284,8 @@ export default class Engine extends EventEmitter {
       return;
     }
     this.controls.reset();
+  }
+  movePawn(pawnMove) {
+    this.board.movePawn(pawnMove);
   }
 }
