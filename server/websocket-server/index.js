@@ -18,7 +18,7 @@ const _nextId = (() => {
 let RoomQueueTimeout = 1 * 1000;
 let MinPlayers = 4;
 
-const TotalBots = 4;
+const TotalBots = 40;
 const RandomDelays = [900, 1400,];
 const Dices = [
   {id:'dice1', colors: ['#fff', '#000',],},// TODO:dopisac kolory z engine
