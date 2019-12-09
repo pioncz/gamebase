@@ -1,3 +1,9 @@
+- lagi na mobilkach
+- stronka testowa samego engine
+- bug klikania na telefonie: gdy za wczesnie jest zaznaczony pionek to reszta nie jest wyszarzona
+- bug klikania na telefonie: na stronie engine nie mozna zmienic zaznaczonego pionka
+- gdy za wczesnie jest zaladowana gra, to nie renderuje sie plansza gry (glownie mobilki). timeout naprawia buga
+
 ? po rzucie kostka, zamiast mojego ruchu, rusza sie bot
 - fixnac klikanie w pionka: najblizsze do vectora, skasowac banki
 

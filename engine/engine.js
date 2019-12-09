@@ -19,12 +19,12 @@ export default class Engine extends EventEmitter {
     this.scene = new THREE.Scene();
     this.animations = new Animations();
     this.raycaster = new THREE.Raycaster();
+
     this.stats = new Stats();
     this.stats.showPanel(0);
     this.stats.dom.style.position = 'absolute';
     this.stats.dom.style.zIndex = '1000';
     this.stats.dom.style.top = 0;
-    document.body.appendChild(this.stats.dom);
 
     let width = this.container.offsetWidth,
       height = this.container.offsetHeight,
@@ -287,5 +287,8 @@ export default class Engine extends EventEmitter {
   }
   movePawn(pawnMove) {
     this.board.movePawn(pawnMove);
+  }
+  appendStats() {
+    document.body.appendChild(this.stats.dom);
   }
 }

@@ -174,6 +174,7 @@ class Engine extends Component {
   }
   componentDidMount() {
     this.props.setInGame();
+    this.gameComponentRef.current.appendStats();
     this.initGame();
     this.profilesComponent.restartProgress();
     let lastId=0;
@@ -352,9 +353,10 @@ class Engine extends Component {
     } else {
       const playerId = pawns.find(pawn => pawn.id === pawnId).playerId;
 
-      this.profilesComponent.restartProgress();
       this.setState({
         currentPlayerId: playerId,
+      }, () => {
+        this.profilesComponent.restartProgress();
       });
 
       this.gameComponentRef.current.engine.selectPawns([pawnId,]);

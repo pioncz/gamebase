@@ -7,7 +7,6 @@
   "frontend": {
     "ws": {
       "host": ""
-    },
-    "mobileAspectRation": 1.3
+    }
   }
 }

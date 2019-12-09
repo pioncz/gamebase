@@ -86,7 +86,7 @@ const Room = ({
 
   useEffect(() => {
     const handleAction = (newAction) => {
-      // Devide lag by 15 minutes, to handle different timezones
+      // Divide lag by 15 minutes, to handle different timezones
       console.log('newAction: ', newAction, ' lag: ', (Math.abs(Date.now() - newAction.timestamp) % (15 * 60 * 1000)));
 
       if (newAction.type === Games.Ludo.ActionTypes.SelectedColor) {
@@ -222,10 +222,6 @@ const Room = ({
       connectorInstance.leaveGame();
     };
   }, []); // eslint-disable-line
-
-  useEffect(() => {
-
-  }, [roomId,]);
 
   const playerColor = player && playerColors.find(playerColor => playerColor.playerId === player.id),
     color = playerColor && playerColor.color;
