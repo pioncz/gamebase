@@ -4,6 +4,8 @@
 - bug klikania na telefonie: na stronie engine nie mozna zmienic zaznaczonego pionka
 - gdy za wczesnie jest zaladowana gra, to nie renderuje sie plansza gry (glownie mobilki). timeout naprawia buga
 
+- remove stopProgress and restartProgress actions from the server
+
 ? po rzucie kostka, zamiast mojego ruchu, rusza sie bot
 - fixnac klikanie w pionka: najblizsze do vectora, skasowac banki
 

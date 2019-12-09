@@ -12,8 +12,8 @@ export default class PlayerProfiles extends Component {
     };
     this.containerRef = createRef();
   }
-  restartProgress = () => {
-    const { roundLength, currentPlayerId, players, firstPlayerId, } = this.props;
+  restartProgress = (currentPlayerId) => {
+    const { roundLength, players, firstPlayerId, } = this.props;
     const { lastProgress, } = this.state;
     const firstIndex = players.findIndex(player => player.id === firstPlayerId);
     const currentIndex = players.findIndex(player => player.id === currentPlayerId);

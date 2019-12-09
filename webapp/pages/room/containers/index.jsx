@@ -115,12 +115,6 @@ const Room = ({
         gameComponentRef.current.initGame(newAction.animationLength);
         timerComponentRef.current.start(gameState.finishTimestamp - Date.now());
       }
-      if (newAction.type === Games.Ludo.ActionTypes.RestartProgress) {
-        profilesComponentRef.current.restartProgress();
-      }
-      if (newAction.type === Games.Ludo.ActionTypes.StopProgress) {
-        profilesComponentRef.current.stopProgress();
-      }
       if (newAction.type === Games.Ludo.ActionTypes.WaitForPlayer) {
         const waitingPlayer = players.find(player => player.id === newAction.playerId);
         const activeDice = player.id === waitingPlayer.id && newAction.expectedAction === Games.Ludo.ActionTypes.Roll;
@@ -128,6 +122,7 @@ const Room = ({
         setCurrentPlayerId(newAction.playerId);
         setWaitingForAction(newAction.expectedAction);
         setActiveDice(activeDice);
+        profilesComponentRef.current.restartProgress(newAction.playerId);
       }
       if (newAction.type === Games.Ludo.ActionTypes.Rolled) {
         let rollPlayer = players.find(player => player.id === currentPlayerId);
