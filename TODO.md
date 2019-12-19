@@ -1,8 +1,7 @@
-server strasznie laguje przy finishgame -> findroom
-podczas bicia pionek natychmiastowo wraca do bazy na poczatku kolejki
 playerProgress bywaja bugi: 1) od zlej strony progresuje na roznych roz. 2) czasami nie ma animacji progresu
-odznaczanie pionkow gdy gracz nie wykona akcji
-zaznaczenie wybranej kostki
+podczas bicia pionek natychmiastowo wraca do bazy na poczatku kolejki
+gdy gracz nie wykona akcji: odznaczanie pionkow, wylaczenie progressu
+zaznaczenie wybranej kostki w menu
 
 - lagi na mobilkach byly odpalane z messengera + fullscreen
 - stronka testowa samego engine
