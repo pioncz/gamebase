@@ -438,6 +438,12 @@ class WebsocketServer {
     delete this.rooms[roomId];
   }
   emitRoomAction(room, action) {
+    if (
+      action.type !== Games.Game.ActionTypes.FinishGame &&
+      room.gameState.roomState === Games.Game.GameStates.finished) {
+      return;
+    }
+
     const roomBots = room.gameState.players.filter(player => !!player.bot && !!player.handleAction);
 
     this.io.to(room.name).emit('newAction', action);
