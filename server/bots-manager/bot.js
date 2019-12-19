@@ -25,6 +25,7 @@ class Bot extends Player {
     let streamActions = [];
 
     if (
+      room.gameState.roomState !== Games.Game.GameStates.finished &&
       action.type === game.ActionTypes.WaitForPlayer &&
       action.playerId === this.id
     ) {
