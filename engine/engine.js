@@ -89,8 +89,11 @@ export default class Engine extends EventEmitter {
         this.onResize();
       }
     }, true);
-    window.addEventListener('click', this.onClick.bind(this), true);
-    window.addEventListener('touchstart', this.onTouch.bind(this), true);
+    if ('ontouchstart' in document.documentElement) {
+      window.addEventListener('touchstart', this.onTouch.bind(this), true);
+    } else {
+      window.addEventListener('click', this.onClick.bind(this), true);
+    }
 
     this.context = {
       animations: this.animations,

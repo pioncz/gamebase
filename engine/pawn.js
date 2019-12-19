@@ -10,6 +10,7 @@ export default class Pawn {
     this.x = props.x;
     this.z = props.z;
     this.id = props.id;
+    this.rotationY = 0;
     this.color = new THREE.Color(props.color);
     this.geometry = new THREE.ConeGeometry(1.2, 2.8, 8, 1, true, 0, 6.3);
     var material = new THREE.MeshPhongMaterial({
@@ -21,6 +22,24 @@ export default class Pawn {
       transparent: true,
       opacity: 1.0,
     });
+    this.customMaterial = new THREE.ShaderMaterial(
+      {
+        uniforms:
+        {
+          i: { type: 'f', value: 0.0, },
+          c: { type: 'f', value: 1.0, },
+          p: { type: 'f', value: 1.4, },
+          glowColor: { type: 'c', value: new THREE.Color(0xffffff), },
+        },
+        vertexShader: GlowShader.vertexShader,
+        fragmentShader: GlowShader.fragmentShader,
+        side: THREE.FrontSide,
+        blending: THREE.AdditiveBlending,
+        transparent: true,
+        depthTest: true,
+        depthWrite: false,
+      },
+    );
     this.$ = new THREE.Object3D();
     this.context = props.context;
     this.selected = false;
@@ -80,7 +99,7 @@ export default class Pawn {
     this.$.position.y = y + .42;
     this.$.position.z = z;
   }
-  select() {
+  select(orientation) {
     this.selected = true;
 
     if (!this.selectionObject) {
@@ -91,32 +110,14 @@ export default class Pawn {
       this.$.remove(this.glowMesh);
     }
 
-    const customMaterial = new THREE.ShaderMaterial(
-      {
-        uniforms:
-        {
-          i: { type: 'f', value: 0.0, },
-          c: { type: 'f', value: 1.0, },
-          p: { type: 'f', value: 1.4, },
-          glowColor: { type: 'c', value: new THREE.Color(0xffffff), },
-          viewVector: { type: 'v3', value: this.camera.position, },
-        },
-        vertexShader: GlowShader.vertexShader,
-        fragmentShader: GlowShader.fragmentShader,
-        side: THREE.FrontSide,
-        blending: THREE.AdditiveBlending,
-        transparent: true,
-        depthTest: true,
-        depthWrite: false,
-      },
-    );
-
-    this.glowMesh = new THREE.Mesh(this.pawnMesh.geometry, customMaterial);
+    this.glowMesh = new THREE.Mesh(this.pawnMesh.geometry, this.customMaterial);
     this.glowMesh.scale.multiplyScalar(1.4);
     this.glowMesh.position.y = .42;
+    this.rotate(orientation);
+
     this.glowMesh.renderOrder = 600;
     this.$.add(this.glowMesh);
-
+    this.customMaterial.uniforms.i.value = 0;
     //create enter animation
     //and after: create infinity bouncing animation
     this.context.animations.create({
@@ -208,5 +209,23 @@ export default class Pawn {
         this.pawnMesh.material.color.setHSL(colorHSL.h, colorHSL.s, light);
       },
     });
+  }
+  rotate(orientation) {
+    const { portrait, rotationY,} = orientation;
+    if (this.glowMesh) {
+      if (portrait) {
+        this.glowMesh.rotation.y = rotationY + Math.PI / 2;
+      } else {
+        this.glowMesh.rotation.y = rotationY + Math.PI;
+      }
+    }
+
+    if (this.selectionObject) {
+      if (rotationY % (Math.PI / 2)) {
+        this.selectionObject.rotation.y = rotationY - Math.PI / 4;
+      } else {
+        this.selectionObject.rotation.y = rotationY + Math.PI / 4;
+      }
+    }
   }
 }

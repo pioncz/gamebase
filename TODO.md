@@ -1,10 +1,19 @@
-- lagi na mobilkach
+podczas bicia pionek natychmiastowo wraca do bazy na poczatku kolejki
+playerProgress bywaja bugi: 1) od zlej strony progresuje na roznych roz. 2) czasami nie ma animacji progresu
+odznaczanie pionkow gdy gracz nie wykona akcji
+bug gdy mija czas - brak konca gry
+
+- lagi na mobilkach byly odpalane z messengera + fullscreen
 - stronka testowa samego engine
 - bug klikania na telefonie: gdy za wczesnie jest zaznaczony pionek to reszta nie jest wyszarzona
 - bug klikania na telefonie: na stronie engine nie mozna zmienic zaznaczonego pionka
 - gdy za wczesnie jest zaladowana gra, to nie renderuje sie plansza gry (glownie mobilki). timeout naprawia buga
 
 - remove stopProgress and restartProgress actions from the server
+
+- show logs in admin panel
+
+=======
 
 ? po rzucie kostka, zamiast mojego ruchu, rusza sie bot
 - fixnac klikanie w pionka: najblizsze do vectora, skasowac banki
@@ -303,3 +312,5 @@ DONE:
 + i18n
 + refaktor botow: podpinane pod sockety, obslugujace wydarzenia jak klient webowy, a nie oparte na stanie pokoju
 + timer na wybor koloru - automatyczny wybor po czasie
++ biala poswiata czasami jest ze zlej strony
++ bug podwojnego klikniecia w pionka

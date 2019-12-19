@@ -349,7 +349,7 @@ export default class Board {
       parsedRotation += Math.PI / 4;
     }
     this.$.rotation.y = parsedRotation;
-    this.pawnsController.rotate(parsedRotation);
+    this.pawnsController.rotate(parsedRotation, this.portraitRotation);
   }
   createSelectionObjects() {
     if (this.pawnsController) {
