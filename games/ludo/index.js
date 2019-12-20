@@ -2,6 +2,7 @@ const BoardUtils = require('./BoardUtils.js');
 const Board = require('./Board.js');
 const { Fields, } = require('./Fields.js');
 const Game = require('./../game');
+const _log = (msg) => console.log('[ludo]: ' + msg);
 
 const InitialState = () => {
   return {
@@ -36,7 +37,7 @@ const Config = {
   ],
   MinPlayer: 4,
   // GameLength: (15 * 60 * 1000), //15 minutes
-  GameLength: 2 * (15 * 60 * 1000), //30 minutes
+  GameLength: 15 * 60 * 1000, //15 minutes
   RoundLength: (10 * 1000), // Time for player to move
   SelectColorLength: 10 * 1000, // Time for player to select color
 };
@@ -51,8 +52,6 @@ const ActionTypes = {
   PickPawn: 'PickPawn',
   SelectPawns: 'SelectPawns',
   FinishGame: 'FinishGame',
-  StopProgress: 'StopProgress',
-  RestartProgress: 'RestartProgress',
   PickColors: 'PickColors',
 };
 
@@ -67,8 +66,8 @@ const Roll = () => {
   return {type: ActionTypes.Roll, };
 };
 
-const Rolled = diceNumber => {
-  return {type: ActionTypes.Rolled, diceNumber,};
+const Rolled = (diceNumber, playerId) => {
+  return {type: ActionTypes.Rolled, diceNumber, playerId,};
 };
 
 const SelectColor = (playerId, color) => {
@@ -95,20 +94,14 @@ const PickPawn = (pawnId) => {
   return {type: ActionTypes.PickPawn, pawnId,};
 };
 
-const StopProgress = () => ({
-  type: ActionTypes.StopProgress,
-});
-
-const RestartProgress = () => ({
-  type: ActionTypes.RestartProgress,
-});
-
 const PickColors = (gameState) => {
   return { type: ActionTypes.PickColors, gameState, }
 }
 
 // For diceNumber 0 number will be generated randomly from 1 to 6
 const RollHandler = (action, player, gameState, diceNumber = 0) => {
+  const now = Date.now();
+  const callbackTimestamp = now + AnimationLengths.rollDice + 100;
   let returnActions = [];
 
   if (player.id !== gameState.currentPlayerId) {
@@ -127,7 +120,10 @@ const RollHandler = (action, player, gameState, diceNumber = 0) => {
   gameState.rolled = true;
   gameState.diceNumber = generatedDiceNumber;
 
-  returnActions.push({action: Rolled(generatedDiceNumber),});
+  returnActions.push({
+    action: Rolled(generatedDiceNumber, player.id),
+    timestamp: now,
+  });
 
   let waitForAction = ActionTypes.PickPawn;
   if (!moves.length) {
@@ -142,28 +138,27 @@ const RollHandler = (action, player, gameState, diceNumber = 0) => {
 
   returnActions.push({
     action: WaitForPlayer(gameState, waitForAction),
-    timestamp: Date.now() + AnimationLengths.rollDice,
+    timestamp: callbackTimestamp,
     callback: () => {
-      let returnActions = [];
       player.previousRoll = player.lastRoll;
       player.lastRoll = generatedDiceNumber;
 
       if (!moves.length) {
         gameState.rolled = false;
-      } else {
-        let pawnIds = moves.map(move => move.pawnId);
-        gameState.selectedPawns = pawnIds;
-        returnActions.push({action: SelectPawns(pawnIds, player.id),});
       }
 
-      gameState.roundTimestamp = Date.now() + Config.RoundLength;
-      returnActions.push({action: RestartProgress(),});
-
-      return returnActions;
+      gameState.roundTimestamp = now + Config.RoundLength;
     },
   });
 
-  returnActions.push({action: StopProgress(),});
+  if (moves.length) {
+    let pawnIds = moves.map(move => move.pawnId);
+    gameState.selectedPawns = pawnIds;
+    returnActions.push({
+      action: SelectPawns(pawnIds, player.id),
+      timestamp: now + AnimationLengths.rollDice,
+    });
+  }
 
   return returnActions;
 };
@@ -181,12 +176,12 @@ const SelectColorHandler = (action, player, gameState) => {
     );
 
   if (playerColor) {
-    console.log('player already has a color');
+    _log('player already has a color');
     return;
   }
 
   if (valueColor || queueColor.selected) {
-    console.log('this color is already taken');
+    _log('this color is already taken');
     return;
   }
 
@@ -200,11 +195,12 @@ const SelectColorHandler = (action, player, gameState) => {
 };
 
 const PickPawnHandler = (action, player, gameState) => {
+  const now = Date.now();
   let returnActions = [],
     animationLength;
 
   if (player.id !== gameState.currentPlayerId) {
-    console.log(`its not this player turn`);
+    _log(`its not this player turn`);
     return;
   }
 
@@ -216,16 +212,16 @@ const PickPawnHandler = (action, player, gameState) => {
     moves = BoardUtils.checkMoves(gameState, diceNumber, player.id);
 
   if (!moves.length) {
-    console.log('Move not possible.');
+    _log('Move not possible.');
     return;
   }
 
   if (gameState.selectedPawns.indexOf(action.pawnId) === -1) {
-    console.log('This pawn is not selected. Pick correct pawn!');
+    _log('This pawn is not selected. Pick correct pawn!');
     return;
   }
 
-  console.log(`player ${player.login} picks pawn ${action.pawnId}`);
+  _log(`player ${player.login} picks pawn ${action.pawnId}`);
 
   let move = (moves.filter(move => move.pawnId === action.pawnId))[0],
     pawn = gameState.pawns.filter(pawn => pawn.id === move.pawnId)[0],
@@ -247,9 +243,9 @@ const PickPawnHandler = (action, player, gameState) => {
   pawn.z = lastField.z;
 
   if (wasPawnOnSpawn) {
-    animationLength = Date.now() + AnimationLengths.movePawnFromSpawn + (AnimationLengths.movePawn * (move.fieldSequence.length - 1)) + 500;
+    animationLength = now + AnimationLengths.movePawnFromSpawn + (AnimationLengths.movePawn * (move.fieldSequence.length - 1)) + 500;
   } else {
-    animationLength = Date.now() + (AnimationLengths.movePawn * move.fieldSequence.length) + 500;
+    animationLength = now + (AnimationLengths.movePawn * move.fieldSequence.length) + 500;
   }
 
   move.fieldSequence = move.fieldSequence.map(
@@ -259,13 +255,16 @@ const PickPawnHandler = (action, player, gameState) => {
     }));
 
   gameState.selectedPawns = [];
-  returnActions.push({action: SelectPawns([], gameState.currentPlayerId),});
+  returnActions.push({
+    action: SelectPawns([], gameState.currentPlayerId),
+    timestamp: now,
+  });
   if (player.lastRoll !== 6 || player.previousRoll === 6) {
     player.lastRoll = 0;
     player.previousRoll = 0;
     gameState.currentPlayerId = Game.Utils.getNextPlayerId(gameState.players, gameState.currentPlayerId);
   }
-  returnActions.push({action: Game.Actions.MovePawn(action.pawnId, move.fieldSequence),});
+  returnActions.push({action: Game.Actions.MovePawn(action.pawnId, move.fieldSequence), timestamp: now,});
 
   // check if pawn moves on someone others pawn and move this pawn to spawn
   if (lastFieldPawn) {
@@ -288,27 +287,20 @@ const PickPawnHandler = (action, player, gameState) => {
       return pawn.playerId === player.id;
     });
     if (BoardUtils.checkWin(playerPawns)) {
-      console.log(`player ${player.login} wins!`);
+      _log(`player ${player.login} wins!`);
       gameState.winnerId = player.id;
       gameState.roomState = Game.GameStates.finished;
       returnActions.push({action:FinishGame(player.id),});
     }
   }
 
+  gameState.roundTimestamp = null;
   returnActions.push({
     action: WaitForPlayer(gameState, ActionTypes.Roll),
     timestamp: animationLength,
     callback: () => {
       gameState.rolled = false;
-    },
-  });
-  gameState.roundTimestamp = null;
-  returnActions.push({ action: StopProgress(), });
-  returnActions.push({
-    action: RestartProgress(),
-    timestamp: animationLength,
-    callback: () => {
-      gameState.roundTimestamp = Date.now() + Config.RoundLength;
+      gameState.roundTimestamp = now + Config.RoundLength;
     },
   });
 
@@ -378,7 +370,6 @@ const RoundEndHandler = (gameState) => {
   gameState.selectedPawns = [];
 
   returnActions.push({action: WaitForPlayer(gameState, ActionTypes.Roll),});
-  returnActions.push({action: RestartProgress(),});
   return returnActions;
 };
 
@@ -411,7 +402,6 @@ const Ludo = {
     PickPawn,
     FinishGame,
     PickColors,
-    RestartProgress,
   },
   ActionHandlers: {
     SelectColor: SelectColorHandler,

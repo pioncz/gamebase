@@ -2,6 +2,7 @@ import React, {Component,} from 'react';
 import './index.sass';
 import Engine from 'engine.js'
 import classnames from 'classnames';
+import Config from 'config';
 
 export default class GameComponent extends Component {
   constructor(props) {
@@ -49,6 +50,9 @@ export default class GameComponent extends Component {
         gameName,
       });
       this.engine.on('click', this.handleClick);
+      if (Config.stats) {
+        this.engine.appendStats();
+      }
     }
   }
   handleClick(e) {
@@ -80,6 +84,9 @@ export default class GameComponent extends Component {
   clearGame() {
     this.containerRef.current.classList.remove('in-game');
     this.engine.clearGame();
+  }
+  appendStats() {
+    this.engine.appendStats();
   }
   render() {
     const { inGame, } = this.state;

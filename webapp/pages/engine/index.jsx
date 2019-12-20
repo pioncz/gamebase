@@ -174,6 +174,7 @@ class Engine extends Component {
   }
   componentDidMount() {
     this.props.setInGame();
+    this.gameComponentRef.current.appendStats();
     this.initGame();
     this.profilesComponent.restartProgress();
     let lastId=0;
@@ -320,8 +321,10 @@ class Engine extends Component {
       gameId: nextId(),
       firstPlayerId,
     }, () => {
-      this.gameComponentRef.current.initGame(Games[gameName].AnimationLengths.startGameBase);
     });
+    setTimeout(() => {
+      this.gameComponentRef.current.initGame(Games[gameName].AnimationLengths.startGameBase);
+    }, 100);
     setTimeout(() => {
       this.gameComponentRef.current.engine.selectPawns([newPawns[0].id,]);
     }, 500);
@@ -344,22 +347,22 @@ class Engine extends Component {
     const { pawns, selectedPawnId, } = this.state;
 
     if (selectedPawnId === pawnId) {
-      this.gameComponentRef.current.engine.selectPawns([]);
       this.setState({
         currentPlayerId: null,
         selectedPawnId: null,
+      }, () => {
+        this.profilesComponent.stopProgress();
+        this.gameComponentRef.current.engine.selectPawns([]);
       });
     } else {
       const playerId = pawns.find(pawn => pawn.id === pawnId).playerId;
 
-      this.profilesComponent.restartProgress();
       this.setState({
         currentPlayerId: playerId,
-      });
-
-      this.gameComponentRef.current.engine.selectPawns([pawnId,]);
-      this.setState({
         selectedPawnId: pawnId,
+      }, () => {
+        this.profilesComponent.restartProgress(playerId);
+        this.gameComponentRef.current.engine.selectPawns([pawnId,]);
       });
     }
   }

@@ -1,12 +1,12 @@
 const Player = require('./../Player.js');
 const Games = require('./../../games/Games.js');
+const Logger = require('./../Logger');
+const logger = new Logger({
+  className: 'bots',
+});
+const _log = logger.log;
 
 let nextId = 1;
-
-let _log = (msg) => {
-  const prefix = ['[bots]: ',];
-  console.log(Array.isArray(msg) ? [prefix,].concat(msg) : prefix + msg);
-};
 
 class Bot extends Player {
   constructor(randomDelays) {
@@ -24,27 +24,14 @@ class Bot extends Player {
     const game = Games[room.gameState.gameName];
     let streamActions = [];
 
-    const addRandomDelays = (arr) => {
-      const randomDelay = parseInt(Math.random() * (this.randomDelays[1] - this.randomDelays[0]) + this.randomDelays[0]);
-
-      if (!arr) {
-        return [];
-      }
-
-      for(let arrAction of arr) {
-        arrAction.timestamp = action.timestamp + randomDelay;
-      }
-
-      return arr;
-    };
-
     if (
+      room.gameState.roomState !== Games.Game.GameStates.finished &&
       action.type === game.ActionTypes.WaitForPlayer &&
       action.playerId === this.id
     ) {
       if (action.expectedAction === game.ActionTypes.Roll) {
         streamActions = streamActions.concat(
-          addRandomDelays(room.handleAction(game.Actions.Roll(), this)));
+          room.handleAction(game.Actions.Roll(), this));
       } else if (action.expectedAction === game.ActionTypes.PickPawn) {
         const moves = game.BoardUtils.checkMoves(room.gameState, room.gameState.diceNumber, this.id);
         if (moves.length) {
@@ -70,7 +57,7 @@ class Bot extends Player {
             resultMove = moves[parseInt(Math.random() * moves.length)];
           }
           streamActions = streamActions.concat(
-            addRandomDelays(room.handleAction(game.Actions.PickPawn(resultMove.pawnId), this)));
+            room.handleAction(game.Actions.PickPawn(resultMove.pawnId), this));
         }
       }
     }

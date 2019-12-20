@@ -285,7 +285,7 @@ export default class Dice {
         cube.rotation.z = baseZ + (2*Math.PI) * progress / 4;
       },
       easing: EASING.InQuad,
-      length: totalLength * (6.5 / 10),
+      length: totalLength * 0.65,
     }, {
       update: (progress) => {
         cube.position.x = 5 * (1-progress);
@@ -294,7 +294,7 @@ export default class Dice {
 
         cube.rotation.x = baseX + (2*Math.PI) * progress / 4;
       },
-      length: totalLength * (3.5 / 10),
+      length: totalLength * 0.35,
     },
     ],});
   }
