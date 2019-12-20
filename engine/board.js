@@ -104,6 +104,9 @@ export default class Board {
 
     this.$.position.y = 0;
     this.pawnsController.$.position.y = 0;
+    for(let i = 0; i < this.dices.length; i++) {
+      this.dices[i].hide();
+    }
     this.animations.create(
       {
         id: 'board-clear',
@@ -349,7 +352,7 @@ export default class Board {
       parsedRotation += Math.PI / 4;
     }
     this.$.rotation.y = parsedRotation;
-    this.pawnsController.rotate(parsedRotation);
+    this.pawnsController.rotate(parsedRotation, this.portraitRotation);
   }
   createSelectionObjects() {
     if (this.pawnsController) {

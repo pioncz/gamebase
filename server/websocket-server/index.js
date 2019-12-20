@@ -13,13 +13,20 @@ const _nextId = (() => {
     return ''+(lastId++);
   };
 })();
+const logger = new Logger({
+  className: 'ws',
+  onLog: (msg) => {
+    // this.logs.push(msg);
+  },
+});
+const _log = logger.log;
 
 // Changeable in admin panel
 let RoomQueueTimeout = 1 * 1000;
 let MinPlayers = 4;
 
-const TotalBots = 4;
-const RandomDelays = [900, 1400,];
+const TotalBots = 40;
+const RandomDelays = [300, 800,];
 const Dices = [
   {id:'dice1', colors: ['#fff', '#000',],},// TODO:dopisac kolory z engine
   {id:'dice2', colors: ['#ffb9fa', '#fff',],},
@@ -69,14 +76,6 @@ class WebsocketServer {
       roomQueueTimeout: RoomQueueTimeout,
       randomDelays: RandomDelays,
     });
-
-    let logger = new Logger({
-      className: 'ws',
-      onLog: (msg) => {
-        this.logs.push(msg);
-      },
-    });
-    let _log = logger.log;
 
     let _getTotalNumPlayers = () => {
         let clients = io.sockets.clients().connected;
@@ -180,7 +179,7 @@ class WebsocketServer {
         connection = this.connections[socket.id],
         player = connection.playerId && this.players[connection.playerId];
 
-      _log(`player ${player.login} requests findRoom`);
+      _log(`Player ${player.login} requests findRoom`);
 
       if (!gameName) {
         _log('Invalid data, cannot find room.');
@@ -188,18 +187,18 @@ class WebsocketServer {
       }
 
       if (connection.roomId) {
-        _log('user ' + player.login + ' already in queue or game');
+        _log('Player ' + player.login + ' already in queue or game');
         return;
       }
 
       if (player.roomId && this.rooms[player.roomId]) {
-        _log('player already in a room');
+        _log('Player already in a room');
         return;
       }
 
       room = _findRoom(gameName);
       if (!room) {
-        _log('create new room');
+        _log('Create new room');
         room = _createRoom(gameName);
         this.rooms[room.id] = room;
       }
@@ -207,7 +206,7 @@ class WebsocketServer {
       room.addPlayer(player);
       socket.join(room.name);
       const minPlayers = Games[gameName].Config.MinPlayer;
-      console.log(`player ${player.login} joins queue(${room.gameState.playerIds.length}/${minPlayers}) in ${room.name}`);
+      _log(`Player ${player.login} joins queue(${room.gameState.playerIds.length}/${minPlayers}) in ${room.name}`);
 
       _emitRoomState(room);
     };
@@ -222,7 +221,7 @@ class WebsocketServer {
         room = connection.roomId && this.rooms[connection.roomId];
 
       if (!connection || !player || !room) {
-        _log('player is not in a room.');
+        _log('Player is not in a room.');
         return;
       }
 
@@ -419,6 +418,7 @@ class WebsocketServer {
 
     if (!room) return;
 
+    _log('Closing room ' + roomId);
     const socketIds = room.gameState.players.map(player => player.socketId);
     for (let i = 0; i < socketIds.length; i++) {
       const socketId = socketIds[i];
@@ -438,15 +438,28 @@ class WebsocketServer {
     delete this.rooms[roomId];
   }
   emitRoomAction(room, action) {
+    if (
+      action.type !== Games.Game.ActionTypes.FinishGame &&
+      room.gameState.roomState === Games.Game.GameStates.finished) {
+      return;
+    }
+
     const roomBots = room.gameState.players.filter(player => !!player.bot && !!player.handleAction);
 
+    this.io.to(room.name).emit('newAction', action);
+
     for(let bot of roomBots) {
-      this.emitRoomActions(
-        room.name,
-        bot.handleAction(room, action),
-      );
+      let botActions = bot.handleAction(room, action)
+      if (botActions.length) {
+        const delay = RandomDelays[0] + (RandomDelays[1] - RandomDelays[0]) * Math.random();
+        botActions = botActions.map(action => ({...action, timestamp: action.timestamp + delay,}));
+        _log(botActions.map(action => ({...action, startEpoch: action.timestamp - room.gameState.startGameTimestamp, })));
+        this.emitRoomActions(
+          room.name,
+          botActions,
+        );
+      }
     }
-    this.io.to(room.name).emit('newAction', { timestamp: Date.now(), ...action,});
   }
   emitRoomActions(roomName, streamActions) {
     if (!roomName || !streamActions || !streamActions.length) return;
@@ -459,13 +472,13 @@ class WebsocketServer {
 
     for(let i = 0; i < streamActions.length; i++) {
       if (streamActions[i]) {
-        const { timestamp = 0, callback, action, } = streamActions[i];
+        const { timestamp = Date.now(), callback, action, } = streamActions[i];
         this.actionsStream.addAction(() => {
-          let callbackActions = (callback && callback()) || [];
+          if (callback) {
+            callback();
+          }
 
-          room.actions = room.actions.concat(callbackActions);
-          this.emitRoomActions(roomName, callbackActions);
-          this.emitRoomAction(room, { timestamp: Date.now(), ...action,});
+          this.emitRoomAction(room, { ...action,});
         }, timestamp);
       }
     }

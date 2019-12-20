@@ -1,10 +1,9 @@
-const Games = require('./../../games/Games.js');
 const Bot = require('./bot.js');
-
-let _log = (msg) => {
-  const prefix = ['[bots-manager]: ',];
-  console.log(Array.isArray(msg) ? [prefix,].concat(msg) : prefix + msg);
-};
+const Logger = require('./../Logger');
+const logger = new Logger({
+  className: 'bots-manager',
+});
+const _log = logger.log;
 
 class BotsManager {
   // Create bots

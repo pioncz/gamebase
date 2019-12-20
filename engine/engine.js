@@ -5,7 +5,7 @@ import EventEmitter from 'event-emitter-es6'
 import Games from 'Games.js'
 import DimmingPass from './shaders/dimmingPass';
 import Utils from './utils/utils';
-
+import Stats from './utils/stats';
 
 export default class Engine extends EventEmitter {
   constructor( { container, gameName, }) {
@@ -19,6 +19,12 @@ export default class Engine extends EventEmitter {
     this.scene = new THREE.Scene();
     this.animations = new Animations();
     this.raycaster = new THREE.Raycaster();
+
+    this.stats = new Stats();
+    this.stats.showPanel(0);
+    this.stats.dom.style.position = 'absolute';
+    this.stats.dom.style.zIndex = '1000';
+    this.stats.dom.style.top = 0;
 
     let width = this.container.offsetWidth,
       height = this.container.offsetHeight,
@@ -68,38 +74,11 @@ export default class Engine extends EventEmitter {
     this.composer.setSize( window.innerWidth * 2, window.innerHeight * 2 );
     let renderPass = new THREE.RenderPass(this.scene, this.camera);
     renderPass.renderToScreen = true;
-    // this.dimmingPass = new DimmingPass(
-    //   new THREE.Vector2(window.innerWidth, window.innerHeight),
-    //   this.scene,
-    //   this.camera,
-    //   [],
-    //   {
-    //     visibleEdgeColor: new THREE.Color(1, 1, 1, 1),
-    //     hiddenEdgeColor: new THREE.Color(0.4, 0.4, 0.4, 1),
-    //   },
-    // );
-    // this.dimmingPass.renderToScreen = true;
+
     this.composer.addPass(renderPass);
     // this.composer.addPass(this.dimmingPass);
 
     this.edgeCorrection = 0; // updated on window resize
-
-    // this.animations.create({
-    //   id: 'dimmingThickness',
-    //   update: (progress) => {
-    //     let parsedProgress = progress;
-    //     if (progress > .5) {
-    //       parsedProgress = 1 - progress;
-    //     }
-    //     if (this.dimmingPass.selectedObjects.length) {
-    //       this.dimmingPass.edgeThickness = parsedProgress * (6 + this.edgeCorrection) + (4 + 4 * this.edgeCorrection);
-    //       this.dimmingPass.edgeStrength = parsedProgress * 20 + (5 + this.edgeCorrection);
-    //     }
-    //   },
-    //   loop: true,
-    //   length: 1000,
-    //   easing: EASING.InOutCubic,
-    // })
 
     // Handle canvas events
     window.addEventListener('resize', () => {
@@ -110,8 +89,11 @@ export default class Engine extends EventEmitter {
         this.onResize();
       }
     }, true);
-    window.addEventListener('click', this.onClick.bind(this), true);
-    window.addEventListener('touchstart', this.onTouch.bind(this), true);
+    if ('ontouchstart' in document.documentElement) {
+      window.addEventListener('touchstart', this.onTouch.bind(this), true);
+    } else {
+      window.addEventListener('click', this.onClick.bind(this), true);
+    }
 
     this.context = {
       animations: this.animations,
@@ -265,13 +247,19 @@ export default class Engine extends EventEmitter {
 
     this.board.selectPawns(pawnIds);
   }
-  animate(timestamp) {
-    let delta = Math.min(Date.now() - this._lastRender, 500);
+  animate = () => {
+    const now = Date.now();
+    const delta = this._lastRender ? now - this._lastRender : 0;
 
-    this.composer.render(this.clock.getDelta());
+    //if (delta > 15 || !this._lastRender) {
+    this._lastRender = now;
+    this.stats.begin();
     this.animations.tick(delta);
-    this._lastRender = Date.now();
-    window.requestAnimationFrame(this.animate.bind(this));
+    this.composer.render(this.clock.getDelta());
+    this.stats.end();
+    //}
+
+    window.requestAnimationFrame(this.animate);
   }
   changeGame(gameName) {
     if (this.gameName !== gameName) {
@@ -299,5 +287,11 @@ export default class Engine extends EventEmitter {
       return;
     }
     this.controls.reset();
+  }
+  movePawn(pawnMove) {
+    this.board.movePawn(pawnMove);
+  }
+  appendStats() {
+    document.body.appendChild(this.stats.dom);
   }
 }

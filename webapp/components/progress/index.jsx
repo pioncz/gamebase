@@ -31,9 +31,10 @@ const Progress = ({
   }, [intervalValue, lastTick, length,]);
 
   let progressValue = intervalValue ? (1 - intervalValue) : value;
+  const style = progressValue ? {width: `${progressValue * 100}%`,} : {};
 
   return (
-    <div className={`progress ${rotated?'progress--rotated':''}`} style={{width: `${progressValue * 100}%`,}}></div>
+    <div className={`progress ${rotated?'progress--rotated':''}`} style={style}></div>
   );
 }
 

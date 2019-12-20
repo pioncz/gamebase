@@ -13,6 +13,7 @@ export default class PawnsController {
     this.columnsLength = props.columnsLength;
     this.renderOrder = props.renderOrder;
     this.pawnSelectionRenderOrder = props.renderOrder;
+    this.orientation = { portrait: false, rotationY: 0,};
 
     this.$ = new THREE.Group();
     this.$.name = 'PawnsController';
@@ -156,7 +157,7 @@ export default class PawnsController {
         if (pawnIds.indexOf(pawnId) > -1) {
           if (!pawn.selected) {
             pawn.lighten();
-            pawn.select();
+            pawn.select(this.orientation);
           }
         } else {
           if (pawn.selected) {
@@ -167,25 +168,12 @@ export default class PawnsController {
       }
     }
   }
-  rotate(newRotation) {
-    this.$.rotation.y = newRotation;
+  rotate(rotationY, portrait) {
+    this.orientation = { portrait, rotationY,};
+    this.$.rotation.y = rotationY;
 
     for(let pawnIndex in this.pawns) {
-      let pawn = this.pawns[pawnIndex];
-
-      if (pawn && pawn.selectionObject) {
-        if (newRotation % (Math.PI / 2)) {
-          pawn.selectionObject.rotation.y = newRotation - Math.PI / 4;
-          if (pawn.glowMesh) {
-            pawn.glowMesh.rotation.y = newRotation - Math.PI / 2;
-          }
-        } else {
-          pawn.selectionObject.rotation.y = newRotation + Math.PI / 4;
-          if (pawn.glowMesh) {
-            pawn.glowMesh.rotation.y = newRotation;
-          }
-        }
-      }
+      this.pawns[pawnIndex].rotate(this.orientation);
     }
   }
 }

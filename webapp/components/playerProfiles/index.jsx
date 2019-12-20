@@ -1,4 +1,4 @@
-import React, { Component, } from 'react';
+import React, { Component, createRef, } from 'react';
 import ClassNames from 'classnames';
 import './index.sass';
 import Progress from 'components/progress'
@@ -8,60 +8,52 @@ export default class PlayerProfiles extends Component {
     super(props);
 
     this.state = {
-      currentPlayerProgress: 0,
+      lastProgress: null,
     };
-    this.updateInterval = null;
-    this.lastTick = null;
-    this.updateProgressValue = this.updateProgressValue.bind(this);
-    this.stopProgress = this.stopProgress.bind(this);
-    this.restartProgress = this.restartProgress.bind(this);
+    this.containerRef = createRef();
   }
-  componentWillUnmount() {
-    if (this.updateInterval) {
-      clearInterval(this.updateInterval);
-    }
-  }
-  restartProgress() {
-    this.stopProgress();
-    this.setState({
-      currentPlayerProgress: 1,
-    }, () =>{
-      this.updateInterval = setInterval(this.updateProgressValue, 60);
-    });
-  }
-  stopProgress() {
-    if (this.updateInterval) {
-      clearInterval(this.updateInterval);
-    }
-    this.updateInterval = null;
-    this.lastTick = null;
-    this.setState({
-      currentPlayerProgress: 0,
-    });
-  }
-  updateProgressValue() {
-    const { currentPlayerProgress, } = this.state;
-    const { roundLength, } = this.props;
-    const currentTime = Date.now();
-    let playerProgress;
-    if (this.lastTick) {
-      playerProgress = currentPlayerProgress - (currentTime - this.lastTick) / roundLength;
-    } else {
-      playerProgress = currentPlayerProgress;
+  restartProgress = (currentPlayerId) => {
+    const { lastProgress, } = this.state;
+    const { roundLength, players, firstPlayerId, } = this.props;
+    const firstIndex = players.findIndex(player => player.id === firstPlayerId);
+    const currentIndex = players.findIndex(player => player.id === currentPlayerId);
+    const whichDiv = (currentIndex + (4 - firstIndex)) % 4;
+    const div = this.containerRef.current.children[whichDiv];
+    const progress = div.querySelector('.progress');
+
+    if (lastProgress !== null) {
+      const oldDiv = this.containerRef.current.children[lastProgress];
+      const oldProgress = oldDiv.querySelector('.progress');
+      oldProgress.style.animationName = '';
+      oldProgress.style.animationDuration = '';
     }
 
+    progress.style.animationName = 'shortenWidth';
+    progress.style.animationDuration = `${roundLength/1000}s`;
+    console.log('restartProgress');
+
     this.setState({
-      currentPlayerProgress: playerProgress,
-    }, () => {
-      if (playerProgress <= 0) {
-        this.stopProgress();
-      }
-      this.lastTick = currentTime;
+      lastProgress: whichDiv,
+    });
+  }
+  stopProgress = () => {
+    const { lastProgress, } = this.state;
+    console.log('stopProgress');
+    if (lastProgress === null) {
+      return;
+    }
+
+    const div = this.containerRef.current.children[lastProgress];
+    const progress = div.querySelector('.progress');
+    progress.style.animationName = '';
+    progress.style.animationDuration = '';
+
+    this.setState({
+      lastProgress: null,
     });
   }
   render() {
     const { players, firstPlayerId, hidden, currentPlayerId, } = this.props;
-    const { currentPlayerProgress, } = this.state;
     let playerIndex = players.findIndex(player => player.id === firstPlayerId),
       filteredPlayers = players.slice(0, players.length);
 
@@ -72,28 +64,31 @@ export default class PlayerProfiles extends Component {
     // swap players so first will be with id firstPlayerId
     filteredPlayers = filteredPlayers.slice(playerIndex, filteredPlayers.length).concat(filteredPlayers.slice(0, playerIndex));
 
-    return <div className='player-profiles'>
-      {filteredPlayers.map((player, index) => {
-        let className = ClassNames({
-          'player': true,
-          ['player-'+ index]: true,
-          'player--hidden': !!hidden || !player.login,
-          'player--disconnected': !!player.disconnected,
-        });
+    return (
+      <div
+        className='player-profiles'
+        ref={this.containerRef}
+      >
+        {filteredPlayers.map((player, index) => {
+          let className = ClassNames({
+            'player': true,
+            ['player-'+ index]: true,
+            'player--hidden': !!hidden || !player.login,
+            'player--disconnected': !!player.disconnected,
+          });
 
-        return <div key={index} className={className}>
-          <div className="player-name" style={{
-            'borderColor': player.color,
-          }}>
-            {player.login}
-            {player.id === currentPlayerId && <p className="arrow"></p>}
-            <Progress
-              value={player.id === currentPlayerId ? currentPlayerProgress : 0}
-            />
+          return <div key={index} className={className}>
+            <div className="player-name" style={{
+              'borderColor': player.color,
+            }}>
+              {player.login}
+              {player.id === currentPlayerId && <p className="arrow"></p>}
+              <Progress />
+            </div>
+            <img src={player.avatar} />
           </div>
-          <img src={player.avatar} />
-        </div>
-      })}
-    </div>
+        })}
+      </div>
+    )
   }
 }

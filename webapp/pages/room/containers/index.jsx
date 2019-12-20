@@ -7,7 +7,7 @@ import Timer from 'components/timer';
 import Games from 'Games.js';
 import Game from 'game/';
 import PlayerProfiles from 'components/playerProfiles';
-import { bindActionCreators, } from 'redux';
+import { compose, bindActionCreators, } from 'redux';
 import { connect, } from 'react-redux';
 import { selectors, } from 'shared/redux/api';
 import SearchingRoom from 'modals/SearchingRoom';
@@ -18,7 +18,6 @@ import Dices from 'components/dices';
 import Progress from 'components/progress';
 
 const Pages = {
-  Initial: 'Initial',
   Queue: 'Queue',
   PickColor: 'PickColor',
   Game: 'Game',
@@ -30,12 +29,12 @@ const Pages = {
 };
 
 const Room = ({
-  player, connectorInstance, setInGame, unsetInGame, match, dices,
+  history, player, connectorInstance, setInGame, unsetInGame, match, dices,
 }) => {
   const [players, setPlayers,] = useState([]);
   const [playerColors, setPlayerColors,] = useState([]);
   const [roomId, setRoomId,] = useState(match.params.roomId);
-  const [page, setPage,] = useState(roomId ? Pages.Queue : Pages.Initial);
+  const [page, setPage,] = useState(Pages.Queue);
   const [winnerId, setWinnerId,] = useState();
   const [gameName, setGameName,] = useState();
   const [pawns, setPawns,] = useState();
@@ -84,9 +83,18 @@ const Room = ({
     }
   }, [connectorInstance, roomId,]);
 
+  const joinQueue = useCallback((gameName) => {
+    connectorInstance.socket.on('roomUpdate', gameState => {
+      history.push(`/room/${gameState.id}`);
+    });
+    connectorInstance.socket.emit('findRoom', {
+      game: gameName,
+    });
+  }, [connectorInstance.socket, history,]);
+
   useEffect(() => {
     const handleAction = (newAction) => {
-      // Devide lag by 15 minutes, to handle different timezones
+      // Divide lag by 15 minutes, to handle different timezones
       console.log('newAction: ', newAction, ' lag: ', (Math.abs(Date.now() - newAction.timestamp) % (15 * 60 * 1000)));
 
       if (newAction.type === Games.Ludo.ActionTypes.SelectedColor) {
@@ -94,7 +102,6 @@ const Room = ({
           queueColors.map(queueColor => queueColor.color === newAction.value ? { ...queueColor, selected: true,} : queueColor)
         );
       }
-
       if (newAction.type === Games.Ludo.ActionTypes.StartGame) {
         let gameState = newAction.gameState;
 
@@ -115,35 +122,30 @@ const Room = ({
         gameComponentRef.current.initGame(newAction.animationLength);
         timerComponentRef.current.start(gameState.finishTimestamp - Date.now());
       }
-      if (newAction.type === Games.Ludo.ActionTypes.RestartProgress) {
-        profilesComponentRef.current.restartProgress();
-      }
-      if (newAction.type === Games.Ludo.ActionTypes.StopProgress) {
-        profilesComponentRef.current.stopProgress();
-      }
       if (newAction.type === Games.Ludo.ActionTypes.WaitForPlayer) {
         const waitingPlayer = players.find(player => player.id === newAction.playerId);
         const activeDice = player.id === waitingPlayer.id && newAction.expectedAction === Games.Ludo.ActionTypes.Roll;
-
         setCurrentPlayerId(newAction.playerId);
         setWaitingForAction(newAction.expectedAction);
         setActiveDice(activeDice);
+        profilesComponentRef.current.restartProgress(newAction.playerId);
       }
       if (newAction.type === Games.Ludo.ActionTypes.Rolled) {
         let rollPlayer = players.find(player => player.id === currentPlayerId);
         let diceColors = (dices.find(dice => dice.id === rollPlayer.diceId) || dices[0]).colors;
 
         gameComponentRef.current.engine.rollDice(newAction.diceNumber, diceColors);
+        profilesComponentRef.current.stopProgress();
       }
       if (newAction.type === Game.ActionTypes.MovePawn) {
         gameComponentRef.current.movePawn({pawnId: newAction.pawnId, fieldSequence: newAction.fieldSequence,});
+        profilesComponentRef.current.stopProgress();
       }
       if (newAction.type === Games.Ludo.ActionTypes.SelectPawns) {
         // highlight pawns only for current player
         if (newAction.playerId !== player.id) return;
 
         gameComponentRef.current.engine.selectPawns(newAction.pawnIds);
-        profilesComponentRef.current.restartProgress();
       }
       if (newAction.type === Games.Ludo.ActionTypes.FinishGame) {
         let winnerId = newAction.winnerId;
@@ -151,6 +153,9 @@ const Room = ({
         setWinnerId(winnerId);
         setPage(winnerId ? Pages.Winner : page);
         timerComponentRef.current.stop();
+        setTimeout(() => {
+          gameComponentRef.current.clearGame();
+        }, 300);
       }
       if (newAction.type === Game.ActionTypes.Disconnected) {
         const playerIndex = players.findIndex(player => player.id === newAction.playerId);
@@ -169,7 +174,7 @@ const Room = ({
     connectorInstance.socket.on('roomUpdate', (gameState) => {
       console.log('roomUpdate', gameState);
 
-      let page = (gameState.roomState === 'pickColors') ? Pages.PickColor : Pages.Initial,
+      let page,
         state = gameState.roomState;
 
       if (state === 'pickColors') {
@@ -180,8 +185,6 @@ const Room = ({
         page = Pages.Winner;
       } else if (state === 'game') {
         page = Pages.Game;
-      } else {
-        page = Pages.Initial;
       }
 
       setGameName(gameState.gameName);
@@ -223,28 +226,15 @@ const Room = ({
     };
   }, []); // eslint-disable-line
 
-  useEffect(() => {
-
-  }, [roomId,]);
-
   const playerColor = player && playerColors.find(playerColor => playerColor.playerId === player.id),
     color = playerColor && playerColor.color;
   let currentModal;
-
-  if (page === Pages.Initial) {
-    currentModal = <Modal open={true}>
-      <h3>Znajdź grę</h3>
-      <div className="buttons-container">
-        <Button onClick={this.joinQueue}>START</Button>
-      </div>
-    </Modal>
-  }
 
   if (page === Pages.Queue) {
     currentModal = <SearchingRoom />
   }
 
-  if (page === Pages.PickColor) {
+  if (page === Pages.PickColor && gameName) {
     let colors = queueColors.map((queueColor) => {
       return <div
         className={"color" + (queueColor.selected ? " selected":"")}
@@ -266,7 +256,7 @@ const Room = ({
   if (page === Pages.Disconnected) {
     currentModal = <Modal open={true}>
       <h3>Gracz się rozłączył</h3>
-      <Button onClick={this.joinQueue}>NOWA GRA</Button>
+      <Button onClick={() => joinQueue(gameName)}>NOWA GRA</Button>
     </Modal>;
   }
 
@@ -283,7 +273,7 @@ const Room = ({
           {winnerPlayer.login}
         </div>
       </div>
-      <Button onClick={this.joinQueue}>NOWA GRA</Button>
+      <Button onClick={() => joinQueue(gameName)}>NOWA GRA</Button>
     </Modal>
   }
 
@@ -337,7 +327,10 @@ const mapDispatchToProps = dispatch => ({
   }, dispatch),
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withRouter(Room));
+export default compose(
+  withRouter,
+  connect(
+    mapStateToProps,
+    mapDispatchToProps,
+  ),
+)(Room);

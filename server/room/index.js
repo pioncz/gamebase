@@ -33,6 +33,7 @@ class Room {
       roomState: RoomStates.queue,
       finishTimestamp: null,
       roundTimestamp: null,
+      startGameTimestamp: null,
       rolled: false,
       diceNumber: 0,
       queueColors: options.queueColors,
@@ -79,7 +80,6 @@ class Room {
     _log('game started in ' + this.name);
 
     const returnActions = [];
-    const bots = this.getBots();
     const game = Games[this.gameState.gameName];
 
     let initialState = game.InitialState(); // {Pawns}
@@ -102,7 +102,8 @@ class Room {
 
     this.gameState.currentPlayerId = this.gameState.playerIds[0];
     this.gameState.rolled = true;
-    this.gameState.finishTimestamp = Date.now() + game.Config.GameLength;
+    this.gameState.startGameTimestamp = Date.now();
+    this.gameState.finishTimestamp = this.gameState.startGameTimestamp + game.Config.GameLength;
     let startGameAction = game.Actions.StartGame(this.gameState),
       waitForPlayer = game.Actions.WaitForPlayer(this.gameState, game.ActionTypes.Roll);
 
@@ -115,8 +116,6 @@ class Room {
 
         this.gameState.rolled = false;
         this.gameState.roundTimestamp = Date.now() + game.Config.RoundLength;
-
-        returnActions.push({action: game.Actions.RestartProgress(),});
         return returnActions;
       },
     });
@@ -212,6 +211,17 @@ class Room {
       return returnActions;
     }
 
+    // round is out of time
+    if (roundTimestamp && now > roundTimestamp) {
+      try {
+        returnActions = returnActions.concat(game.ActionHandlers.RoundEnd(this.gameState));
+      } catch(e) {
+        console.error(e.message ? e.message : e);
+      }
+
+      return returnActions;
+    }
+
     // room is queued and there are enough players
     if (roomState === RoomStates.queue &&
       playerIds.length >= minPlayers) {
@@ -245,14 +255,6 @@ class Room {
     if (roomState === RoomStates.pickColors &&
       this.gameState.playerColors.length >= minPlayers) {
       returnActions = returnActions.concat(this.startGame());
-    }
-
-    if (roundTimestamp && now > roundTimestamp) {
-      try {
-        returnActions = returnActions.concat(game.ActionHandlers.RoundEnd(this.gameState));
-      } catch(e) {
-        console.error(e.message ? e.message : e);
-      }
     }
 
     return returnActions;

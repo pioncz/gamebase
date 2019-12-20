@@ -2,9 +2,10 @@
   "server": {
     "port": 5000,
     "jwtSecret": "kjh43hf7qx",
-    "mongooseConnectionString": "mongodb://localhost:27017/gamebase"
+    "mongooseConnectionString": "mongodb://localhost:27017/gamebase",
+    "log-level": 2
   },
   "frontend": {
-    "mobileAspectRation": 1.3
+    "stats": false
   }
 }
