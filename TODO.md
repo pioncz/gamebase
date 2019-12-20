@@ -1,6 +1,4 @@
-playerProgress bywaja bugi: 1) od zlej strony progresuje na roznych roz. 2) czasami nie ma animacji progresu
 podczas bicia pionek natychmiastowo wraca do bazy na poczatku kolejki
-gdy gracz nie wykona akcji: odznaczanie pionkow, wylaczenie progressu
 zaznaczenie wybranej kostki w menu
 
 - lagi na mobilkach byly odpalane z messengera + fullscreen
@@ -316,3 +314,5 @@ DONE:
 + bug podwojnego klikniecia w pionka
 + bug gdy mija czas - brak konca gry
 + po finishu nie maja leciec zadne akcje
++ playerProgress bywaja bugi: 1) od zlej strony progresuje na roznych roz. 2) czasami nie ma animacji progresu
++ gdy gracz nie wykona akcji: odznaczanie pionkow, wylaczenie progressu

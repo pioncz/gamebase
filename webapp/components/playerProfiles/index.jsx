@@ -13,8 +13,8 @@ export default class PlayerProfiles extends Component {
     this.containerRef = createRef();
   }
   restartProgress = (currentPlayerId) => {
-    const { roundLength, players, firstPlayerId, } = this.props;
     const { lastProgress, } = this.state;
+    const { roundLength, players, firstPlayerId, } = this.props;
     const firstIndex = players.findIndex(player => player.id === firstPlayerId);
     const currentIndex = players.findIndex(player => player.id === currentPlayerId);
     const whichDiv = (currentIndex + (4 - firstIndex)) % 4;
@@ -22,35 +22,31 @@ export default class PlayerProfiles extends Component {
     const progress = div.querySelector('.progress');
 
     if (lastProgress !== null) {
-      const div = this.containerRef.current.children[lastProgress];
-      if (div) {
-        const lastProgress = div.querySelector('.progress');
-        lastProgress.style.width = '';
-        lastProgress.style.transition = '';
-      }
-
+      const oldDiv = this.containerRef.current.children[lastProgress];
+      const oldProgress = oldDiv.querySelector('.progress');
+      oldProgress.style.animationName = '';
+      oldProgress.style.animationDuration = '';
     }
 
-    progress.style.transition = '';
-    progress.style.width = '100%';
-    setTimeout(() => {
-      progress.style.transition = `${roundLength/1000}s all linear`;
-      progress.style.width = '';
-    });
+    progress.style.animationName = 'shortenWidth';
+    progress.style.animationDuration = `${roundLength/1000}s`;
+    console.log('restartProgress');
+
     this.setState({
       lastProgress: whichDiv,
     });
   }
   stopProgress = () => {
-    const { currentPlayerId, players, firstPlayerId, } = this.props;
-    const firstIndex = players.findIndex(player => player.id === firstPlayerId);
-    const currentIndex = players.findIndex(player => player.id === currentPlayerId);
-    const whichDiv = (currentIndex + (4 - firstIndex)) % 4;
-    const div = this.containerRef.current.children[whichDiv];
-    const progress = div.querySelector('.progress');
+    const { lastProgress, } = this.state;
+    console.log('stopProgress');
+    if (lastProgress === null) {
+      return;
+    }
 
-    progress.style.width = '';
-    progress.style.transition = '';
+    const div = this.containerRef.current.children[lastProgress];
+    const progress = div.querySelector('.progress');
+    progress.style.animationName = '';
+    progress.style.animationDuration = '';
 
     this.setState({
       lastProgress: null,
@@ -87,9 +83,7 @@ export default class PlayerProfiles extends Component {
             }}>
               {player.login}
               {player.id === currentPlayerId && <p className="arrow"></p>}
-              <Progress
-                value={0}
-              />
+              <Progress />
             </div>
             <img src={player.avatar} />
           </div>

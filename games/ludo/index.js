@@ -52,8 +52,6 @@ const ActionTypes = {
   PickPawn: 'PickPawn',
   SelectPawns: 'SelectPawns',
   FinishGame: 'FinishGame',
-  StopProgress: 'StopProgress',
-  RestartProgress: 'RestartProgress',
   PickColors: 'PickColors',
 };
 
@@ -96,14 +94,6 @@ const PickPawn = (pawnId) => {
   return {type: ActionTypes.PickPawn, pawnId,};
 };
 
-const StopProgress = () => ({
-  type: ActionTypes.StopProgress,
-});
-
-const RestartProgress = () => ({
-  type: ActionTypes.RestartProgress,
-});
-
 const PickColors = (gameState) => {
   return { type: ActionTypes.PickColors, gameState, }
 }
@@ -145,17 +135,6 @@ const RollHandler = (action, player, gameState, diceNumber = 0) => {
       waitForAction = ActionTypes.Roll;
     }
   }
-
-  returnActions.push({
-    action: StopProgress(),
-    timestamp: now,
-  });
-
-  returnActions.push({
-    action: RestartProgress(),
-    timestamp: callbackTimestamp,
-  });
-
 
   returnActions.push({
     action: WaitForPlayer(gameState, waitForAction),
@@ -276,13 +255,16 @@ const PickPawnHandler = (action, player, gameState) => {
     }));
 
   gameState.selectedPawns = [];
-  returnActions.push({action: SelectPawns([], gameState.currentPlayerId),});
+  returnActions.push({
+    action: SelectPawns([], gameState.currentPlayerId),
+    timestamp: now,
+  });
   if (player.lastRoll !== 6 || player.previousRoll === 6) {
     player.lastRoll = 0;
     player.previousRoll = 0;
     gameState.currentPlayerId = Game.Utils.getNextPlayerId(gameState.players, gameState.currentPlayerId);
   }
-  returnActions.push({action: Game.Actions.MovePawn(action.pawnId, move.fieldSequence),});
+  returnActions.push({action: Game.Actions.MovePawn(action.pawnId, move.fieldSequence), timestamp: now,});
 
   // check if pawn moves on someone others pawn and move this pawn to spawn
   if (lastFieldPawn) {
@@ -312,19 +294,12 @@ const PickPawnHandler = (action, player, gameState) => {
     }
   }
 
+  gameState.roundTimestamp = null;
   returnActions.push({
     action: WaitForPlayer(gameState, ActionTypes.Roll),
     timestamp: animationLength,
     callback: () => {
       gameState.rolled = false;
-    },
-  });
-  gameState.roundTimestamp = null;
-  returnActions.push({ action: StopProgress(), });
-  returnActions.push({
-    action: RestartProgress(),
-    timestamp: animationLength,
-    callback: () => {
       gameState.roundTimestamp = now + Config.RoundLength;
     },
   });
@@ -395,7 +370,6 @@ const RoundEndHandler = (gameState) => {
   gameState.selectedPawns = [];
 
   returnActions.push({action: WaitForPlayer(gameState, ActionTypes.Roll),});
-  returnActions.push({action: RestartProgress(),});
   return returnActions;
 };
 
@@ -428,7 +402,6 @@ const Ludo = {
     PickPawn,
     FinishGame,
     PickColors,
-    RestartProgress,
   },
   ActionHandlers: {
     SelectColor: SelectColorHandler,

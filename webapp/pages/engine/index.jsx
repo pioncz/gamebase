@@ -345,12 +345,13 @@ class Engine extends Component {
   }
   selectPawn = (pawnId) => {
     const { pawns, selectedPawnId, } = this.state;
-    console.log('select');
+
     if (selectedPawnId === pawnId) {
       this.setState({
         currentPlayerId: null,
         selectedPawnId: null,
       }, () => {
+        this.profilesComponent.stopProgress();
         this.gameComponentRef.current.engine.selectPawns([]);
       });
     } else {
@@ -360,12 +361,8 @@ class Engine extends Component {
         currentPlayerId: playerId,
         selectedPawnId: pawnId,
       }, () => {
-        this.profilesComponent.restartProgress();
+        this.profilesComponent.restartProgress(playerId);
         this.gameComponentRef.current.engine.selectPawns([pawnId,]);
-      });
-
-      this.setState({
-
       });
     }
   }

@@ -116,8 +116,6 @@ class Room {
 
         this.gameState.rolled = false;
         this.gameState.roundTimestamp = Date.now() + game.Config.RoundLength;
-
-        returnActions.push({action: game.Actions.RestartProgress(),});
         return returnActions;
       },
     });

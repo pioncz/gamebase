@@ -45,6 +45,7 @@ const Room = ({
   const gameComponentRef = useRef();
   const timerComponentRef = useRef();
   const profilesComponentRef = useRef();
+
   const handleBoardClick = useCallback((e) => {
     if (waitingForAction === Games.Ludo.ActionTypes.PickPawn) {
       if (e && e.pawnIds && e.pawnIds.length) {
@@ -145,7 +146,6 @@ const Room = ({
         if (newAction.playerId !== player.id) return;
 
         gameComponentRef.current.engine.selectPawns(newAction.pawnIds);
-        profilesComponentRef.current.restartProgress(newAction.playerId);
       }
       if (newAction.type === Games.Ludo.ActionTypes.FinishGame) {
         let winnerId = newAction.winnerId;

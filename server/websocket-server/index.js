@@ -26,7 +26,7 @@ let RoomQueueTimeout = 1 * 1000;
 let MinPlayers = 4;
 
 const TotalBots = 40;
-const RandomDelays = [900, 1400,];
+const RandomDelays = [300, 800,];
 const Dices = [
   {id:'dice1', colors: ['#fff', '#000',],},// TODO:dopisac kolory z engine
   {id:'dice2', colors: ['#ffb9fa', '#fff',],},
@@ -453,7 +453,7 @@ class WebsocketServer {
       if (botActions.length) {
         const delay = RandomDelays[0] + (RandomDelays[1] - RandomDelays[0]) * Math.random();
         botActions = botActions.map(action => ({...action, timestamp: action.timestamp + delay,}));
-
+        _log(botActions.map(action => ({...action, startEpoch: action.timestamp - room.gameState.startGameTimestamp, })));
         this.emitRoomActions(
           room.name,
           botActions,
