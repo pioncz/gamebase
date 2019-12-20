@@ -6,6 +6,6 @@
     "log-level": 2
   },
   "frontend": {
-    "stats": true
+    "stats": false
   }
 }

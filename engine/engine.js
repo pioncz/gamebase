@@ -254,8 +254,8 @@ export default class Engine extends EventEmitter {
     //if (delta > 15 || !this._lastRender) {
     this._lastRender = now;
     this.stats.begin();
-    this.composer.render(this.clock.getDelta());
     this.animations.tick(delta);
+    this.composer.render(this.clock.getDelta());
     this.stats.end();
     //}
 
