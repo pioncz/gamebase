@@ -1,3 +1,4 @@
+bug obrotu zaznaczenia pionka
 podczas bicia pionek natychmiastowo wraca do bazy na poczatku kolejki
 zaznaczenie wybranej kostki w menu
 

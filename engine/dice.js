@@ -289,7 +289,7 @@ export default class Dice {
     }, {
       update: (progress) => {
         cube.position.x = 5 * (1-progress);
-        cube.position.y = 2.28 + 2 * EASING.Sin(progress/2);
+        cube.position.y = 2.48 + 2 * EASING.Sin(progress/2);
         cube.position.z = -5 * (1-progress);
 
         cube.rotation.x = baseX + (2*Math.PI) * progress / 4;

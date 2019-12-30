@@ -73,7 +73,7 @@ export default class Board {
         const animationRotation = Math.PI/4;
         const startRotation = this.rotation - animationRotation;
 
-        this.$.position.y = 0;
+        this.$.position.y = 0.8;
         this.pawnsController.$.position.y = 0;
         this.animations.create(
           {
@@ -82,7 +82,7 @@ export default class Board {
             length: animationLength,
             update: (progress) => {
               const opacity = progress;
-              this.$.material[0].opacity = opacity;
+              this.$.material[0].opacity = opacity * 0.4;
               this.$.material[1].opacity = opacity;
               this.$.scale.set(progress, progress, progress);
               this.rotateBoard(startRotation + animationRotation * progress);
@@ -224,7 +224,7 @@ export default class Board {
     let canvas = this.canvas,
       texture = new THREE.Texture(canvas),
       width = 40,
-      depth = 2,
+      depth = 0.8,
       height = 40;
     this.materials = [
       new THREE.MeshBasicMaterial(
@@ -232,13 +232,15 @@ export default class Board {
           map: texture,
           transparent: true,
           opacity: 0,
+          side: THREE.DoubleSide,
         }
       ),
       new THREE.MeshBasicMaterial(
         {
-          color: 'rgba(61, 72, 97, 0.8)',
+          color: 'rgba(61, 72, 97)',
           transparent: true,
           opacity: 0,
+          side: THREE.DoubleSide,
         }
       ),
     ];
@@ -251,8 +253,8 @@ export default class Board {
     this.geometry.faces[1].materialIndex = 1;
     this.geometry.faces[4].materialIndex = 0;
     this.geometry.faces[5].materialIndex = 0;
-    this.geometry.faces[8].materialIndex = 1;
-    this.geometry.faces[9].materialIndex = 1;
+    this.geometry.faces[6].materialIndex = 1;
+    this.geometry.faces[7].materialIndex = 1;
 
     this.$ = new THREE.Mesh(this.geometry, this.materials);
     this.$.scale.set(0.01, 0.01, 0.01);
