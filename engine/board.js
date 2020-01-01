@@ -82,7 +82,7 @@ export default class Board {
             length: animationLength,
             update: (progress) => {
               const opacity = progress;
-              this.$.material[0].opacity = opacity * 0.4;
+              this.$.material[0].opacity = opacity;
               this.$.material[1].opacity = opacity;
               this.$.scale.set(progress, progress, progress);
               this.rotateBoard(startRotation + animationRotation * progress);

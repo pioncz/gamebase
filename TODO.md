@@ -1,4 +1,3 @@
-bug obrotu zaznaczenia pionka
 podczas bicia pionek natychmiastowo wraca do bazy na poczatku kolejki
 zaznaczenie wybranej kostki w menu
 
@@ -317,3 +316,5 @@ DONE:
 + po finishu nie maja leciec zadne akcje
 + playerProgress bywaja bugi: 1) od zlej strony progresuje na roznych roz. 2) czasami nie ma animacji progresu
 + gdy gracz nie wykona akcji: odznaczanie pionkow, wylaczenie progressu
++ bug obrotu zaznaczenia pionka
++ fixy planszy
