@@ -333,18 +333,29 @@ export default class Board {
     }
   }
   handleClick(raycaster) {
-    let pawns = [];
+    let returnPawn,
+      distance = -1;
+    if (!this.pawnsController.pawns) return;
 
-    for(let pawnId of Object.keys(this.pawnsController.pawns)) {
-      let pawn = this.pawnsController.pawns[pawnId],
-        intersects = raycaster.intersectObject(pawn.boundingSphere, true);
+    for (var pawnId in this.pawnsController.pawns) {
+      if (Object.prototype.hasOwnProperty.call(this.pawnsController.pawns, pawnId)) {
+        let pawn = this.pawnsController.pawns[pawnId];
+        let intersects = raycaster.intersectObject(pawn.pawnMesh, true);
+        let minIntersect = intersects.reduce((acc, val)=> {
+          if (val.distance < acc || acc === -1) {
+            acc = val.distance;
+          }
+          return acc;
+        }, -1);
 
-      if (pawn && intersects.length) {
-        pawns.push(pawn);
+        if (minIntersect > -1 && (minIntersect < distance || distance === -1)) {
+          returnPawn = pawn;
+          distance = minIntersect;
+        }
       }
     }
 
-    return pawns;
+    return returnPawn;
   }
   rotateBoard(newRotation) {
     this.rotation = newRotation;

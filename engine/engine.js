@@ -195,10 +195,9 @@ export default class Engine extends EventEmitter {
     };
 
     this.raycaster.setFromCamera( point, this.camera );
-    const pawns = this.board.handleClick(this.raycaster);
-    const pawnIds = pawns.map(pawn => pawn.id );
+    const pawn = this.board.handleClick(this.raycaster);
 
-    this.emit('click', { pawnIds: [...new Set(pawnIds),], });
+    this.emit('click', { pawnId: (pawn ? pawn.id : null),});
   }
   onTouch(e) {
     if (e.touches && e.touches.length) {

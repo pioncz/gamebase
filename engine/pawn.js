@@ -52,22 +52,6 @@ export default class Pawn {
     this.$.name = 'PawnMesh';
     this.$.add(pawnMesh);
     this.pawnMesh = pawnMesh;
-    this.geometry.computeBoundingSphere();
-    this.boundingSphere = new THREE.Mesh(
-      new THREE.SphereGeometry( this.geometry.boundingSphere.radius, 8, 8 ),
-      new THREE.MeshBasicMaterial({
-        opacity: 0,
-        transparent: true,
-        depthTest: false,
-      }),
-    );
-    this.boundingSphere.position.set(
-      this.geometry.boundingSphere.center.x,
-      this.geometry.boundingSphere.center.y,
-      this.geometry.boundingSphere.center.z,
-    );
-    this.boundingSphere.scale.set(1.5,1.5,1.5);
-    this.$.add(this.boundingSphere);
     this.createSelectionObject();
   }
   createSelectionObject() {

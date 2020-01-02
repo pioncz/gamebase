@@ -383,9 +383,8 @@ class Engine extends Component {
     console.log('handleSetGame');
   }
   handleClick = (e) => {
-    if (e.pawnIds.length) {
-      let firstPawnId = e.pawnIds[0];
-      this.selectPawn(firstPawnId);
+    if (e.pawnId) {
+      this.selectPawn(e.pawnId);
     }
   }
   toggleControls = () => {
