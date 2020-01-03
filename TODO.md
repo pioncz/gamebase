@@ -1,6 +1,6 @@
-podczas bicia pionek natychmiastowo wraca do bazy na poczatku kolejki
 remove stopProgress and restartProgress actions from the server
 
+1 tempId zapisywany do localStorage
 1 player per polaczenie 
 1 gra per player
 
@@ -322,3 +322,4 @@ DONE:
 + bug obrotu zaznaczenia pionka
 + fixy planszy
 + zaznaczenie wybranej kostki w menu
++ podczas bicia pionek natychmiastowo wraca do bazy na poczatku kolejki

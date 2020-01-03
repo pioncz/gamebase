@@ -243,15 +243,15 @@ const PickPawnHandler = (action, player, gameState) => {
   pawn.z = lastField.z;
 
   if (wasPawnOnSpawn) {
-    animationLength = now + AnimationLengths.movePawnFromSpawn + (AnimationLengths.movePawn * (move.fieldSequence.length - 1)) + 500;
+    animationLength = now + AnimationLengths.movePawnFromSpawn + (AnimationLengths.movePawn * (move.fieldSequence.length - 1));
   } else {
-    animationLength = now + (AnimationLengths.movePawn * move.fieldSequence.length) + 500;
+    animationLength = now + (AnimationLengths.movePawn * move.fieldSequence.length);
   }
 
   move.fieldSequence = move.fieldSequence.map(
     (sequence, i) => ({
       ...sequence,
-      animationLength: (i===0 && wasPawnOnSpawn) ? AnimationLengths.movePawnFromSpawn : AnimationLengths.movePawn,
+      animationLength: wasPawnOnSpawn ? AnimationLengths.movePawnFromSpawn : AnimationLengths.movePawn,
     }));
 
   gameState.selectedPawns = [];
@@ -264,13 +264,16 @@ const PickPawnHandler = (action, player, gameState) => {
     player.previousRoll = 0;
     gameState.currentPlayerId = Game.Utils.getNextPlayerId(gameState.players, gameState.currentPlayerId);
   }
-  returnActions.push({action: Game.Actions.MovePawn(action.pawnId, move.fieldSequence), timestamp: now,});
+  returnActions.push({
+    action: Game.Actions.MovePawn(action.pawnId, move.fieldSequence),
+    timestamp: now,
+  });
 
   // check if pawn moves on someone others pawn and move this pawn to spawn
   if (lastFieldPawn) {
     let playerIndex =  gameState.playerIds.findIndex(playerId => lastFieldPawn.playerId === playerId),
       spawnPosition = BoardUtils.getEmptySpawnFields(gameState.pawns, playerIndex)[0],
-      fieldSequence = [{x: spawnPosition.x, z: spawnPosition.z,},];
+      fieldSequence = [{x: spawnPosition.x, z: spawnPosition.z, animationLength: AnimationLengths.movePawn,},];
 
     lastFieldPawn.x = spawnPosition.x;
     lastFieldPawn.z = spawnPosition.z;
@@ -290,7 +293,9 @@ const PickPawnHandler = (action, player, gameState) => {
       _log(`player ${player.login} wins!`);
       gameState.winnerId = player.id;
       gameState.roomState = Game.GameStates.finished;
-      returnActions.push({action:FinishGame(player.id),});
+      returnActions.push({
+        action:FinishGame(player.id),
+      });
     }
   }
 

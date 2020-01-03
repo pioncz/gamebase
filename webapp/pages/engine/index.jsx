@@ -89,7 +89,7 @@ const nextId = (()=>{
         {id: '4', x: 1, z: 4,}, // second player
         {id: '5', x: 4, z: 4,}, // second player
         {id: '6', x: 3, z: 4,}, // second player
-        {id: '7', x: 10, z: 1,}, // second player
+        {id: '7', x: 2, z: 4,}, // second player
         {id: '0', x: 9, z: 10,}, // third player
         {id: '1', x: 10, z: 10,}, // third player
         {id: '2', x: 9, z: 9,}, // third player
@@ -195,10 +195,11 @@ class Engine extends Component {
     clearInterval(this.messagesIntervalId);
   }
   movePawn(e) {
-    const { pawns, selectedPawnId, pawnInput, players, } = this.state,
+    const { pawns, selectedPawnId, pawnInput, players, gameName, } = this.state,
       pawn = pawns.find(pawn => pawn.id === selectedPawnId),
       playerIds = players.map(player => player.id),
-      gameState = {pawns, playerIds,};
+      gameState = {pawns, playerIds,},
+      game = Games[gameName];
 
     if (!selectedPawnId) {
       log('No pawn');
@@ -244,9 +245,9 @@ class Engine extends Component {
 
           if (anotherPawns.length) {
             let anotherPawn = anotherPawns[0],
-              anotherPawnSpawnFields = BoardUtils.getSpawnFields(pawns, anotherPawn.playerIndex),
+              anotherPawnSpawnFields = BoardUtils.getEmptySpawnFields(pawns, anotherPawn.playerIndex),
               spawnField = (anotherPawnSpawnFields && anotherPawnSpawnFields[0]) || null,
-              anotherPawnMove = { pawnId: anotherPawn.id, fieldSequence: [spawnField,], };
+              anotherPawnMove = { pawnId: anotherPawn.id, fieldSequence: [{x: spawnField.x, z: spawnField.z, animationLength: game.AnimationLengths.movePawn,},], };
 
             if (anotherPawnMove) {
               this.gameComponentRef.current.movePawn(anotherPawnMove)
