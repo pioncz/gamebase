@@ -329,13 +329,16 @@ export default class Board {
         });
     }
   }
-  handleClick(raycaster) {
+  handleClick(raycaster, playerId) {
     let returnPawn,
       distance = -1;
     if (!this.pawnsController.pawns) return;
-
+    
     for (var pawnId in this.pawnsController.pawns) {
-      if (Object.prototype.hasOwnProperty.call(this.pawnsController.pawns, pawnId)) {
+      if (
+        Object.prototype.hasOwnProperty.call(this.pawnsController.pawns, pawnId) &&
+        this.pawnsController.pawns[pawnId].playerId === playerId
+      ) {
         let pawn = this.pawnsController.pawns[pawnId];
         let intersects = raycaster.intersectObject(pawn.pawnMesh, true);
         let minIntersect = intersects.reduce((acc, val)=> {
@@ -344,7 +347,6 @@ export default class Board {
           }
           return acc;
         }, -1);
-
         if (minIntersect > -1 && (minIntersect < distance || distance === -1)) {
           returnPawn = pawn;
           distance = minIntersect;

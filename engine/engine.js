@@ -15,6 +15,7 @@ export default class Engine extends EventEmitter {
     this.initializing = false;
     this.gameName = gameName;
     this.gameId = null;
+    this.firstPlayerId = null;
 
     this.scene = new THREE.Scene();
     this.animations = new Animations();
@@ -195,7 +196,7 @@ export default class Engine extends EventEmitter {
     };
 
     this.raycaster.setFromCamera( point, this.camera );
-    const pawn = this.board.handleClick(this.raycaster);
+    const pawn = this.board.handleClick(this.raycaster, this.firstPlayerId);
 
     this.emit('click', { pawnId: (pawn ? pawn.id : null),});
   }
@@ -209,7 +210,7 @@ export default class Engine extends EventEmitter {
       e.stopPropagation();
     }
   }
-  initGame({gameId, gameName, pawns, players,}, firstPlayerId, animationLength) {
+  initGame({gameId, gameName, pawns, players,}, firstPlayerId, animationLength, ) {
     if (!this.board) {
       this.gameName = gameName;
       this.createBoard();
@@ -229,6 +230,8 @@ export default class Engine extends EventEmitter {
     }
 
     this.initializing = true;
+    this.firstPlayerId = firstPlayerId;
+
     this.firstPlayerIndex = players.findIndex(player => player.id === firstPlayerId);
     this.onResize();
     this.board.initGame({pawns, players, firstPlayerIndex: this.firstPlayerIndex, animationLength,})

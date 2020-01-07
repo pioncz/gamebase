@@ -10,6 +10,7 @@ export default class Pawn {
     this.x = props.x;
     this.z = props.z;
     this.id = props.id;
+    this.playerId = props.playerId;
     this.rotationY = 0;
     this.color = new THREE.Color(props.color);
     this.geometry = new THREE.ConeGeometry(1.2, 2.8, 8, 1, true, 0, 6.3);

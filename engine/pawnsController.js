@@ -22,7 +22,8 @@ export default class PawnsController {
     for (let pawnIndex in pawns) {
       let pawnId = pawns[pawnIndex].id,
         parsedX = (pawns[pawnIndex].x - Math.floor(this.columnsLength/2)) * this.fieldLength,
-        parsedZ = (pawns[pawnIndex].z - Math.floor(this.columnsLength/2)) * this.fieldLength;
+        parsedZ = (pawns[pawnIndex].z - Math.floor(this.columnsLength/2)) * this.fieldLength,
+        playerId = pawns[pawnIndex].playerId;
 
       let pawn = new Pawn({
         ...pawns[pawnIndex],
@@ -31,6 +32,7 @@ export default class PawnsController {
         camera: this.camera,
         parsedX: parsedX,
         parsedZ: parsedZ,
+        playerId: playerId,
         x: pawns[pawnIndex].x,
         z: pawns[pawnIndex].z,
         context: this.context,
