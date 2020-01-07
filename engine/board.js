@@ -127,7 +127,7 @@ export default class Board {
     this.canvas.width = width,
     this.canvas.height = height;
     Games[this.gameName].Board.drawBoard(this.canvas);
-console.log(this.gameName, GridSize);
+
     //fields
     let drawField = (field) => {
       let x = field.x,

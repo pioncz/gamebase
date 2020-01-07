@@ -120,22 +120,10 @@ const nextId = (()=>{
     },
     Kira: {
       'initial': [
-        {id: '12', x: 1, z: 1,},// first player
-        {id: '13', x: 1, z: 3,},
-        {id: '14', x: 3, z: 1,},
-        {id: '15', x: 3, z: 3,},
-        {id: '0', x: 7, z: 1,}, // second player
-        {id: '1', x: 7, z: 3,},
-        {id: '2', x: 9, z: 1,},
-        {id: '3', x: 9, z: 3,},
-        {id: '4', x: 9, z: 9,}, // third player
-        {id: '5', x: 7, z: 9,},
-        {id: '6', x: 9, z: 7,},
-        {id: '7', x: 7, z: 7,},
-        {id: '8', x: 1, z: 7,}, // fourth player
-        {id: '9', x: 1, z: 9,},
-        {id: '10', x: 3, z: 7,},
-        {id: '11', x: 3, z: 9,},
+        {id: '12', x: 0.5, z: 0.5,},// first player
+        {id: '0', x: 0.5, z: 0.5,}, // second player
+        {id: '4', x: 0.5, z: 0.5,}, // third player
+        {id: '8', x: 0.5, z: 0.5,}, // fourth player
       ],
     },
   };
@@ -289,6 +277,8 @@ class Engine extends Component {
   }
   initGame() {
     const { numberOfPlayers, pawnSet, firstPlayerIndex, gameName, } = this.state;
+    const pawnsForPlayer = Games[gameName].Config.PawnsForPlayer;
+
     let newPlayers = [],
       newPawns,
       firstPlayer,
@@ -300,11 +290,11 @@ class Engine extends Component {
       newPlayers.push(newPlayer);
     }
 
-    newPawns = PawnSets[gameName][pawnSet].slice(0,4*numberOfPlayers);
+    newPawns = PawnSets[gameName][pawnSet].slice(0,pawnsForPlayer*numberOfPlayers);
 
     for(let pawnI in newPawns) {
       let pawn = newPawns[pawnI],
-        player = newPlayers[Math.floor(pawnI / 4)];
+        player = newPlayers[Math.floor(pawnI / pawnsForPlayer)];
 
       pawn.color = player.color;
       pawn.playerId = player.id;

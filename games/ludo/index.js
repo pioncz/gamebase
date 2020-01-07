@@ -37,7 +37,7 @@ const Config = {
     '#FFCCDD',
   ],
   MinPlayer: 4,
-  PawnsForPlayer: 1,
+  PawnsForPlayer: 4,
   // GameLength: (15 * 60 * 1000), //15 minutes
   GameLength: 15 * 60 * 1000, //15 minutes
   RoundLength: (10 * 1000), // Time for player to move
