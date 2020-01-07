@@ -18,7 +18,7 @@ export default class PawnsController {
     this.$ = new THREE.Group();
     this.$.name = 'PawnsController';
   }
-  createPawns({pawns,}) {
+  createPawns({pawns, firstPlayerId, }) {
     for (let pawnIndex in pawns) {
       let pawnId = pawns[pawnIndex].id,
         parsedX = (pawns[pawnIndex].x - Math.floor(this.columnsLength/2)) * this.fieldLength,
@@ -38,6 +38,8 @@ export default class PawnsController {
         context: this.context,
       });
       this.pawns[pawnId] = pawn;
+
+      pawn.pawnMesh.renderOrder = playerId === firstPlayerId ? 1000 : 10;
 
       pawn.pawnMesh.material.opacity = 0;
       pawn.selectionObject.renderOrder = this.pawnSelectionRenderOrder;

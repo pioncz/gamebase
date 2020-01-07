@@ -59,7 +59,10 @@ export default class Board {
       }
       this.drawBoard();
 
-      this.pawnsController.createPawns({pawns: props.pawns,});
+      this.pawnsController.createPawns({
+        pawns: props.pawns,
+        firstPlayerId: props.firstPlayerId,
+      });
 
       let newRotation = (Math.PI/2) * firstPlayerIndex;
       this.rotateBoard(newRotation);

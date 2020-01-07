@@ -234,7 +234,13 @@ export default class Engine extends EventEmitter {
 
     this.firstPlayerIndex = players.findIndex(player => player.id === firstPlayerId);
     this.onResize();
-    this.board.initGame({pawns, players, firstPlayerIndex: this.firstPlayerIndex, animationLength,})
+    this.board.initGame({
+      pawns, 
+      players, 
+      firstPlayerIndex: this.firstPlayerIndex, 
+      animationLength,
+      firstPlayerId,
+    })
       .then(() => {
         this.initializing = false;
       });
