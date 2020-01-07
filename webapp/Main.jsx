@@ -65,9 +65,10 @@ class Main extends Component {
       connectorInstance,
     });
     connectorInstance.socket.on('initialData', initialState => {
-      const { player, dices, } = initialState;
+      const { player, dices, games, } = initialState;
       this.props.setCurrentPlayer(player);
       this.props.setCurrentDices(dices);
+      this.props.setCurrentGames(games);
     });
     const diceId = window.localStorage.diceId;
     if (diceId) {
@@ -109,7 +110,7 @@ class Main extends Component {
   }
   render() {
     const { loginModalVisible, registrationModalVisible, fullscreenModalVisible,} = this.state,
-      { player, dices,} = this.props;
+      { player, dices, } = this.props;
     const isIos = Utils.isIos;
 
     return (<Router>
@@ -171,6 +172,7 @@ const {
   setCurrentDices,
   logout,
   setCurrentPlayerDice,
+  setCurrentGames,
 } = actions;
 
 const mapStateToProps = state => ({
@@ -187,6 +189,7 @@ const mapDispatchToProps = dispatch => ({
     setCurrentDices,
     logout,
     setCurrentPlayerDice,
+    setCurrentGames,
   }, dispatch),
 });
 

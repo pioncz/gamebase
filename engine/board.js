@@ -1,11 +1,8 @@
 import Utils from 'utils/utils.js'
 import PawnsController from 'pawnsController';
 import Dice from './dice';
-import BoardUtils from './../games/ludo/BoardUtils.js';
 import Games from 'Games.js';
 import { EASING, } from './utils/animations'
-
-const GridAmount = 11;
 
 const RenderOrder = {
   PawnSelection: 1000,
@@ -22,13 +19,11 @@ export default class Board {
     this.canvasWidth = 512;
     this.canvasHeight = 512;
     this.renderer = props.renderer;
-    this.columnsLength = 11;
-    this.fieldLength = 40 / this.columnsLength;
+    this.gameName = props.gameName;
     this.canvas = Utils.$({element: 'canvas',});
     this.texture = null;
     this.rotation = 0;
     this.portraitRotation = false;
-    this.gameName = props.gameName;
     this.dices = [];
     this.diceAnimationLength;
     this.diceContainer = new THREE.Group();
@@ -128,10 +123,11 @@ export default class Board {
     let ctx = this.canvas.getContext('2d'),
       width = this.canvasWidth,
       height = this.canvasHeight;
+    const GridSize = Games[this.gameName].Config.GridSize;
     this.canvas.width = width,
     this.canvas.height = height;
     Games[this.gameName].Board.drawBoard(this.canvas);
-
+console.log(this.gameName, GridSize);
     //fields
     let drawField = (field) => {
       let x = field.x,
@@ -150,7 +146,7 @@ export default class Board {
       }
 
       ctx.beginPath();
-      var cellSize = width / GridAmount;
+      var cellSize = width / GridSize;
       var r = cellSize / 2 * 0.75;
       var r2 = cellSize / 2 * 0.60;
       let cellX = (x + 0.5) * cellSize,
@@ -177,14 +173,15 @@ export default class Board {
     this.texture.needsUpdate = true;
   }
   createPawns() {
+    const GridSize = Games[this.gameName].Config.GridSize;
     this.pawnsController = new PawnsController({
       context: this.context,
       scene: this.scene,
       camera: this.camera,
-      fieldLength: this.fieldLength,
+      fieldLength: 40 / GridSize,
       pawns: [],
       animations: this.animations,
-      columnsLength: this.columnsLength,
+      columnsLength: GridSize,
       renderOrder: RenderOrder.PawnsController,
       pawnSelectionRenderOrder: RenderOrder.PawnSelection,
     });
@@ -317,7 +314,7 @@ export default class Board {
     return fieldSequence;
   }
   checkMoves(pawns, diceNumber, playerIndex) {
-    return BoardUtils.checkMoves(pawns, diceNumber, playerIndex);
+    return Games[this.gameName].BoardUtils.checkMoves(pawns, diceNumber, playerIndex);
   }
   movePawn({pawnId, fieldSequence,}) {
     let pawn = this.pawnsController.getPawn(pawnId);

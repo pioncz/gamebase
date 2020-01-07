@@ -2,33 +2,20 @@ const BoardUtils = require('./BoardUtils.js');
 const Board = require('./Board.js');
 const { Fields, } = require('./Fields.js');
 const Game = require('./../game');
-const _log = (msg) => console.log('[ludo]: ' + msg);
+const _log = (msg) => console.log('[kira]: ' + msg);
 
 const InitialState = () => {
   return {
     pawns: [
-      {id: '12', x: 0, z: 0,}, // first player
-      {id: '13', x: 1, z: 0,}, // first player
-      {id: '14', x: 0, z: 1,}, // first player
-      {id: '15', x: 1, z: 1,}, // first player
-      {id: '4', x: 9, z: 0,}, // second player
-      {id: '5', x: 10, z: 0,}, // second player
-      {id: '6', x: 9, z: 1,}, // second player
-      {id: '7', x: 10, z: 1,}, // second player
-      {id: '0', x: 9, z: 10,}, // third player
-      {id: '1', x: 10, z: 10,}, // third player
-      {id: '2', x: 9, z: 9,}, // third player
-      {id: '3', x: 10, z: 9,}, // third player
-      {id: '8', x: 0, z: 9,}, // fourth player
-      {id: '9', x: 1, z: 9,}, // fourth player
-      {id: '10', x: 0, z: 10,}, // fourth player
-      {id: '11', x: 1, z: 10,}, // fourth player
+      {id: '12', x: 0.5, z: 0.5,}, // first player
+      {id: '4', x: 0.5, z: 0.5,}, // second player
+      {id: '0', x: 0.5, z: 0.5,}, // third player
+      {id: '8', x: 0.5, z: 0.5,}, // fourth player
     ],
   }
 };
 
 const Config = {
-  GridSize: 11,
   Colors: [
     "#D50000",
     "#64DD17",
@@ -37,6 +24,7 @@ const Config = {
     '#FFCCDD',
   ],
   MinPlayer: 4,
+  GridSize: 7,
   PawnsForPlayer: 1,
   // GameLength: (15 * 60 * 1000), //15 minutes
   GameLength: 15 * 60 * 1000, //15 minutes
@@ -398,8 +386,8 @@ const PickColorsHandler = (gameState) => {
   return returnActions;
 };
 
-const Ludo = {
-  Name: 'Ludo',
+const Kira = {
+  Name: 'Kira',
   Config,
   Actions: {
     SelectColor,
@@ -428,4 +416,4 @@ const Ludo = {
   InitialState,
 };
 
-module.exports = Ludo;
+module.exports = Kira;
