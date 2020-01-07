@@ -260,7 +260,10 @@ export default class Engine extends EventEmitter {
     this.stats.end();
     //}
 
-    window.requestAnimationFrame(this.animate);
+    window.setTimeout(
+      () => window.requestAnimationFrame(this.animate), 
+      16,
+    );
   }
   changeGame(gameName) {
     if (this.gameName !== gameName) {
