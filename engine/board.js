@@ -123,54 +123,17 @@ export default class Board {
     })
   }
   drawBoard() {
-    let ctx = this.canvas.getContext('2d'),
-      width = this.canvasWidth,
-      height = this.canvasHeight;
     const GridSize = Games[this.gameName].Config.GridSize;
-    this.canvas.width = width,
-    this.canvas.height = height;
+    this.canvas.width = this.canvasWidth,
+    this.canvas.height = this.canvasHeight;
     Games[this.gameName].Board.drawBoard(this.canvas);
 
-    //fields
-    let drawField = (field) => {
-      let x = field.x,
-        z = field.z,
-        color = 'white',
-        lineWidth = 4,
-        strokeStyle = 'rgba(0,0,0,.07)';
-
-      if (field.color) {
-        color = field.color;
-        strokeStyle = 'rgba(255,255,255,0.3)';
-      }
-      if (field.disabled) {
-        color = '#bbb';
-        strokeStyle = 'rgba(255,255,255,0.3)';
-      }
-
-      ctx.beginPath();
-      var cellSize = width / GridSize;
-      var r = cellSize / 2 * 0.75;
-      var r2 = cellSize / 2 * 0.60;
-      let cellX = (x + 0.5) * cellSize,
-        cellZ = (z + 0.5) * cellSize;
-
-      ctx.arc(cellX, cellZ, r, 0, 2 * Math.PI);
-      ctx.fillStyle = color;
-      ctx.fill();
-      ctx.save();
-      ctx.clip();
-
-      ctx.arc(cellX, cellZ, r2, 0, 2 * Math.PI);
-      ctx.lineWidth = lineWidth;
-      ctx.strokeStyle = strokeStyle;
-
-      ctx.stroke();
-      ctx.restore();
-    }
-
     for (let i = 0; i < this.fields.length; i++) {
-      drawField(this.fields[i]);
+      Games[this.gameName].Board.drawField(
+        this.canvas,
+        GridSize,
+        this.fields[i],
+      );
     }
 
     this.texture.needsUpdate = true;
@@ -181,10 +144,10 @@ export default class Board {
       context: this.context,
       scene: this.scene,
       camera: this.camera,
-      fieldLength: 40 / GridSize,
+      fieldLength: 40,
       pawns: [],
       animations: this.animations,
-      columnsLength: GridSize,
+      gridSize: GridSize,
       renderOrder: RenderOrder.PawnsController,
       pawnSelectionRenderOrder: RenderOrder.PawnSelection,
     });
@@ -377,6 +340,7 @@ export default class Board {
   }
   changeGame(gameName) {
     this.gameName = gameName;
+    this.pawnsController.gridSize = Games[gameName].Config.GridSize;
     this.fields = Games[this.gameName].Fields;
     this.diceAnimationLength = Games[gameName].AnimationLengths.rollDice;
     this.clearGame();
