@@ -10,7 +10,7 @@ export default class PawnsController {
     this.fieldLength = props.fieldLength;
     this.animations = props.context.animations;
     this.context = props.context;
-    this.columnsLength = props.columnsLength;
+    this.gridSize = props.gridSize;
     this.renderOrder = props.renderOrder;
     this.pawnSelectionRenderOrder = props.renderOrder;
     this.orientation = { portrait: false, rotationY: 0,};
@@ -21,8 +21,8 @@ export default class PawnsController {
   createPawns({pawns, firstPlayerId, }) {
     for (let pawnIndex in pawns) {
       let pawnId = pawns[pawnIndex].id,
-        parsedX = (pawns[pawnIndex].x - Math.floor(this.columnsLength/2)) * this.fieldLength,
-        parsedZ = (pawns[pawnIndex].z - Math.floor(this.columnsLength/2)) * this.fieldLength,
+        parsedX = (pawns[pawnIndex].x - Math.floor(this.gridSize/2)) * (this.fieldLength / this.gridSize),
+        parsedZ = (pawns[pawnIndex].z - Math.floor(this.gridSize/2)) * (this.fieldLength / this.gridSize),
         playerId = pawns[pawnIndex].playerId;
 
       let pawn = new Pawn({
@@ -39,7 +39,7 @@ export default class PawnsController {
       });
       this.pawns[pawnId] = pawn;
 
-      pawn.pawnMesh.renderOrder = playerId === firstPlayerId ? 1000 : 10;
+      pawn.pawnMesh.renderOrder = playerId === firstPlayerId ? 50 : 10;
 
       pawn.pawnMesh.material.opacity = 0;
       pawn.selectionObject.renderOrder = this.pawnSelectionRenderOrder;
@@ -90,8 +90,8 @@ export default class PawnsController {
     let pawnOnLastField;
     for(let i = 0; i < fieldSequence.length; i++) {
       let {x, z, animationLength,} = fieldSequence[i],
-        newX = (x - Math.floor(this.columnsLength/2)) * this.fieldLength,
-        newZ = (z - Math.floor(this.columnsLength/2)) * this.fieldLength,
+        newX = (x - Math.floor(this.gridSize/2)) * this.fieldLength,
+        newZ = (z - Math.floor(this.gridSize/2)) * this.fieldLength,
         pawnOnNextField = (!!this.getPawnByXZ(x, z)) &&
           i !== (fieldSequence.length -1);
 

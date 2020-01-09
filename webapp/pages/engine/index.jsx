@@ -395,7 +395,7 @@ class Engine extends Component {
           {`${pawn.id}:${pawn.color}:${pawn.x},${pawn.z}`}
         </div>;
       });
-    const games = Object.keys(Games);
+    const games = Object.keys(Games).filter(gameName => gameName !== 'Game');
 
     return <div className="engine-page">
       <div className="settings">
