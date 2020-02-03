@@ -66,9 +66,9 @@ const Header = ({
   return (
     <header className={headerClass}>
       <div className="links-container">
-        <div className="nav-icon" onClick={toggleMenu}>
+        {/* <div className="nav-icon" onClick={toggleMenu}>
           <MenuIcon />
-        </div>
+        </div> */}
         {!isIos && <FullscreenButton />}
       </div>
       <div className="menu-container">

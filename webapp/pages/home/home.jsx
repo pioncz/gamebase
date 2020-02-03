@@ -6,6 +6,7 @@ import Games from 'Games.js';
 import { withRouter, } from 'react-router-dom';
 import { selectors, actions, } from 'shared/redux/api'
 import { useTranslation, } from 'react-i18next';
+import Button from 'components/button/index'
 
 const Home = ({
   player, history, connectorInstance,
@@ -27,13 +28,18 @@ const Home = ({
       <h1>{t('home.pickGame')}</h1>
       <div className="games-container">
         <div className="game-info">
-          <h2>Ludo</h2>
-          <button
-            onClick={() => {joinQueue(Games.Ludo.Name)}}
+          <h2>{t('ludo.name')}</h2>
+          <div className="game-description">
+            <p>{t('ludo.description')}</p>
+            <p>{t('ludo.details1')}</p>
+            <p>{t('ludo.details2')}</p>
+          </div>
+          <Button 
+            onClick={() => {joinQueue(Games.Ludo.Name)}}            
             disabled={loggedOut}
           >
             {t('home.findGame')}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

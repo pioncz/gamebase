@@ -54,6 +54,12 @@ i18n
           loginModal: {
             header: 'Login',
           },
+          ludo: {
+            name: 'Ludo',
+            description: 'You start with 4 pawns and have to win race with other players. You can beat other players when you stand on their field. Roll 6 to gain extra roll (max 2).',
+            details1: 'Difficulty: easy',
+            details2: 'Players: 2-4',
+          },
         },
       },
       pl: {
@@ -89,6 +95,12 @@ i18n
           },
           registrationModal: {
             header: 'Rejestracja',
+          },
+          ludo: {
+            name: 'Ludo',
+            description: 'Zaczynasz z 4 pionkami i musisz wygrać wyścig z innymi graczami. Możesz zbić pionka, gdy staniesz na jego polu. Rzuć 6, żeby otrzymać dodatkowy ruch (max 2).',
+            details1: 'Trudność: prosta',
+            details2: 'Gracze: 2-4',
           },
         },
       },

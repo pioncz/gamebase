@@ -2,17 +2,22 @@
 
 .button
   border: 1px solid $primary-color
-  background: transparent
-  color: #fff
+  background: rgba(0,0,0,0.6)
+  color: #e5ebed
   display: inline-block
   user-select: none
   cursor: pointer
-  border: 1px solid $primary-color-dark
-  padding: $margin1 $margin2
+  padding: $margin2 $margin3
   border-radius: 2px
-  transition: all .2s ease-in-out
+  transition: all .1s ease-in-out
   margin: $margin1
   letter-spacing: 1.2px
+  text-transform: uppercase
+  font-size: 14px
+  font-weight: 600
   
+  &:hover
+    background: $primary-color
+
   &:disabled
     opacity: .3
