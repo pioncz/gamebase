@@ -48,18 +48,11 @@ const Room = ({
 
   const handleBoardClick = useCallback((e) => {
     if (waitingForAction === Games.Ludo.ActionTypes.PickPawn) {
-      if (e && e.pawnIds && e.pawnIds.length) {
-        const filteredPawnIds = e.pawnIds.filter(pawnId => {
-          const pawn = pawns.find(pawn => pawn.id === pawnId);
-          return pawn && pawn.playerId === player.id;
-        });
-
-        if (filteredPawnIds.length) {
-          connectorInstance.socket.emit('callAction', Games.Ludo.Actions.PickPawn(filteredPawnIds[0], player.id));
-        }
+      if (e && e.pawnId) {
+        connectorInstance.socket.emit('callAction', Games.Ludo.Actions.PickPawn(e.pawnId, player.id));
       }
     }
-  }, [pawns, player.id, waitingForAction, connectorInstance,]);
+  }, [player.id, waitingForAction, connectorInstance,]);
 
   const handleDicesClick = useCallback(() => {
     connectorInstance.socket.emit('callAction', Games.Ludo.Actions.Roll());

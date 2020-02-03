@@ -30,6 +30,7 @@ export default class Pawn {
           c: { type: 'f', value: 1.0, },
           p: { type: 'f', value: 1.4, },
           glowColor: { type: 'c', value: new THREE.Color(0xffffff), },
+          viewVector: { type: 'v3', value: this.camera.position, },
         },
         vertexShader: GlowShader.vertexShader,
         fragmentShader: GlowShader.fragmentShader,
@@ -51,22 +52,6 @@ export default class Pawn {
     this.$.name = 'PawnMesh';
     this.$.add(pawnMesh);
     this.pawnMesh = pawnMesh;
-    this.geometry.computeBoundingSphere();
-    this.boundingSphere = new THREE.Mesh(
-      new THREE.SphereGeometry( this.geometry.boundingSphere.radius, 8, 8 ),
-      new THREE.MeshBasicMaterial({
-        opacity: 0,
-        transparent: true,
-        depthTest: false,
-      }),
-    );
-    this.boundingSphere.position.set(
-      this.geometry.boundingSphere.center.x,
-      this.geometry.boundingSphere.center.y,
-      this.geometry.boundingSphere.center.z,
-    );
-    this.boundingSphere.scale.set(1.5,1.5,1.5);
-    this.$.add(this.boundingSphere);
     this.createSelectionObject();
   }
   createSelectionObject() {
@@ -96,7 +81,7 @@ export default class Pawn {
   }
   moveTo(x, y, z) {
     this.$.position.x = x;
-    this.$.position.y = y + .42;
+    this.$.position.y = y + .62;
     this.$.position.z = z;
   }
   select(orientation) {
@@ -212,19 +197,16 @@ export default class Pawn {
   }
   rotate(orientation) {
     const { portrait, rotationY,} = orientation;
+
     if (this.glowMesh) {
-      if (portrait) {
-        this.glowMesh.rotation.y = rotationY + Math.PI / 2;
-      } else {
-        this.glowMesh.rotation.y = rotationY + Math.PI;
-      }
+      this.glowMesh.rotation.y = -rotationY;
     }
 
     if (this.selectionObject) {
-      if (rotationY % (Math.PI / 2)) {
-        this.selectionObject.rotation.y = rotationY - Math.PI / 4;
+      if (portrait) {
+        this.selectionObject.rotation.y = -rotationY + Math.PI / 4;
       } else {
-        this.selectionObject.rotation.y = rotationY + Math.PI / 4;
+        this.selectionObject.rotation.y = -rotationY + Math.PI / 4;
       }
     }
   }

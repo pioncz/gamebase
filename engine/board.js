@@ -73,7 +73,7 @@ export default class Board {
         const animationRotation = Math.PI/4;
         const startRotation = this.rotation - animationRotation;
 
-        this.$.position.y = 0;
+        this.$.position.y = 0.8;
         this.pawnsController.$.position.y = 0;
         this.animations.create(
           {
@@ -224,7 +224,7 @@ export default class Board {
     let canvas = this.canvas,
       texture = new THREE.Texture(canvas),
       width = 40,
-      depth = 2,
+      depth = 0.8,
       height = 40;
     this.materials = [
       new THREE.MeshBasicMaterial(
@@ -232,13 +232,15 @@ export default class Board {
           map: texture,
           transparent: true,
           opacity: 0,
+          side: THREE.DoubleSide,
         }
       ),
       new THREE.MeshBasicMaterial(
         {
-          color: 'rgba(61, 72, 97, 0.8)',
+          color: 'rgba(61, 72, 97)',
           transparent: true,
           opacity: 0,
+          side: THREE.DoubleSide,
         }
       ),
     ];
@@ -251,8 +253,8 @@ export default class Board {
     this.geometry.faces[1].materialIndex = 1;
     this.geometry.faces[4].materialIndex = 0;
     this.geometry.faces[5].materialIndex = 0;
-    this.geometry.faces[8].materialIndex = 1;
-    this.geometry.faces[9].materialIndex = 1;
+    this.geometry.faces[6].materialIndex = 1;
+    this.geometry.faces[7].materialIndex = 1;
 
     this.$ = new THREE.Mesh(this.geometry, this.materials);
     this.$.scale.set(0.01, 0.01, 0.01);
@@ -331,18 +333,29 @@ export default class Board {
     }
   }
   handleClick(raycaster) {
-    let pawns = [];
+    let returnPawn,
+      distance = -1;
+    if (!this.pawnsController.pawns) return;
 
-    for(let pawnId of Object.keys(this.pawnsController.pawns)) {
-      let pawn = this.pawnsController.pawns[pawnId],
-        intersects = raycaster.intersectObject(pawn.boundingSphere, true);
+    for (var pawnId in this.pawnsController.pawns) {
+      if (Object.prototype.hasOwnProperty.call(this.pawnsController.pawns, pawnId)) {
+        let pawn = this.pawnsController.pawns[pawnId];
+        let intersects = raycaster.intersectObject(pawn.pawnMesh, true);
+        let minIntersect = intersects.reduce((acc, val)=> {
+          if (val.distance < acc || acc === -1) {
+            acc = val.distance;
+          }
+          return acc;
+        }, -1);
 
-      if (pawn && intersects.length) {
-        pawns.push(pawn);
+        if (minIntersect > -1 && (minIntersect < distance || distance === -1)) {
+          returnPawn = pawn;
+          distance = minIntersect;
+        }
       }
     }
 
-    return pawns;
+    return returnPawn;
   }
   rotateBoard(newRotation) {
     this.rotation = newRotation;

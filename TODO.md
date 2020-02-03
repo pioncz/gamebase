@@ -1,13 +1,20 @@
-podczas bicia pionek natychmiastowo wraca do bazy na poczatku kolejki
-zaznaczenie wybranej kostki w menu
+remove stopProgress and restartProgress actions from the server
 
-- lagi na mobilkach byly odpalane z messengera + fullscreen
-- stronka testowa samego engine
-- bug klikania na telefonie: gdy za wczesnie jest zaznaczony pionek to reszta nie jest wyszarzona
-- bug klikania na telefonie: na stronie engine nie mozna zmienic zaznaczonego pionka
-- gdy za wczesnie jest zaladowana gra, to nie renderuje sie plansza gry (glownie mobilki). timeout naprawia buga
+1 tempId zapisywany do localStorage
+1 player per polaczenie 
+1 gra per player
 
-- remove stopProgress and restartProgress actions from the server
+Wejscie do gry:
+ Z home:
+  + User wybiera gre, wysyla findRoom(gameName)
+  + Serwer wysyla updateRoom z informacja o jego nowym pokoju
+  + User jest przekierowany na room/:id
+ Z room/:id
+  + jesli nie ma roomId to przekierowanie na home
+  + wysyla joinRoom(gameId)
+  + jesli nie ma takiej gry, to user widzi modal: 'Taka gra nie istnieje, worc na glowna'
+  - jesli jest taka gra, ale nie ma miejsc do grania, user dolacza jako spectator (bedzie otrzymywal roomUpdate)
+  - jestli jest taka gra i jest miejsce dla gracza, to user dolacza do pokoju jako gracz
 
 - show logs in admin panel
 
@@ -54,17 +61,13 @@ zaznaczenie wybranej kostki w menu
 - walka graczy o miejsce 2 i 3 
 - staty do panelu admina: lagi - ping /pong na stronie admina, mierzenie np przy starcie gry u graczy
 
-Wejscie do gry:
- Z home:
-  + User wybiera gre, wysyla findRoom(gameName)
-  + Serwer wysyla updateRoom z informacja o jego nowym pokoju
-  + User jest przekierowany na room/:id
- Z room/:id
-  + jesli nie ma roomId to przekierowanie na home
-  + wysyla joinRoom(gameId)
-  + jesli nie ma takiej gry, to user widzi modal: 'Taka gra nie istnieje, worc na glowna'
-  - jesli jest taka gra, ale nie ma miejsc do grania, user dolacza jako spectator (bedzie otrzymywal roomUpdate)
-  - jestli jest taka gra i jest miejsce dla gracza, to user dolacza do pokoju jako gracz
+- Performance:
+ - lags on mobile was found when run through messenger
+ - how to test it? constant 60 fps doesnt help
+ - check renderer.info and see what can be optimized
+ - buffer geometry
+ - worse textures?
+ - antialiasing / shadows - are those turned off?
 
 https://threejsfundamentals.org
 http://www.andrewberg.com/prototypes/threejs/bokeh/
@@ -316,3 +319,7 @@ DONE:
 + po finishu nie maja leciec zadne akcje
 + playerProgress bywaja bugi: 1) od zlej strony progresuje na roznych roz. 2) czasami nie ma animacji progresu
 + gdy gracz nie wykona akcji: odznaczanie pionkow, wylaczenie progressu
++ bug obrotu zaznaczenia pionka
++ fixy planszy
++ zaznaczenie wybranej kostki w menu
++ podczas bicia pionek natychmiastowo wraca do bazy na poczatku kolejki

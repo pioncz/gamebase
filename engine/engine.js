@@ -158,6 +158,7 @@ export default class Engine extends EventEmitter {
       this.camera.right  =   this.frustumSize * aspect;
       this.camera.top    =   this.frustumSize + moveY;
       this.camera.bottom = - this.frustumSize + moveY;
+
       if (this.board) {
         this.board.setPortraitRotation(true); //rotates board
       }
@@ -176,11 +177,12 @@ export default class Engine extends EventEmitter {
         this.board.setPortraitRotation(false); //rotates board
 
         const marginTop = 4;
-        this.board.$.position.set(marginTop, 0, marginTop);
+        this.board.$.position.set(marginTop, 0.8, marginTop);
         this.board.pawnsController.$.position.set(marginTop, 0, marginTop);
-        this.board.diceContainer.position.set(marginTop, 0, marginTop);
+        this.board.diceContainer.position.set(marginTop, 0.0, marginTop);
       }
     }
+
     this.camera.updateProjectionMatrix();
   }
   onClick(e) {
@@ -193,10 +195,9 @@ export default class Engine extends EventEmitter {
     };
 
     this.raycaster.setFromCamera( point, this.camera );
-    const pawns = this.board.handleClick(this.raycaster);
-    const pawnIds = pawns.map(pawn => pawn.id );
+    const pawn = this.board.handleClick(this.raycaster);
 
-    this.emit('click', { pawnIds: [...new Set(pawnIds),], });
+    this.emit('click', { pawnId: (pawn ? pawn.id : null),});
   }
   onTouch(e) {
     if (e.touches && e.touches.length) {
@@ -228,9 +229,9 @@ export default class Engine extends EventEmitter {
     }
 
     this.initializing = true;
-    let firstPlayerIndex = players.findIndex(player => player.id === firstPlayerId);
+    this.firstPlayerIndex = players.findIndex(player => player.id === firstPlayerId);
     this.onResize();
-    this.board.initGame({pawns, players, firstPlayerIndex, animationLength,})
+    this.board.initGame({pawns, players, firstPlayerIndex: this.firstPlayerIndex, animationLength,})
       .then(() => {
         this.initializing = false;
       });

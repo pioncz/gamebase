@@ -99,11 +99,13 @@ class Main extends Component {
     this.props.logout();
   }
   selectDice = (diceId) => {
+    const { setCurrentPlayerDice, } = this.props;
     const { connectorInstance, } = this.state;
     window.localStorage.diceId=diceId;
     if (connectorInstance) {
       connectorInstance.socket.emit('selectDice', { diceId, });
     }
+    setCurrentPlayerDice(diceId);
   }
   render() {
     const { loginModalVisible, registrationModalVisible, fullscreenModalVisible,} = this.state,
@@ -168,6 +170,7 @@ const {
   setCurrentPlayer,
   setCurrentDices,
   logout,
+  setCurrentPlayerDice,
 } = actions;
 
 const mapStateToProps = state => ({
@@ -183,6 +186,7 @@ const mapDispatchToProps = dispatch => ({
     setCurrentPlayer,
     setCurrentDices,
     logout,
+    setCurrentPlayerDice,
   }, dispatch),
 });
 

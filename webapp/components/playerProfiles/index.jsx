@@ -30,7 +30,6 @@ export default class PlayerProfiles extends Component {
 
     progress.style.animationName = 'shortenWidth';
     progress.style.animationDuration = `${roundLength/1000}s`;
-    console.log('restartProgress');
 
     this.setState({
       lastProgress: whichDiv,
@@ -38,7 +37,7 @@ export default class PlayerProfiles extends Component {
   }
   stopProgress = () => {
     const { lastProgress, } = this.state;
-    console.log('stopProgress');
+
     if (lastProgress === null) {
       return;
     }

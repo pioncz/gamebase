@@ -99,7 +99,12 @@ const Header = ({
           </select>
           <div className="dices-container">
             {dices.map(dice => (
-              <div key={dice.id} style={{background: dice.colors[0],}} className="dice" onClick={() => { toggleMenu(); selectDice(dice.id)}}>
+              <div
+                key={dice.id}
+                style={{background: dice.colors[0],}}
+                className={`dice${player.diceId === dice.id ? ' selected' : ''}`}
+                onClick={() => { toggleMenu(); selectDice(dice.id)}}
+              >
                 <div className="dice__spot" style={{background: dice.colors[1],}} />
                 <div className="dice__spot" style={{background: dice.colors[1],}} />
                 <div className="dice__spot" style={{background: dice.colors[1],}} />
