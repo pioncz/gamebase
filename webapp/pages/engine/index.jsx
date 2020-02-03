@@ -120,10 +120,10 @@ const nextId = (()=>{
     },
     Kira: {
       'initial': [
-        {id: '12', x: 0.5, z: 0.5,},// first player
-        {id: '0', x: 0.5, z: 0.5,}, // second player
-        {id: '4', x: 0.5, z: 0.5,}, // third player
+        {id: '12', x: 0.5, z: 0.5,}, // first player
+        {id: '0', x: 0.5, z: 0.5,}, // third player
         {id: '8', x: 0.5, z: 0.5,}, // fourth player
+        {id: '4', x: 0.5, z: 0.5,}, // second player
       ],
     },
   };

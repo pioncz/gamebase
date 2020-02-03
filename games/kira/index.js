@@ -7,10 +7,10 @@ const _log = (msg) => console.log('[kira]: ' + msg);
 const InitialState = () => {
   return {
     pawns: [
-      {id: '12', x: 0.5, z: 0.5,}, // first player
-      {id: '4', x: 0.5, z: 0.5,}, // second player
-      {id: '0', x: 0.5, z: 0.5,}, // third player
-      {id: '8', x: 0.5, z: 0.5,}, // fourth player
+      {id: '12', x: 0.25, z: 0.25,}, // first player
+      {id: '4', x: 0.25, z: 0.75,}, // second player
+      {id: '0', x: 0.75, z: 0.25,}, // third player
+      {id: '8', x: 0.75, z: 0.75,}, // fourth player
     ],
   }
 };
