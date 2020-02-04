@@ -302,6 +302,15 @@ class WebsocketServer {
         player.diceId = options.diceId;
       }
     }
+    
+    const _handleSelectLogin = socket => (options) => {
+      let connection = this.connections[socket.id],
+        player = connection.playerId && this.players[connection.playerId];
+
+      if(player && options.login) {
+        player.login = options.login;
+      }
+    }
 
     // Authorization
     io.use((socket, next) => {
@@ -383,6 +392,8 @@ class WebsocketServer {
       socket.on('setConfig', _handleSetConfig(socket));
 
       socket.on('selectDice', _handleSelectDice(socket));
+
+      socket.on('selectLogin', _handleSelectLogin(socket));
 
       socket.on('log', (msg) => {_log('Client logs: ' + msg)});
     });

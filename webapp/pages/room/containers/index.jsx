@@ -88,7 +88,7 @@ const Room = ({
   useEffect(() => {
     const handleAction = (newAction) => {
       // Divide lag by 15 minutes, to handle different timezones
-      console.log('newAction: ', newAction, ' lag: ', (Math.abs(Date.now() - newAction.timestamp) % (15 * 60 * 1000)));
+      // console.log('newAction: ', newAction, ' lag: ', (Math.abs(Date.now() - newAction.timestamp) % (15 * 60 * 1000)));
 
       if (newAction.type === Games.Ludo.ActionTypes.SelectedColor) {
         setQueueColors(

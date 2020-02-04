@@ -25,6 +25,7 @@ const  LOGOUT = `${prefix}LOGOUT`;
 const  SET_PLAYER = `${prefix}SET_PLAYER`;
 const SET_DICES = `${prefix}SET_DICES`;
 const SET_CURRENT_PLAYER_DICE = `${prefix}SET_CURRENT_PLAYER_DICE`;
+const SET_CURRENT_PLAYER_LOGIN = `${prefix}SET_CURRENT_PLAYER_LOGIN`;
 
 /*
  * ACTIONS
@@ -115,6 +116,13 @@ const setCurrentPlayerDice = diceId => ({
   type: SET_CURRENT_PLAYER_DICE,
   payload: {
     diceId,
+  },
+});
+
+const setCurrentPlayerLogin = login => ({
+  type: SET_CURRENT_PLAYER_LOGIN,
+  payload: {
+    login,
   },
 });
 
@@ -234,6 +242,13 @@ const reducer = (state = initialState, action) => {
         diceId: action.payload.diceId,
       },
     }),
+    [SET_CURRENT_PLAYER_LOGIN]: () => ({
+      ...state,
+      player: {
+        ...state.player,
+        login: action.payload.login,
+      },
+    }),
   };
 
   return (actions[action.type] && actions[action.type]()) || state;
@@ -317,6 +332,7 @@ export const actions = {
   setCurrentPlayer,
   setCurrentDices,
   setCurrentPlayerDice,
+  setCurrentPlayerLogin,
 };
 
 export const logic = {

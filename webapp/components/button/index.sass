@@ -7,7 +7,7 @@
   display: inline-block
   user-select: none
   cursor: pointer
-  padding: $margin2 $margin3
+  padding: $margin1 $margin2
   border-radius: 2px
   transition: all .1s ease-in-out
   margin: $margin1
@@ -16,8 +16,9 @@
   font-size: 14px
   font-weight: 600
   
-  &:hover
+  &:hover:enabled
     background: $primary-color
 
   &:disabled
     opacity: .3
+    cursor: default
