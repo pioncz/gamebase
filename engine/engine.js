@@ -235,9 +235,9 @@ export default class Engine extends EventEmitter {
     this.firstPlayerIndex = players.findIndex(player => player.id === firstPlayerId);
     this.onResize();
     this.board.initGame({
-      pawns, 
-      players, 
-      firstPlayerIndex: this.firstPlayerIndex, 
+      pawns,
+      players,
+      firstPlayerIndex: this.firstPlayerIndex,
       animationLength,
       firstPlayerId,
     })
@@ -261,16 +261,16 @@ export default class Engine extends EventEmitter {
     const now = Date.now();
     const delta = this._lastRender ? now - this._lastRender : 0;
 
-    //if (delta > 15 || !this._lastRender) {
-    this._lastRender = now;
-    this.stats.begin();
-    this.animations.tick(delta);
-    this.composer.render(this.clock.getDelta());
-    this.stats.end();
-    //}
+    if (delta > 24 || !this._lastRender) {
+      this._lastRender = now;
+      this.stats.begin();
+      this.animations.tick(delta);
+      this.composer.render(this.clock.getDelta());
+      this.stats.end();
+    }
 
     window.setTimeout(
-      () => window.requestAnimationFrame(this.animate), 
+      () => window.requestAnimationFrame(this.animate),
       16,
     );
   }

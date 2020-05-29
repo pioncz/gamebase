@@ -118,6 +118,14 @@ const nextId = (()=>{
         {id: '11', x: 1, z: 10,},
       ],
     },
+    Ludo2: {
+      'initial': [
+        {id: '4', x: 1, z: 9,}, // first player
+        {id: '12', x: 1, z: 1,}, // second player
+        {id: '0', x: 9, z: 1,}, // third player
+        {id: '8', x: 9, z: 9,}, // fourth player
+      ],
+    },
     Kira: {
       'initial': [
         {id: '12', x: 0.5, z: 0.5,}, // first player
