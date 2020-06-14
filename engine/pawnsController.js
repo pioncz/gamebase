@@ -10,7 +10,7 @@ export default class PawnsController {
     this.fieldLength = props.fieldLength;
     this.animations = props.context.animations;
     this.context = props.context;
-    this.columnsLength = props.columnsLength;
+    this.gridSize = props.gridSize;
     this.renderOrder = props.renderOrder;
     this.pawnSelectionRenderOrder = props.renderOrder;
     this.orientation = { portrait: false, rotationY: 0,};
@@ -18,11 +18,23 @@ export default class PawnsController {
     this.$ = new THREE.Group();
     this.$.name = 'PawnsController';
   }
-  createPawns({pawns,}) {
+  createPawns({pawns, firstPlayerId, }) {
+    // If all pawns spawn in the same field, move them
+    const sameField = pawns.length > 1 && pawns[0].x === pawns[1].x;
+
     for (let pawnIndex in pawns) {
+      let x = pawns[pawnIndex].x;
+      let z = pawns[pawnIndex].z;
+
+      if (sameField) {
+        x +=  (pawnIndex < 2 ? -1: 1 ) * 0.25;
+        z +=  (pawnIndex % 2 ? -1: 1 ) * 0.25;
+      }
+
       let pawnId = pawns[pawnIndex].id,
-        parsedX = (pawns[pawnIndex].x - Math.floor(this.columnsLength/2)) * this.fieldLength,
-        parsedZ = (pawns[pawnIndex].z - Math.floor(this.columnsLength/2)) * this.fieldLength;
+        parsedX = (x - Math.floor(this.gridSize/2)) * (this.fieldLength / this.gridSize),
+        parsedZ = (z - Math.floor(this.gridSize/2)) * (this.fieldLength / this.gridSize),
+        playerId = pawns[pawnIndex].playerId;
 
       let pawn = new Pawn({
         ...pawns[pawnIndex],
@@ -31,11 +43,14 @@ export default class PawnsController {
         camera: this.camera,
         parsedX: parsedX,
         parsedZ: parsedZ,
+        playerId: playerId,
         x: pawns[pawnIndex].x,
         z: pawns[pawnIndex].z,
         context: this.context,
       });
       this.pawns[pawnId] = pawn;
+
+      pawn.pawnMesh.renderOrder = playerId === firstPlayerId ? 50 : 10;
 
       pawn.pawnMesh.material.opacity = 0;
       pawn.selectionObject.renderOrder = this.pawnSelectionRenderOrder;
@@ -83,11 +98,14 @@ export default class PawnsController {
       return;
     }
 
+    // If last field is save and there are more pawns in the same field => move them
+    const lastField = fieldSequence[fieldSequence.length - 1];
+
     let pawnOnLastField;
     for(let i = 0; i < fieldSequence.length; i++) {
       let {x, z, animationLength,} = fieldSequence[i],
-        newX = (x - Math.floor(this.columnsLength/2)) * this.fieldLength,
-        newZ = (z - Math.floor(this.columnsLength/2)) * this.fieldLength,
+        newX = (x - Math.floor(this.gridSize/2)) * (this.fieldLength / this.gridSize),
+        newZ = (z - Math.floor(this.gridSize/2)) * (this.fieldLength / this.gridSize),
         pawnOnNextField = (!!this.getPawnByXZ(x, z)) &&
           i !== (fieldSequence.length -1);
 

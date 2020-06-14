@@ -10,22 +10,23 @@ const getState = state => state[name];
 
 const prefix = `${name}/`;
 
-const  SET_IN_GAME = `${prefix}SET_IN_GAME`;
-const  UNSET_IN_GAME = `${prefix}UNSET_IN_GAME`;
-const  REGISTER_PLAYER = `${prefix}REGISTER_PLAYER`;
-const  REGISTER_PLAYER_SUCCESS = `${prefix}REGISTER_PLAYER_SUCCESS`;
-const  REGISTER_PLAYER_FAIL = `${prefix}REGISTER_PLAYER_FAIL`;
-const  LOGIN_PLAYER = `${prefix}LOGIN_PLAYER`;
-const  LOGIN_PLAYER_SUCCESS = `${prefix}LOGIN_PLAYER_SUCCESS`;
-const  LOGIN_PLAYER_FAIL = `${prefix}LOGIN_PLAYER_FAIL`;
-const  FETCH_CURRENT_PLAYER = `${prefix}FETCH_CURRENT_PLAYER`;
-const  FETCH_CURRENT_PLAYER_SUCCESS = `${prefix}FETCH_CURRENT_PLAYER_SUCCESS`;
-const  FETCH_CURRENT_PLAYER_FAIL = `${prefix}FETCH_CURRENT_PLAYER_FAIL`;
-const  LOGOUT = `${prefix}LOGOUT`;
-const  SET_PLAYER = `${prefix}SET_PLAYER`;
+const SET_IN_GAME = `${prefix}SET_IN_GAME`;
+const UNSET_IN_GAME = `${prefix}UNSET_IN_GAME`;
+const REGISTER_PLAYER = `${prefix}REGISTER_PLAYER`;
+const REGISTER_PLAYER_SUCCESS = `${prefix}REGISTER_PLAYER_SUCCESS`;
+const REGISTER_PLAYER_FAIL = `${prefix}REGISTER_PLAYER_FAIL`;
+const LOGIN_PLAYER = `${prefix}LOGIN_PLAYER`;
+const LOGIN_PLAYER_SUCCESS = `${prefix}LOGIN_PLAYER_SUCCESS`;
+const LOGIN_PLAYER_FAIL = `${prefix}LOGIN_PLAYER_FAIL`;
+const FETCH_CURRENT_PLAYER = `${prefix}FETCH_CURRENT_PLAYER`;
+const FETCH_CURRENT_PLAYER_SUCCESS = `${prefix}FETCH_CURRENT_PLAYER_SUCCESS`;
+const FETCH_CURRENT_PLAYER_FAIL = `${prefix}FETCH_CURRENT_PLAYER_FAIL`;
+const LOGOUT = `${prefix}LOGOUT`;
+const SET_PLAYER = `${prefix}SET_PLAYER`;
 const SET_DICES = `${prefix}SET_DICES`;
 const SET_CURRENT_PLAYER_DICE = `${prefix}SET_CURRENT_PLAYER_DICE`;
 const SET_CURRENT_PLAYER_LOGIN = `${prefix}SET_CURRENT_PLAYER_LOGIN`;
+const SET_CURRENT_GAMES = `${prefix}SET_CURRENT_GAMES`;
 
 /*
  * ACTIONS
@@ -119,10 +120,18 @@ const setCurrentPlayerDice = diceId => ({
   },
 });
 
+
 const setCurrentPlayerLogin = login => ({
   type: SET_CURRENT_PLAYER_LOGIN,
   payload: {
     login,
+  },
+});
+
+const setCurrentGames = games => ({
+  type: SET_CURRENT_GAMES,
+  payload: {
+    games,
   },
 });
 
@@ -145,6 +154,7 @@ const initialState = {
   },
   inGame: false,
   Dices: [],
+  games: [],
 };
 
 const reducer = (state = initialState, action) => {
@@ -249,6 +259,10 @@ const reducer = (state = initialState, action) => {
         login: action.payload.login,
       },
     }),
+    [SET_CURRENT_GAMES]: () => ({
+      ...state,
+      games: action.payload.games,
+    }),
   };
 
   return (actions[action.type] && actions[action.type]()) || state;
@@ -316,6 +330,8 @@ const isInGame = state => getState(state).inGame;
 
 const getCurrentDices = state => getState(state).Dices;
 
+const getCurrentGames = state => getState(state).games;
+
 /*
  * EXPORTS
  */
@@ -333,6 +349,7 @@ export const actions = {
   setCurrentDices,
   setCurrentPlayerDice,
   setCurrentPlayerLogin,
+  setCurrentGames,
 };
 
 export const logic = {
@@ -346,4 +363,5 @@ export const selectors = {
   getCurrentPlayer,
   isInGame,
   getCurrentDices,
+  getCurrentGames,
 };

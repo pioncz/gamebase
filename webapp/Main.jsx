@@ -20,7 +20,7 @@ class Main extends Component {
     super(props);
 
     let fullscreenmModalCounter = parseInt(localStorage.getItem('fullscreenModalCounter'), 10);
-    
+
     if( isNaN(fullscreenmModalCounter) ){
       fullscreenmModalCounter = 0;
     }
@@ -67,10 +67,9 @@ class Main extends Component {
       connectorInstance,
     });
     connectorInstance.socket.on('initialData', initialState => {
-      const { player, dices, } = initialState;
+      const { player, dices, games, } = initialState;
       this.props.setCurrentPlayer(player);
       this.props.setCurrentDices(dices);
-
       const diceId = window.localStorage.diceId;
       const login = window.localStorage.login;
       if (diceId) {
@@ -81,6 +80,7 @@ class Main extends Component {
         connectorInstance.socket.emit('selectLogin', { login, });
         setCurrentPlayerLogin(login);
       }
+      this.props.setCurrentGames(games);
     });
   }
   toggleLoginModal() {
@@ -116,7 +116,7 @@ class Main extends Component {
     }
     setCurrentPlayerDice(diceId);
   }
-  sendNameModal = ({login, diceId}) => {
+  sendNameModal = ({login, diceId,}) => {
     const { setCurrentPlayerDice, setCurrentPlayerLogin, } = this.props;
     const { connectorInstance, } = this.state;
 
@@ -133,12 +133,12 @@ class Main extends Component {
     });
   }
   render() {
-    const { 
-      loginModalVisible, 
-      registrationModalVisible, 
-      fullscreenModalVisible, 
-      nameModalVisible, 
-    } = this.state,
+    const {
+        loginModalVisible,
+        registrationModalVisible,
+        fullscreenModalVisible,
+        nameModalVisible,
+      } = this.state,
       { player, dices,} = this.props;
     const isIos = Utils.isIos;
 
@@ -206,6 +206,7 @@ const {
   logout,
   setCurrentPlayerDice,
   setCurrentPlayerLogin,
+  setCurrentGames,
 } = actions;
 
 const mapStateToProps = state => ({
@@ -223,6 +224,7 @@ const mapDispatchToProps = dispatch => ({
     logout,
     setCurrentPlayerDice,
     setCurrentPlayerLogin,
+    setCurrentGames,
   }, dispatch),
 });
 

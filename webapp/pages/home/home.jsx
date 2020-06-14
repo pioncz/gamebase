@@ -9,7 +9,7 @@ import { useTranslation, } from 'react-i18next';
 import Button from 'components/button/index'
 
 const Home = ({
-  player, history, connectorInstance,
+  player, history, connectorInstance, games,
 }) => {
   const { t, i18n, } = useTranslation();
   const loggedOut = !player || player.state && player.state === 'loggedOut';
@@ -22,25 +22,26 @@ const Home = ({
     });
   }, [ history, connectorInstance, ]);
 
-
   return (
     <div className="home-page">
       <h1>{t('home.pickGame')}</h1>
       <div className="games-container">
-        <div className="game-info">
-          <h2>{t('ludo.name')}</h2>
-          <div className="game-description">
-            <p>{t('ludo.description')}</p>
-            <p>{t('ludo.details1')}</p>
-            <p>{t('ludo.details2')}</p>
-          </div>
-          <Button 
-            onClick={() => {joinQueue(Games.Ludo.Name)}}            
-            disabled={loggedOut}
+        {games.map(gameName => (
+          <div
+            className="game-info"
+            key={gameName}
           >
-            {t('home.findGame')}
-          </Button>
-        </div>
+            <h2>{gameName}</h2>
+            <p>Game description</p>
+            <button
+              className="button"
+              onClick={() => {joinQueue(gameName)}}
+              disabled={loggedOut}
+            >
+              {t('home.findGame')}
+            </button>
+          </div>
+        ))}
       </div>
     </div>
   );
@@ -48,6 +49,7 @@ const Home = ({
 
 const mapStateToProps = state => ({
   player: selectors.getCurrentPlayer(state),
+  games: selectors.getCurrentGames(state),
 });
 
 export default compose(

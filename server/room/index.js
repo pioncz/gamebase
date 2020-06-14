@@ -81,6 +81,7 @@ class Room {
 
     const returnActions = [];
     const game = Games[this.gameState.gameName];
+    const pawnsForPlayer = game.Config.PawnsForPlayer;
 
     let initialState = game.InitialState(); // {Pawns}
 
@@ -92,13 +93,13 @@ class Room {
     this.gameState.playerIds.forEach((playerId, i) => {
       let playerColor = this.gameState.playerColors.find(playerColor => playerColor.playerId === playerId);
 
-      for(let j = 0; j < 4; j++) {
-        initialState.pawns[(i * 4 + j)].playerId = playerColor.playerId;
-        initialState.pawns[(i * 4 + j)].color = playerColor.color;
+      for(let j = 0; j < pawnsForPlayer; j++) {
+        initialState.pawns[(i * pawnsForPlayer + j)].playerId = playerColor.playerId;
+        initialState.pawns[(i * pawnsForPlayer + j)].color = playerColor.color;
       }
     });
     // Remove pawns for extra players
-    initialState.pawns.splice(this.gameState.playerIds.length * 4, (4 - this.gameState.playerIds.length) * 4);
+    initialState.pawns.splice(this.gameState.playerIds.length * pawnsForPlayer, (pawnsForPlayer - this.gameState.playerIds.length) * pawnsForPlayer);
 
     this.gameState.currentPlayerId = this.gameState.playerIds[0];
     this.gameState.rolled = true;

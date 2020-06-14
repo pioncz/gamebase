@@ -1,11 +1,8 @@
 import Utils from 'utils/utils.js'
 import PawnsController from 'pawnsController';
 import Dice from './dice';
-import BoardUtils from './../games/ludo/BoardUtils.js';
 import Games from 'Games.js';
 import { EASING, } from './utils/animations'
-
-const GridAmount = 11;
 
 const RenderOrder = {
   PawnSelection: 1000,
@@ -22,13 +19,11 @@ export default class Board {
     this.canvasWidth = 512;
     this.canvasHeight = 512;
     this.renderer = props.renderer;
-    this.columnsLength = 11;
-    this.fieldLength = 40 / this.columnsLength;
+    this.gameName = props.gameName;
     this.canvas = Utils.$({element: 'canvas',});
     this.texture = null;
     this.rotation = 0;
     this.portraitRotation = false;
-    this.gameName = props.gameName;
     this.dices = [];
     this.diceAnimationLength;
     this.diceContainer = new THREE.Group();
@@ -64,7 +59,10 @@ export default class Board {
       }
       this.drawBoard();
 
-      this.pawnsController.createPawns({pawns: props.pawns,});
+      this.pawnsController.createPawns({
+        pawns: props.pawns,
+        firstPlayerId: props.firstPlayerId,
+      });
 
       let newRotation = (Math.PI/2) * firstPlayerIndex;
       this.rotateBoard(newRotation);
@@ -125,66 +123,31 @@ export default class Board {
     })
   }
   drawBoard() {
-    let ctx = this.canvas.getContext('2d'),
-      width = this.canvasWidth,
-      height = this.canvasHeight;
-    this.canvas.width = width,
-    this.canvas.height = height;
+    const GridSize = Games[this.gameName].Config.GridSize;
+    this.canvas.width = this.canvasWidth,
+    this.canvas.height = this.canvasHeight;
     Games[this.gameName].Board.drawBoard(this.canvas);
 
-    //fields
-    let drawField = (field) => {
-      let x = field.x,
-        z = field.z,
-        color = 'white',
-        lineWidth = 4,
-        strokeStyle = 'rgba(0,0,0,.07)';
-
-      if (field.color) {
-        color = field.color;
-        strokeStyle = 'rgba(255,255,255,0.3)';
-      }
-      if (field.disabled) {
-        color = '#bbb';
-        strokeStyle = 'rgba(255,255,255,0.3)';
-      }
-
-      ctx.beginPath();
-      var cellSize = width / GridAmount;
-      var r = cellSize / 2 * 0.75;
-      var r2 = cellSize / 2 * 0.60;
-      let cellX = (x + 0.5) * cellSize,
-        cellZ = (z + 0.5) * cellSize;
-
-      ctx.arc(cellX, cellZ, r, 0, 2 * Math.PI);
-      ctx.fillStyle = color;
-      ctx.fill();
-      ctx.save();
-      ctx.clip();
-
-      ctx.arc(cellX, cellZ, r2, 0, 2 * Math.PI);
-      ctx.lineWidth = lineWidth;
-      ctx.strokeStyle = strokeStyle;
-
-      ctx.stroke();
-      ctx.restore();
-    }
-
     for (let i = 0; i < this.fields.length; i++) {
-      drawField(this.fields[i]);
+      Games[this.gameName].Board.drawField(
+        this.canvas,
+        GridSize,
+        this.fields[i],
+      );
     }
 
     this.texture.needsUpdate = true;
   }
   createPawns() {
+    const GridSize = Games[this.gameName].Config.GridSize;
     this.pawnsController = new PawnsController({
       context: this.context,
       scene: this.scene,
       camera: this.camera,
-      fieldLength: this.fieldLength,
+      fieldLength: 40,
       pawns: [],
       animations: this.animations,
-      columnsLength: this.columnsLength,
+      gridSize: GridSize,
       renderOrder: RenderOrder.PawnsController,
       pawnSelectionRenderOrder: RenderOrder.PawnSelection,
     });
@@ -317,7 +280,7 @@ export default class Board {
     return fieldSequence;
   }
   checkMoves(pawns, diceNumber, playerIndex) {
-    return BoardUtils.checkMoves(pawns, diceNumber, playerIndex);
+    return Games[this.gameName].BoardUtils.checkMoves(pawns, diceNumber, playerIndex);
   }
   movePawn({pawnId, fieldSequence,}) {
     let pawn = this.pawnsController.getPawn(pawnId);
@@ -332,13 +295,16 @@ export default class Board {
         });
     }
   }
-  handleClick(raycaster) {
+  handleClick(raycaster, playerId) {
     let returnPawn,
       distance = -1;
     if (!this.pawnsController.pawns) return;
-
+    
     for (var pawnId in this.pawnsController.pawns) {
-      if (Object.prototype.hasOwnProperty.call(this.pawnsController.pawns, pawnId)) {
+      if (
+        Object.prototype.hasOwnProperty.call(this.pawnsController.pawns, pawnId) &&
+        this.pawnsController.pawns[pawnId].playerId === playerId
+      ) {
         let pawn = this.pawnsController.pawns[pawnId];
         let intersects = raycaster.intersectObject(pawn.pawnMesh, true);
         let minIntersect = intersects.reduce((acc, val)=> {
@@ -347,7 +313,6 @@ export default class Board {
           }
           return acc;
         }, -1);
-
         if (minIntersect > -1 && (minIntersect < distance || distance === -1)) {
           returnPawn = pawn;
           distance = minIntersect;
@@ -375,6 +340,7 @@ export default class Board {
   }
   changeGame(gameName) {
     this.gameName = gameName;
+    this.pawnsController.gridSize = Games[gameName].Config.GridSize;
     this.fields = Games[this.gameName].Fields;
     this.diceAnimationLength = Games[gameName].AnimationLengths.rollDice;
     this.clearGame();

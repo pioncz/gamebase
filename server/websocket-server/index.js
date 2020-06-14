@@ -373,6 +373,7 @@ class WebsocketServer {
       socket.emit('initialData', {
         player,
         dices: Dices,
+        games: Object.keys(Games).filter(gameName => gameName !== 'Game'),
       });
 
       socket.on('disconnect', _handleDisconnect(socket));

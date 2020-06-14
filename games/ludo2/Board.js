@@ -7,7 +7,7 @@ const drawBoard = (canvas) => {
 
   // background
   var grd = ctx.createLinearGradient(0, 0, width, height);
-  grd.addColorStop(.1, "#0fb8ad");
+  grd.addColorStop(.1, "#0fb8ff");
   grd.addColorStop(.4, "#1fc8db");
   grd.addColorStop(.7, "#2cb5e8");
   ctx.fillStyle = grd;
@@ -15,7 +15,7 @@ const drawBoard = (canvas) => {
 };
 
 const drawField = (
-  canvas, 
+  canvas,
   gridSize,
   field,
 ) => {
