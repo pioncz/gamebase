@@ -1,6 +1,6 @@
 ## Developing
 
-To run project locally you will need statick web files (serve or build scripts), backend (start script) and mongodb.
+To run project locally you will need static web files (serve or build scripts), backend (start script) and mongodb.
 
 ### Package scripts:
 
