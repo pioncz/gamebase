@@ -320,6 +320,7 @@ export default class Board {
   handleClick(raycaster, playerId) {
     let returnPawn,
       distance = -1;
+
     if (!this.pawnsController.pawns) return;
 
     for (var pawnId in this.pawnsController.pawns) {
@@ -341,6 +342,9 @@ export default class Board {
           }
           return acc;
         }, -1);
+        if (intersects.length) {
+          console.log(intersects);
+        }
         if (
           minIntersect > -1 &&
           (minIntersect < distance || distance === -1)

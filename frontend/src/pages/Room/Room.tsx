@@ -68,6 +68,7 @@ const RoomPage = () => {
 
   const handleBoardClick = useCallback(
     (e: { pawnId: string }) => {
+      console.log('handleBoardClick', e);
       if (
         waitingForAction === Games.Ludo.ActionTypes.PickPawn &&
         e?.pawnId
@@ -389,7 +390,6 @@ const RoomPage = () => {
         onClick={handleBoardClick}
         gameId={roomId}
         gameName={gameName}
-        pawns={pawns}
         players={players}
         firstPlayerId={player.id}
       />

@@ -99,7 +99,7 @@ const GameComponent = forwardRef(
           container: rendererContainerRef.current,
           gameName,
         });
-        engineRef.current?.on('click', onClick);
+
         if (config.stats) {
           engineRef.current?.appendStats();
         }
@@ -111,6 +111,16 @@ const GameComponent = forwardRef(
         engineRef.current?.off('click', onClick);
       };
     }, [gameName, onClick]);
+
+    useEffect(() => {
+      if (!engineRef.current) return;
+
+      engineRef.current?.on('click', onClick);
+
+      return () => {
+        engineRef.current?.off('click', onClick);
+      };
+    }, [onClick]);
 
     // useEffect(() => {
     //   if (engineRef.current && moves.length) {

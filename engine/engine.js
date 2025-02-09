@@ -237,10 +237,11 @@ export default class Engine extends EventsEmitter {
       this.raycaster,
       this.firstPlayerId,
     );
-
-    // this.emit('click', { pawnId: pawn ? pawn.id : null });
+console.log('ENGINE click', pawn?.id);
+    this.emit('click', { pawnId: pawn ? pawn.id : null });
   }
   onTouch(e) {
+    console.log('ENGINE touch');;
     if (e.touches && e.touches.length) {
       this.onClick({
         clientX: e.touches[0].clientX,
