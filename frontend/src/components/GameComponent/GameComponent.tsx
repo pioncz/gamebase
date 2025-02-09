@@ -10,7 +10,7 @@ import { config } from '@/lib/config';
 import { styled } from '@/lib/stitches.config.js';
 
 export type GameComponentHandle = {
-  initGame: (a: number, pawns: Pawn[]) => void;
+  initGame: (a: number, pawns: Pawn[], players: Player[]) => void;
   movePawn: (pawnMove: PawnMove) => void;
   checkMoves: (
     pawns: Pawn[],
@@ -48,7 +48,7 @@ const GameComponent = forwardRef(
     useImperativeHandle(
       ref,
       () => ({
-        initGame: (animationLength: number, pawns: Pawn[]) => {
+        initGame: (animationLength: number, pawns: Pawn[], players: Player[]) => {
           containerRef.current?.classList.add('in-game');
 
           engineRef.current?.initGame(

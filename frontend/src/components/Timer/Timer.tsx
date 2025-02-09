@@ -29,7 +29,7 @@ const Timer = forwardRef((_props, ref) => {
 
   const tick = useCallback(() => {
     let diff = Math.floor((timestamp - Date.now()) / 1000);
-    console.log('tick', timestamp, diff);
+
     if (diff < 0) {
       diff = 0;
       setTimestamp(0);

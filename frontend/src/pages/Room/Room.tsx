@@ -147,6 +147,7 @@ const RoomPage = () => {
         gameComponentRef.current?.initGame(
           newAction.animationLength || 0,
           gameState.pawns,
+          gameState.players,
         );
         timerComponentRef.current?.start(
           gameState.finishTimestamp - Date.now(),
