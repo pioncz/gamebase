@@ -50,7 +50,6 @@ const RoomPage = () => {
   const [page, setPage] = useState(Pages.Queue);
   const [winnerId, setWinnerId] = useState('');
   const [gameName, setGameName] = useState('');
-  const [pawns, setPawns] = useState<Pawn[]>([]);
   const [activeDice, setActiveDice] = useState(false);
   const [currentPlayerId, setCurrentPlayerId] = useState('');
   const [waitingForAction, setWaitingForAction] = useState('');
@@ -68,7 +67,6 @@ const RoomPage = () => {
 
   const handleBoardClick = useCallback(
     (e: { pawnId: string }) => {
-      console.log('handleBoardClick', e);
       if (
         waitingForAction === Games.Ludo.ActionTypes.PickPawn &&
         e?.pawnId
@@ -146,8 +144,6 @@ const RoomPage = () => {
         setPlayerColors(gameState.playerColors);
         setCurrentPlayerId(gameState.currentPlayerId);
         setPage(Pages.Game);
-        setPawns(gameState.pawns);
-
         gameComponentRef.current?.initGame(
           newAction.animationLength || 0,
           gameState.pawns,
