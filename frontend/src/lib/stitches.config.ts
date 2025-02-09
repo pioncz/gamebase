@@ -11,16 +11,17 @@ export const {
   config,
 } = createStitches({
   theme: {
-    colors: {},
+    colors: {
+      primary: '#2cb5e8',
+      primary700: '#0f1721',
+    },
     transitions: {
       1: 'all 0.2s ease-in-out',
     },
     space: {
-      1: '4px',
-      2: '8px',
-      3: '12px',
-      4: '18px',
-      5: '24px',
+      1: '8px',
+      2: '16px',
+      3: '24px',
     },
     fontSizes: {
       1: '14px',

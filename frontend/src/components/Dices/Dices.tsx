@@ -47,7 +47,7 @@ const Root = styled('div', {
   top: '98px',
   textAlign: 'center',
   pointerEvents: 'none',
-  borderRadius: '$border-radius',
+  borderRadius: '2px',
 
   '.dices-label': {
     display: 'inline',

@@ -233,8 +233,6 @@ const RoomPage = () => {
     };
 
     socket?.on('roomUpdate', (gameState) => {
-      console.log('roomUpdate', gameState);
-
       const state = gameState.roomState;
       let page;
 
@@ -435,7 +433,7 @@ const Root = styled('div', {
   '.colors-container': {
     display: 'flex',
     justifyContent: 'flex-start',
-    marginBottom: '$margin1',
+    marginBottom: '$1',
     flexWrap: 'wrap',
 
     '.color': {

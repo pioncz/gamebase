@@ -1,3 +1,4 @@
+import { styled } from '@/lib/stitches.config';
 import { useState } from 'react';
 
 const FullscreenButton = ({
@@ -26,7 +27,7 @@ const FullscreenButton = ({
   };
 
   return (
-    <div
+    <Root
       className="nav-icon nav-icon--fullscreen"
       onClick={toggleFullscreen}
     >
@@ -35,8 +36,14 @@ const FullscreenButton = ({
       ) : (
         <span className="material-icons-outlined">fullscreen</span>
       )}
-    </div>
+    </Root>
   );
 };
+
+const Root = styled('div', {
+  span: {
+    display: 'block',
+  }
+});
 
 export default FullscreenButton;

@@ -166,7 +166,7 @@ const Root = styled('div', {
       whiteSpace: 'nowrap',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
-      borderRadius: '$border-radius',
+      borderRadius: '2px',
 
       '.arrow': {
         position: 'absolute',
