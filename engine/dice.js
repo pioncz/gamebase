@@ -1,9 +1,8 @@
-import Utils from "./utils/utils";
-import { EASING, } from "./utils/animations";
-import Config from 'config.js';
+import Utils from './utils/utils';
+import { EASING } from './utils/animations';
 
 export default class Dice {
-  constructor({id, container, context, colors = [], }) {
+  constructor({ id, container, context, colors = [] }) {
     this.id = id;
     this.container = container;
     this.animations = context.animations;
@@ -18,33 +17,37 @@ export default class Dice {
     geometry.vertices.push(
       new THREE.Vector3(0, radius, 0),
       new THREE.Vector3(size, radius, 0),
-      new THREE.Vector3(size, (size + radius), 0),
-      new THREE.Vector3(0, (size + radius), 0),
+      new THREE.Vector3(size, size + radius, 0),
+      new THREE.Vector3(0, size + radius, 0),
 
       new THREE.Vector3(0, radius, -(size + 2 * radius)),
       new THREE.Vector3(size, radius, -(size + 2 * radius)),
-      new THREE.Vector3(size, (size + radius), -(size + 2 * radius)),
-      new THREE.Vector3(0, (size + radius), -(size + 2 * radius)),
+      new THREE.Vector3(size, size + radius, -(size + 2 * radius)),
+      new THREE.Vector3(0, size + radius, -(size + 2 * radius)),
 
       new THREE.Vector3(-radius, radius, -radius),
       new THREE.Vector3(-radius, radius, -(radius + size)),
-      new THREE.Vector3(-radius, (size + radius), -radius),
-      new THREE.Vector3(-radius, (size + radius) ,-(radius + size)),
+      new THREE.Vector3(-radius, size + radius, -radius),
+      new THREE.Vector3(-radius, size + radius, -(radius + size)),
 
       new THREE.Vector3(size + radius, radius, -radius),
       new THREE.Vector3(size + radius, radius, -(radius + size)),
-      new THREE.Vector3(size + radius, (size + radius), -radius),
-      new THREE.Vector3(size + radius, (size + radius) ,-(radius + size)),
+      new THREE.Vector3(size + radius, size + radius, -radius),
+      new THREE.Vector3(
+        size + radius,
+        size + radius,
+        -(radius + size),
+      ),
 
       new THREE.Vector3(0, 0, -radius),
       new THREE.Vector3(size, 0, -radius),
-      new THREE.Vector3(0, 0, -(size+radius)),
-      new THREE.Vector3(size, 0, -(size+radius)),
+      new THREE.Vector3(0, 0, -(size + radius)),
+      new THREE.Vector3(size, 0, -(size + radius)),
 
-      new THREE.Vector3(0, (size + 2 * radius), -radius),
-      new THREE.Vector3(size, (size + 2 * radius), -radius),
-      new THREE.Vector3(0, (size + 2 * radius), -(size+radius)),
-      new THREE.Vector3(size, (size + 2 * radius), -(size+radius)),
+      new THREE.Vector3(0, size + 2 * radius, -radius),
+      new THREE.Vector3(size, size + 2 * radius, -radius),
+      new THREE.Vector3(0, size + 2 * radius, -(size + radius)),
+      new THREE.Vector3(size, size + 2 * radius, -(size + radius)),
     );
 
     // create faces by way of an array of
@@ -171,8 +174,8 @@ export default class Dice {
 
     for (var i = 0; i < faces.length; i++) {
       const face = faces[i];
-      const components = ['x', 'y', 'z',].sort((a,b) =>
-        Math.abs(face.normal[a]) - Math.abs(face.normal[b])
+      const components = ['x', 'y', 'z'].sort(
+        (a, b) => Math.abs(face.normal[a]) - Math.abs(face.normal[b]),
       );
 
       var v1 = geometry.vertices[faces[i].a],
@@ -180,25 +183,34 @@ export default class Dice {
         v3 = geometry.vertices[faces[i].c];
 
       geometry.faceVertexUvs[0].push([
-        new THREE.Vector2((v1[components[0]] + offset.x)/range.x ,(v1[components[1]] + offset.y)/range.y),
-        new THREE.Vector2((v2[components[0]] + offset.x)/range.x ,(v2[components[1]] + offset.y)/range.y),
-        new THREE.Vector2((v3[components[0]] + offset.x)/range.x ,(v3[components[1]] + offset.y)/range.y),
+        new THREE.Vector2(
+          (v1[components[0]] + offset.x) / range.x,
+          (v1[components[1]] + offset.y) / range.y,
+        ),
+        new THREE.Vector2(
+          (v2[components[0]] + offset.x) / range.x,
+          (v2[components[1]] + offset.y) / range.y,
+        ),
+        new THREE.Vector2(
+          (v3[components[0]] + offset.x) / range.x,
+          (v3[components[1]] + offset.y) / range.y,
+        ),
       ]);
     }
 
     geometry.uvsNeedUpdate = true;
 
-    this.$ = new THREE.Mesh( geometry, materials );
+    this.$ = new THREE.Mesh(geometry, materials);
     this.$.name = 'Dice';
     this.$.position.x = 0;
     this.$.position.y = 2;
     this.$.position.z = 0;
-    this.$.scale.set(2,2,2);
+    this.$.scale.set(2, 2, 2);
     this._setOpacity(0);
     this.container.add(this.$);
   }
   _createFace(number) {
-    let canvas = Utils.$({element: 'canvas',}),
+    let canvas = Utils.$({ element: 'canvas' }),
       ctx = canvas.getContext('2d'),
       width = 64,
       height = 64,
@@ -215,12 +227,37 @@ export default class Dice {
       h2 = height / 2,
       w2 = width / 2,
       dotPositions = {
-        1: [{x: w2, y: h2,},],
-        2: [{x:w4, y: h4,}, {x:(w2+w4), y: (h2+h4),},],
-        3: [{x:w4, y: h4,}, {x:w2, y: h2,}, {x:(w2+w4), y: (h2+h4),},],
-        4: [{x:w4, y: h4,}, {x:(w2+w4), y: (h2+h4),}, {x:(w2+w4), y: h4,}, {x:w4, y: (h2+h4),},],
-        5: [{x:w4, y: h4,}, {x:(w2+w4), y: (h2+h4),}, {x: w2, y: h2,}, {x:(w2+w4), y: h4,}, {x:w4, y: (h2+h4),},],
-        6: [{x:w4, y: h4,}, {x:w2, y: h4,}, {x:(w2+w4), y: h4,}, {x:w4, y: (h2+h4),}, {x:w2, y: (h2+h4),}, {x:(w2+w4), y: (h2+h4),},],
+        1: [{ x: w2, y: h2 }],
+        2: [
+          { x: w4, y: h4 },
+          { x: w2 + w4, y: h2 + h4 },
+        ],
+        3: [
+          { x: w4, y: h4 },
+          { x: w2, y: h2 },
+          { x: w2 + w4, y: h2 + h4 },
+        ],
+        4: [
+          { x: w4, y: h4 },
+          { x: w2 + w4, y: h2 + h4 },
+          { x: w2 + w4, y: h4 },
+          { x: w4, y: h2 + h4 },
+        ],
+        5: [
+          { x: w4, y: h4 },
+          { x: w2 + w4, y: h2 + h4 },
+          { x: w2, y: h2 },
+          { x: w2 + w4, y: h4 },
+          { x: w4, y: h2 + h4 },
+        ],
+        6: [
+          { x: w4, y: h4 },
+          { x: w2, y: h4 },
+          { x: w2 + w4, y: h4 },
+          { x: w4, y: h2 + h4 },
+          { x: w2, y: h2 + h4 },
+          { x: w2 + w4, y: h2 + h4 },
+        ],
       };
 
     canvas.width = width;
@@ -229,9 +266,9 @@ export default class Dice {
     ctx.fillStyle = this.colors[0] || '#f6f6f5'; // '#ffbbe4';
     ctx.fillRect(0, 0, width, height);
 
-    ctx.fillStyle = this.colors[1] || "#1e1e1e"; // '#fff'
+    ctx.fillStyle = this.colors[1] || '#1e1e1e'; // '#fff'
     let dots = dotPositions[number];
-    for(let dotI in dots) {
+    for (let dotI in dots) {
       let dot = dots[dotI];
 
       drawDot(dot.x, dot.y, radius);
@@ -239,10 +276,13 @@ export default class Dice {
 
     texture.needsUpdate = true;
 
-    return new THREE.MeshBasicMaterial({map: texture, transparent: true,});
+    return new THREE.MeshBasicMaterial({
+      map: texture,
+      transparent: true,
+    });
   }
   _setOpacity(opacity) {
-    for(let materialId in this.$.material) {
+    for (let materialId in this.$.material) {
       let material = this.$.material[materialId];
 
       material.opacity = opacity;
@@ -255,56 +295,61 @@ export default class Dice {
     if (!animationLength) return;
     let cube = this.$,
       numberRotations = {
-        1: {x: 0, z: .25,},
-        2: {x: 0, z: .75,},
-        3: {x: 0, z: 0,},
-        4: {x: 0, z: .5,},
-        5: {x: .75, z: 1,},
-        6: {x: .25, z: 1,},
+        1: { x: 0, z: 0.25 },
+        2: { x: 0, z: 0.75 },
+        3: { x: 0, z: 0 },
+        4: { x: 0, z: 0.5 },
+        5: { x: 0.75, z: 1 },
+        6: { x: 0.25, z: 1 },
       },
       totalLength = animationLength;
 
-    let baseX = (2*Math.PI) * numberRotations[number].x,
-      baseZ = (2*Math.PI) * numberRotations[number].z;
+    let baseX = 2 * Math.PI * numberRotations[number].x,
+      baseZ = 2 * Math.PI * numberRotations[number].z;
 
     // Substract animation rotation
-    baseX -= (2*Math.PI) * 1.25;
-    baseZ -= (2*Math.PI) * .25;
+    baseX -= 2 * Math.PI * 1.25;
+    baseZ -= 2 * Math.PI * 0.25;
 
-    this.animations.createSequence({name: 'rollDice', steps: [{
-      update: (progress) => {
-        let diceAlpha = progress * 5;
+    this.animations.createSequence({
+      name: 'rollDice',
+      steps: [
+        {
+          update: (progress) => {
+            let diceAlpha = progress * 5;
 
-        this._setOpacity(diceAlpha);
+            this._setOpacity(diceAlpha);
 
-        cube.position.x = 15-10*progress;
-        cube.position.y = 15.28 - 13*progress;
-        cube.position.z = -(15-10*progress);
+            cube.position.x = 15 - 10 * progress;
+            cube.position.y = 15.28 - 13 * progress;
+            cube.position.z = -(15 - 10 * progress);
 
-        cube.rotation.x = baseX + (2*Math.PI) * progress;
-        cube.rotation.z = baseZ + (2*Math.PI) * progress / 4;
-      },
-      easing: EASING.InQuad,
-      length: totalLength * 0.65,
-    }, {
-      update: (progress) => {
-        cube.position.x = 5 * (1-progress);
-        cube.position.y = 2.48 + 2 * EASING.Sin(progress/2);
-        cube.position.z = -5 * (1-progress);
+            cube.rotation.x = baseX + 2 * Math.PI * progress;
+            cube.rotation.z = baseZ + (2 * Math.PI * progress) / 4;
+          },
+          easing: EASING.InQuad,
+          length: totalLength * 0.65,
+        },
+        {
+          update: (progress) => {
+            cube.position.x = 5 * (1 - progress);
+            cube.position.y = 2.48 + 2 * EASING.Sin(progress / 2);
+            cube.position.z = -5 * (1 - progress);
 
-        cube.rotation.x = baseX + (2*Math.PI) * progress / 4;
-      },
-      length: totalLength * 0.35,
-    },
-    ],});
+            cube.rotation.x = baseX + (2 * Math.PI * progress) / 4;
+          },
+          length: totalLength * 0.35,
+        },
+      ],
+    });
   }
   hide() {
     return this.animations.create({
       update: (progress) => {
-        this._setOpacity(1-progress);
+        this._setOpacity(1 - progress);
       },
       length: 200,
-    })
+    });
   }
   remove() {
     this.hide().then(() => {

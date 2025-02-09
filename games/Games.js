@@ -1,16 +1,16 @@
-const Game = require('./game/index.js');
-const Ludo = require('./ludo/index.js');
-const Ludo2 = require('./ludo2/index.js');
-const Kira = require('./kira/index.js');
+import Game from './game/index.js';
+import Ludo from './ludo/index.js';
+import Ludo2 from './ludo2/index.js';
+import Kira from './kira/index.js';
 
 /**
  * Class which provides all games api
  */
-const Games  = {
+const Games = {
   Game,
   Ludo,
   Ludo2,
   Kira,
 };
 
-module.exports = Games;
+export default Games;

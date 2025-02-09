@@ -1,4 +1,4 @@
-const drawBoard = (canvas) => {
+export const drawBoard = (canvas) => {
   let ctx = canvas.getContext('2d'),
     width = canvas.width,
     height = canvas.height;
@@ -7,21 +7,15 @@ const drawBoard = (canvas) => {
 
   // background
   var grd = ctx.createLinearGradient(0, 0, width, height);
-  grd.addColorStop(.1, "#0fb8ad");
-  grd.addColorStop(.4, "#1fc8db");
-  grd.addColorStop(.7, "#2cb5e8");
+  grd.addColorStop(0.1, '#0fb8ad');
+  grd.addColorStop(0.4, '#1fc8db');
+  grd.addColorStop(0.7, '#2cb5e8');
   ctx.fillStyle = grd;
   ctx.fillRect(0, 0, width, width);
 };
 
-const drawField = (
-  canvas, 
-  gridSize,
-  field,
-) => {
-  const {
-    x, z, color, disabled,
-  } = field;
+export const drawField = (canvas, gridSize, field) => {
+  const { x, z, color, disabled } = field;
   const ctx = canvas.getContext('2d');
   const lineWidth = 4;
   let background = 'white';
@@ -38,8 +32,8 @@ const drawField = (
 
   ctx.beginPath();
   var cellSize = canvas.width / gridSize;
-  var r = cellSize / 2 * 0.75;
-  var r2 = cellSize / 2 * 0.60;
+  var r = (cellSize / 2) * 0.75;
+  var r2 = (cellSize / 2) * 0.6;
   let cellX = (x + 0.5) * cellSize,
     cellZ = (z + 0.5) * cellSize;
 
@@ -55,9 +49,4 @@ const drawField = (
 
   ctx.stroke();
   ctx.restore();
-};
-
-module.exports = {
-  drawBoard,
-  drawField,
 };

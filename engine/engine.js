@@ -1,14 +1,14 @@
-import Controls from './utils/controls'
-import { EASING, TIMES, Animations, } from './utils/animations'
-import Board from './board'
-import EventEmitter from 'event-emitter-es6'
-import Games from 'Games.js'
+import Controls from './utils/controls';
+import { EASING, TIMES, Animations } from './utils/animations';
+import Board from './board';
+import Games from './../games/Games.js';
 import DimmingPass from './shaders/dimmingPass';
 import Utils from './utils/utils';
 import Stats from './utils/stats';
+import EventsEmitter from './utils/eventsEmitter.js';
 
-export default class Engine extends EventEmitter {
-  constructor( { container, gameName, }) {
+export default class Engine extends EventsEmitter {
+  constructor({ container, gameName }) {
     super();
     this.container = container;
     this.raycaster = new THREE.Raycaster();
@@ -39,40 +39,47 @@ export default class Engine extends EventEmitter {
       this.frustumSize,
       -this.frustumSize,
       1,
-      200);
-    this.camera.position.set( 40, 50, 40 );
-    this.camera.lookAt( new THREE.Vector3(0,0,0) );
-    this.renderer = new THREE.WebGLRenderer({alpha: true, antialias: true,});
-    this.renderer.setPixelRatio( window.devicePixelRatio );
-    this.renderer.setClearColor( '#000', 0 );
-    this.renderer.setSize( width, height );
+      200,
+    );
+    this.camera.position.set(40, 50, 40);
+    this.camera.lookAt(new THREE.Vector3(0, 0, 0));
+    this.renderer = new THREE.WebGLRenderer({
+      alpha: true,
+      antialias: true,
+    });
+    this.renderer.setPixelRatio(window.devicePixelRatio);
+    this.renderer.setClearColor('#000', 0);
+    this.renderer.setSize(width, height);
     this.container.appendChild(this.renderer.domElement);
 
-    var ambientLight = new THREE.AmbientLight( 0x000000 );
-    this.scene.add( ambientLight );
+    var ambientLight = new THREE.AmbientLight(0x000000);
+    this.scene.add(ambientLight);
     var lights = [],
-      intensity = .6;
-    lights[ 0 ] = new THREE.PointLight( 0xffffff, intensity, 0 );
-    lights[ 1 ] = new THREE.PointLight( 0xffffff, intensity, 0 );
-    lights[ 2 ] = new THREE.PointLight( 0xffffff, intensity, 0 );
-    lights[ 3 ] = new THREE.PointLight( 0xffffff, intensity, 0 );
+      intensity = 0.6;
+    lights[0] = new THREE.PointLight(0xffffff, intensity, 0);
+    lights[1] = new THREE.PointLight(0xffffff, intensity, 0);
+    lights[2] = new THREE.PointLight(0xffffff, intensity, 0);
+    lights[3] = new THREE.PointLight(0xffffff, intensity, 0);
 
     let dist = 60,
       distH = 20;
-    lights[ 0 ].position.set( dist, distH, 0 );
-    lights[ 1 ].position.set( -dist, distH, 0 );
-    lights[ 2 ].position.set( 0, distH, dist );
-    lights[ 3 ].position.set( 0, distH, -dist );
+    lights[0].position.set(dist, distH, 0);
+    lights[1].position.set(-dist, distH, 0);
+    lights[2].position.set(0, distH, dist);
+    lights[3].position.set(0, distH, -dist);
 
-    this.scene.add( lights[ 0 ] );
-    this.scene.add( lights[ 1 ] );
-    this.scene.add( lights[ 2 ] );
-    this.scene.add( lights[ 3 ] );
+    this.scene.add(lights[0]);
+    this.scene.add(lights[1]);
+    this.scene.add(lights[2]);
+    this.scene.add(lights[3]);
 
     // Shaders setup
     this.clock = new THREE.Clock();
     this.composer = new THREE.EffectComposer(this.renderer);
-    this.composer.setSize( window.innerWidth * 2, window.innerHeight * 2 );
+    this.composer.setSize(
+      window.innerWidth * 2,
+      window.innerHeight * 2,
+    );
     let renderPass = new THREE.RenderPass(this.scene, this.camera);
     renderPass.renderToScreen = true;
 
@@ -82,16 +89,24 @@ export default class Engine extends EventEmitter {
     this.edgeCorrection = 0; // updated on window resize
 
     // Handle canvas events
-    window.addEventListener('resize', () => {
-      // Ios doesnt update container size properly onresize
-      if (Utils.isIos) {
-        setTimeout(this.onResize, 100);
-      } else {
-        this.onResize();
-      }
-    }, true);
+    window.addEventListener(
+      'resize',
+      () => {
+        // Ios doesnt update container size properly onresize
+        if (Utils.isIos) {
+          setTimeout(this.onResize, 100);
+        } else {
+          this.onResize();
+        }
+      },
+      true,
+    );
     if ('ontouchstart' in document.documentElement) {
-      window.addEventListener('touchstart', this.onTouch.bind(this), true);
+      window.addEventListener(
+        'touchstart',
+        this.onTouch.bind(this),
+        true,
+      );
     } else {
       window.addEventListener('click', this.onClick.bind(this), true);
     }
@@ -124,10 +139,13 @@ export default class Engine extends EventEmitter {
 
     this.windowWidth = width;
     this.windowHeight = height;
-    this.renderer.setSize( width, height );
-    this.composer.setSize( width * 2, height * 2 );
+    this.renderer.setSize(width, height);
+    this.composer.setSize(width * 2, height * 2);
 
-    this.edgeCorrection = Math.max(Math.min((this.windowWidth - 600) / 1400, 1), 0); // 0 - 1
+    this.edgeCorrection = Math.max(
+      Math.min((this.windowWidth - 600) / 1400, 1),
+      0,
+    ); // 0 - 1
 
     document.body.classList = '';
 
@@ -142,10 +160,10 @@ export default class Engine extends EventEmitter {
 
       const moveY = 1;
 
-      this.camera.left   = - this.frustumSize;
-      this.camera.right  =   this.frustumSize;
-      this.camera.top    =   (this.frustumSize + moveY ) / aspect;
-      this.camera.bottom = - (this.frustumSize - moveY ) / aspect;
+      this.camera.left = -this.frustumSize;
+      this.camera.right = this.frustumSize;
+      this.camera.top = (this.frustumSize + moveY) / aspect;
+      this.camera.bottom = -(this.frustumSize - moveY) / aspect;
       if (this.board) {
         this.board.setPortraitRotation(true); //rotates board
       }
@@ -155,10 +173,10 @@ export default class Engine extends EventEmitter {
       this.frustumSize = 18;
       const moveY = 0;
 
-      this.camera.left   = - this.frustumSize * aspect - 16;
-      this.camera.right  =   this.frustumSize * aspect;
-      this.camera.top    =   this.frustumSize + moveY;
-      this.camera.bottom = - this.frustumSize + moveY;
+      this.camera.left = -this.frustumSize * aspect - 16;
+      this.camera.right = this.frustumSize * aspect;
+      this.camera.top = this.frustumSize + moveY;
+      this.camera.bottom = -this.frustumSize + moveY;
 
       if (this.board) {
         this.board.setPortraitRotation(true); //rotates board
@@ -170,39 +188,60 @@ export default class Engine extends EventEmitter {
 
       this.frustumSize = 22;
 
-      this.camera.left   = - this.frustumSize * aspect;
-      this.camera.right  =   this.frustumSize * aspect;
-      this.camera.top    =   this.frustumSize;
-      this.camera.bottom = - this.frustumSize;
+      this.camera.left = -this.frustumSize * aspect;
+      this.camera.right = this.frustumSize * aspect;
+      this.camera.top = this.frustumSize;
+      this.camera.bottom = -this.frustumSize;
       if (this.board) {
         this.board.setPortraitRotation(false); //rotates board
 
         const marginTop = 4;
         this.board.$.position.set(marginTop, 0.8, marginTop);
-        this.board.pawnsController.$.position.set(marginTop, 0, marginTop);
-        this.board.diceContainer.position.set(marginTop, 0.0, marginTop);
+        this.board.pawnsController.$.position.set(
+          marginTop,
+          0,
+          marginTop,
+        );
+        this.board.diceContainer.position.set(
+          marginTop,
+          0.0,
+          marginTop,
+        );
       }
     }
 
     this.camera.updateProjectionMatrix();
-  }
+  };
   onClick(e) {
     if (!this.gameName) return;
 
-    const boundingRect = this.renderer.domElement.getBoundingClientRect();
+    const boundingRect =
+      this.renderer.domElement.getBoundingClientRect();
     const point = {
-      x: ( (e.clientX - boundingRect.left) / this.renderer.domElement.clientWidth ) * 2 - 1,
-      y: - ( (e.clientY - boundingRect.top) / this.renderer.domElement.clientHeight ) * 2 + 1,
+      x:
+        ((e.clientX - boundingRect.left) /
+          this.renderer.domElement.clientWidth) *
+          2 -
+        1,
+      y:
+        -(
+          (e.clientY - boundingRect.top) /
+          this.renderer.domElement.clientHeight
+        ) *
+          2 +
+        1,
     };
 
-    this.raycaster.setFromCamera( point, this.camera );
-    const pawn = this.board.handleClick(this.raycaster, this.firstPlayerId);
+    this.raycaster.setFromCamera(point, this.camera);
+    const pawn = this.board.handleClick(
+      this.raycaster,
+      this.firstPlayerId,
+    );
 
-    this.emit('click', { pawnId: (pawn ? pawn.id : null),});
+    // this.emit('click', { pawnId: pawn ? pawn.id : null });
   }
   onTouch(e) {
     if (e.touches && e.touches.length) {
-
       this.onClick({
         clientX: e.touches[0].clientX,
         clientY: e.touches[0].clientY,
@@ -210,7 +249,11 @@ export default class Engine extends EventEmitter {
       e.stopPropagation();
     }
   }
-  initGame({gameId, gameName, pawns, players,}, firstPlayerId, animationLength, ) {
+  initGame(
+    { gameId, gameName, pawns, players },
+    firstPlayerId,
+    animationLength,
+  ) {
     if (!this.board) {
       this.gameName = gameName;
       this.createBoard();
@@ -232,15 +275,18 @@ export default class Engine extends EventEmitter {
     this.initializing = true;
     this.firstPlayerId = firstPlayerId;
 
-    this.firstPlayerIndex = players.findIndex(player => player.id === firstPlayerId);
+    this.firstPlayerIndex = players.findIndex(
+      (player) => player.id === firstPlayerId,
+    );
     this.onResize();
-    this.board.initGame({
-      pawns,
-      players,
-      firstPlayerIndex: this.firstPlayerIndex,
-      animationLength,
-      firstPlayerId,
-    })
+    this.board
+      .initGame({
+        pawns,
+        players,
+        firstPlayerIndex: this.firstPlayerIndex,
+        animationLength,
+        firstPlayerId,
+      })
       .then(() => {
         this.initializing = false;
       });
@@ -251,7 +297,7 @@ export default class Engine extends EventEmitter {
       return;
     }
     this.board.clearGame();
-  }
+  };
   selectPawns(pawnIds) {
     if (!this.board) return;
 
@@ -273,7 +319,7 @@ export default class Engine extends EventEmitter {
       () => window.requestAnimationFrame(this.animate),
       16,
     );
-  }
+  };
   changeGame(gameName) {
     if (this.gameName !== gameName) {
       this.gameName = gameName;
@@ -288,7 +334,10 @@ export default class Engine extends EventEmitter {
   }
   toggleControls() {
     if (!this.controls) {
-      this.controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
+      this.controls = new THREE.OrbitControls(
+        this.camera,
+        this.renderer.domElement,
+      );
     } else if (this.controls.enabled) {
       this.controls.enabled = false;
     } else {

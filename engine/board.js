@@ -1,8 +1,8 @@
-import Utils from 'utils/utils.js'
-import PawnsController from 'pawnsController';
+import Utils from './utils/utils.js';
+import PawnsController from './pawnsController';
 import Dice from './dice';
-import Games from 'Games.js';
-import { EASING, } from './utils/animations'
+import Games from './../games/Games.js';
+import { EASING } from './utils/animations';
 
 const RenderOrder = {
   PawnSelection: 1000,
@@ -20,7 +20,7 @@ export default class Board {
     this.canvasHeight = 512;
     this.renderer = props.renderer;
     this.gameName = props.gameName;
-    this.canvas = Utils.$({element: 'canvas',});
+    this.canvas = Utils.$({ element: 'canvas' });
     this.texture = null;
     this.rotation = 0;
     this.portraitRotation = false;
@@ -40,10 +40,10 @@ export default class Board {
       this.pawnsController.removePawns();
       this.pawnsController.$.position.y = 0;
 
-      const { players, firstPlayerIndex, animationLength, } = props;
+      const { players, firstPlayerIndex, animationLength } = props;
 
       // Set field colors
-      for(let fieldIndex in this.fields) {
+      for (let fieldIndex in this.fields) {
         let field = this.fields[fieldIndex];
 
         if (field.playerIndex !== undefined) {
@@ -64,17 +64,17 @@ export default class Board {
         firstPlayerId: props.firstPlayerId,
       });
 
-      let newRotation = (Math.PI/2) * firstPlayerIndex;
+      let newRotation = (Math.PI / 2) * firstPlayerIndex;
       this.rotateBoard(newRotation);
 
       const animateBoard = () => {
-        const animationRotation = Math.PI/4;
+        const animationRotation = Math.PI / 4;
         const startRotation = this.rotation - animationRotation;
 
         this.$.position.y = 0.8;
         this.pawnsController.$.position.y = 0;
-        this.animations.create(
-          {
+        this.animations
+          .create({
             id: 'board-init',
             easing: EASING.InOutQuint,
             length: animationLength,
@@ -83,13 +83,15 @@ export default class Board {
               this.$.material[0].opacity = opacity;
               this.$.material[1].opacity = opacity;
               this.$.scale.set(progress, progress, progress);
-              this.rotateBoard(startRotation + animationRotation * progress);
+              this.rotateBoard(
+                startRotation + animationRotation * progress,
+              );
             },
-          },
-        ).then(() => {
-          this.pawnsController.initPawns();
-          resolve();
-        });
+          })
+          .then(() => {
+            this.pawnsController.initPawns();
+            resolve();
+          });
       };
 
       this.animations
@@ -102,11 +104,11 @@ export default class Board {
 
     this.$.position.y = 0;
     this.pawnsController.$.position.y = 0;
-    for(let i = 0; i < this.dices.length; i++) {
+    for (let i = 0; i < this.dices.length; i++) {
       this.dices[i].hide();
     }
-    this.animations.create(
-      {
+    this.animations
+      .create({
         id: 'board-clear',
         length: 800,
         easing: EASING.InOutQuint,
@@ -117,15 +119,15 @@ export default class Board {
           this.$.position.y -= progress * 5;
           this.pawnsController.$.position.y -= progress * 5;
         },
-      },
-    ).then(() => {
-      this.pawnsController.removePawns();
-    })
-  }
+      })
+      .then(() => {
+        this.pawnsController.removePawns();
+      });
+  };
   drawBoard() {
     const GridSize = Games[this.gameName].Config.GridSize;
-    this.canvas.width = this.canvasWidth,
-    this.canvas.height = this.canvasHeight;
+    (this.canvas.width = this.canvasWidth),
+      (this.canvas.height = this.canvasHeight);
     Games[this.gameName].Board.drawBoard(this.canvas);
 
     for (let i = 0; i < this.fields.length; i++) {
@@ -155,31 +157,27 @@ export default class Board {
   }
   selectPawns(pawnIds) {
     if (pawnIds.length) {
-      this.animations.create(
-        {
-          id: 'board-darken',
-          length: 200,
-          easing: EASING.InOutQuint,
-          update: (progress) => {
-            const opacity = 1.0 - 0.2 * progress;
-            this.$.material[0].opacity = opacity;
-            this.$.material[1].opacity = opacity;
-          },
-        }
-      );
+      this.animations.create({
+        id: 'board-darken',
+        length: 200,
+        easing: EASING.InOutQuint,
+        update: (progress) => {
+          const opacity = 1.0 - 0.2 * progress;
+          this.$.material[0].opacity = opacity;
+          this.$.material[1].opacity = opacity;
+        },
+      });
     } else {
-      this.animations.create(
-        {
-          id: 'board-lighten',
-          length: 200,
-          easing: EASING.InOutQuint,
-          update: (progress) => {
-            const opacity = 0.8 + 0.2 * progress;
-            this.$.material[0].opacity = opacity;
-            this.$.material[1].opacity = opacity;
-          },
-        }
-      );
+      this.animations.create({
+        id: 'board-lighten',
+        length: 200,
+        easing: EASING.InOutQuint,
+        update: (progress) => {
+          const opacity = 0.8 + 0.2 * progress;
+          this.$.material[0].opacity = opacity;
+          this.$.material[1].opacity = opacity;
+        },
+      });
     }
     this.pawnsController.selectPawns(pawnIds);
   }
@@ -190,22 +188,18 @@ export default class Board {
       depth = 0.8,
       height = 40;
     this.materials = [
-      new THREE.MeshBasicMaterial(
-        {
-          map: texture,
-          transparent: true,
-          opacity: 0,
-          side: THREE.DoubleSide,
-        }
-      ),
-      new THREE.MeshBasicMaterial(
-        {
-          color: 'rgba(61, 72, 97)',
-          transparent: true,
-          opacity: 0,
-          side: THREE.DoubleSide,
-        }
-      ),
+      new THREE.MeshBasicMaterial({
+        map: texture,
+        transparent: true,
+        opacity: 0,
+        side: THREE.DoubleSide,
+      }),
+      new THREE.MeshBasicMaterial({
+        color: 'rgba(61, 72, 97)',
+        transparent: true,
+        opacity: 0,
+        side: THREE.DoubleSide,
+      }),
     ];
     this.geometry = new THREE.BoxGeometry(width, depth, height);
     this.texture = texture;
@@ -237,7 +231,7 @@ export default class Board {
       fieldSequence = [],
       firstStart = false;
 
-    for(let i = 0; i < this.fields.length; i++) {
+    for (let i = 0; i < this.fields.length; i++) {
       let field = this.fields[i];
 
       if (field.x === pawnData.x && field.z === pawnData.z) {
@@ -248,29 +242,49 @@ export default class Board {
     }
 
     if (currentField) {
-      for(let i = currentFieldI + 1; i < this.fields.length && fieldSequence.length < length; i++) {
+      for (
+        let i = currentFieldI + 1;
+        i < this.fields.length && fieldSequence.length < length;
+        i++
+      ) {
         let field = this.fields[i];
 
-        if (field.type === 'start' && field.player === pawnData.player) {
+        if (
+          field.type === 'start' &&
+          field.player === pawnData.player
+        ) {
           fieldSequence.push(field);
           firstStart = true;
           break;
         } else if (!field.type || field.type === 'start') {
           fieldSequence.push(field);
-        } else if (field.type === 'goal' && field.player === pawnData.player) {
+        } else if (
+          field.type === 'goal' &&
+          field.player === pawnData.player
+        ) {
           fieldSequence.push(field);
         }
       }
       if (!firstStart && fieldSequence.length < length) {
-        for(let j = 0; j < currentFieldI + 1 && fieldSequence.length < length; j++) {
+        for (
+          let j = 0;
+          j < currentFieldI + 1 && fieldSequence.length < length;
+          j++
+        ) {
           let field = this.fields[j];
 
-          if (field.type === 'start' && field.player === pawnData.player) {
+          if (
+            field.type === 'start' &&
+            field.player === pawnData.player
+          ) {
             fieldSequence.push(field);
             break;
           } else if (!field.type || field.type === 'start') {
             fieldSequence.push(field);
-          } else if (field.type === 'goal' && field.player === pawnData.player) {
+          } else if (
+            field.type === 'goal' &&
+            field.player === pawnData.player
+          ) {
             fieldSequence.push(field);
           }
         }
@@ -280,40 +294,57 @@ export default class Board {
     return fieldSequence;
   }
   checkMoves(pawns, diceNumber, playerIndex) {
-    return Games[this.gameName].BoardUtils.checkMoves(pawns, diceNumber, playerIndex);
+    return Games[this.gameName].BoardUtils.checkMoves(
+      pawns,
+      diceNumber,
+      playerIndex,
+    );
   }
-  movePawn({pawnId, fieldSequence,}) {
+  movePawn({ pawnId, fieldSequence }) {
     let pawn = this.pawnsController.getPawn(pawnId);
 
     if (pawn && fieldSequence.length) {
-      return this.pawnsController.movePawn(pawnId, fieldSequence)
-        .then(() => {
-          pawn.x = fieldSequence[fieldSequence.length-1].x;
-          pawn.z = fieldSequence[fieldSequence.length-1].z;
-        }, () => {
-          console.log('Cannot move this pawn with this dice value');
-        });
+      return this.pawnsController
+        .movePawn(pawnId, fieldSequence)
+        .then(
+          () => {
+            pawn.x = fieldSequence[fieldSequence.length - 1].x;
+            pawn.z = fieldSequence[fieldSequence.length - 1].z;
+          },
+          () => {
+            console.log('Cannot move this pawn with this dice value');
+          },
+        );
     }
   }
   handleClick(raycaster, playerId) {
     let returnPawn,
       distance = -1;
     if (!this.pawnsController.pawns) return;
-    
+
     for (var pawnId in this.pawnsController.pawns) {
       if (
-        Object.prototype.hasOwnProperty.call(this.pawnsController.pawns, pawnId) &&
+        Object.prototype.hasOwnProperty.call(
+          this.pawnsController.pawns,
+          pawnId,
+        ) &&
         this.pawnsController.pawns[pawnId].playerId === playerId
       ) {
         let pawn = this.pawnsController.pawns[pawnId];
-        let intersects = raycaster.intersectObject(pawn.pawnMesh, true);
-        let minIntersect = intersects.reduce((acc, val)=> {
+        let intersects = raycaster.intersectObject(
+          pawn.pawnMesh,
+          true,
+        );
+        let minIntersect = intersects.reduce((acc, val) => {
           if (val.distance < acc || acc === -1) {
             acc = val.distance;
           }
           return acc;
         }, -1);
-        if (minIntersect > -1 && (minIntersect < distance || distance === -1)) {
+        if (
+          minIntersect > -1 &&
+          (minIntersect < distance || distance === -1)
+        ) {
           returnPawn = pawn;
           distance = minIntersect;
         }
@@ -330,7 +361,10 @@ export default class Board {
       parsedRotation += Math.PI / 4;
     }
     this.$.rotation.y = parsedRotation;
-    this.pawnsController.rotate(parsedRotation, this.portraitRotation);
+    this.pawnsController.rotate(
+      parsedRotation,
+      this.portraitRotation,
+    );
   }
   createSelectionObjects() {
     if (this.pawnsController) {
@@ -342,12 +376,13 @@ export default class Board {
     this.gameName = gameName;
     this.pawnsController.gridSize = Games[gameName].Config.GridSize;
     this.fields = Games[this.gameName].Fields;
-    this.diceAnimationLength = Games[gameName].AnimationLengths.rollDice;
+    this.diceAnimationLength =
+      Games[gameName].AnimationLengths.rollDice;
     this.clearGame();
   }
   rollDice(number, diceColors) {
     if (this.dices.length) {
-      for(let i = this.dices.length - 1; i >= 0; i--) {
+      for (let i = this.dices.length - 1; i >= 0; i--) {
         this.dices[i].remove();
         this.dices.splice(i, 1);
       }

@@ -1,34 +1,29 @@
-const BoardUtils = require('./BoardUtils.js');
-const Board = require('./Board.js');
-const { Fields, } = require('./Fields.js');
-const Game = require('./../game');
+import * as BoardUtils from './BoardUtils.js';
+import * as Board from './Board.js';
+import { Fields } from './Fields.js';
+import Game from './../game/index.js';
+
 const _log = (msg) => console.log('[ludo2]: ' + msg);
 
 const InitialState = () => {
   return {
     pawns: [
-      {id: '12', x: 5.5, z: 0,}, // first player
-      {id: '4', x: 4.5, z: 9.5,}, // second player
-      {id: '0', x: 9, z: 10,}, // third player
-      {id: '8', x: 0, z: 9,}, // fourth player
+      { id: '12', x: 5.5, z: 0 }, // first player
+      { id: '4', x: 4.5, z: 9.5 }, // second player
+      { id: '0', x: 9, z: 10 }, // third player
+      { id: '8', x: 0, z: 9 }, // fourth player
     ],
-  }
+  };
 };
 
 const Config = {
   GridSize: 11,
-  Colors: [
-    "#D50000",
-    "#64DD17",
-    "#1DE9B6",
-    "#FFEA00",
-    '#FFCCDD',
-  ],
+  Colors: ['#D50000', '#64DD17', '#1DE9B6', '#FFEA00', '#FFCCDD'],
   MinPlayer: 4,
   PawnsForPlayer: 1,
   // GameLength: (15 * 60 * 1000), //15 minutes
   GameLength: 15 * 60 * 1000, //15 minutes
-  RoundLength: (10 * 1000), // Time for player to move
+  RoundLength: 10 * 1000, // Time for player to move
   SelectColorLength: 10 * 1000, // Time for player to select color
 };
 
@@ -49,44 +44,52 @@ const AnimationLengths = {
   movePawn: 300,
   movePawnFromSpawn: 600,
   rollDice: 600,
-  startGameBase: 800,// total start game time: startGameBase plus 300 * (pawn.length - 1) in the game
+  startGameBase: 800, // total start game time: startGameBase plus 300 * (pawn.length - 1) in the game
 };
 
 const Roll = () => {
-  return {type: ActionTypes.Roll, };
+  return { type: ActionTypes.Roll };
 };
 
 const Rolled = (diceNumber, playerId) => {
-  return {type: ActionTypes.Rolled, diceNumber, playerId,};
+  return { type: ActionTypes.Rolled, diceNumber, playerId };
 };
 
 const SelectColor = (playerId, color) => {
-  return {type: ActionTypes.SelectColor, playerId, value: color,};
+  return { type: ActionTypes.SelectColor, playerId, value: color };
 };
 
 const StartGame = (gameState) => {
-  return {type: ActionTypes.StartGame, gameState, animationLength: AnimationLengths.startGameBase,};
+  return {
+    type: ActionTypes.StartGame,
+    gameState,
+    animationLength: AnimationLengths.startGameBase,
+  };
 };
 
 const FinishGame = (winnerId) => {
-  return {type: ActionTypes.FinishGame, winnerId,};
+  return { type: ActionTypes.FinishGame, winnerId };
 };
 
 const WaitForPlayer = (gameState, expectedAction) => {
-  return {type: ActionTypes.WaitForPlayer, playerId: gameState.currentPlayerId, expectedAction,};
+  return {
+    type: ActionTypes.WaitForPlayer,
+    playerId: gameState.currentPlayerId,
+    expectedAction,
+  };
 };
 
 const SelectPawns = (pawnIds, playerId) => {
-  return {type: ActionTypes.SelectPawns, pawnIds, playerId,};
+  return { type: ActionTypes.SelectPawns, pawnIds, playerId };
 };
 
 const PickPawn = (pawnId) => {
-  return {type: ActionTypes.PickPawn, pawnId,};
+  return { type: ActionTypes.PickPawn, pawnId };
 };
 
 const PickColors = (gameState) => {
-  return { type: ActionTypes.PickColors, gameState, }
-}
+  return { type: ActionTypes.PickColors, gameState };
+};
 
 // For diceNumber 0 number will be generated randomly from 1 to 6
 const RollHandler = (action, player, gameState, diceNumber = 0) => {
@@ -99,13 +102,22 @@ const RollHandler = (action, player, gameState, diceNumber = 0) => {
   }
 
   if (gameState.rolled) {
-    throw new Error('This player already rolled in this room. Pick pawn!');
+    throw new Error(
+      'This player already rolled in this room. Pick pawn!',
+    );
   }
   //diceNumber=6;
-  let generatedDiceNumber = diceNumber !== 0 &&
-    (diceNumber > 0 && diceNumber < 7 && diceNumber)
-    || Math.min(parseInt(Math.random()*6)+1,6), // 1-6
-    moves = BoardUtils.checkMoves(gameState, generatedDiceNumber, player.id);
+  let generatedDiceNumber =
+      (diceNumber !== 0 &&
+        diceNumber > 0 &&
+        diceNumber < 7 &&
+        diceNumber) ||
+      Math.min(parseInt(Math.random() * 6) + 1, 6), // 1-6
+    moves = BoardUtils.checkMoves(
+      gameState,
+      generatedDiceNumber,
+      player.id,
+    );
 
   gameState.rolled = true;
   gameState.diceNumber = generatedDiceNumber;
@@ -121,7 +133,10 @@ const RollHandler = (action, player, gameState, diceNumber = 0) => {
     if (player.previousRoll !== 6 || player.lastRoll === 6) {
       player.lastRoll = 0;
       player.previousRoll = 0;
-      gameState.currentPlayerId = Game.Utils.getNextPlayerId(gameState.players, gameState.currentPlayerId);
+      gameState.currentPlayerId = Game.Utils.getNextPlayerId(
+        gameState.players,
+        gameState.currentPlayerId,
+      );
       waitForAction = ActionTypes.Roll;
     }
   }
@@ -142,7 +157,7 @@ const RollHandler = (action, player, gameState, diceNumber = 0) => {
   });
 
   if (moves.length) {
-    let pawnIds = moves.map(move => move.pawnId);
+    let pawnIds = moves.map((move) => move.pawnId);
     gameState.selectedPawns = pawnIds;
     returnActions.push({
       action: SelectPawns(pawnIds, player.id),
@@ -155,14 +170,14 @@ const RollHandler = (action, player, gameState, diceNumber = 0) => {
 
 const SelectColorHandler = (action, player, gameState) => {
   const returnActions = [];
-  let playerColor = gameState.playerColors.find(playerColor => {
+  let playerColor = gameState.playerColors.find((playerColor) => {
       return playerColor.playerId === player.id;
     }),
-    valueColor = gameState.playerColors.find(playerColor => {
+    valueColor = gameState.playerColors.find((playerColor) => {
       return playerColor.color === action.value;
     }),
-    queueColor = gameState.colorsQueue.find(queueColor =>
-      queueColor.color === action.value
+    queueColor = gameState.colorsQueue.find(
+      (queueColor) => queueColor.color === action.value,
     );
 
   if (playerColor) {
@@ -175,11 +190,24 @@ const SelectColorHandler = (action, player, gameState) => {
     return;
   }
 
-  gameState.playerColors.push({playerId: player.id, color: action.value,});
+  gameState.playerColors.push({
+    playerId: player.id,
+    color: action.value,
+  });
   player.color = action.value;
-  gameState.colorsQueue = gameState.colorsQueue.map(color => color.color === action.value ? {...color, selected: true,} : color);
+  gameState.colorsQueue = gameState.colorsQueue.map((color) =>
+    color.color === action.value
+      ? { ...color, selected: true }
+      : color,
+  );
 
-  returnActions.push({action: {type: ActionTypes.SelectedColor, playerId: player.id, value: action.value,},});
+  returnActions.push({
+    action: {
+      type: ActionTypes.SelectedColor,
+      playerId: player.id,
+      value: action.value,
+    },
+  });
 
   return returnActions;
 };
@@ -213,36 +241,48 @@ const PickPawnHandler = (action, player, gameState) => {
 
   _log(`player ${player.login} picks pawn ${action.pawnId}`);
 
-  let move = (moves.filter(move => move.pawnId === action.pawnId))[0],
-    pawn = gameState.pawns.filter(pawn => pawn.id === move.pawnId)[0],
+  let move = moves.filter((move) => move.pawnId === action.pawnId)[0],
+    pawn = gameState.pawns.filter(
+      (pawn) => pawn.id === move.pawnId,
+    )[0],
     lastField = move.fieldSequence[move.fieldSequence.length - 1],
-    lastFieldPawns = gameState.pawns.filter(pawn => (
-      pawn.x === lastField.x &&
-      pawn.z === lastField.z &&
-      pawn.playerId !== player.id
-    )),
+    lastFieldPawns = gameState.pawns.filter(
+      (pawn) =>
+        pawn.x === lastField.x &&
+        pawn.z === lastField.z &&
+        pawn.playerId !== player.id,
+    ),
     lastFieldPawn = lastFieldPawns.length && lastFieldPawns[0];
 
-  const playerIndex = gameState.players.findIndex(p => p.id === player.id);
+  const playerIndex = gameState.players.findIndex(
+    (p) => p.id === player.id,
+  );
   const spawnFields = BoardUtils.getSpawnFields(playerIndex);
-  const wasPawnOnSpawn = (spawnFields.findIndex(
-    spawnField => spawnField.x === pawn.x && spawnField.z === pawn.z
-  )) > -1;
+  const wasPawnOnSpawn =
+    spawnFields.findIndex(
+      (spawnField) =>
+        spawnField.x === pawn.x && spawnField.z === pawn.z,
+    ) > -1;
 
   pawn.x = lastField.x;
   pawn.z = lastField.z;
 
   if (wasPawnOnSpawn) {
-    animationLength = now + AnimationLengths.movePawnFromSpawn + (AnimationLengths.movePawn * (move.fieldSequence.length - 1));
+    animationLength =
+      now +
+      AnimationLengths.movePawnFromSpawn +
+      AnimationLengths.movePawn * (move.fieldSequence.length - 1);
   } else {
-    animationLength = now + (AnimationLengths.movePawn * move.fieldSequence.length);
+    animationLength =
+      now + AnimationLengths.movePawn * move.fieldSequence.length;
   }
 
-  move.fieldSequence = move.fieldSequence.map(
-    (sequence, i) => ({
-      ...sequence,
-      animationLength: wasPawnOnSpawn ? AnimationLengths.movePawnFromSpawn : AnimationLengths.movePawn,
-    }));
+  move.fieldSequence = move.fieldSequence.map((sequence, i) => ({
+    ...sequence,
+    animationLength: wasPawnOnSpawn
+      ? AnimationLengths.movePawnFromSpawn
+      : AnimationLengths.movePawn,
+  }));
 
   gameState.selectedPawns = [];
   returnActions.push({
@@ -252,7 +292,10 @@ const PickPawnHandler = (action, player, gameState) => {
   if (player.lastRoll !== 6 || player.previousRoll === 6) {
     player.lastRoll = 0;
     player.previousRoll = 0;
-    gameState.currentPlayerId = Game.Utils.getNextPlayerId(gameState.players, gameState.currentPlayerId);
+    gameState.currentPlayerId = Game.Utils.getNextPlayerId(
+      gameState.players,
+      gameState.currentPlayerId,
+    );
   }
   returnActions.push({
     action: Game.Actions.MovePawn(action.pawnId, move.fieldSequence),
@@ -261,9 +304,20 @@ const PickPawnHandler = (action, player, gameState) => {
 
   // check if pawn moves on someone others pawn and move this pawn to spawn
   if (lastFieldPawn) {
-    let playerIndex =  gameState.playerIds.findIndex(playerId => lastFieldPawn.playerId === playerId),
-      spawnPosition = BoardUtils.getEmptySpawnFields(gameState.pawns, playerIndex)[0],
-      fieldSequence = [{x: spawnPosition.x, z: spawnPosition.z, animationLength: AnimationLengths.movePawn,},];
+    let playerIndex = gameState.playerIds.findIndex(
+        (playerId) => lastFieldPawn.playerId === playerId,
+      ),
+      spawnPosition = BoardUtils.getEmptySpawnFields(
+        gameState.pawns,
+        playerIndex,
+      )[0],
+      fieldSequence = [
+        {
+          x: spawnPosition.x,
+          z: spawnPosition.z,
+          animationLength: AnimationLengths.movePawn,
+        },
+      ];
 
     lastFieldPawn.x = spawnPosition.x;
     lastFieldPawn.z = spawnPosition.z;
@@ -276,7 +330,7 @@ const PickPawnHandler = (action, player, gameState) => {
 
   //check win
   if (lastField.type === BoardUtils.FieldTypes.goal) {
-    let playerPawns = gameState.pawns.filter(pawn => {
+    let playerPawns = gameState.pawns.filter((pawn) => {
       return pawn.playerId === player.id;
     });
     if (BoardUtils.checkWin(playerPawns)) {
@@ -284,7 +338,7 @@ const PickPawnHandler = (action, player, gameState) => {
       gameState.winnerId = player.id;
       gameState.roomState = Game.GameStates.finished;
       returnActions.push({
-        action:FinishGame(player.id),
+        action: FinishGame(player.id),
       });
     }
   }
@@ -307,11 +361,17 @@ const DisconnectedHandler = (action, player, room) => {
     activePlayers,
     gameState = room.gameState,
     playerIndex = gameState.playerIds.indexOf(player.id),
-    spawnFields = gameState.pawns && BoardUtils.getEmptySpawnFields(gameState.pawns, playerIndex),
-    playerPawns = gameState.pawns && gameState.pawns.filter(pawn =>
-      pawn.playerId === player.id &&
-      BoardUtils.getFieldByPosition(pawn.x, pawn.z).type !== BoardUtils.FieldTypes.spawn
-    );
+    spawnFields =
+      gameState.pawns &&
+      BoardUtils.getEmptySpawnFields(gameState.pawns, playerIndex),
+    playerPawns =
+      gameState.pawns &&
+      gameState.pawns.filter(
+        (pawn) =>
+          pawn.playerId === player.id &&
+          BoardUtils.getFieldByPosition(pawn.x, pawn.z).type !==
+            BoardUtils.FieldTypes.spawn,
+      );
 
   activePlayers = room.getActivePlayers();
 
@@ -319,22 +379,31 @@ const DisconnectedHandler = (action, player, room) => {
   if (activePlayers.length === 1) {
     room.gameState.winnerId = activePlayers[0].id;
     room.gameState.roomState = Game.GameStates.finished;
-    returnActions.push({action:FinishGame(room.gameState.winnerId),})
-  // if there is no winner, move player pawns to spawn
+    returnActions.push({
+      action: FinishGame(room.gameState.winnerId),
+    });
+    // if there is no winner, move player pawns to spawn
   } else if (playerPawns && activePlayers.length) {
     // for every player pawn which is not in goal
-    for(let i = 0; i < playerPawns.length; i++) {
+    for (let i = 0; i < playerPawns.length; i++) {
       let pawn = playerPawns[i],
         field = spawnFields[i];
 
       pawn.x = field.x;
       pawn.z = field.z;
 
-      returnActions.push({action: Game.Actions.MovePawn(pawn.id, [{x: field.x, z: field.z,},]),});
+      returnActions.push({
+        action: Game.Actions.MovePawn(pawn.id, [
+          { x: field.x, z: field.z },
+        ]),
+      });
     }
     // switch player if disconnected current
-    if(gameState.currentPlayerId === player.id) {
-      gameState.currentPlayerId = Game.Utils.getNextPlayerId(gameState.players, gameState.currentPlayerId);
+    if (gameState.currentPlayerId === player.id) {
+      gameState.currentPlayerId = Game.Utils.getNextPlayerId(
+        gameState.players,
+        gameState.currentPlayerId,
+      );
       gameState.selectedPawns = [];
       gameState.rolled = false;
       returnActions.push({
@@ -344,7 +413,7 @@ const DisconnectedHandler = (action, player, room) => {
   }
 
   // append Disconnected action to returnActions
-  returnActions.push({action,});
+  returnActions.push({ action });
 
   return returnActions;
 };
@@ -353,25 +422,32 @@ const TimeoutHandler = (gameState) => {
   const winnerId = BoardUtils.getWinningPlayer(gameState);
   gameState.winnerId = winnerId;
   gameState.roomState = Game.GameStates.finished;
-  return [{action:FinishGame(gameState.winnerId),},];
+  return [{ action: FinishGame(gameState.winnerId) }];
 };
 
 const RoundEndHandler = (gameState) => {
   const returnActions = [];
-  returnActions.push({action: SelectPawns([], gameState.currentPlayerId),});
-  gameState.currentPlayerId = Game.Utils.getNextPlayerId(gameState.players, gameState.currentPlayerId);
+  returnActions.push({
+    action: SelectPawns([], gameState.currentPlayerId),
+  });
+  gameState.currentPlayerId = Game.Utils.getNextPlayerId(
+    gameState.players,
+    gameState.currentPlayerId,
+  );
   gameState.roundTimestamp = Date.now() + Config.RoundLength;
   gameState.rolled = false;
   gameState.selectedPawns = [];
 
-  returnActions.push({action: WaitForPlayer(gameState, ActionTypes.Roll),});
+  returnActions.push({
+    action: WaitForPlayer(gameState, ActionTypes.Roll),
+  });
   return returnActions;
 };
 
 const StartGameHandler = (gameState) => {
   const returnActions = [];
 
-  returnActions.push({action: StartGame(gameState),});
+  returnActions.push({ action: StartGame(gameState) });
 
   return returnActions;
 };
@@ -381,7 +457,7 @@ const PickColorsHandler = (gameState) => {
 
   gameState.roomState = Game.GameStates.pickColors;
 
-  returnActions.push({action: PickColors(gameState),});
+  returnActions.push({ action: PickColors(gameState) });
 
   return returnActions;
 };
@@ -416,4 +492,4 @@ const Ludo2 = {
   InitialState,
 };
 
-module.exports = Ludo2;
+export default Ludo2;

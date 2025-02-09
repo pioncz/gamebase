@@ -1,4 +1,4 @@
-const drawSquareField = (
+export const drawSquareField = (
   canvas,
   color,
   disabled,
@@ -45,8 +45,4 @@ const drawSquareField = (
     radius, 
     background,
   );
-};
-
-module.exports = {
-  drawSquareField,
 };

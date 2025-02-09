@@ -1,6 +1,5 @@
-import Pawn from "./pawn";
-import {EASING, TIMES,} from "./utils/animations";
-import Config from 'config.js';
+import Pawn from './pawn';
+import { EASING } from './utils/animations';
 
 export default class PawnsController {
   constructor(props) {
@@ -13,12 +12,12 @@ export default class PawnsController {
     this.gridSize = props.gridSize;
     this.renderOrder = props.renderOrder;
     this.pawnSelectionRenderOrder = props.renderOrder;
-    this.orientation = { portrait: false, rotationY: 0,};
+    this.orientation = { portrait: false, rotationY: 0 };
 
     this.$ = new THREE.Group();
     this.$.name = 'PawnsController';
   }
-  createPawns({pawns, firstPlayerId, }) {
+  createPawns({ pawns, firstPlayerId }) {
     // If all pawns spawn in the same field, move them
     const sameField = pawns.length > 1 && pawns[0].x === pawns[1].x;
 
@@ -27,13 +26,17 @@ export default class PawnsController {
       let z = pawns[pawnIndex].z;
 
       if (sameField) {
-        x +=  (pawnIndex < 2 ? -1: 1 ) * 0.25;
-        z +=  (pawnIndex % 2 ? -1: 1 ) * 0.25;
+        x += (pawnIndex < 2 ? -1 : 1) * 0.25;
+        z += (pawnIndex % 2 ? -1 : 1) * 0.25;
       }
 
       let pawnId = pawns[pawnIndex].id,
-        parsedX = (x - Math.floor(this.gridSize/2)) * (this.fieldLength / this.gridSize),
-        parsedZ = (z - Math.floor(this.gridSize/2)) * (this.fieldLength / this.gridSize),
+        parsedX =
+          (x - Math.floor(this.gridSize / 2)) *
+          (this.fieldLength / this.gridSize),
+        parsedZ =
+          (z - Math.floor(this.gridSize / 2)) *
+          (this.fieldLength / this.gridSize),
         playerId = pawns[pawnIndex].playerId;
 
       let pawn = new Pawn({
@@ -50,10 +53,12 @@ export default class PawnsController {
       });
       this.pawns[pawnId] = pawn;
 
-      pawn.pawnMesh.renderOrder = playerId === firstPlayerId ? 50 : 10;
+      pawn.pawnMesh.renderOrder =
+        playerId === firstPlayerId ? 50 : 10;
 
       pawn.pawnMesh.material.opacity = 0;
-      pawn.selectionObject.renderOrder = this.pawnSelectionRenderOrder;
+      pawn.selectionObject.renderOrder =
+        this.pawnSelectionRenderOrder;
       this.$.add(pawn.$);
     }
   }
@@ -63,7 +68,7 @@ export default class PawnsController {
 
       if (!pawn) return;
 
-      let delay = Math.floor((+pawnId / 4))*200+(+pawnId % 4)*100;
+      let delay = Math.floor(+pawnId / 4) * 200 + (+pawnId % 4) * 100;
 
       this.animations.create({
         id: 'enterPawn' + pawnId,
@@ -71,17 +76,17 @@ export default class PawnsController {
         delay: delay,
         easing: EASING.InOutQuad,
         update: (progress) => {
-          let newY = (20*(1-progress)) + 2,
-            newOpacity = (progress * 5);
+          let newY = 20 * (1 - progress) + 2,
+            newOpacity = progress * 5;
 
           pawn.pawnMesh.material.opacity = newOpacity;
-          pawn.moveTo(pawn.parsedX, newY ,pawn.parsedZ);
+          pawn.moveTo(pawn.parsedX, newY, pawn.parsedZ);
         },
       });
     }
   }
   removePawns() {
-    for(let pawnId in this.pawns) {
+    for (let pawnId in this.pawns) {
       let pawn = this.pawns[pawnId];
       this.animations.removeAnimation('enterPawn' + pawnId);
       pawn.unselect();
@@ -102,35 +107,43 @@ export default class PawnsController {
     const lastField = fieldSequence[fieldSequence.length - 1];
 
     let pawnOnLastField;
-    for(let i = 0; i < fieldSequence.length; i++) {
-      let {x, z, animationLength,} = fieldSequence[i],
-        newX = (x - Math.floor(this.gridSize/2)) * (this.fieldLength / this.gridSize),
-        newZ = (z - Math.floor(this.gridSize/2)) * (this.fieldLength / this.gridSize),
-        pawnOnNextField = (!!this.getPawnByXZ(x, z)) &&
-          i !== (fieldSequence.length -1);
+    for (let i = 0; i < fieldSequence.length; i++) {
+      let { x, z, animationLength } = fieldSequence[i],
+        newX =
+          (x - Math.floor(this.gridSize / 2)) *
+          (this.fieldLength / this.gridSize),
+        newZ =
+          (z - Math.floor(this.gridSize / 2)) *
+          (this.fieldLength / this.gridSize),
+        pawnOnNextField =
+          !!this.getPawnByXZ(x, z) && i !== fieldSequence.length - 1;
 
       animationsSteps.push({
         length: animationLength,
         easing: EASING.InOutQuad,
-        update: ((newX, newZ, pawnOnLastField, pawnOnNextField) =>
+        update: (
+          (newX, newZ, pawnOnLastField, pawnOnNextField) =>
           (progress) => {
             let oldX = pawn.parsedX,
               oldZ = pawn.parsedZ,
               dX = oldX - newX,
               dZ = oldZ - newZ,
-              newParsedX = oldX - (dX * progress),
+              newParsedX = oldX - dX * progress,
               newParsedY,
-              newParsedZ = oldZ - (dZ * progress);
+              newParsedZ = oldZ - dZ * progress;
 
-            if ((progress <= 0.5 && pawnOnLastField) ||
-              (progress > 0.5 && pawnOnNextField)) {
+            if (
+              (progress <= 0.5 && pawnOnLastField) ||
+              (progress > 0.5 && pawnOnNextField)
+            ) {
               newParsedY = 4 + EASING.Sin(progress / 2);
             } else {
               newParsedY = 2 + 3 * EASING.Sin(progress / 2);
             }
 
             pawn.moveTo(newParsedX, newParsedY, newParsedZ);
-          })(newX, newZ, pawnOnLastField, pawnOnNextField),
+          }
+        )(newX, newZ, pawnOnLastField, pawnOnNextField),
         finish: () => {
           pawn.parsedX = newX;
           pawn.parsedZ = newZ;
@@ -140,12 +153,15 @@ export default class PawnsController {
       pawnOnLastField = pawnOnNextField;
     }
 
-    return this.animations.createSequence({name: 'movePawn'+pawnId, steps: animationsSteps,});
+    return this.animations.createSequence({
+      name: 'movePawn' + pawnId,
+      steps: animationsSteps,
+    });
   }
   getPawn(pawnId) {
     return this.pawns[pawnId];
   }
-  getPawnByXZ(x,z) {
+  getPawnByXZ(x, z) {
     let returnPawn;
 
     for (const pawnId in this.pawns) {
@@ -160,7 +176,7 @@ export default class PawnsController {
     return returnPawn;
   }
   selectPawns(pawnIds) {
-    for(let pawnId in this.pawns) {
+    for (let pawnId in this.pawns) {
       let pawn = this.pawns[pawnId];
 
       if (!pawn) {
@@ -187,10 +203,10 @@ export default class PawnsController {
     }
   }
   rotate(rotationY, portrait) {
-    this.orientation = { portrait, rotationY,};
+    this.orientation = { portrait, rotationY };
     this.$.rotation.y = rotationY;
 
-    for(let pawnIndex in this.pawns) {
+    for (let pawnIndex in this.pawns) {
       this.pawns[pawnIndex].rotate(this.orientation);
     }
   }

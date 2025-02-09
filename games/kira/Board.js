@@ -1,6 +1,6 @@
-const GameBoard = require('./../game/Board.js');
+import * as GameBoard from './../game/Board.js';
 
-const drawBoard = (canvas) => {
+export const drawBoard = (canvas) => {
   let ctx = canvas.getContext('2d'),
     width = canvas.width,
     height = canvas.height;
@@ -9,21 +9,15 @@ const drawBoard = (canvas) => {
 
   // background
   var grd = ctx.createLinearGradient(0, 0, width, height);
-  grd.addColorStop(.1, "#dcd183");
-  grd.addColorStop(.4, "#ece3a1");
-  grd.addColorStop(.7, "#fde429");
+  grd.addColorStop(0.1, '#dcd183');
+  grd.addColorStop(0.4, '#ece3a1');
+  grd.addColorStop(0.7, '#fde429');
   ctx.fillStyle = grd;
   ctx.fillRect(0, 0, width, width);
 };
 
-const drawField = (
-  canvas, 
-  gridSize,
-  field,
-) => {
-  const {
-    x, z, color, disabled,
-  } = field;
+export const drawField = (canvas, gridSize, field) => {
+  const { x, z, color, disabled } = field;
   const radius = 5;
   let background = '#d7bb54';
   let stroke = 'rgba(0,0,0,.07)';
@@ -36,7 +30,7 @@ const drawField = (
     background = '#bbb';
     stroke = 'rgba(255,255,255,0.3)';
   }
-  
+
   GameBoard.drawSquareField(
     canvas,
     color,
@@ -48,9 +42,4 @@ const drawField = (
     background,
     stroke,
   );
-};
-
-module.exports = {
-  drawBoard,
-  drawField,
 };
