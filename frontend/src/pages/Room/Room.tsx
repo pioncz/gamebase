@@ -15,7 +15,7 @@ import { getDices, getPlayer, setInGame } from '@/store/GameSlice';
 import WSConnectorContext from '@/contexts/WSConnector/WSConnectorContext';
 import { useAppDispatch } from '@/store/store';
 import { useNavigate, useParams } from 'react-router';
-import { GameAction, Pawn, Player, PlayerColor } from '@/lib/types';
+import { GameAction, Player, PlayerColor } from '@/lib/types';
 import SearchingRoomModal from '@/components/SearchingRoomModal/SearchingRoomModal';
 import Progress from '@/components/Progress/Progress';
 import Modal from '@/components/Modal/Modal';
