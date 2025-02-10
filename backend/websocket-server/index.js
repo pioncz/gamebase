@@ -406,7 +406,7 @@ class WebsocketServer {
           player.temporary
         }}. currently ${_getTotalNumPlayers()} online.`,
       );
-      io.emit('initialData', {
+      socket.emit('initialData', {
         player,
         dices: Dices,
         games: Object.keys(Games).filter(
