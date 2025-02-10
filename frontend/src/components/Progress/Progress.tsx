@@ -14,7 +14,7 @@ const Progres = ({
   const [lastTick, setLastTick] = useState(0);
 
   useEffect(() => {
-    let updateInterval: number | null = null;
+    let updateInterval: NodeJS.Timeout | null = null;
 
     const clear = () => {
       if (updateInterval) {

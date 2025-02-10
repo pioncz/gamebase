@@ -375,7 +375,7 @@ class WebsocketServer {
           login: `Name ${nextId}`,
           socketId: socket.id,
           diceId: Dices[0].id,
-          avatar: `/avatar${Math.floor(Math.random() * 6) + 1}.jpg`,
+          avatar: `avatar${Math.floor(Math.random() * 6) + 1}.jpg`,
         });
         updatePlayer(tempPlayer);
         return tempPlayer;

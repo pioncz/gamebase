@@ -61,7 +61,7 @@ async function create(playerParam) {
     throw 'Login "' + playerParam.login + '" is already taken';
   }
   playerParam.avatar =
-    '/avatar' + parseInt(Math.random() * 6 + 1) + '.jpg';
+    'avatar' + parseInt(Math.random() * 6 + 1) + '.jpg';
   const player = new Player(playerParam);
 
   // hash password

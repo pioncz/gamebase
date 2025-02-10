@@ -15,7 +15,7 @@ class Bot extends Player {
     super({
       id,
       login: id,
-      avatar: '/avatar1.jpg',
+      avatar: 'avatar1.jpg',
     });
     this.randomDelays = randomDelays;
     this.bot = true;

@@ -8,7 +8,7 @@ import store from './store/store.ts';
 import { WSConnectorContextProvider } from '@/contexts/WSConnector/WSConnectorContext';
 
 createRoot(document.getElementById('root')!).render(
-  <BrowserRouter>
+  <BrowserRouter basename={import.meta.env.VITE_ROUTER_BASENAME}>
     <Provider store={store}>
       <WSConnectorContextProvider>
         <App />
