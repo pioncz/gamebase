@@ -24,7 +24,8 @@ import { dirname } from 'path';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const mongodb_uri = `mongodb+srv://luzeckipiotr:${process.env.DB_PASSWORD}@portfolio.bw5b6.mongodb.net/?retryWrites=true&w=majority&appName=Portfolio`;
+const dbPassword = process.env.DB_PASSWORD || '';
+const mongodb_uri = `mongodb+srv://luzeckipiotr:${dbPassword}@portfolio.bw5b6.mongodb.net/?retryWrites=true&w=majority&appName=Portfolio`;
 const port = process.env.PORT || config.port;
 
 const app = express();
@@ -97,11 +98,11 @@ app.use('/ping', function (req, res) {
   res.send(200);
 });
 
-app.use(
-  '/',
-  express.static(path.join(__dirname, '/../frontend/dist')),
-);
-app.use('/static/', express.static(path.join(__dirname, 'static')));
+// app.use(
+//   '/',
+//   express.static(path.join(__dirname, '/../frontend/dist')),
+// );
+// app.use('/static/', express.static(path.join(__dirname, 'static')));
 
 app.use('/api/currentPlayer', (req, res) => {
   const token = req.cookies.token,
@@ -162,17 +163,7 @@ app.use((err, req, res, next) => {
 });
 
 app.use(function (req, res) {
-  var fileName = __dirname + '/../frontend/dist/index.html';
-  fs.readFile(fileName, 'utf8', function (err, data) {
-    if (err) {
-      console.log(err);
-      res
-        .status(404)
-        .send({ error: 'index not found', url: req.url });
-    } else {
-      res.send(data);
-    }
-  });
+  res.send({ hello: 'world' });
 });
 
 server.listen(port, () => {

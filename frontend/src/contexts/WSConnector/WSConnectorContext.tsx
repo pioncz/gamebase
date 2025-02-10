@@ -5,7 +5,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { config } from '@/lib/config';
 import ioClient, { Socket } from 'socket.io-client';
 import { styled } from '@/lib/stitches.config';
 import { Dice, Player } from '@/lib/types';
