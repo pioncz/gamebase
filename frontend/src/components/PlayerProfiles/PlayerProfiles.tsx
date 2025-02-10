@@ -7,6 +7,7 @@ import {
 import Progress from '../Progress/Progress';
 import { Player } from '@/lib/types';
 import { styled } from '@/lib/stitches.config';
+import { getAssetPath } from '@/lib/assets';
 
 export type PlayerProfilesHandle = {
   restartProgress: () => void;
@@ -127,7 +128,7 @@ const PlayerProfiles = forwardRef(
                 )}
                 <Progress />
               </div>
-              <img src={player.avatar} />
+              <img src={getAssetPath(player.avatar)} />
             </div>
           );
         })}

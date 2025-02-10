@@ -27,6 +27,7 @@ import PlayerProfiles, {
 import Dices from '@/components/Dices/Dices';
 import Timer, { TimerHandle } from '@/components/Timer/Timer';
 import { styled } from '@/lib/stitches.config';
+import { getAssetPath } from '@/lib/assets';
 
 const Pages = {
   Queue: 'Queue',
@@ -364,7 +365,7 @@ const RoomPage = () => {
         <h3>Winner!</h3>
         <div className={'player'}>
           <img
-            src={winnerPlayer?.avatar}
+            src={getAssetPath(winnerPlayer?.avatar)}
             style={{
               border: '6px solid ' + winnerPlayer?.color,
             }}

@@ -22,7 +22,7 @@ const logger = new Logger({
 const _log = logger.log;
 
 // Changeable in admin panel
-let RoomQueueTimeout = 1 * 1000;
+let RoomQueueTimeout = 10 * 1000;
 let MinPlayers = 4;
 
 const TotalBots = 40;

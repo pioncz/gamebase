@@ -1,3 +1,4 @@
+import { getAssetPath } from '@/lib/assets';
 import { styled } from '@/lib/stitches.config';
 import { Player } from '@/lib/types';
 
@@ -13,7 +14,7 @@ const Profile = ({
       {player && (
         <Avatar
           style={{
-            backgroundImage: `url(${player.avatar})`,
+            backgroundImage: `url(${getAssetPath(player.avatar)})`,
           }}
         ></Avatar>
       )}

@@ -1,0 +1,1 @@
+export const getAssetPath = (url?: string) => `${import.meta.env.VITE_PATH}${url}`
