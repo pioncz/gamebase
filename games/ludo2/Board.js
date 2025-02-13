@@ -8,8 +8,8 @@ export const drawBoard = (canvas) => {
   // background
   var grd = ctx.createLinearGradient(0, 0, width, height);
   grd.addColorStop(0.1, '#0fb8ff');
-  grd.addColorStop(0.4, '#1fc8db');
-  grd.addColorStop(0.7, '#2cb5e8');
+  grd.addColorStop(0.4, '#B9DB1FFF');
+  grd.addColorStop(0.7, '#2CE84BFF');
   ctx.fillStyle = grd;
   ctx.fillRect(0, 0, width, width);
 };

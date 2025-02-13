@@ -1,10 +1,16 @@
 export const FieldTypes = {
-  spawn: 'spawn',
   start: 'start',
   goal: 'goal',
 };
 
 export const Fields = [
+  {
+    x: 2,
+    z: 2,
+    playerIndex: 0,
+    color: '',
+    type: 'goal',
+  },
   {
     x: 1,
     z: 1,
@@ -39,6 +45,13 @@ export const Fields = [
   {
     x: 8,
     z: 1,
+  },
+  {
+    x: 8,
+    z: 2,
+    playerIndex: 1,
+    color: '',
+    type: 'goal',
   },
   {
     x: 9,
@@ -76,6 +89,13 @@ export const Fields = [
     z: 8,
   },
   {
+    x: 8,
+    z: 8,
+    playerIndex: 2,
+    color: '',
+    type: 'goal',
+  },
+  {
     x: 9,
     z: 9,
     playerIndex: 2,
@@ -111,8 +131,18 @@ export const Fields = [
     z: 9,
   },
   {
+    x: 2,
+    z: 8,
+    playerIndex: 3,
+    color: '',
+    type: 'goal',
+  },
+  {
     x: 1,
     z: 9,
+    playerIndex: 3,
+    color: '',
+    type: 'start',
   },
   {
     x: 1,
@@ -137,12 +167,9 @@ export const Fields = [
   {
     x: 1,
     z: 3,
-    playerIndex: 3,
-    color: '',
-    type: 'start',
   },
   {
     x: 1,
     z: 2,
-  },
+  }
 ];

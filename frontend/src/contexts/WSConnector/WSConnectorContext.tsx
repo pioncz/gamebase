@@ -56,7 +56,7 @@ export const WSConnectorContextProvider: React.FC<{
         player: Player;
         dices: Dice[];
         games: [];
-      }) => {
+        }) => {
         dispatch(setPlayer({ ...player, state: 'loggedIn' }));
         dispatch(setDices(dices));
 

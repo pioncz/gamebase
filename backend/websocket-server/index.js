@@ -15,9 +15,6 @@ const _nextId = (() => {
 })();
 const logger = new Logger({
   className: 'ws',
-  onLog: (msg) => {
-    // this.logs.push(msg);
-  },
 });
 const _log = logger.log;
 

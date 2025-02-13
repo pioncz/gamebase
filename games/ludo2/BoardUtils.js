@@ -33,50 +33,31 @@ export const getFieldSequence = (
 
   if (!startField) return [];
 
-  if (startField.type === FieldTypes.spawn) {
-    if (diceNumber === 6 || diceNumber === 1) {
-      let index = startFieldIndex;
+  let index = startFieldIndex;
+  while (fieldSequence.length !== diceNumber && index !== -1) {
+    let nextField = getField(++index),
+      lastField =
+        fieldSequence.length &&
+        fieldSequence[fieldSequence.length - 1];
 
-      while (!fieldSequence.length) {
-        let nextField = getField(++index);
-
-        if (nextField.type !== FieldTypes.spawn) {
-          fieldSequence.push(nextField);
-        }
-      }
-    } else {
-      fieldSequence = [];
+    if (
+      !isNaN(nextField.playerIndex) &&
+      nextField.playerIndex !== playerIndex &&
+      nextField.type !== FieldTypes.start
+    ) {
+      continue;
     }
-  } else {
-    let index = startFieldIndex;
-    while (fieldSequence.length !== diceNumber && index !== -1) {
-      let nextField = getField(++index),
-        lastField =
-          fieldSequence.length &&
-          fieldSequence[fieldSequence.length - 1];
+    if (
+      (startField.type === FieldTypes.goal ||
+        (lastField && lastField.type === FieldTypes.goal)) &&
+      nextField.type !== FieldTypes.goal
+    ) {
+      fieldSequence = [];
+      index = -1;
+    }
 
-      if (nextField.type === FieldTypes.spawn) {
-        continue;
-      }
-      if (
-        !isNaN(nextField.playerIndex) &&
-        nextField.playerIndex !== playerIndex &&
-        nextField.type !== FieldTypes.start
-      ) {
-        continue;
-      }
-      if (
-        (startField.type === FieldTypes.goal ||
-          (lastField && lastField.type === FieldTypes.goal)) &&
-        nextField.type !== FieldTypes.goal
-      ) {
-        fieldSequence = [];
-        index = -1;
-      }
-
-      if (index !== -1) {
-        fieldSequence.push(nextField);
-      }
+    if (index !== -1) {
+      fieldSequence.push(nextField);
     }
   }
 
@@ -90,17 +71,17 @@ export const getFieldSequence = (
 
   return fieldSequence;
 };
-export const getSpawnFields = (playerIndex) => {
+export const getStartFields = (playerIndex) => {
   return Fields.filter(
     (field) =>
       field.playerIndex === playerIndex &&
-      field.type === FieldTypes.spawn,
+      field.type === FieldTypes.start,
   );
 };
-export const getEmptySpawnFields = (pawns, playerIndex) => {
-  let spawnFields = getSpawnFields(playerIndex);
+export const getEmptyStartFields = (pawns, playerIndex) => {
+  let startFields = getStartFields(playerIndex);
 
-  return spawnFields.filter(
+  return startFields.filter(
     (field) =>
       pawns.findIndex(
         (pawn) => pawn.x === field.x && pawn.z === field.z,

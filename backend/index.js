@@ -43,39 +43,23 @@ function handleError(req, res, error) {
   res.send(error.statusCode);
 }
 
-console.log(mongodb_uri);
-// mongoose.set('useCreateIndex', true);
-// mongoose
-//   .connect(mongodb_uri, { useNewUrlParser: true }, (error) => {
-//     console.error('Mongoose connection fail!');
-//     error && console.error(error);
-//   })
-//   .then(
-//     () => {
-//       console.log('Mongoose connected!');
-//     },
-//     () => {
-//       console.error('Mongoose connection fail!');
-//     },
-//   );
-// mongoose.Promise = global.Promise;
-const clientOptions = {
-  serverApi: { version: '1', strict: true, deprecationErrors: true },
-};
-async function run() {
-  try {
-    // Create a Mongoose client with a MongoClientOptions object to set the Stable API version
-    await mongoose.connect(mongodb_uri, clientOptions);
-    await mongoose.connection.db.admin().command({ ping: 1 });
-    console.log(
-      'Pinged your deployment. You successfully connected to MongoDB!',
-    );
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await mongoose.disconnect();
-  }
-}
-run().catch(console.dir);
+// const clientOptions = {
+//   serverApi: { version: '1', strict: true, deprecationErrors: true },
+// };
+// async function run() {
+//   try {
+//     // Create a Mongoose client with a MongoClientOptions object to set the Stable API version
+//     await mongoose.connect(mongodb_uri, clientOptions);
+//     await mongoose.connection.db.admin().command({ ping: 1 });
+//     console.log(
+//       'Pinged your deployment. You successfully connected to MongoDB!',
+//     );
+//   } finally {
+//     // Ensures that the client will close when you finish/error
+//     await mongoose.disconnect();
+//   }
+// }
+// run().catch(console.dir);
 
 /**
  * Module variables

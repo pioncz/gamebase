@@ -19,7 +19,12 @@ export type PlayerColor = {
   color: string;
 };
 
-export type Pawn = {};
+export type Pawn = {
+  id: string;
+  color: string;
+  x: string;
+  z: string;
+};
 
 export type Game = {
   id: string;

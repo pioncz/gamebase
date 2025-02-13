@@ -342,9 +342,7 @@ export default class Board {
           }
           return acc;
         }, -1);
-        if (intersects.length) {
-          console.log(intersects);
-        }
+
         if (
           minIntersect > -1 &&
           (minIntersect < distance || distance === -1)

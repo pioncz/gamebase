@@ -168,7 +168,7 @@ export class Room {
       gameState.pawns.filter(
         (pawn) =>
           pawn.playerId === player.id &&
-          game.BoardUtils.getFieldByPosition(pawn.x, pawn.z).type !==
+          game.BoardUtils.getFieldByPosition(pawn.x, pawn.z)?.type !==
             game.BoardUtils.FieldTypes.spawn,
       );
     let returnActions = [];

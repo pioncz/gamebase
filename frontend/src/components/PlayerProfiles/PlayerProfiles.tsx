@@ -39,10 +39,9 @@ const PlayerProfiles = forwardRef(
       (player) => player.id === firstPlayerId,
     );
     // swap players so first will be with id firstPlayerId
-    const filteredPlayers: Player[] = players
-      .slice(0, players.length)
-      .slice(playerIndex, players.length)
-      .concat(players.slice(0, players.length).slice(0, playerIndex));
+    let filteredPlayers: Player[] = players.slice(0, players.length)
+      
+    filteredPlayers = filteredPlayers.slice(playerIndex, filteredPlayers.length).concat(filteredPlayers.slice(0, playerIndex));
 
     useImperativeHandle(
       ref,
