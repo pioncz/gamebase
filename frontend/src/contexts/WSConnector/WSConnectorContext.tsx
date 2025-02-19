@@ -27,8 +27,7 @@ export const WSConnectorContextProvider: React.FC<{
 
   useEffect(() => {
     if (socketRef.current) return;
-
-    socketRef.current = ioClient(import.meta.env.VITE_WS_HOST);
+    socketRef.current = ioClient(import.meta.env.VITE_WS_HOST, { secure: true });
 
     socketRef.current?.on('connect', () => {
       setConnected(true);

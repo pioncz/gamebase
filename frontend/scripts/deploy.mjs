@@ -8,6 +8,8 @@ const URL = 'luzecki.com/gamebase';
 const getDeployCommand = () =>
   `aws s3 sync . ${BUCKET}`;
 
+const getMetadataCommand = () =>
+  `aws s3 cp ${BUCKET}/index.html ${BUCKET}/index.html --cache-control=no-store,no-cache,private`;
 
 const execMaxBuffer = 1024 * 2000;
 
@@ -59,11 +61,23 @@ const deployToAws = async () => {
   log('✔ Deployed to aws.', 'green');
 };
 
+const updateCacheMetadata = async () => {
+  try {
+    await execute(getMetadataCommand());
+  } catch (e) {
+    log('❗ Update cache metadata failed', 'red');
+    log(e);
+    process.exit('6');
+  }
+  log('✔ Cache metadata updated.', 'green');
+};
+
 const main = async () => {
   log(`\n🚀 Deploying\n`);
 
   await build();
   await deployToAws();
+  await updateCacheMetadata();
 
   log('✨ Successfully deployed!');
   log(
